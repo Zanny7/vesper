@@ -1,5 +1,11 @@
 # Working on Vesper
 
+## Linear issue order
+
+- Work through Linear issues in ascending numeric identifier order by default (for example, BAT-7 before BAT-8).
+- Only use priority or another ordering when the user explicitly requests it. Check issue status and existing implementation before starting so completed work is not repeated.
+- If the next issue is blocked, explain the blocker before moving to a later issue; do not silently reorder the queue.
+
 ## Version control
 
 The user wants consistent version control and proactive Git/GitHub reminders.

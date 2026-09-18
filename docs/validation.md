@@ -1,5 +1,14 @@
 # Validation — first vertical slice
 
+## BAT-7 — navigation and utility controls
+
+- Verified Adventures opens by default, encounter entry resets to a fresh ready state, and layout controls appear only inside the encounter.
+- Opened and toggled both utility panels outside combat; confirmed both buttons remain visible but disabled in running and paused encounters.
+- Navigated during Greater Heal: cancel preserved the cast and mana. Cancel from an already paused encounter kept it paused. Confirm abandoned the attempt and opened the selected hub screen.
+- Checked the persistent header and utility controls in immersive mode at 1280×720 and a narrow 390×844 viewport. The narrow viewport had no horizontal content overflow; the ability bar and utility group remained separate.
+- Restored the normal viewport and left Adventures ready for review. Browser warning/error logs were empty.
+- All 15 Node tests pass. Shell interactions were checked manually in the browser; no cross-browser matrix was performed.
+
 ## Automated
 
 `npm test`: 13 passing test cases using Node's built-in test runner.
@@ -34,3 +43,12 @@ Full victory/defeat and timing edge cases were checked by simulation tests, not 
 - Reloaded and confirmed the saved immersive preference was restored; checked narrow-screen canvas sizing and no horizontal overflow.
 - Restored the browser viewport and restarted the encounter, leaving the immersive preview ready to play. Browser warning/error logs were empty.
 - All 13 existing combat tests passed after the layout implementation. This UI change does not modify the combat simulation.
+
+## BAT-6 — shared ability bar
+
+- Browser-checked panel and immersive layouts at 1280×720: a single shared container, four equally sized icons, and no permanent ability names/details.
+- Measured every desktop icon at 64×64 and every key badge at 30×18, anchored at icon offset (0, 0).
+- Cast Penance and paused during its cooldown. Computed styles showed grayscale/brightness on only its icon; all buttons remained opacity 1 with no filter, and key badges remained unfiltered. The centered countdown contained no unit suffix.
+- Verified a spell tooltip by pointer interaction and then Tab navigation to Prayer of Healing, which exposed its name, cast time, cost, healing, and effect.
+- At 390×844, measured all icons at 54×54 and all badges at 30×18; no horizontal overflow.
+- Added formatter tests for modifier aliases, combined modifiers, fractional seconds, the 60-second boundary, padded seconds, and multi-minute cooldowns. These cover long cooldowns and modifier labels without changing actual ability balance or keybindings. All 15 tests pass.

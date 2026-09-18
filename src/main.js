@@ -1,6 +1,8 @@
 import { Combat } from './combat.js';
 import { Battlefield } from './renderer.js';
 import { setupView } from './view.js';
+import { setupShell } from './shell.js';
+import { compactKeybind, formatCooldown } from './ability-presentation.js';
 import { CONFIG, SPELLS } from './data.js';
 
 const $ = selector => document.querySelector(selector);
@@ -17,7 +19,7 @@ const icons = {
 };
 const roleIcons={tank:'♜',rogue:'⚔',mage:'✦',ranger:'⌁',priest:'✧'};
 $('#party-frames').innerHTML=game.party.map(p=>`<button class="party-frame ${p.id===selected?'selected':''}" data-target="${p.id}" style="--class-color:${p.color}" aria-label="${p.name}, ${p.role}"><div class="health-fill"></div><div class="incoming-fill"></div><div class="frame-top"><strong><i>${roleIcons[p.id]}</i>${p.name}</strong><span class="debuff" hidden></span><span class="hp-percent">100%</span></div><div class="frame-bottom"><span>${p.role} <span style="opacity:.6">· ${p.label}</span></span><span class="hp-values">${p.maxHp} / ${p.maxHp}</span></div></button>`).join('');
-$('#spellbook').innerHTML=SPELLS.map(s=>`<button class="spell" data-spell="${s.id}" aria-label="${s.name}, key ${s.key}. ${s.description}"><kbd>${s.key}</kbd><div class="spell-icon"><svg viewBox="0 0 40 40" fill="none" stroke="${s.color}" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">${icons[s.icon]}</svg></div><div class="spell-info"><strong>${s.name}</strong><span class="spell-meta"><span class="spell-duration">${s.cast.toFixed(1)}s</span> ${s.channel?'channel':'cast'} <span style="opacity:.5"> / </span> ${s.cost*CONFIG.baseMana} mana</span><span class="spell-detail">${s.party?'100 healing · all allies':`${s.heal} healing`}${s.id==='flash'?' · +1 Post-Haste':s.cooldown?' · 10s cooldown':''}</span></div><div class="cooldown-mask" hidden></div></button>`).join('');
+$('#spellbook').innerHTML=SPELLS.map(s=>`<button class="spell" data-spell="${s.id}" aria-label="${s.name}, key ${s.key}. ${s.description}"><div class="spell-icon" aria-hidden="true"><svg viewBox="0 0 40 40" fill="none" stroke="${s.color}" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">${icons[s.icon]}</svg></div><kbd aria-hidden="true">${compactKeybind(s.key)}</kbd><div class="cooldown-mask" aria-hidden="true" hidden></div></button>`).join('');
 $('.help-spells').innerHTML=SPELLS.map(s=>`<div><strong>${s.key} · ${s.name}</strong>${s.description}<small>${s.cast}s ${s.channel?'channel':'cast'} · ${s.heal} healing${s.party?' per ally':''} · ${s.cost*CONFIG.baseMana} mana</small></div>`).join('');
 const frames = [...document.querySelectorAll('.party-frame')];
 const spellButtons = [...document.querySelectorAll('.spell')];
@@ -48,8 +50,9 @@ function openHelp(){if(game.status==='running')game.pause();$('#help').showModal
 function closeHelp(){$('#help').close();}
 $('#help-button').addEventListener('click',openHelp);$('#close-help').addEventListener('click',closeHelp);$('#help-done').addEventListener('click',closeHelp);
 document.addEventListener('keydown',e=>{
-  if($('#help').open)return;
+  if(document.querySelector('dialog[open]'))return;
   if(e.key==='?'&&!e.repeat){e.preventDefault();openHelp();return;}
+  if(!shell.isEncounter())return;
   if(e.code==='Space'){e.preventDefault();if(!e.repeat){game.pause();renderUI();}return;}
   if(e.key==='Escape'){e.preventDefault();game.cancel();return;}
   if(e.key==='ArrowUp'||e.key==='ArrowDown'){
@@ -61,6 +64,7 @@ document.addEventListener('keydown',e=>{
 document.addEventListener('visibilitychange',()=>{if(document.hidden&&game.status==='running'){game.pause();renderUI();}last=performance.now();accumulator=0;});
 window.addEventListener('blur',()=>{hovered=null;if(game.status==='running'){game.pause();renderUI();}});
 function renderUI(){
+  shell.refresh();
   for(const frame of frames){
     const p=game.party.find(p=>p.id===frame.dataset.target),percentage=p.hp/p.maxHp*100;
     frame.querySelector('.health-fill').style.width=`${percentage}%`;
@@ -88,12 +92,12 @@ function renderUI(){
   $('#cast-fill').style.width=cast?`${Math.min(100,Math.max(0,(cast.spell.channel?1-cast.elapsed/cast.duration:cast.elapsed/cast.duration)*100))}%`:'0%';$('.cast-track').classList.toggle('channel',!!cast?.spell.channel);
   for(const button of spellButtons){
     const spell=SPELLS.find(s=>s.id===button.dataset.spell),cooldown=Math.max(0,(game.cooldowns[spell.id]||0)-game.time);
-    const mask=button.querySelector('.cooldown-mask');mask.hidden=cooldown<=0;mask.textContent=`${cooldown.toFixed(1)}s`;
+    const mask=button.querySelector('.cooldown-mask');mask.hidden=cooldown<=0;mask.textContent=formatCooldown(cooldown);
+    button.classList.toggle('on-cooldown', cooldown > 0);
     button.setAttribute('aria-disabled', String(game.status!=='running'||cooldown>0||game.mana<spell.cost*CONFIG.baseMana));
     const duration = spell.cast * (spell.consumes && game.buffs[spell.consumes.buff] > 0 ? spell.consumes.castMultiplier : 1);
     button.dataset.tooltip = `${spell.name} · ${spell.key}\n${duration.toFixed(1)}s ${spell.channel?'channel':'cast'} · ${spell.cost*CONFIG.baseMana} mana\n${spell.heal} healing${spell.party?' to every living ally':''}${spell.cooldown?` · ${spell.cooldown}s cooldown`:''}\n${spell.description}${cooldown>0?`\nReady in ${cooldown.toFixed(1)}s`:''}`;
     button.classList.toggle('active',cast?.spell.id===spell.id);
-    button.querySelector('.spell-duration').textContent=`${(spell.cast*(spell.consumes&&game.buffs[spell.consumes.buff]>0?spell.consumes.castMultiplier:1)).toFixed(1)}s`;
   }
   for (const [index, mechanic] of [...game.mechanics].sort((a,b)=>a.next-b.next).entries()) {
     const item = timelineItems.get(mechanic.id);
@@ -131,8 +135,9 @@ function frame(now){
     accumulator+=dt;
     while(accumulator>=CONFIG.step){game.step();accumulator-=CONFIG.step;}
   }else accumulator=0;
-  scene.receive(game.drainEvents());scene.render(game,dt,selected,hovered);
+  scene.receive(game.drainEvents());if(shell.isEncounter())scene.render(game,dt,selected,hovered);
   uiElapsed+=dt;if(uiElapsed>=1/30){renderUI();uiElapsed=0;}
   requestAnimationFrame(frame);
 }
+const shell = setupShell({ game, view, resetEncounter: restart });
 renderUI();requestAnimationFrame(frame);

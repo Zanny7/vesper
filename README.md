@@ -16,12 +16,15 @@ Open **http://localhost:5173**. The server binds to localhost only. To stop it, 
 npm test
 ```
 
-The 13 Node test cases cover spell timing, resource costs, Post-Haste consumption, separate Penance launches/impacts, cancellation, cooldowns, overheal, death, encounter schedules, damage-over-time, pause, outcomes, reset, and full encounter feasibility.
+The 15 Node test cases cover spell timing, resource costs, Post-Haste consumption, separate Penance launches/impacts, cancellation, cooldowns, overheal, death, encounter schedules, damage-over-time, pause, outcomes, reset, full encounter feasibility, and ability-label formatting.
 
 ## Play
 
+- **Adventures** is the landing screen. Choose **Enter sanctum** to open the encounter. **Adventures** and **Team** remain available in the header; leaving a running or paused encounter requires confirmation. Cancel preserves the attempt; confirm resets it and opens the selected screen.
+- Bottom-right **Inventory** and **Equipment** buttons toggle their panels outside combat and are disabled during active encounters. Team, Inventory, and Equipment currently provide navigation shells; their full content comes in later issues.
 - **Immersive view / Panel view** switches between the detailed layout and a full-window battlefield with compact overlay controls. Switching preserves the encounter, cast, target, mana, and cooldowns; the chosen layout is remembered in this browser.
 - In immersive view, hover or keyboard-focus a spell for its cast time, mana cost, healing, cooldown, and effect. Post-Haste and encounter mechanics also have tooltips. Spell keys, health, mana, charges, cooldown countdowns, and active cast information stay visible; the detailed explanations remain in Panel view.
+- Both views use one shared icon-only ability bar. Hover or keyboard-focus an ability for its name and details. Keybind badges stay the same size; modifier labels abbreviate Shift/Ctrl/Alt/Meta to S/C/A/M. Only the icon greys out on cooldown. Its centered countdown has no suffix: seconds below a minute (for example `1.5`), then `M.SS` at 60 seconds or more (for example `1.35` for 95 seconds). Current spells retain their existing 1–4 bindings.
 - Click **Begin encounter**. Tank and DPS fight automatically.
 - Hover a party frame and press **1–4** to heal that ally. Without a hovered frame, your selected ally receives the spell.
 - Click a frame or use **↑ / ↓** to change the selected ally. Clicking a spell also casts it on the selected ally.
@@ -63,8 +66,12 @@ Development happens on `dev`; `main` holds stable, tested milestones. Larger exp
 | `src/renderer.js` | Canvas environment, articulated characters, spells and impact feedback |
 | `src/main.js` | Input, party-frame UI, event forwarding and game loop |
 | `src/view.js` | Layout preference and hover/focus tooltips |
+| `src/shell.js` | Global navigation, abandonment confirmation, and utility panels |
+| `src/shell.css` | Persistent header, hub screens, and utility controls |
 | `src/style.css` | Responsive UI and visual tokens |
 | `src/immersive.css` | Full-window battlefield and compact overlay layout |
+| `src/ability-bar.css` | Shared icon-only action bar, keybind badges, and cooldown presentation |
+| `src/ability-presentation.js` | Compact keybind and cooldown formatting |
 | `tests/combat.test.mjs` | Deterministic combat and encounter tests |
 | `server.mjs` | Dependency-free local static server |
 

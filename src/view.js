@@ -3,6 +3,8 @@ export function setupView(scene) {
   const toggle = document.querySelector('#view-toggle');
   const tooltip = document.querySelector('#hud-tooltip');
   let source = null;
+  let encounterVisible = false;
+  let immersivePreferred = false;
 
   function hideTooltip() {
     source?.removeAttribute('aria-describedby');
@@ -32,8 +34,9 @@ export function setupView(scene) {
 
   function setImmersive(enabled) {
     hideTooltip();
-    document.body.classList.toggle('immersive', enabled);
-    scene.immersive = enabled;
+    immersivePreferred = enabled;
+    document.body.classList.toggle('immersive', enabled && encounterVisible);
+    scene.immersive = enabled && encounterVisible;
     toggle.textContent = enabled ? 'Panel view' : 'Immersive view';
     toggle.setAttribute('aria-pressed', String(enabled));
     toggle.title = enabled ? 'Return to the detailed panel layout' : 'Expand the battlefield and use compact overlay controls';
@@ -41,7 +44,7 @@ export function setupView(scene) {
     // ResizeObserver handles the resized canvas; no encounter reset or pause.
   }
 
-  toggle.addEventListener('click', () => setImmersive(!document.body.classList.contains('immersive')));
+  toggle.addEventListener('click', () => setImmersive(!immersivePreferred));
   document.addEventListener('pointerover', event => {
     if (event.pointerType === 'touch') return;
     const element = event.target.closest('[data-tooltip]');
@@ -62,5 +65,13 @@ export function setupView(scene) {
   let saved = 'panels';
   try { saved = localStorage.getItem('vesper-view'); } catch { /* Use the panel layout by default. */ }
   setImmersive(saved === 'immersive');
-  return { refreshTooltip };
+  return {
+    refreshTooltip,
+    setEncounterVisible(visible) {
+      hideTooltip();
+      encounterVisible = visible;
+      document.body.classList.toggle('immersive', immersivePreferred && visible);
+      scene.immersive = immersivePreferred && visible;
+    },
+  };
 }

@@ -224,7 +224,7 @@ export class Battlefield {
       c.restore(); c.save();
       const actorScale = Math.max(.25, Math.min(this.width/820, (this.height-280)/420));
       const center = this.width <= 600 ? this.width * .67 : this.width / 2;
-      const top = this.width <= 600 ? this.height * .34 : 145;
+      const top = this.width <= 600 ? Math.max(290, this.height * .34) : 190;
       c.translate(center-495*actorScale, top-87*actorScale);
       c.scale(actorScale, actorScale);
     }

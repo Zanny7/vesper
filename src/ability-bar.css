@@ -1,0 +1,95 @@
+/* Shared action bar in both panel and immersive layouts. */
+#spellbook {
+  --ability-size: 64px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 13px 18px;
+  border: 1px solid #93836580;
+  border-radius: 6px;
+  background: linear-gradient(180deg, #1c2a2fe8, #0c181eed);
+  box-shadow: inset 0 1px 0 #ddc59a12, 0 6px 24px #0004;
+  backdrop-filter: blur(10px);
+}
+#spellbook .spell {
+  position: relative;
+  display: block;
+  flex: 0 0 var(--ability-size);
+  width: var(--ability-size);
+  height: var(--ability-size);
+  min-width: 0;
+  padding: 0;
+  margin: 0;
+  border: 0;
+  border-radius: 4px;
+  background: none;
+  box-shadow: none;
+  backdrop-filter: none;
+  opacity: 1;
+  filter: none;
+  overflow: visible;
+}
+#spellbook .spell-icon {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  border: 1px solid #a593616e;
+  border-radius: 4px;
+  background: radial-gradient(circle, #9883484d, #202925 85%);
+  box-shadow: inset 0 0 14px #ccac561c;
+}
+#spellbook .spell:nth-child(3) .spell-icon {
+  background: radial-gradient(circle, #84c4a044, #192a27);
+  border-color: #719a7d77;
+}
+#spellbook .spell-icon svg { width: 40px; height: 40px; }
+#spellbook .spell:hover .spell-icon,
+#spellbook .spell:focus-visible .spell-icon,
+#spellbook .spell.active .spell-icon { border-color: #ead2a0; }
+#spellbook .spell.on-cooldown .spell-icon { filter: grayscale(1) brightness(.48); }
+#spellbook .spell kbd {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  box-sizing: border-box;
+  width: 30px;
+  height: 18px;
+  padding: 0;
+  margin: 0;
+  border: 1px solid #b5a078;
+  border-radius: 3px 0 3px 0;
+  background: #102027;
+  color: #f0dfb8;
+  font: 600 10px/1 'DM Sans', sans-serif;
+  white-space: nowrap;
+  overflow: hidden;
+  opacity: 1;
+}
+#spellbook .cooldown-mask {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  background: none;
+  color: #fff1d3;
+  font: 600 19px/1 'DM Sans', sans-serif;
+  font-variant-numeric: tabular-nums;
+  text-shadow: 0 2px 5px #000, 0 0 10px #000;
+  pointer-events: none;
+}
+#spellbook .cooldown-mask[hidden] { display: none; }
+@media (max-width: 600px), (max-height: 600px) {
+  #spellbook { --ability-size: 54px; gap: 12px; padding: 10px; }
+  #spellbook .spell-icon svg { width: 34px; height: 34px; }
+  #spellbook .cooldown-mask { font-size: 18px; }
+}
+@media (max-width: 360px) {
+  #spellbook { gap: 8px; padding: 8px; }
+}
