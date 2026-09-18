@@ -2,12 +2,17 @@ import { Combat } from './combat.js';
 import { Battlefield } from './renderer.js';
 import { setupView } from './view.js';
 import { setupShell } from './shell.js';
+import { setupAdventures } from './adventures.js';
+import { setupTeam } from './team.js';
+import { setupEquipment } from './equipment.js';
 import { compactKeybind, formatCooldown } from './ability-presentation.js';
 import { CONFIG, SPELLS } from './data.js';
 
 const $ = selector => document.querySelector(selector);
 const game = new Combat(), scene = new Battlefield($('#battlefield'));
 const view = setupView(scene);
+setupTeam((canvas, member) => scene.paintPortrait(canvas, member));
+setupEquipment((canvas, member) => scene.paintPortrait(canvas, member, 200));
 let selected = 'tank', hovered = null, lastStatus = '', lastLog = '', last = performance.now(), accumulator = 0, toastTimer;
 const clock = t => `${String(Math.floor(t / 60)).padStart(2,'0')}:${String(Math.floor(t % 60)).padStart(2,'0')}`;
 const number = n => Math.round(n).toLocaleString('en-US');
@@ -64,6 +69,7 @@ document.addEventListener('keydown',e=>{
 document.addEventListener('visibilitychange',()=>{if(document.hidden&&game.status==='running'){game.pause();renderUI();}last=performance.now();accumulator=0;});
 window.addEventListener('blur',()=>{hovered=null;if(game.status==='running'){game.pause();renderUI();}});
 function renderUI(){
+  if (game.status === 'victory') adventures.recordVictory();
   shell.refresh();
   for(const frame of frames){
     const p=game.party.find(p=>p.id===frame.dataset.target),percentage=p.hp/p.maxHp*100;
@@ -140,4 +146,5 @@ function frame(now){
   requestAnimationFrame(frame);
 }
 const shell = setupShell({ game, view, resetEncounter: restart });
+const adventures = setupAdventures({ startEncounter: () => { shell.enterEncounter(); renderUI(); } });
 renderUI();requestAnimationFrame(frame);

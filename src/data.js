@@ -1,4 +1,12 @@
 export const CONFIG = { mana: 1200, baseMana: 30, manaRegen: 4, step: 1 / 60, enrage: 150 };
+// Routes are independent of encounter rules. Unreleased destinations stay locked.
+// A node opens when any incoming route is completed and its encounter is released.
+export const ADVENTURES = [
+  { id: 'sanctum', name: 'The Hollow Sanctum', kind: 'boss', encounter: 'warden', from: [], x: 15, y: 50, description: 'Face the Hollow Warden. Keep five souls alive through crushing blows, hollow novas, and withering marks.' },
+  { id: 'wood', name: 'Whispering Wood', kind: 'normal', encounter: null, from: ['sanctum'], x: 48, y: 25, description: 'A path beneath the ancient canopy.' },
+  { id: 'crypt', name: 'The Sunken Crypt', kind: 'normal', encounter: null, from: ['sanctum'], x: 48, y: 75, description: 'A passage through the forgotten depths.' },
+  { id: 'spire', name: 'The Ashen Spire', kind: 'boss', encounter: null, from: ['wood', 'crypt'], x: 82, y: 50, description: 'The two roads meet beneath a distant crown.' },
+];
 export const PARTY = [
   { id: 'tank', name: 'Aldric', role: 'Guardian', label: 'TANK', maxHp: 600, color: '#78aabc', damage: 7, interval: 2, x: 485, y: 348 },
   { id: 'rogue', name: 'Nyx', role: 'Nightblade', label: 'DPS', maxHp: 360, color: '#b598d3', damage: 15, interval: 1.65, x: 633, y: 327 },

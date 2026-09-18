@@ -19,6 +19,12 @@ export class Battlefield {
     this.width = rect.width; this.height = rect.height; this.dpr = dpr;
   }
   reset() { this.effects = []; this.hits = {}; this.attacks = {}; }
+  paintPortrait(canvas, member, width = 400) {
+    const c = canvas.getContext('2d');
+    canvas.width = width; canvas.height = 280;
+    c.translate(width / 2, 220); c.scale(2.2, 2.2);
+    this.drawCharacter(c, { ...member, x: 0, y: 0, hp: member.maxHp }, { status: 'ready', cast: null }, 0, null, null);
+  }
   point(id) { return positions[id] || positions.priest; }
   receive(events) {
     for (const e of events) {

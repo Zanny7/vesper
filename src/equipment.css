@@ -1,0 +1,27 @@
+.utility-surface.equipment-open { width: min(950px, calc(100% - 40px)); max-height: calc(100dvh - 155px); overflow-y: auto; background: #132129; }
+.equipment-layout { display: grid; grid-template-columns: minmax(150px, 1fr) minmax(180px, 1.6fr) minmax(110px, .8fr); gap: 24px; }
+.equipment-layout h3 { margin: 0 0 18px; color: #aebeaf; font-size: 11px; font-family: 'DM Sans', sans-serif; letter-spacing: 1.2px; text-transform: uppercase; }
+#equipment-slots { padding: 0; margin: 0; list-style: none; display: grid; gap: 10px; }
+#equipment-slots li { display: flex; align-items: center; gap: 12px; padding: 10px; border: 1px solid #66745c55; border-radius: 4px; background: #1b2c30; }
+.empty-slot { display: grid; place-items: center; width: 35px; height: 35px; color: #8b9d8f; border: 1px dashed #7e8a6877; border-radius: 3px; font-size: 22px; }
+#equipment-slots strong { display: block; font-size: 12px; font-weight: 500; color: #e0d4b6; }
+#equipment-slots li div > span { display: block; font-size: 10px; color: #a2b0a7; margin-top: 4px; }
+.equipment-hero { min-width: 0; text-align: center; display: flex; flex-direction: column; justify-content: center; background: radial-gradient(ellipse, #72855a25, transparent 70%); border-inline: 1px solid #62725433; }
+#equipment-portrait { width: 100%; height: 240px; object-fit: contain; }
+#equipment-hero-name { font-size: 32px; font-family: 'Cormorant Garamond', Georgia, serif; }
+#equipment-hero-role { color: #ceb889; font-size: 12px; margin-top: 8px; }
+#equipment-stats { display: grid; gap: 22px; margin: 0; }
+#equipment-stats dt { color: #b1c0b6; font-size: 12px; }
+#equipment-stats dd { margin: 6px 0 0; font-size: 27px; color: #e5cfa4; }
+.utility-surface .equipment-note { margin: 24px 0 0; font-size: 11px; color: #a0b0a5; border-top: 1px solid #62725444; padding-top: 16px; }
+@media (max-width: 600px) {
+  .utility-surface.equipment-open { width: calc(100% - 24px); padding: 16px; max-height: calc(100dvh - 140px); }
+  .equipment-layout { grid-template-columns: minmax(80px, 1fr) minmax(85px, 1.2fr) minmax(60px, .8fr); gap: 10px; }
+  .equipment-layout h3 { font-size: 9px; letter-spacing: .6px; }
+  #equipment-slots li { padding: 10px 7px; gap: 5px; }
+  .empty-slot { display: none; }
+  #equipment-portrait { height: 180px; }
+  #equipment-hero-name { font-size: 26px; }
+  #equipment-hero-role { font-size: 10px; }
+  #equipment-stats dd { font-size: 22px; }
+}

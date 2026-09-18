@@ -1,15 +1,22 @@
 <!doctype html>
 <html lang="en">
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Vesper — The Hollow Sanctum</title><meta name="theme-color" content="#101719"><link rel="stylesheet" href="/src/style.css"><link rel="stylesheet" href="/src/immersive.css"><link rel="stylesheet" href="/src/ability-bar.css"><link rel="stylesheet" href="/src/shell.css"></head>
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Vesper — The Hollow Sanctum</title><meta name="theme-color" content="#101719"><link rel="stylesheet" href="/src/style.css"><link rel="stylesheet" href="/src/immersive.css"><link rel="stylesheet" href="/src/ability-bar.css"><link rel="stylesheet" href="/src/shell.css"><link rel="stylesheet" href="/src/adventures.css"><link rel="stylesheet" href="/src/team.css"><link rel="stylesheet" href="/src/equipment.css"></head>
 <body>
   <header class="masthead"><a class="brand" href="/" aria-label="Vesper home"><span class="brand-mark">✧</span> VESPER <span class="brand-sub">A HEALER'S VIGIL</span></a><nav class="primary-nav" aria-label="Main navigation"><button data-navigate="adventures" aria-current="page">Adventures</button><button data-navigate="team">Team</button></nav><div class="header-right"><span class="build"><i></i> FIRST LIGHT · v0.1</span><button class="quiet" id="help-button">How to play <kbd>?</kbd></button></div></header>
   <main id="adventures-view" class="hub-view" aria-labelledby="adventures-title">
     <div class="hub-heading"><span class="eyebrow">YOUR NEXT VIGIL</span><h1 id="adventures-title" tabindex="-1">Adventures</h1><p>Choose where your party's journey begins.</p></div>
-    <section class="adventure-entry"><div class="sanctum-sigil" aria-hidden="true">✧</div><div><span class="eyebrow">THE FORSAKEN HALLS · 5 HEROES</span><h2>The Hollow Sanctum</h2><p>A silent guardian waits beyond the gates. Gather your party and keep their light alive.</p><button class="primary" id="enter-encounter">Enter sanctum <span>→</span></button></div></section>
+    <section class="journey" aria-label="The Forsaken Halls progression map">
+      <div class="journey-heading"><div><span class="eyebrow">CHAPTER I</span><h2>The Forsaken Halls</h2></div><span id="journey-progress"></span></div>
+      <p class="journey-intro">Begin at the sanctum. Beyond its gates, two roads lead into the unknown.</p>
+      <div class="map-scroll" tabindex="0" role="region" aria-label="Encounter routes"><div id="adventure-map"></div></div>
+      <div class="map-legend" aria-label="Map legend"><span>✓ Completed</span><span>● Available</span><span>⊘ Locked</span><span>◎ Selected</span><span>♜ Boss</span><span>◇ Encounter</span></div>
+      <p class="journey-note">Defeat the Warden to complete your first vigil. Further routes are coming soon.</p>
+    </section>
   </main>
   <main id="team-view" class="hub-view" aria-labelledby="team-title" hidden>
     <div class="hub-heading"><span class="eyebrow">YOUR COMPANIONS</span><h1 id="team-title" tabindex="-1">Team</h1><p>Five souls. One shared vigil.</p></div>
-    <section class="hub-empty"><span aria-hidden="true">♜</span><h2>Your party stands ready.</h2><p>The party roster and character details will be available here.</p><button class="quiet" data-navigate="adventures">Back to Adventures</button></section>
+    <div class="team-roster" id="team-roster" role="group" aria-label="Party roster"></div>
+    <section class="team-details" id="team-details" aria-labelledby="team-detail-name"></section>
   </main>
   <main id="encounter-view" hidden>
     <section class="heading"><div><div class="eyebrow">DUNGEON 01 <span> / </span> THE FORSAKEN HALLS</div><h1>The Hollow Sanctum</h1><p>Five souls enter. Keep their light alive.</p></div><div class="encounter-controls"><div class="timer"><span id="status-label">AWAITING PULL</span><strong id="timer">00:00</strong></div><button class="quiet" id="view-toggle" aria-pressed="false" title="Switch to an immersive battlefield with overlay controls">Immersive view</button><button class="quiet" id="pause" disabled>Ⅱ Pause</button><button class="quiet" id="restart">↻ Restart</button></div></section>
@@ -25,13 +32,26 @@ Flash Heal grants a charge, up to two. Each Greater Heal or Prayer consumes one 
     <footer><span>VESPER <b> / </b> A moment of light in the dark.</span><span id="healing-stat">EFFECTIVE HEALING <b>0</b></span></footer>
   </main><div id="toast" role="status" aria-live="polite"></div><div id="hud-tooltip" role="tooltip" hidden></div>
   <aside id="utility-surface" class="utility-surface" aria-labelledby="utility-title" hidden>
-    <div class="utility-heading"><h2 id="utility-title"></h2><button class="quiet" id="close-utility" aria-label="Close utility panel">✕</button></div>
+    <div class="utility-heading"><h2 id="utility-title" tabindex="-1"></h2><button class="quiet" id="close-utility" aria-label="Close utility panel">✕</button></div>
     <p id="utility-description"></p>
+    <div id="equipment-content" hidden>
+      <div class="equipment-layout">
+        <section aria-labelledby="equipment-slots-title"><h3 id="equipment-slots-title">Equipment slots</h3><ul id="equipment-slots"></ul></section>
+        <section class="equipment-hero" aria-label="Your priest"><canvas id="equipment-portrait" role="img" aria-label="Your priest holding a staff, wearing the familiar healer robes"></canvas><strong id="equipment-hero-name"></strong><span id="equipment-hero-role"></span></section>
+        <section aria-labelledby="equipment-stats-title"><h3 id="equipment-stats-title">Core stats</h3><dl id="equipment-stats"></dl></section>
+      </div>
+      <p class="equipment-note">Starting stats, before encounter effects. No items equipped. Haste and Crit are not yet provided and display as 0.</p>
+    </div>
   </aside>
   <div class="utility-controls" role="group" aria-label="Character utilities">
     <button class="utility-button" id="inventory-button" data-utility="inventory" aria-label="Inventory" title="Inventory" aria-expanded="false" aria-controls="utility-surface"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M8 6V4h8v2M6 7h12l2 14H4L6 7Z"/><path d="M8 7v4a4 4 0 0 0 8 0V7M8 16h8"/></svg></button>
     <button class="utility-button" id="equipment-button" data-utility="equipment" aria-label="Equipment" title="Equipment" aria-expanded="false" aria-controls="utility-surface"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="m8 3-6 5 4 4 2-2-1 11h10l-1-11 2 2 4-4-6-5a4 4 0 0 1-8 0Z"/><path d="M8 16h8"/></svg></button>
   </div>
+  <dialog id="encounter-preview" aria-labelledby="preview-title" aria-describedby="preview-description preview-question">
+    <span class="eyebrow" id="preview-type"></span><h2 id="preview-title"></h2><p id="preview-description"></p>
+    <p id="preview-question">Start this encounter?</p>
+    <div class="dialog-actions"><button class="quiet" id="cancel-preview" autofocus>Cancel</button><button class="primary" id="start-preview">Start encounter →</button></div>
+  </dialog>
   <dialog id="leave-encounter" aria-labelledby="leave-title" aria-describedby="leave-description">
     <span class="eyebrow">LEAVE THE SANCTUM</span><h2 id="leave-title">Abandon this encounter?</h2><p id="leave-description">Leaving ends this attempt. Your current encounter progress will be lost.</p>
     <div class="dialog-actions"><button class="quiet" id="stay-encounter" autofocus>Stay in encounter</button><button class="primary" id="confirm-leave">Abandon encounter</button></div>

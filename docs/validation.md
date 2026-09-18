@@ -1,5 +1,30 @@
 # Validation — first vertical slice
 
+## BAT-10 — Main character Equipment view
+
+- Equipment toggles a three-column inspection panel: Head, Chest, Legs, Boots, and Weapon on the left, the existing priest artwork in the center, and Health, Mana, Haste, and Crit on the right. All five slots remain visibly empty; no equipment system or item bonuses were invented.
+- Browser-verified Health 400, Mana 1,200, Haste 0, and Crit 0. Missing/non-finite values fall back to zero. Values represent starting stats before encounter effects.
+- Checked opening from Adventures and Team, button toggling, keyboard opening, Escape dismissal and focus return, and switching between Equipment and Inventory.
+- Checked desktop and 390×844 layouts. Fixed scrollbar-related clipping on mobile and verified the final panel stays within the viewport without horizontal overflow.
+- Started and paused an encounter: Equipment remained disabled and its panel hidden in both states. After abandoning, Equipment became available again.
+- All 17 tests pass. Browser warning/error logs were empty. No cross-browser matrix was performed.
+
+## BAT-9 — Team roster and character inspection
+
+- Team displays all five party members with the same procedural character artwork used in combat, plus name, class, role, maximum health, and attack damage or mana.
+- Selected each character in the browser and verified detailed values against PARTY / CONFIG / SPELLS. Priest details show all four spells, healing, mana costs, base cast or channel times, and Penance cooldown. The page labels these as starting stats before encounter effects.
+- Checked desktop and 390×844 layouts, including priest spell details, with no horizontal page overflow. Enter selected Nyx, updated the selected card, and moved focus to the detail heading.
+- Verified Inventory still opens and closes from Team; navigating to Adventures and back preserves character selection. Adventures remains the landing screen after reload.
+- All 17 existing Node tests pass. Syntax and whitespace checks pass; browser warning/error logs were empty. Combat rules and party configuration are unchanged. No cross-browser matrix was performed.
+
+## BAT-8 — Adventures progression map
+
+- Adventures remains the landing screen. Replaced the encounter card with a data-driven connected map: one released boss, two future normal routes, and a future converging boss. Future content is explicitly locked / coming soon.
+- Browser-checked selection, selected state, compact preview, Cancel with focus restoration, confirmed start directly into combat, Panel / Immersive switching, and guarded navigation back to Adventures. Abandoning an attempt did not grant completion.
+- Checked the map and confirmation at a 390×844 viewport: vertical branching routes, readable labels, and no horizontal page overflow. Verified Enter opens the preview and Escape dismisses it.
+- Completed state is earned on victory and saved locally, with an in-memory fallback when storage is unavailable. Automated progression tests cover completion state, unavailable content remaining locked, and either incoming route unlocking a future released encounter. Full victory and save/reload were not manually played through in the browser.
+- All 17 Node tests pass, including existing combat tests. Browser warning/error logs were empty. No cross-browser matrix was performed.
+
 ## BAT-7 — navigation and utility controls
 
 - Verified Adventures opens by default, encounter entry resets to a fresh ready state, and layout controls appear only inside the encounter.

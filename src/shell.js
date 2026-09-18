@@ -6,6 +6,8 @@ export function setupShell({ game, view, resetEncounter }) {
     encounter: document.querySelector('#encounter-view'),
   };
   const utilitySurface = document.querySelector('#utility-surface');
+  const equipmentContent = document.querySelector('#equipment-content');
+  const utilityDescription = document.querySelector('#utility-description');
   const utilityButtons = [...document.querySelectorAll('[data-utility]')];
   const navigation = [...document.querySelectorAll('.primary-nav [data-navigate]')];
   const leaveDialog = document.querySelector('#leave-encounter');
@@ -69,10 +71,6 @@ export function setupShell({ game, view, resetEncounter }) {
     event.preventDefault();
     requestNavigation('adventures');
   });
-  document.querySelector('#enter-encounter').addEventListener('click', () => {
-    resetEncounter();
-    navigate('encounter');
-  });
   document.querySelector('#stay-encounter').addEventListener('click', () => leaveDialog.close());
   leaveDialog.addEventListener('close', () => {
     if (pendingNavigation && resumeOnCancel && game.status === 'paused') game.pause();
@@ -96,11 +94,13 @@ export function setupShell({ game, view, resetEncounter }) {
       utility = next;
       const name = next === 'inventory' ? 'Inventory' : 'Equipment';
       document.querySelector('#utility-title').textContent = name;
-      document.querySelector('#utility-description').textContent = next === 'inventory'
-        ? 'Your pack is empty. Collected items will appear here.'
-        : 'Your priest’s equipment will appear here.';
+      utilityDescription.textContent = 'Your pack is empty. Collected items will appear here.';
+      utilityDescription.hidden = next === 'equipment';
+      equipmentContent.hidden = next !== 'equipment';
+      utilitySurface.classList.toggle('equipment-open', next === 'equipment');
       utilitySurface.hidden = false;
       button.setAttribute('aria-expanded', 'true');
+      document.querySelector('#utility-title').focus({ preventScroll: true });
     });
   }
   document.querySelector('#close-utility').addEventListener('click', () => {
@@ -116,5 +116,12 @@ export function setupShell({ game, view, resetEncounter }) {
     }
   }, true);
   navigate('adventures', false);
-  return { refresh, isEncounter: () => current === 'encounter' };
+  return { refresh, isEncounter: () => current === 'encounter', enterEncounter() {
+    resetEncounter();
+    navigate('encounter', false);
+    game.start();
+    refresh();
+    document.querySelector('#view-toggle').focus({ preventScroll: true });
+    window.scrollTo(0, 0);
+  } };
 }
