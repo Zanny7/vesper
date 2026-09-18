@@ -1,0 +1,23 @@
+# Local dependencies and generated output
+node_modules/
+dist/
+coverage/
+*.log
+
+# Credentials and machine-specific configuration
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Editor and operating-system files
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# Temporary files and local QA captures
+tmp/
+.tmp/
+artifacts/
