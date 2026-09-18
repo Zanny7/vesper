@@ -52,6 +52,8 @@ Mana: 1,200 pool, base unit 30, passive regeneration 4/second. Boss: 4,200 healt
 
 ## Project map
 
+Development happens on `dev`; `main` holds stable, tested milestones. Larger experiments may use feature branches based on `dev`, with pull requests back into `dev`. When a milestone is ready, run the relevant tests and browser checks, then review and merge a `dev` → `main` pull request. Continue subsequent work on `dev`.
+
 | File | Responsibility |
 | --- | --- |
 | `src/data.js` | Abilities, party archetypes, encounter schedule, balance values |
