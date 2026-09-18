@@ -203,9 +203,15 @@ export class Battlefield {
     if(state.status==='running'||state.status==='ready')this.clock+=dt;
     const c=this.ctx,t=this.reducedMotion?0:this.clock;
     c.setTransform(this.dpr,0,0,this.dpr,0,0);c.clearRect(0,0,this.width,this.height);
-    // Show all six actors even when the canvas is narrow.
+    // The immersive background covers the viewport; actors have their own HUD-safe framing.
     const scale=Math.min(this.width/800,this.height/570),x=(this.width-960*scale)/2,y=(this.height-590*scale)/2;
-    c.translate(x,y);c.scale(scale,scale);c.drawImage(this.background,0,0);
+    c.save();
+    if (this.immersive) {
+      const cover = Math.max(this.width/960, this.height/590);
+      c.translate((this.width-960*cover)/2, (this.height-590*cover)/2);
+      c.scale(cover, cover);
+    } else { c.translate(x,y);c.scale(scale,scale); }
+    c.drawImage(this.background,0,0);
     for(const bx of [110,830]){
       this.glow(c,bx,281,35+Math.sin(t*3)*3,'#f6bf5c55');
       this.poly(c,[[bx-7,290],[bx-10,279],[bx-3,264+Math.sin(t*8)*4],[bx,273],[bx+4,260+Math.cos(t*7)*3],[bx+10,281],[bx+6,290]],'#e4b774');
@@ -214,6 +220,14 @@ export class Battlefield {
     for(let i=0;i<28;i++){
       const ax=100+(i*83.17)%780,ay=100+((i*49+t*(4+i%3))%390);c.globalAlpha=.15+.25*Math.sin(i+t);this.ellipse(c,ax+Math.sin(t*.6+i)*8,ay,i%3===0?1.5:.8,i%3===0?1.5:.8,'#b9cba8');
     }c.globalAlpha=1;
+    if (this.immersive) {
+      c.restore(); c.save();
+      const actorScale = Math.max(.25, Math.min(this.width/820, (this.height-280)/420));
+      const center = this.width <= 600 ? this.width * .67 : this.width / 2;
+      const top = this.width <= 600 ? this.height * .34 : 145;
+      c.translate(center-495*actorScale, top-87*actorScale);
+      c.scale(actorScale, actorScale);
+    }
     const warning=state.mechanics.find(m=>m.warned);
     if(warning&&state.status==='running'){
       c.globalAlpha=.2+Math.sin(t*5)*.08;this.ellipse(c,495,365,warning.id==='pulse'?280:80,warning.id==='pulse'?103:30,null,warning.color,3);c.globalAlpha=1;
@@ -223,5 +237,6 @@ export class Battlefield {
     if(state.cast){const p=this.point(state.cast.target);c.save();c.globalAlpha=.18;this.line(c,[[485,444],[p.x,p.y]],'#f8dc91',1);c.restore();}
     this.effects=this.effects.filter(e=>this.clock-e.born<e.duration);
     for(const e of this.effects)this.drawEffect(c,e);
+    c.restore();
   }
 }

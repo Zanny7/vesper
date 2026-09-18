@@ -1,0 +1,200 @@
+/* Both layouts use the same controls and combat state. Only their presentation changes. */
+#view-toggle { border-color: #8c7b56; color: #decca5; white-space: nowrap; }
+#timeline { display: flex; flex-direction: column; }
+@media (min-width: 601px) and (max-width: 1150px) {
+  #timeline { flex-direction: row; }
+}
+@media (max-width: 600px) {
+  body:not(.immersive) #timeline { flex-direction: row; }
+}
+.mechanic-item:focus-visible { outline: 1px solid #dac18b; outline-offset: 5px; }
+#hud-tooltip {
+  position: fixed;
+  z-index: 100;
+  width: max-content;
+  max-width: min(290px, calc(100vw - 20px));
+  padding: 13px 16px;
+  border: 1px solid #847653;
+  border-radius: 5px;
+  background: #101b20f5;
+  box-shadow: 0 8px 35px #0009;
+  color: #dfdfd0;
+  white-space: pre-line;
+  font-size: 11px;
+  line-height: 1.8;
+  pointer-events: none;
+}
+.spell[aria-disabled="true"] { opacity: .6; cursor: default; }
+.spell[aria-disabled="true"]:hover { border-color: #766a50; }
+
+body.immersive { overflow: hidden; background: #09151b; }
+.immersive main { position: relative; width: 100%; max-width: none; height: 100dvh; padding: 0; }
+.immersive .game-grid { display: contents; }
+.immersive .battle-panel {
+  position: fixed; inset: 0; z-index: 0;
+  min-height: 0; border: 0; border-radius: 0;
+}
+.immersive .battle-panel::after {
+  content: ''; position: absolute; inset: 0; pointer-events: none;
+  background: linear-gradient(#06101899, transparent 18%, transparent 78%, #061018b0),
+    linear-gradient(90deg, #06101866, transparent 26%, transparent 78%, #06101866);
+}
+.immersive .masthead {
+  position: fixed; left: 26px; top: 17px; z-index: 4;
+  height: auto; padding: 0; border: 0; background: none;
+}
+.immersive .brand { font-size: 18px; letter-spacing: 4px; gap: 8px; pointer-events: none; }
+.immersive .brand-mark { font-size: 29px; }
+.immersive .brand-sub, .immersive .header-right,
+.immersive .heading > div:first-child, .immersive #status-label,
+.immersive .party-panel .panel-title, .immersive .frame-hint,
+.immersive .target-note, .immersive .haste-row small, .immersive .party-bottom,
+.immersive .spell-meta, .immersive .spell-detail,
+.immersive .action-footer, .immersive .cast-cancel,
+.immersive .intel-panel .panel-title, .immersive .intel-section > .eyebrow,
+.immersive .mechanic-type, .immersive .tip, .immersive .log-section,
+.immersive .difficulty, .immersive .scene-caption, .immersive footer,
+.immersive #overlay-foot { display: none; }
+.immersive .heading { position: fixed; top: 17px; right: 26px; margin: 0; z-index: 5; }
+.immersive .encounter-controls { gap: 8px; max-width: none; flex-wrap: nowrap; }
+.immersive .encounter-controls .quiet { background: #101d23a8; backdrop-filter: blur(10px); font-size: 10px; }
+.immersive .timer { margin: 0 7px 0 0; width: auto; }
+.immersive #timer { font-size: 14px; color: #bdc9be; }
+.immersive .party-panel {
+  position: fixed; z-index: 3; left: 26px; top: 50%; transform: translateY(-50%);
+  width: 225px; min-height: 0; border: 0; border-radius: 0;
+  background: none; overflow: visible;
+}
+.immersive .party-frame {
+  width: 100%; margin: 0 0 7px; padding: 10px 11px;
+  border-color: #b6c5ad40; border-radius: 3px;
+  background: #091719cc; box-shadow: 0 4px 18px #0004;
+}
+.immersive .party-frame.selected { border-color: #dac18b; box-shadow: -3px 0 0 #dac18b, 0 4px 18px #0004; }
+.immersive .party-frame:hover { border-color: #f5e5bc; }
+.immersive .health-fill { opacity: .83; }
+.immersive .frame-top { line-height: 16px; }
+.immersive .frame-top strong, .immersive .frame-top .hp-percent { font-size: 12px; }
+.immersive .frame-bottom { margin-top: 3px; line-height: 12px; font-size: 8px; }
+.immersive .priest-resource {
+  border: 1px solid #adbea321; border-radius: 3px;
+  background: #08171db8; backdrop-filter: blur(8px); padding: 12px;
+}
+.immersive .resource-title { font-size: 10px; }
+.immersive .mana-track { margin: 8px 0 12px; }
+.immersive .haste-row { padding: 2px 0; }
+.immersive .haste-row:focus-visible { outline: 1px solid #dcca96; outline-offset: 4px; }
+.immersive .scene-top { top: 70px; left: 50%; width: min(390px, 38vw); transform: translateX(-50%); z-index: 2; }
+.immersive .boss-title h2 { font-size: 25px; }
+.immersive .boss-title .eyebrow, .immersive .boss-emblem { display: none; }
+.immersive .boss-track { height: 7px; margin-top: 8px; }
+.immersive .boss-details { font-size: 8px; }
+.immersive .mechanic-alert { z-index: 2; top: 143px; }
+.immersive .intel-panel {
+  position: fixed; z-index: 3; right: 26px; top: 27%;
+  width: 205px; min-height: 0; display: block; border: 0;
+  background: linear-gradient(90deg, #0c1a2070, #0c1a20b5); backdrop-filter: blur(5px);
+  border-radius: 3px; overflow: visible;
+}
+.immersive .intel-section { padding: 16px 13px 2px; }
+.immersive #timeline { display: flex; flex-direction: column; gap: 0; }
+.immersive .mechanic-item { margin-bottom: 15px; }
+.immersive .mechanic-row { font-size: 11px; text-shadow: 0 1px 4px #000; }
+.immersive .mechanic-row strong { font-size: 11px; }
+.immersive .mechanic-track { height: 3px; }
+.immersive .action-panel {
+  position: fixed; z-index: 4; left: 50%; bottom: 24px; transform: translateX(-50%);
+  width: min(630px, calc(100vw - 48px)); padding: 0; margin: 0;
+  background: none; border: 0; border-radius: 0; overflow: visible;
+}
+.immersive .casting-row {
+  width: 85%; margin: 0 auto 14px; min-height: 43px;
+  display: grid; grid-template-columns: 1fr; gap: 8px;
+  visibility: hidden; pointer-events: none;
+}
+.immersive .casting-row.is-casting { visibility: visible; pointer-events: auto; }
+.immersive .casting-label { min-width: 0; }
+.immersive .cast-star { display: none; }
+.immersive .casting-label > div { display: flex; align-items: center; gap: 10px; }
+.immersive .casting-label strong { font-size: 12px; text-shadow: 0 1px 5px #000; }
+.immersive .casting-label small { margin: 0; font-size: 10px; color: #bfccb9; }
+.immersive .cast-track { width: 100%; height: 6px; background: #081319cc; box-shadow: 0 2px 12px #0007; }
+.immersive .spellbook { grid-template-columns: repeat(4, 1fr); gap: 8px; }
+.immersive .spell {
+  flex-direction: column; gap: 6px; padding: 9px 7px 8px;
+  background: linear-gradient(#17272dd9, #0d1b21eb); backdrop-filter: blur(10px);
+  border: 1px solid #9f96705c; box-shadow: 0 6px 22px #0005;
+}
+.immersive .spell:hover { background: #2c3834de; border-color: #cebc91; }
+.immersive .spell-icon { width: 43px; height: 43px; }
+.immersive .spell-info strong { font: 500 13px 'Cormorant Garamond', Georgia, serif; }
+.immersive .spell kbd { top: 6px; left: 6px; }
+.immersive .cooldown-mask { background: #08131bbd; font-size: 23px; }
+.immersive .scene-overlay { z-index: 2; background: #06131b55; backdrop-filter: none; }
+.immersive .overlay-card { padding: 0 24px; max-width: 420px; margin-bottom: 20px; text-shadow: 0 2px 15px #000; }
+.immersive .overlay-card h2 { font-size: 36px; }
+.immersive .overlay-card .primary { margin-top: 20px; text-shadow: none; }
+.immersive:not(.encounter-ended) #overlay-text { display: none; }
+.immersive #toast { bottom: 160px; z-index: 8; }
+
+@media (max-width: 900px) {
+  .immersive .masthead { left: 16px; }
+  .immersive .brand { font-size: 14px; }
+  .immersive .heading { right: 16px; }
+  .immersive .party-panel { left: 16px; width: 180px; top: 48%; }
+  .immersive .party-frame { padding: 7px 9px; }
+  .immersive .intel-panel { right: 16px; width: 170px; top: 24%; }
+  .immersive .mechanic-row { font-size: 9px; }
+  .immersive .scene-top { width: 340px; max-width: 48vw; }
+  .immersive .boss-title h2 { font-size: 22px; }
+  .immersive .action-panel { width: 520px; max-width: calc(100vw - 32px); bottom: 18px; }
+  .immersive .overlay-card { max-width: 300px; }
+  .immersive .overlay-card h2 { font-size: 27px; }
+}
+@media (max-width: 600px) {
+  .immersive .masthead { display: none; }
+  .immersive .heading { left: 12px; right: 12px; top: 12px; display: block; }
+  .immersive .encounter-controls { justify-content: flex-end; gap: 6px; }
+  .immersive .timer { margin-right: auto; }
+  .immersive .scene-top { top: 62px; width: calc(100vw - 36px); max-width: none; }
+  .immersive .boss-title h2 { font-size: 22px; }
+  .immersive .mechanic-alert { top: 122px; font-size: 9px; }
+  .immersive .party-panel { left: 12px; top: auto; bottom: 138px; transform: none; width: 142px; }
+  .immersive .party-frame { padding: 5px 7px; margin-bottom: 5px; }
+  .immersive .frame-top { line-height: 13px; }
+  .immersive .frame-top strong, .immersive .frame-top .hp-percent { font-size: 10px; }
+  .immersive .frame-bottom { line-height: 10px; margin-top: 2px; font-size: 7px; }
+  .immersive .frame-bottom .hp-values { font-size: 7px; }
+  .immersive .priest-resource { padding: 9px; }
+  .immersive .resource-title { font-size: 8px; }
+  .immersive .resource-title strong { font-size: 7px; }
+  .immersive .haste-row strong { font-size: 9px; }
+  .immersive .mana-track { margin: 7px 0 10px; }
+  .immersive .intel-panel { top: 158px; right: 12px; width: 154px; }
+  .immersive .intel-section { padding: 12px 9px 0; }
+  .immersive .mechanic-item { margin-bottom: 11px; }
+  .immersive .mechanic-row, .immersive .mechanic-row strong { font-size: 9px; }
+  .immersive .action-panel { bottom: 12px; width: calc(100vw - 24px); max-width: none; }
+  .immersive .spellbook { gap: 5px; }
+  .immersive .spell { padding: 8px 2px; gap: 5px; }
+  .immersive .spell-icon { width: 36px; height: 36px; }
+  .immersive .spell-info strong { font-size: 11px; }
+  .immersive .spell kbd { top: 3px; left: 3px; font-size: 8px; }
+  .immersive .casting-row { width: 94%; margin-bottom: 10px; }
+  .immersive .scene-overlay { z-index: 6; background: #06131bd4; }
+  .immersive .overlay-card { margin-bottom: 0; }
+  .immersive.encounter-overlay .party-panel,
+  .immersive.encounter-overlay .intel-panel,
+  .immersive.encounter-overlay .action-panel { visibility: hidden; }
+}
+@media (min-width: 601px) and (max-height: 600px) {
+  .immersive .party-panel { width: 180px; top: 53%; }
+  .immersive .party-frame { padding: 5px 9px; margin-bottom: 5px; }
+  .immersive .frame-top { line-height: 13px; }
+  .immersive .frame-bottom { line-height: 10px; }
+  .immersive .priest-resource { padding: 8px; }
+  .immersive .action-panel { bottom: 12px; width: 460px; }
+  .immersive .spell-icon { width: 30px; height: 30px; }
+  .immersive .spell { gap: 3px; padding: 6px; }
+  .immersive .scene-top { top: 59px; }
+}

@@ -1,9 +1,11 @@
 import { Combat } from './combat.js';
 import { Battlefield } from './renderer.js';
+import { setupView } from './view.js';
 import { CONFIG, SPELLS } from './data.js';
 
 const $ = selector => document.querySelector(selector);
 const game = new Combat(), scene = new Battlefield($('#battlefield'));
+const view = setupView(scene);
 let selected = 'tank', hovered = null, lastStatus = '', lastLog = '', last = performance.now(), accumulator = 0, toastTimer;
 const clock = t => `${String(Math.floor(t / 60)).padStart(2,'0')}:${String(Math.floor(t % 60)).padStart(2,'0')}`;
 const number = n => Math.round(n).toLocaleString('en-US');
@@ -15,10 +17,20 @@ const icons = {
 };
 const roleIcons={tank:'♜',rogue:'⚔',mage:'✦',ranger:'⌁',priest:'✧'};
 $('#party-frames').innerHTML=game.party.map(p=>`<button class="party-frame ${p.id===selected?'selected':''}" data-target="${p.id}" style="--class-color:${p.color}" aria-label="${p.name}, ${p.role}"><div class="health-fill"></div><div class="incoming-fill"></div><div class="frame-top"><strong><i>${roleIcons[p.id]}</i>${p.name}</strong><span class="debuff" hidden></span><span class="hp-percent">100%</span></div><div class="frame-bottom"><span>${p.role} <span style="opacity:.6">· ${p.label}</span></span><span class="hp-values">${p.maxHp} / ${p.maxHp}</span></div></button>`).join('');
-$('#spellbook').innerHTML=SPELLS.map(s=>`<button class="spell" data-spell="${s.id}" title="${s.name}: ${s.description} Costs ${s.cost*CONFIG.baseMana} mana." aria-label="${s.name}, key ${s.key}. ${s.description}"><kbd>${s.key}</kbd><div class="spell-icon"><svg viewBox="0 0 40 40" fill="none" stroke="${s.color}" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">${icons[s.icon]}</svg></div><div class="spell-info"><strong>${s.name}</strong><span class="spell-meta"><span class="spell-duration">${s.cast.toFixed(1)}s</span> ${s.channel?'channel':'cast'} <span style="opacity:.5"> / </span> ${s.cost*CONFIG.baseMana} mana</span><span class="spell-detail">${s.party?'100 healing · all allies':`${s.heal} healing`}${s.id==='flash'?' · +1 Post-Haste':s.cooldown?' · 10s cooldown':''}</span></div><div class="cooldown-mask" hidden></div></button>`).join('');
+$('#spellbook').innerHTML=SPELLS.map(s=>`<button class="spell" data-spell="${s.id}" aria-label="${s.name}, key ${s.key}. ${s.description}"><kbd>${s.key}</kbd><div class="spell-icon"><svg viewBox="0 0 40 40" fill="none" stroke="${s.color}" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">${icons[s.icon]}</svg></div><div class="spell-info"><strong>${s.name}</strong><span class="spell-meta"><span class="spell-duration">${s.cast.toFixed(1)}s</span> ${s.channel?'channel':'cast'} <span style="opacity:.5"> / </span> ${s.cost*CONFIG.baseMana} mana</span><span class="spell-detail">${s.party?'100 healing · all allies':`${s.heal} healing`}${s.id==='flash'?' · +1 Post-Haste':s.cooldown?' · 10s cooldown':''}</span></div><div class="cooldown-mask" hidden></div></button>`).join('');
 $('.help-spells').innerHTML=SPELLS.map(s=>`<div><strong>${s.key} · ${s.name}</strong>${s.description}<small>${s.cast}s ${s.channel?'channel':'cast'} · ${s.heal} healing${s.party?' per ally':''} · ${s.cost*CONFIG.baseMana} mana</small></div>`).join('');
 const frames = [...document.querySelectorAll('.party-frame')];
 const spellButtons = [...document.querySelectorAll('.spell')];
+// Keep timeline elements stable so hover/focus tooltips survive UI updates.
+const timelineItems = new Map(game.mechanics.map(m => {
+  const item = document.createElement('div');
+  item.className = 'mechanic-item';
+  item.tabIndex = 0;
+  item.dataset.tooltip = `${m.name}\n${m.hint}`;
+  item.innerHTML = `<div class="mechanic-row"><span class="mechanic-symbol" style="color:${m.color}">${m.id==='crush'?'♜':m.id==='pulse'?'✺':'◇'}</span><span>${m.name}</span><strong></strong></div><div class="mechanic-track"><div style="background:${m.color}"></div></div><div class="mechanic-type">${m.target==='tank'?'Heavy tank damage':m.target==='party'?'Party-wide damage':'Damage over time'}</div>`;
+  $('#timeline').append(item);
+  return [m.id, item];
+}));
 for(const frame of frames){
   frame.addEventListener('pointerenter',e=>{if(e.pointerType!=='touch')hovered=frame.dataset.target;});
   frame.addEventListener('pointerleave',()=>{hovered=null;});
@@ -69,6 +81,7 @@ function renderUI(){
   $('#alive-count').textContent=`${game.party.filter(p=>p.hp>0).length} / 5`;
   $('#healing-stat').innerHTML=`EFFECTIVE HEALING <b>${number(game.stats.effective)}</b>`;
   const cast=game.cast;
+  $('.casting-row').classList.toggle('is-casting', !!cast);
   $('#cast-name').textContent=cast?`${cast.spell.channel?'Channeling: ':''}${cast.spell.name}`:'Ready to heal';
   $('#cast-target').textContent=cast?`→ ${cast.spell.party?'Every living ally':game.party.find(p=>p.id===cast.target)?.name}`:'Hover a frame or select an ally';
   $('#cast-time').textContent=cast?`${Math.max(0,cast.duration-cast.elapsed).toFixed(1)}s`:'';
@@ -76,16 +89,25 @@ function renderUI(){
   for(const button of spellButtons){
     const spell=SPELLS.find(s=>s.id===button.dataset.spell),cooldown=Math.max(0,(game.cooldowns[spell.id]||0)-game.time);
     const mask=button.querySelector('.cooldown-mask');mask.hidden=cooldown<=0;mask.textContent=`${cooldown.toFixed(1)}s`;
-    button.disabled=game.status!=='running'||cooldown>0||game.mana<spell.cost*CONFIG.baseMana;
+    button.setAttribute('aria-disabled', String(game.status!=='running'||cooldown>0||game.mana<spell.cost*CONFIG.baseMana));
+    const duration = spell.cast * (spell.consumes && game.buffs[spell.consumes.buff] > 0 ? spell.consumes.castMultiplier : 1);
+    button.dataset.tooltip = `${spell.name} · ${spell.key}\n${duration.toFixed(1)}s ${spell.channel?'channel':'cast'} · ${spell.cost*CONFIG.baseMana} mana\n${spell.heal} healing${spell.party?' to every living ally':''}${spell.cooldown?` · ${spell.cooldown}s cooldown`:''}\n${spell.description}${cooldown>0?`\nReady in ${cooldown.toFixed(1)}s`:''}`;
     button.classList.toggle('active',cast?.spell.id===spell.id);
     button.querySelector('.spell-duration').textContent=`${(spell.cast*(spell.consumes&&game.buffs[spell.consumes.buff]>0?spell.consumes.castMultiplier:1)).toFixed(1)}s`;
   }
-  $('#timeline').innerHTML=[...game.mechanics].sort((a,b)=>a.next-b.next).map(m=>`<div class="mechanic-item"><div class="mechanic-row"><span class="mechanic-symbol" style="color:${m.color}">${m.id==='crush'?'♜':m.id==='pulse'?'✺':'◇'}</span><span>${m.name}</span><strong>${Math.ceil(m.next-game.time)}s</strong></div><div class="mechanic-track"><div style="width:${Math.max(0,Math.min(100,(1-(m.next-game.time)/m.every)*100))}%;background:${m.color}"></div></div><div class="mechanic-type">${m.target==='tank'?'Heavy tank damage':m.target==='party'?'Party-wide damage':'Damage over time'}</div></div>`).join('');
+  for (const [index, mechanic] of [...game.mechanics].sort((a,b)=>a.next-b.next).entries()) {
+    const item = timelineItems.get(mechanic.id);
+    item.style.order = index;
+    item.querySelector('strong').textContent = `${Math.ceil(mechanic.next-game.time)}s`;
+    item.querySelector('.mechanic-track > div').style.width = `${Math.max(0,Math.min(100,(1-(mechanic.next-game.time)/mechanic.every)*100))}%`;
+  }
+  view.refreshTooltip();
   const warning=game.mechanics.filter(m=>m.warned).sort((a,b)=>a.next-b.next)[0];$('#mechanic-alert').hidden=!warning||game.status!=='running';
   if(warning){$('#mechanic-alert').textContent=`${warning.name.toUpperCase()} · ${(warning.next-game.time).toFixed(1)}s`;$('#tactical-tip').textContent=warning.hint;}else{$('#tactical-tip').textContent='Build Post-Haste with Flash Heal before the Warden’s party-wide nova.';}
   const logKey=game.history.map(l=>l.time+l.text).join('|');
   if(logKey!==lastLog){$('#combat-log').innerHTML=game.history.slice(0,6).map(l=>`<div class="log-entry ${l.kind}"><time>${clock(l.time)}</time><span>${l.text}</span></div>`).join('')||'<p class="empty-log">The sanctum is still.<br>For now.</p>';lastLog=logKey;}
   if(game.status!==lastStatus){
+    document.body.classList.toggle('encounter-overlay', game.status !== 'running');
     lastStatus=game.status;$('#scene-overlay').hidden=game.status==='running';
     $('#status-label').textContent=({ready:'AWAITING PULL',running:'ENCOUNTER ACTIVE',paused:'ENCOUNTER PAUSED',victory:'WARDEN DEFEATED',defeat:'PARTY DEFEATED'})[game.status];
     $('#pause').disabled=!['running','paused'].includes(game.status);$('#pause').textContent=game.status==='paused'?'▷ Resume':'Ⅱ Pause';
@@ -97,6 +119,7 @@ function renderUI(){
     }[game.status];
     if(data){$('#overlay-eyebrow').textContent=data[0];$('#overlay-title').textContent=data[1];$('#overlay-text').innerHTML=data[2];$('#begin').innerHTML=`${data[3]} <span>→</span>`;}
     const ended=['victory','defeat'].includes(game.status);
+    document.body.classList.toggle('encounter-ended', ended);
     $('#result-stats').innerHTML=ended?`<div><b>${clock(game.time)}</b>TIME</div><div><b>${number(game.stats.effective)}</b>HEALED</div><div><b>${Math.round(game.stats.overheal/Math.max(1,game.stats.effective+game.stats.overheal)*100)}%</b>OVERHEAL</div>`:'';
     $('#overlay-foot').hidden=ended;$('#overlay-foot').textContent=game.status==='paused'?'Press Space to resume.':'No movement. Just you, your spells, and five lives.';
   }

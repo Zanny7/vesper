@@ -20,6 +20,8 @@ The 13 Node test cases cover spell timing, resource costs, Post-Haste consumptio
 
 ## Play
 
+- **Immersive view / Panel view** switches between the detailed layout and a full-window battlefield with compact overlay controls. Switching preserves the encounter, cast, target, mana, and cooldowns; the chosen layout is remembered in this browser.
+- In immersive view, hover or keyboard-focus a spell for its cast time, mana cost, healing, cooldown, and effect. Post-Haste and encounter mechanics also have tooltips. Spell keys, health, mana, charges, cooldown countdowns, and active cast information stay visible; the detailed explanations remain in Panel view.
 - Click **Begin encounter**. Tank and DPS fight automatically.
 - Hover a party frame and press **1–4** to heal that ally. Without a hovered frame, your selected ally receives the spell.
 - Click a frame or use **↑ / ↓** to change the selected ally. Clicking a spell also casts it on the selected ally.
@@ -60,7 +62,9 @@ Development happens on `dev`; `main` holds stable, tested milestones. Larger exp
 | `src/combat.js` | Browser-independent combat state and fixed-step rules |
 | `src/renderer.js` | Canvas environment, articulated characters, spells and impact feedback |
 | `src/main.js` | Input, party-frame UI, event forwarding and game loop |
+| `src/view.js` | Layout preference and hover/focus tooltips |
 | `src/style.css` | Responsive UI and visual tokens |
+| `src/immersive.css` | Full-window battlefield and compact overlay layout |
 | `tests/combat.test.mjs` | Deterministic combat and encounter tests |
 | `server.mjs` | Dependency-free local static server |
 
