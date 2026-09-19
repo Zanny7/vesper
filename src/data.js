@@ -28,11 +28,18 @@ export const SPELLS = [
   { id: 'prayer', name: 'Prayer of Healing', key: '3', icon: 'wings', cast: 3, cost: 2.5, heal: 100, party: true, color: '#9fdfc6', description: 'Restores 100 health to every living ally, including you. Benefits from Post-Haste.', consumes: { buff: 'postHaste', castMultiplier: 0.6 } },
   { id: 'penance', name: 'Penance', key: '4', icon: 'bolts', cast: 2, cost: 1.2, heal: 250, channel: true, cooldown: 10, ticks: [{ at: 0.5, heal: 83 }, { at: 1.25, heal: 83 }, { at: 2, heal: 84 }], description: 'Channel three holy bolts for 250 total healing. 10s cooldown.', color: '#f4c16c' },
 ];
-// Healer identity and spell kits are separate from the companion roster. The
-// Druid keeps the proven training kit until its dedicated healing-kit issue.
+export const DRUID_HOTS = ['rejuvenation', 'regrowth', 'wildGrowth'];
+export const DRUID_SPELLS = [
+  { id: 'rejuvenation', name: 'Rejuvenation', key: '1', icon: 'leaf', cast: 0, cost: 1, heal: 0, hot: { duration: 15, interval: 3, heal: 25 }, color: '#9cdb95', description: 'Heal for 25 every 3s for 15s (125 total). Refreshing restarts the duration and tick timer.' },
+  { id: 'regrowth', name: 'Regrowth', key: '2', icon: 'sprout', cast: 1.5, cost: 40 / CONFIG.baseMana, heal: 50, hot: { duration: 18, interval: 3, heal: 20 }, color: '#a8e5b9', description: 'Heal for 50 immediately, then 20 every 3s for 18s (170 total). Refreshing restarts the HoT.' },
+  { id: 'swiftmend', name: 'Swiftmend', key: '3', icon: 'bloom', cast: 0, cost: 35 / CONFIG.baseMana, heal: 160, cooldown: 15, consumesHot: DRUID_HOTS, color: '#e0d497', description: 'Heal for 160. Requires and consumes the shortest remaining Rejuvenation, Regrowth, or Wild Growth on this ally.' },
+  { id: 'wildGrowth', name: 'Wild Growth', key: '4', icon: 'grove', cast: 0, cost: 70 / CONFIG.baseMana, heal: 0, party: true, cooldown: 10, hot: { duration: 8, interval: 1, heal: 10 }, color: '#80c9a8', description: 'Heal every living ally for 10 every second for 8s (80 per ally). Each ally has their own HoT.' },
+  { id: 'nourish', name: 'Nourish', key: '5', icon: 'seed', cast: 2, cost: 1, heal: 80, hotBonus: { sources: DRUID_HOTS, amount: 20, max: 3 }, color: '#c8df9b', description: 'Heal for 80, plus 20 per active Druid HoT at completion: 80 / 100 / 120 / 140 healing.' },
+];
+// Healer identity and spell kits are separate from the companion roster.
 export const HEALERS = {
   priest: { id: 'priest', name: 'You', role: 'Priest', label: 'HEALER', maxHp: 400, color: '#e2cc94', damage: 0, interval: 2, x: 485, y: 484, spellBook: SPELLS, combatSpells: SPELLS, description: 'A disciplined keeper of the party’s light. Uses the current healing kit.' },
-  druid: { id: 'druid', name: 'You', role: 'Druid', label: 'HEALER', maxHp: 400, color: '#9acb91', damage: 0, interval: 2, x: 485, y: 484, spellBook: [], combatSpells: SPELLS, description: 'A guardian of living things. Their distinct healing kit will arrive in a later vigil.' },
+  druid: { id: 'druid', name: 'You', role: 'Druid', label: 'HEALER', maxHp: 400, color: '#9acb91', damage: 0, interval: 2, x: 485, y: 484, spellBook: DRUID_SPELLS, combatSpells: DRUID_SPELLS, description: 'Prepare allies with healing over time. Nourish rewards layered HoTs; Swiftmend trades one for an immediate burst.' },
 };
 export const partyForHealer = healerId => [...PARTY.filter(member => member.label !== 'HEALER'), HEALERS[healerId] || HEALERS.priest];
 export const ENCOUNTER = {

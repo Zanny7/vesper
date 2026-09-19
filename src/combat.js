@@ -6,7 +6,7 @@ export class Combat {
   setLoadout(party, spells = this.spells) { this.partyTemplate = party; this.spells = spells; this.reset(); }
   reset(encounter = this.encounter) {
     this.encounter = encounter;
-    this.party = this.partyTemplate.map((p, i) => ({ ...p, hp: p.maxHp, dots: [], nextAttack: 1 + i * 0.2 }));
+    this.party = this.partyTemplate.map((p, i) => ({ ...p, hp: p.maxHp, dots: [], hots: [], nextAttack: 1 + i * 0.2 }));
     this.boss = { hp: encounter.maxHp, maxHp: encounter.maxHp };
     this.adds = (encounter.adds || []).map((add, i) => ({ ...add, id: `add-${i}`, name: add.name || `Pale Archer ${i + 1}`, next: add.first }));
     this.time = 0; this.status = 'ready'; this.mana = CONFIG.mana; this.buffs = { postHaste: 0 };
@@ -27,7 +27,8 @@ export class Combat {
     if (this.cast) return { ok: false, reason: 'Already casting. Press Esc to cancel.' };
     if (!spell) return { ok: false, reason: 'Unknown spell.' };
     if (!spell.party && (!target || target.hp <= 0)) return { ok: false, reason: 'Select a living ally.' };
-    if ((this.cooldowns[id] || 0) > this.time + 0.00001) return { ok: false, reason: 'Penance is on cooldown.' };
+    if ((this.cooldowns[id] || 0) > this.time + 0.00001) return { ok: false, reason: `${spell.name} is on cooldown.` };
+    if (spell.consumesHot && !this.activeHots(target, spell.consumesHot).length) return { ok: false, reason: `${spell.name} requires Rejuvenation, Regrowth, or Wild Growth on this ally.` };
     const cost = spell.cost * CONFIG.baseMana;
     if (this.mana < cost) return { ok: false, reason: 'Not enough mana.' };
     let duration = spell.cast;
@@ -37,7 +38,40 @@ export class Combat {
     this.cast = { spell, target: targetId, duration, elapsed: 0, launched: 0, landed: 0 };
     this.emit('cast', { spell: id, target: targetId });
     this.stats.casts++;
+    if (duration === 0) this.completeCast();
     return { ok: true };
+  }
+  activeHots(target, sources) {
+    return (target?.hots || []).filter(hot => hot.expires > this.time + 1e-8 && (!sources || sources.includes(hot.source)));
+  }
+  directHealing(spell, target) {
+    const bonus = spell.hotBonus;
+    return spell.heal + (bonus ? Math.min(bonus.max, this.activeHots(target, bonus.sources).length) * bonus.amount : 0);
+  }
+  applyHot(target, spell) {
+    // One independently timed instance per source and target. Refresh has no carryover.
+    target.hots = target.hots.filter(hot => hot.source !== spell.id);
+    target.hots.push({ ...spell.hot, source: spell.id, name: spell.name, icon: spell.icon, color: spell.color, applied: this.time, expires: this.time + spell.hot.duration, next: this.time + spell.hot.interval, ticks: Math.round(spell.hot.duration / spell.hot.interval) });
+  }
+  completeCast() {
+    const cast = this.cast, spell = cast.spell;
+    if (!spell.channel) {
+      const targets = spell.party ? this.party : [this.party.find(p => p.id === cast.target)];
+      for (const target of targets) {
+        if (!target || target.hp <= 0) continue;
+        if (spell.consumesHot) {
+          const consumed = this.activeHots(target, spell.consumesHot).sort((a, b) => a.expires - b.expires)[0];
+          if (!consumed) continue;
+          target.hots = target.hots.filter(hot => hot !== consumed);
+        }
+        const amount = this.directHealing(spell, target);
+        if (amount > 0) this.heal(target, amount, spell.id);
+        if (spell.hot) this.applyHot(target, spell);
+      }
+      if (spell.grants && targets.some(p => p?.hp > 0)) { const g = spell.grants; this.buffs[g.buff] = Math.min(g.max, this.buffs[g.buff] + g.amount); }
+    }
+    this.log(`${spell.name} → ${spell.party ? 'Party' : this.party.find(p => p.id === cast.target)?.name}`, 'heal');
+    this.emit('complete', { spell: spell.id }); this.cast = null;
   }
   heal(target, amount, spell) {
     if (!target || target.hp <= 0) return;
@@ -49,7 +83,7 @@ export class Combat {
     if (!target || target.hp <= 0) return;
     target.hp = Math.max(0, target.hp - amount);
     this.emit('damage', { target: target.id, amount, source });
-    if (!target.hp) { target.dots = []; this.stats.deaths++; this.log(`${target.name} has fallen.`, 'danger'); this.emit('death', { target: target.id }); }
+    if (!target.hp) { target.dots = []; target.hots = []; this.stats.deaths++; this.log(`${target.name} has fallen.`, 'danger'); this.emit('death', { target: target.id }); }
   }
   rotatingTarget() { const living = this.party.filter(p => p.hp > 0 && p.id !== 'tank'); return living[this.rotation++ % living.length]; }
   randomTargets(count = 1) {
@@ -81,6 +115,16 @@ export class Combat {
   step(dt = CONFIG.step) {
     if (this.status !== 'running') return;
     this.time += dt; this.mana = Math.min(CONFIG.mana, this.mana + CONFIG.manaRegen * dt);
+    // Resolve due ticks before a finishing cast can refresh/consume an effect.
+    for (const p of this.party) {
+      if (p.hp <= 0) continue;
+      for (const hot of p.hots) {
+        while (hot.ticks > 0 && this.time + 1e-8 >= hot.next) {
+          this.heal(p, hot.heal, hot.source); hot.ticks--; hot.next += hot.interval;
+        }
+      }
+      p.hots = p.hots.filter(hot => hot.ticks > 0);
+    }
     const cast = this.cast;
     if (cast) {
       cast.elapsed += dt;
@@ -94,13 +138,7 @@ export class Combat {
         }
       }
       if (cast.elapsed + 1e-8 >= cast.duration) {
-        if (!cast.spell.channel) {
-          const targets = cast.spell.party ? this.party : [this.party.find(p => p.id === cast.target)];
-          for (const target of targets) this.heal(target, cast.spell.heal, cast.spell.id);
-          if (cast.spell.grants && targets.some(p => p?.hp > 0)) { const g = cast.spell.grants; this.buffs[g.buff] = Math.min(g.max, this.buffs[g.buff] + g.amount); }
-        }
-        this.log(`${cast.spell.name} → ${cast.spell.party ? 'Party' : this.party.find(p => p.id === cast.target)?.name}`, 'heal');
-        this.emit('complete', { spell: cast.spell.id }); this.cast = null;
+        this.completeCast();
       }
     }
     for (const p of this.party) {

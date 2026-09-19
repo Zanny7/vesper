@@ -1,3 +1,4 @@
+import { renderPartyEffects } from './party-effects.js';
 import { Combat } from './combat.js';
 import { Battlefield } from './renderer.js';
 import { setupView } from './view.js';
@@ -6,8 +7,8 @@ import { setupAdventures } from './adventures.js';
 import { setupChapters } from './chapters.js';
 import { setupTeam } from './team.js';
 import { setupEquipment } from './equipment.js';
-import { activeHealer, activeParty, loadActiveHealer } from './healers.js';
-import { formatCooldown } from './ability-presentation.js';
+import { activeHealer, activeParty, loadActiveHealer, healerHint } from './healers.js';
+import { formatCooldown, healingSummary } from './ability-presentation.js';
 import { abilityIcon } from './ability-icons.js';
 import { createAbilitySettings, bindingFromEvent } from './ability-settings.js';
 import { CONFIG, CHAPTER_ENCOUNTERS, ALL_ADVENTURES, CHAPTERS } from './data.js';
@@ -29,9 +30,11 @@ function buildHealerUI() {
   const healer = activeHealer(activeHealerId);
   currentSpells = abilitySettings.spells(activeHealerId);
   game.spells = currentSpells;
-  $('#party-frames').innerHTML=game.party.map(p=>`<button class="party-frame ${p.id===selected?'selected':''}" data-target="${p.id}" style="--class-color:${p.color}" aria-label="${p.name}, ${p.role}"><div class="health-fill"></div><div class="incoming-fill"></div><div class="frame-top"><strong><i>${roleIcons[p.id]}</i>${p.name}</strong><span class="debuff" hidden></span><span class="hp-percent">100%</span></div><div class="frame-bottom"><span>${p.role} <span style="opacity:.6">· ${p.label}</span></span><span class="hp-values">${p.maxHp} / ${p.maxHp}</span></div></button>`).join('');
+  $('#party-frames').innerHTML=game.party.map(p=>`<button class="party-frame ${p.id===selected?'selected':''}" data-target="${p.id}" style="--class-color:${p.color}" aria-label="${p.name}, ${p.role}"><div class="health-fill"></div><div class="incoming-fill"></div><div class="frame-top"><strong><i>${roleIcons[p.id]}</i>${p.name}</strong></div><div class="frame-bottom"><span>${p.role}</span></div><div class="frame-health"><span class="hp-percent">100%</span><span class="hp-values">${p.maxHp} / ${p.maxHp}</span></div><div class="frame-effects frame-effects-negative" aria-hidden="true"></div><div class="frame-effects frame-effects-helpful" aria-hidden="true"></div></button>`).join('');
   $('#spellbook').innerHTML=currentSpells.map(s=>`<button class="spell" data-spell="${s.id}" data-icon="${s.icon}" aria-label="${s.name}, key ${s.key}. ${s.description}">${abilityIcon(s)}<div class="cooldown-mask" aria-hidden="true" hidden></div></button>`).join('');
-  $('.help-spells').innerHTML=currentSpells.map(s=>`<div><strong>${s.key} · ${s.name}</strong>${s.description}<small>${s.cast}s ${s.channel?'channel':'cast'} · ${s.heal} healing${s.party?' per ally':''} · ${s.cost*CONFIG.baseMana} mana</small></div>`).join('');
+  $('.help-spells').innerHTML=currentSpells.map(s=>`<div><strong>${s.key} · ${s.name}</strong>${s.description}<small>${s.cast ? s.cast + 's ' + (s.channel?'channel':'cast') : 'Instant'} · ${healingSummary(s)} healing · ${s.cost*CONFIG.baseMana} mana</small></div>`).join('');
+  $('.haste-row').hidden = activeHealerId !== 'priest';
+  $('#help-haste').hidden = activeHealerId !== 'priest';
   $('.priest-resource .resource-title span').textContent = `✧ ${healer.role} mana`;
   frames = [...document.querySelectorAll('.party-frame')]; spellButtons = [...document.querySelectorAll('#spellbook .spell')];
   $('.action-footer > span').textContent = `${currentSpells.map(s => s.key).join(' · ')} — Cast spell · Hover to target · Click to select · ↑ ↓ Change ally`;
@@ -54,7 +57,7 @@ function prepareEncounterUI() {
   $('.scene-caption').innerHTML = `<span class="scene-dot"></span> ${node.name.toUpperCase()} <span>${chapter.nodes.indexOf(node) + 1} / ${chapter.nodes.length}</span>`;
   $('#enemy-roster').textContent = (node.kind === 'boss' ? 'Chapter Boss · ' : '') + (game.adds.length ? `${game.adds.map(add => add.name).join(' · ')} · Flee when leader falls` : 'One enemy');
   $('#timeline').innerHTML = `<div class="baseline-attack">Tank strike <b id="strike-countdown"></b><small>${game.encounter.strike.damage} damage to Aldric every ${game.encounter.strike.every}s</small></div>${game.adds.map(add => `<div class="baseline-attack">${add.name} <b data-add-countdown="${add.id}"></b><small>${add.damage} damage · ${add.target === 'tank' ? 'Aldric' : 'Random living ally'}</small></div>`).join('')}`;
-  $('#timeline').insertAdjacentHTML('beforeend', game.mechanics.map(m => `<div class="baseline-attack mechanic-countdown" data-mechanic="${m.id}" tabindex="0" data-tooltip="${m.name}: ${m.hint}">${m.name} <b></b><small>${m.target === 'party' ? 'Party-wide damage' : m.dot ? 'Persistent wound' : `${m.count || 1} targets`}</small></div>`).join(''));
+  $('#timeline').insertAdjacentHTML('beforeend', game.mechanics.map(m => `<div class="baseline-attack mechanic-countdown" data-mechanic="${m.id}" tabindex="0" data-tooltip="${m.name}: ${healerHint(m.hint, activeHealerId)}">${m.name} <b></b><small>${m.target === 'party' ? 'Party-wide damage' : m.dot ? 'Persistent wound' : `${m.count || 1} targets`}</small></div>`).join(''));
 }
 prepareEncounterUI();
 function toast(message){$('#toast').textContent=message;$('#toast').classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>$('#toast').classList.remove('show'),2200);}
@@ -91,12 +94,11 @@ function renderUI(){
     frame.querySelector('.hp-percent').textContent=p.hp>0?`${Math.ceil(percentage)}%`:'DEAD';
     frame.querySelector('.hp-values').textContent=`${number(p.hp)} / ${p.maxHp}`;
     frame.classList.toggle('selected',selected===p.id);frame.classList.toggle('critical',percentage>0&&percentage<30);frame.classList.toggle('dead',p.hp<=0);
-    frame.setAttribute('aria-pressed',String(selected===p.id));frame.setAttribute('aria-label',`${p.name}, ${p.role}, ${number(p.hp)} of ${p.maxHp} health${p.dots.length?', '+p.dots.map(d=>d.name).join(', '):''}`);
-    const debuff=frame.querySelector('.debuff');debuff.hidden=!p.dots.length;debuff.textContent=p.dots.length?`☠ ${Math.ceil(Math.max(...p.dots.map(d=>d.next+(d.ticks-1)*d.interval))-game.time)}s`:'';
-    debuff.title = p.dots.map(d => `${d.name}: ${d.damage} damage every ${d.interval}s, ${d.ticks} ticks left`).join('\n');
+    const effectLabel = renderPartyEffects(frame, p, game.time);
+    frame.setAttribute('aria-pressed',String(selected===p.id));frame.setAttribute('aria-label',`${p.name}, ${p.role}, ${number(p.hp)} of ${p.maxHp} health${effectLabel ? ', ' + effectLabel : ''}`);
     frame.classList.toggle('threatened', game.mechanics.some(m => m.warned && m.targets?.includes(p.id)));
     const incoming=frame.querySelector('.incoming-fill');let amount=0;
-    if(game.cast&&p.hp>0&&(game.cast.spell.party||game.cast.target===p.id))amount=game.cast.spell.channel?game.cast.spell.ticks.slice(game.cast.landed).reduce((n,t)=>n+t.heal,0):game.cast.spell.heal;
+    if(game.cast&&p.hp>0&&(game.cast.spell.party||game.cast.target===p.id))amount=game.cast.spell.channel?game.cast.spell.ticks.slice(game.cast.landed).reduce((n,t)=>n+t.heal,0):game.directHealing(game.cast.spell,p);
     incoming.style.left=`${percentage}%`;incoming.style.width=`${Math.min(p.maxHp-p.hp,amount)/p.maxHp*100}%`;
   }
   const target=game.party.find(p=>p.id===(hovered||selected));$('#target-label').textContent=`${hovered?'Mouseover':'Selected'}: ${target.name}`;
@@ -116,9 +118,9 @@ function renderUI(){
     const spell=currentSpells.find(s=>s.id===button.dataset.spell),cooldown=Math.max(0,(game.cooldowns[spell.id]||0)-game.time);
     const mask=button.querySelector('.cooldown-mask');mask.hidden=cooldown<=0;mask.textContent=formatCooldown(cooldown);
     button.classList.toggle('on-cooldown', cooldown > 0);
-    button.setAttribute('aria-disabled', String(game.status!=='running'||cooldown>0||game.mana<spell.cost*CONFIG.baseMana));
+    button.setAttribute('aria-disabled', String(game.status!=='running'||cooldown>0||game.mana<spell.cost*CONFIG.baseMana||(spell.consumesHot&&!game.activeHots(target,spell.consumesHot).length)));
     const duration = spell.cast * (spell.consumes && game.buffs[spell.consumes.buff] > 0 ? spell.consumes.castMultiplier : 1);
-    button.dataset.tooltip = `${spell.name} · ${spell.key}\n${duration.toFixed(1)}s ${spell.channel?'channel':'cast'} · ${spell.cost*CONFIG.baseMana} mana\n${spell.heal} healing${spell.party?' to every living ally':''}${spell.cooldown?` · ${spell.cooldown}s cooldown`:''}\n${spell.description}${cooldown>0?`\nReady in ${cooldown.toFixed(1)}s`:''}`;
+    button.dataset.tooltip = `${spell.name} · ${spell.key}\n${duration ? duration.toFixed(1) + 's ' + (spell.channel?'channel':'cast') : 'Instant'} · ${spell.cost*CONFIG.baseMana} mana\n${healingSummary(spell)} healing${spell.cooldown?` · ${spell.cooldown}s cooldown`:''}\n${spell.description}${cooldown>0?`\nReady in ${cooldown.toFixed(1)}s`:''}`;
     button.classList.toggle('active',cast?.spell.id===spell.id);
   }
   $('#strike-countdown').textContent = `· ${Math.max(0, Math.ceil(game.nextStrike-game.time))}s`;
@@ -130,7 +132,7 @@ function renderUI(){
   }
   view.refreshTooltip();
   const warning=game.mechanics.filter(m=>m.warned).sort((a,b)=>a.next-b.next)[0];$('#mechanic-alert').hidden=!warning||game.status!=='running';
-  if(warning){$('#mechanic-alert').textContent=`${warning.name.toUpperCase()} · ${(warning.next-game.time).toFixed(1)}s · ${warning.target === 'party' ? 'Everyone' : (warning.targets || []).map(id=>game.party.find(p=>p.id===id)?.name).join(', ')}`;$('#tactical-tip').textContent=warning.hint;}else{$('#tactical-tip').textContent=game.encounter.lesson;}
+  if(warning){$('#mechanic-alert').textContent=`${warning.name.toUpperCase()} · ${(warning.next-game.time).toFixed(1)}s · ${warning.target === 'party' ? 'Everyone' : (warning.targets || []).map(id=>game.party.find(p=>p.id===id)?.name).join(', ')}`;$('#tactical-tip').textContent=healerHint(warning.hint,activeHealerId);}else{$('#tactical-tip').textContent=healerHint(game.encounter.lesson,activeHealerId);}
   const logKey=game.history.map(l=>l.time+l.text).join('|');
   if(logKey!==lastLog){$('#combat-log').innerHTML=game.history.slice(0,6).map(l=>`<div class="log-entry ${l.kind}"><time>${clock(l.time)}</time><span>${l.text}</span></div>`).join('')||'<p class="empty-log">The sanctum is still.<br>For now.</p>';lastLog=logKey;}
   if(game.status!==lastStatus){

@@ -1,3 +1,4 @@
+import { healingSummary } from './ability-presentation.js';
 import { CONFIG, HEALERS } from './data.js';
 import { activeHealer, activeParty, loadActiveHealer, saveActiveHealer } from './healers.js';
 import { setupTeamAbilities } from './team-abilities.js';
@@ -32,7 +33,7 @@ export function setupTeam({ paintPortrait, onHealerChange, settings, onAbilities
     });
   }
   const healerOptions = document.querySelector('#healer-options');
-  healerOptions.innerHTML = Object.values(HEALERS).map(healer => `<button type="button" class="healer-option" role="radio" data-healer="${healer.id}"><span class="healer-option-mark" aria-hidden="true">◇</span><span><strong>${healer.role}</strong><small>${healer.id === 'priest' ? 'Current healing kit' : 'Healing kit forthcoming'}</small></span></button>`).join('');
+  healerOptions.innerHTML = Object.values(HEALERS).map(healer => `<button type="button" class="healer-option" role="radio" data-healer="${healer.id}"><span class="healer-option-mark" aria-hidden="true">◇</span><span><strong>${healer.role}</strong><small>${healer.id === 'priest' ? 'Direct healing' : 'Healing over time'}</small></span></button>`).join('');
   healerOptions.addEventListener('click', event => {
     const option = event.target.closest('[data-healer]');
     if (!option || option.dataset.healer === healerId) return;
@@ -57,7 +58,7 @@ export function setupTeam({ paintPortrait, onHealerChange, settings, onAbilities
       : [['Maximum health', format(member.maxHp)], ['Maximum mana', format(CONFIG.mana)], ['Mana regeneration', `${CONFIG.manaRegen} / second`]];
     const spells = healer.spellBook;
     const spellBook = spells.length
-      ? `<div class="team-spells">${spells.map(spell => `<article><h4>${spell.name}</h4><p>${spell.description}</p><dl><div><dt>Healing</dt><dd>${spell.heal}${spell.party ? ' / ally' : ''}</dd></div><div><dt>Mana cost</dt><dd>${format(spell.cost * CONFIG.baseMana)}</dd></div><div><dt>${spell.channel ? 'Channel' : 'Base cast'}</dt><dd>${spell.cast}s</dd></div>${spell.cooldown ? `<div><dt>Cooldown</dt><dd>${spell.cooldown}s</dd></div>` : ''}</dl></article>`).join('')}</div>`
+      ? `<div class="team-spells">${spells.map(spell => `<article><h4>${spell.name}</h4><p>${spell.description}</p><dl><div><dt>Healing</dt><dd>${healingSummary(spell)}</dd></div><div><dt>Mana cost</dt><dd>${format(spell.cost * CONFIG.baseMana)}</dd></div><div><dt>${spell.channel ? 'Channel' : 'Base cast'}</dt><dd>${spell.cast ? spell.cast + 's' : 'Instant'}</dd></div>${spell.cooldown ? `<div><dt>Cooldown</dt><dd>${spell.cooldown}s</dd></div>` : ''}</dl></article>`).join('')}</div>`
       : `<p class="team-behavior">${healer.description}</p>`;
     const body = member.damage
       ? `<p class="team-behavior">${member.label === 'TANK' ? 'Holds the front line and takes the Warden’s heavy strikes.' : 'Attacks the Warden automatically while alive.'} Attacks deal ${member.damage} damage every ${member.interval} seconds during combat.</p>`

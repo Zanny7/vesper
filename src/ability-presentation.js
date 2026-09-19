@@ -1,4 +1,9 @@
 // Presentation helpers; these do not alter bindings or combat timing.
+export function healingSummary(spell) {
+  if (spell.hot) return `${spell.heal ? `${spell.heal} + ` : ''}${spell.hot.heal * Math.round(spell.hot.duration / spell.hot.interval)} over ${spell.hot.duration}s${spell.party ? ' / ally' : ''}`;
+  if (spell.hotBonus) return `${spell.heal}–${spell.heal + spell.hotBonus.amount * spell.hotBonus.max}`;
+  return `${spell.heal}${spell.party ? ' / ally' : ''}`;
+}
 export function compactKeybind(binding) {
   const aliases = { shift: 'S', ctrl: 'C', control: 'C', alt: 'A', option: 'A', meta: 'M', cmd: 'M', command: 'M', win: 'M', super: 'M' };
   const parts = binding.split('+').map(part => part.trim());

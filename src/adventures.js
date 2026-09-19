@@ -1,3 +1,4 @@
+import { healerHint, loadActiveHealer } from './healers.js';
 import { CHAPTERS, CHAPTER_ENCOUNTERS } from './data.js';
 import { nodeState, chapterComplete, chapterUnlocked, restoreCampaign, awardVictory } from './progression.js';
 export { nodeState, chapterComplete, restoreProgress, awardVictory } from './progression.js';
@@ -81,8 +82,8 @@ export function setupAdventures({ startEncounter, onProgress }) {
     $('#detail-title').textContent = node.name;
     $('#detail-description').textContent = node.description;
     $('#detail-enemies').textContent = `${encounter.name}${count ? ` + ${encounter.adds.map((add, i) => add.name || `Pale Archer ${i + 1}`).join(', ')}` : ' · Alone'}`;
-    $('#detail-mechanics').innerHTML = `<li><strong>Tank strikes</strong><p>${encounter.strike.damage} damage to Aldric every ${encounter.strike.every}s.</p></li>${encounter.mechanics.map(m => `<li><strong>${m.name}</strong><p>${m.hint}</p></li>`).join('')}${count ? `<li><strong>Supporting enemies</strong><p>${encounter.adds.map(add => `${add.name || 'Pale Archer'} attacks ${add.target === 'tank' ? 'Aldric' : 'random living allies'}.`).join(' ')} Your party focuses the main enemy; the others flee when it falls.</p></li>` : ''}`;
-    $('#detail-lesson').textContent = encounter.lesson;
+    $('#detail-mechanics').innerHTML = `<li><strong>Tank strikes</strong><p>${encounter.strike.damage} damage to Aldric every ${encounter.strike.every}s.</p></li>${encounter.mechanics.map(m => `<li><strong>${m.name}</strong><p>${healerHint(m.hint, loadActiveHealer())}</p></li>`).join('')}${count ? `<li><strong>Supporting enemies</strong><p>${encounter.adds.map(add => `${add.name || 'Pale Archer'} attacks ${add.target === 'tank' ? 'Aldric' : 'random living allies'}.`).join(' ')} Your party focuses the main enemy; the others flee when it falls.</p></li>` : ''}`;
+    $('#detail-lesson').textContent = healerHint(encounter.lesson, loadActiveHealer());
     $('#preview-encounter').disabled = state === 'locked';
     $('#preview-encounter').textContent = state === 'locked' ? 'Encounter locked' : state === 'completed' ? 'Replay encounter →' : 'Prepare encounter →';
     $('#detail-state').textContent = state === 'locked' ? `Complete ${node.from.map(id => nodes.find(item => item.id === id).name).join(' or ')} first.` : state === 'completed' ? 'Completed. You can return for another vigil.' : 'Your next vigil. Select Prepare to confirm.';

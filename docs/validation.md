@@ -129,3 +129,24 @@ Full victory/defeat and timing edge cases were checked by simulation tests, not 
 - Browser-tested right-most → far-left drag and the reverse, outside-bar cancellation, Enter after dragging, right-click capture, occupied-key swapping, Shift+Q, reserved Space rejection, Escape cancellation, keyboard/dialog movement, and separate Priest/Druid settings after reload.
 - Entered an encounter as Druid and confirmed its saved order, compact SQ badge, and Shift+Q casting Flash Heal with the expected mana cost. Team configuration left combat idle and mana full. Checked desktop and 390×844 Team layouts and mobile move controls; no horizontal page overflow or browser warning/error logs. Restored normal viewport and both healers' original order/bindings after QA, leaving Druid selected as before.
 - BAT-15 and BAT-16 remain uncommitted on dev for review. Druid continues using the existing temporary combat kit pending its separate kit issue.
+
+
+## BAT-17 — Druid baseline kit
+
+- Replaced the temporary Priest kit with Rejuvenation, Regrowth, Swiftmend, Wild Growth, and Nourish. All starting tuning lives in src/data.js; Priest values are unchanged.
+- Each party member exposes hots with source, name, icon, color, applied/expiry times, next tick, remaining ticks, interval, and healing. Same-source refresh replaces the instance and restarts timing. HoTs stop during pause and clear on death/reset.
+- Swiftmend validates before spending resources and consumes the shortest remaining eligible effect on its target only. Nourish counts eligible HoTs at cast completion. Due HoT ticks resolve before a finishing cast on the same simulation step.
+- Added shared healing summaries, five nature icons, instant-cast labels, Druid guidance, and green healing effects. Priest-only Post-Haste controls are hidden for Druid. Detailed party-frame effect visuals remain for the separate effect-display issue.
+- All 45 tests pass, including exact costs/tick totals, refresh timing, non-stacking/coexistence, Swiftmend rejection/consumption/cooldowns, Wild Growth target isolation, Nourish scaling/expiry, cancellation, pause, death, and reset. Existing Priest tests remain green.
+- Browser-tested all five Druid spells in an encounter, Swiftmend rejection without a HoT, both cooldown displays, Team Spell Book, panel/immersive layouts, and a 390x844 Team layout with five icons and no horizontal overflow. Verified Priest Flash Heal still grants Post-Haste; browser error logs were empty. Restored the normal viewport and left Druid selected for review.
+- Changes remain uncommitted on dev. No balance tuning beyond the issue's requested starting values.
+
+
+## BAT-18 — Party-frame effect indicators
+
+- Centered the existing two-line health readout. Names/classes stay on the left; helpful effects occupy the bottom-right and debuffs the top-right, inside the existing frame bounds.
+- Added reusable party-effect adapters/rendering with shared spell glyphs. HoTs retain Rejuvenation/Regrowth/Wild Growth order. Optional future helpfulEffects/debuffs support icon, color, expiry, display order, dispellability and priority, including indefinite effects.
+- Negative effects show at most two entries: dispellable first, explicit priority next, then damage per second and stable source ID. Countdown values derive from combat timestamps, with no UI timer. Accessible frame descriptions include the visible effects and remaining durations.
+- All 48 tests pass. Added coverage for live HoT display order, refresh, expiry, consumption, Wild Growth target isolation, deterministic priority selection, indefinite effects and escaped descriptions.
+- Browser-tested all three HoTs plus Rending Maul in Kennels of Sorrow. Verified Swiftmend removes Wild Growth only from Aldric, other targets retain it, refresh updates durations and expiry removes icons. Inspected desktop panel/immersive and 390x844 immersive layouts. Effect bounds stayed inside frames; percentage and numeric health centers matched to within 0.01px. No browser console errors.
+- Restored the normal viewport and left the encounter paused with effects visible for review. BAT-17 and BAT-18 remain uncommitted on dev.

@@ -1,0 +1,27 @@
+/* Keep identity, centered health and both effect corners inside existing frames. */
+.party-frame { container-type: inline-size; }
+.party-frame .frame-top, .party-frame .frame-bottom { width: 34%; justify-content: flex-start; white-space: nowrap; }
+.party-frame .frame-bottom { font-size: 8px; }
+.party-frame .frame-top strong { overflow: hidden; text-overflow: ellipsis; }
+.party-frame .frame-top strong i { margin-right: 3px; }
+.frame-health { position: absolute; left: 34%; width: 30%; top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; align-items: center; line-height: 1.3; font-variant-numeric: tabular-nums; white-space: nowrap; text-shadow: 0 1px 2px #000; }
+.frame-health .hp-percent { font-size: 12px; }
+.frame-health .hp-values { font-size: 8px; }
+.frame-effects { position: absolute; right: 3px; display: flex; gap: 2px; pointer-events: auto; }
+.frame-effects-helpful { bottom: 2px; }
+.frame-effects-negative { top: 2px; }
+.frame-effect { width: 19px; height: 20px; position: relative; border: 1px solid #95bc8c80; border-radius: 3px; background: #0a1719ee; color: #c8e4bb; overflow: hidden; }
+.frame-effects-negative .frame-effect { border-color: #ce718c; color: #f2a1af; }
+.frame-effect svg { width: 100%; height: 100%; display: block; }
+.frame-effect b { position: absolute; right: 0; bottom: -1px; padding: 0 1px; background: #071214d9; color: #fff5da; font: 700 10px/11px sans-serif; text-shadow: 0 1px 2px #000; }
+@container (max-width: 175px) {
+  .party-frame .frame-top strong { font-size: 9px; }
+  .party-frame .frame-bottom { font-size: 7px; }
+  .party-frame .frame-top strong i { display: none; }
+  .frame-health { left: 31%; width: 32%; }
+  .frame-health .hp-percent { font-size: 10px; }
+  .frame-health .hp-values { font-size: 7px; }
+  .frame-effects { right: 2px; gap: 1px; }
+  .frame-effect { width: 14px; height: 15px; }
+  .frame-effect b { font-size: 9px; line-height: 10px; }
+}

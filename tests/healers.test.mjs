@@ -23,5 +23,5 @@ test('a selected Druid is the encounter healer while Priest behavior remains ava
   assert.equal(druid.party.at(-1).role, 'Druid');
   assert.equal(priest.party.at(-1).role, 'Priest');
   druid.start(); druid.nextStrike = Infinity; druid.nextShard = Infinity; druid.mechanics.forEach(mechanic => mechanic.next = Infinity);
-  assert.equal(druid.begin('flash', 'tank').ok, true);
+  assert.equal(druid.begin('rejuvenation', 'tank').ok, true);
 });

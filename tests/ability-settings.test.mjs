@@ -15,12 +15,12 @@ test('reordering and conflicting binds persist independently for each healer', (
   assert.deepEqual(settings.spells('priest').map(s => s.id), ['penance', 'flash', 'greater', 'prayer']);
   assert.deepEqual(settings.bind('priest', 'penance', '1'), { ok: true, swapped: 'flash' });
   assert.deepEqual(settings.spells('priest').map(s => s.key), ['1', '4', '2', '3']);
-  settings.move('druid', 'flash', 'prayer'); settings.bind('druid', 'prayer', 'shift+q');
+  settings.move('druid', 'rejuvenation', 'swiftmend'); settings.bind('druid', 'swiftmend', 'shift+q');
   const restored = createAbilitySettings(disk);
   for (const id of ['priest', 'druid']) assert.deepEqual(restored.spells(id), settings.spells(id));
   assert.deepEqual(restored.spells('priest').map(s => s.key), ['1', '4', '2', '3']);
-  assert.deepEqual(restored.spells('druid').map(s => s.id), ['greater', 'prayer', 'flash', 'penance']);
-  assert.equal(restored.spells('druid').find(s => s.id === 'prayer').key, 'Shift+Q');
+  assert.deepEqual(restored.spells('druid').map(s => s.id), ['regrowth', 'swiftmend', 'rejuvenation', 'wildGrowth', 'nourish']);
+  assert.equal(restored.spells('druid').find(s => s.id === 'swiftmend').key, 'Shift+Q');
   assert.deepEqual(SPELLS.map(s => s.key), ['1', '2', '3', '4']);
 });
 test('settings repair stale IDs, duplicates and invalid bindings while preserving valid choices', () => {
@@ -34,9 +34,9 @@ test('settings repair stale IDs, duplicates and invalid bindings while preservin
 });
 test('blocked storage retains usable session settings and damaged JSON falls back to defaults', () => {
   const settings = createAbilitySettings({ getItem() { return '{'; }, setItem() { throw new Error('Blocked'); } });
-  settings.bind('druid', 'flash', 'E'); settings.move('druid', 'penance', 'flash');
-  assert.equal(settings.spells('druid')[0].id, 'penance');
-  assert.equal(settings.spells('druid').find(s => s.id === 'flash').key, 'E');
+  settings.bind('druid', 'rejuvenation', 'E'); settings.move('druid', 'nourish', 'rejuvenation');
+  assert.equal(settings.spells('druid')[0].id, 'nourish');
+  assert.equal(settings.spells('druid').find(s => s.id === 'rejuvenation').key, 'E');
   assert.equal(settings.move('priest', 'missing', 'flash'), false);
   assert.equal(settings.bind('priest', 'flash', 'Escape').ok, false);
 });

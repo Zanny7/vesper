@@ -18,3 +18,8 @@ export function saveActiveHealer(id) {
 
 export const activeHealer = id => HEALERS[restoreActiveHealer(id)];
 export const activeParty = id => partyForHealer(restoreActiveHealer(id));
+
+export function healerHint(text, id) {
+  if (id !== 'druid' || !/Flash Heal|Greater Heal|Prayer|Penance|Post-Haste/.test(text)) return text;
+  return 'Keep Rejuvenation and Regrowth on allies under pressure. Use Wild Growth for party wounds, Nourish for prepared targets, and Swiftmend for an urgent burst.';
+}

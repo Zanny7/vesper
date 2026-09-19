@@ -310,7 +310,7 @@ export class Battlefield {
     }
     if(e.type==='heal'){
       c.globalAlpha=Math.max(0,1-progress);c.globalCompositeOperation='lighter';
-      const color=e.spell==='prayer'?'#a4f4c0':'#ffe9aa';
+      const color=this.healerId==='druid'?'#a8e5b9':e.spell==='prayer'?'#a4f4c0':'#ffe9aa';
       this.glow(c,p.x,p.y+10,45,color+'33');this.ellipse(c,p.x,p.y+32,24+progress*25,9+progress*8,null,color,2);
       for(let i=0;i<8;i++){const a=i/8*TAU;this.ellipse(c,p.x+Math.cos(a)*(15+progress*18),p.y+25-Math.sin(a)*20-progress*60,1.5,3,color);}
       if(e.spell==='greater'){this.line(c,[[p.x,p.y-90],[p.x,p.y+32]],'#ffeabb33',22);this.line(c,[[p.x,p.y-70],[p.x,p.y+32]],'#fff5d966',3);}
