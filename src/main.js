@@ -3,13 +3,14 @@ import { Battlefield } from './renderer.js';
 import { setupView } from './view.js';
 import { setupShell } from './shell.js';
 import { setupAdventures } from './adventures.js';
+import { setupChapters } from './chapters.js';
 import { setupTeam } from './team.js';
 import { setupEquipment } from './equipment.js';
 import { compactKeybind, formatCooldown } from './ability-presentation.js';
-import { CONFIG, SPELLS } from './data.js';
+import { CONFIG, SPELLS, CHAPTER_ENCOUNTERS, ALL_ADVENTURES, CHAPTERS } from './data.js';
 
 const $ = selector => document.querySelector(selector);
-const game = new Combat(), scene = new Battlefield($('#battlefield'));
+const game = new Combat(CHAPTER_ENCOUNTERS.sentinel), scene = new Battlefield($('#battlefield'));
 const view = setupView(scene);
 setupTeam((canvas, member) => scene.paintPortrait(canvas, member));
 setupEquipment((canvas, member) => scene.paintPortrait(canvas, member, 200));
@@ -28,16 +29,20 @@ $('#spellbook').innerHTML=SPELLS.map(s=>`<button class="spell" data-spell="${s.i
 $('.help-spells').innerHTML=SPELLS.map(s=>`<div><strong>${s.key} · ${s.name}</strong>${s.description}<small>${s.cast}s ${s.channel?'channel':'cast'} · ${s.heal} healing${s.party?' per ally':''} · ${s.cost*CONFIG.baseMana} mana</small></div>`).join('');
 const frames = [...document.querySelectorAll('.party-frame')];
 const spellButtons = [...document.querySelectorAll('.spell')];
-// Keep timeline elements stable so hover/focus tooltips survive UI updates.
-const timelineItems = new Map(game.mechanics.map(m => {
-  const item = document.createElement('div');
-  item.className = 'mechanic-item';
-  item.tabIndex = 0;
-  item.dataset.tooltip = `${m.name}\n${m.hint}`;
-  item.innerHTML = `<div class="mechanic-row"><span class="mechanic-symbol" style="color:${m.color}">${m.id==='crush'?'♜':m.id==='pulse'?'✺':'◇'}</span><span>${m.name}</span><strong></strong></div><div class="mechanic-track"><div style="background:${m.color}"></div></div><div class="mechanic-type">${m.target==='tank'?'Heavy tank damage':m.target==='party'?'Party-wide damage':'Damage over time'}</div>`;
-  $('#timeline').append(item);
-  return [m.id, item];
-}));
+function prepareEncounterUI() {
+  const node = ALL_ADVENTURES.find(node => node.encounter === game.encounter.id);
+  const chapter = CHAPTERS.find(chapter => chapter.nodes.includes(node));
+  $('#encounter-view .heading h1').textContent = node.name;
+  $('#encounter-view .heading .eyebrow').textContent = `${chapter.number.toUpperCase()} / ENCOUNTER ${chapter.nodes.indexOf(node) + 1} OF ${chapter.nodes.length}`;
+  $('.boss-title h2').textContent = game.encounter.name;
+  $('.boss-title .eyebrow').textContent = node.kind === 'boss' ? 'CHAPTER BOSS' : chapter.name.toUpperCase();
+  $('#battlefield').setAttribute('aria-label', `Party fighting ${game.encounter.name} with ${game.adds.length} supporting enemies`);
+  $('.scene-caption').innerHTML = `<span class="scene-dot"></span> ${node.name.toUpperCase()} <span>${chapter.nodes.indexOf(node) + 1} / ${chapter.nodes.length}</span>`;
+  $('#enemy-roster').textContent = (node.kind === 'boss' ? 'Chapter Boss · ' : '') + (game.adds.length ? `${game.adds.map(add => add.name).join(' · ')} · Flee when leader falls` : 'One enemy');
+  $('#timeline').innerHTML = `<div class="baseline-attack">Tank strike <b id="strike-countdown"></b><small>${game.encounter.strike.damage} damage to Aldric every ${game.encounter.strike.every}s</small></div>${game.adds.map(add => `<div class="baseline-attack">${add.name} <b data-add-countdown="${add.id}"></b><small>${add.damage} damage · ${add.target === 'tank' ? 'Aldric' : 'Random living ally'}</small></div>`).join('')}`;
+  $('#timeline').insertAdjacentHTML('beforeend', game.mechanics.map(m => `<div class="baseline-attack mechanic-countdown" data-mechanic="${m.id}" tabindex="0" data-tooltip="${m.name}: ${m.hint}">${m.name} <b></b><small>${m.target === 'party' ? 'Party-wide damage' : m.dot ? 'Persistent wound' : `${m.count || 1} targets`}</small></div>`).join(''));
+}
+prepareEncounterUI();
 for(const frame of frames){
   frame.addEventListener('pointerenter',e=>{if(e.pointerType!=='touch')hovered=frame.dataset.target;});
   frame.addEventListener('pointerleave',()=>{hovered=null;});
@@ -46,10 +51,10 @@ for(const frame of frames){
 function toast(message){$('#toast').textContent=message;$('#toast').classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>$('#toast').classList.remove('show'),2200);}
 function cast(id){const result=game.begin(id,hovered||selected);if(!result.ok)toast(result.reason);}
 for(const button of spellButtons)button.addEventListener('click',()=>cast(button.dataset.spell));
-function restart(){game.reset();scene.reset();selected='tank';hovered=null;accumulator=0;lastStatus='';lastLog='';$('#toast').classList.remove('show');renderUI();}
+function restart(encounter){game.reset(encounter);prepareEncounterUI();scene.reset();selected='tank';hovered=null;accumulator=0;lastStatus='';lastLog='';$('#toast').classList.remove('show');renderUI();}
 function begin(){if(game.status==='paused')game.pause();else{if(game.status!=='ready')restart();game.start();}renderUI();}
 $('#begin').addEventListener('click',begin);
-$('#restart').addEventListener('click',restart);
+$('#restart').addEventListener('click',()=>restart());
 $('#pause').addEventListener('click',()=>{game.pause();renderUI();});
 function openHelp(){if(game.status==='running')game.pause();$('#help').showModal();renderUI();}
 function closeHelp(){$('#help').close();}
@@ -69,7 +74,7 @@ document.addEventListener('keydown',e=>{
 document.addEventListener('visibilitychange',()=>{if(document.hidden&&game.status==='running'){game.pause();renderUI();}last=performance.now();accumulator=0;});
 window.addEventListener('blur',()=>{hovered=null;if(game.status==='running'){game.pause();renderUI();}});
 function renderUI(){
-  if (game.status === 'victory') adventures.recordVictory();
+  if (game.status === 'victory') adventures.recordVictory(game);
   shell.refresh();
   for(const frame of frames){
     const p=game.party.find(p=>p.id===frame.dataset.target),percentage=p.hp/p.maxHp*100;
@@ -77,8 +82,10 @@ function renderUI(){
     frame.querySelector('.hp-percent').textContent=p.hp>0?`${Math.ceil(percentage)}%`:'DEAD';
     frame.querySelector('.hp-values').textContent=`${number(p.hp)} / ${p.maxHp}`;
     frame.classList.toggle('selected',selected===p.id);frame.classList.toggle('critical',percentage>0&&percentage<30);frame.classList.toggle('dead',p.hp<=0);
-    frame.setAttribute('aria-pressed',String(selected===p.id));frame.setAttribute('aria-label',`${p.name}, ${p.role}, ${number(p.hp)} of ${p.maxHp} health${p.dots.length?', Withering Mark':''}`);
+    frame.setAttribute('aria-pressed',String(selected===p.id));frame.setAttribute('aria-label',`${p.name}, ${p.role}, ${number(p.hp)} of ${p.maxHp} health${p.dots.length?', '+p.dots.map(d=>d.name).join(', '):''}`);
     const debuff=frame.querySelector('.debuff');debuff.hidden=!p.dots.length;debuff.textContent=p.dots.length?`☠ ${Math.ceil(Math.max(...p.dots.map(d=>d.next+(d.ticks-1)*d.interval))-game.time)}s`:'';
+    debuff.title = p.dots.map(d => `${d.name}: ${d.damage} damage every ${d.interval}s, ${d.ticks} ticks left`).join('\n');
+    frame.classList.toggle('threatened', game.mechanics.some(m => m.warned && m.targets?.includes(p.id)));
     const incoming=frame.querySelector('.incoming-fill');let amount=0;
     if(game.cast&&p.hp>0&&(game.cast.spell.party||game.cast.target===p.id))amount=game.cast.spell.channel?game.cast.spell.ticks.slice(game.cast.landed).reduce((n,t)=>n+t.heal,0):game.cast.spell.heal;
     incoming.style.left=`${percentage}%`;incoming.style.width=`${Math.min(p.maxHp-p.hp,amount)/p.maxHp*100}%`;
@@ -105,30 +112,32 @@ function renderUI(){
     button.dataset.tooltip = `${spell.name} · ${spell.key}\n${duration.toFixed(1)}s ${spell.channel?'channel':'cast'} · ${spell.cost*CONFIG.baseMana} mana\n${spell.heal} healing${spell.party?' to every living ally':''}${spell.cooldown?` · ${spell.cooldown}s cooldown`:''}\n${spell.description}${cooldown>0?`\nReady in ${cooldown.toFixed(1)}s`:''}`;
     button.classList.toggle('active',cast?.spell.id===spell.id);
   }
-  for (const [index, mechanic] of [...game.mechanics].sort((a,b)=>a.next-b.next).entries()) {
-    const item = timelineItems.get(mechanic.id);
-    item.style.order = index;
-    item.querySelector('strong').textContent = `${Math.ceil(mechanic.next-game.time)}s`;
-    item.querySelector('.mechanic-track > div').style.width = `${Math.max(0,Math.min(100,(1-(mechanic.next-game.time)/mechanic.every)*100))}%`;
+  $('#strike-countdown').textContent = `· ${Math.max(0, Math.ceil(game.nextStrike-game.time))}s`;
+  for (const add of game.adds) $('[data-add-countdown="'+add.id+'"]').textContent = `· ${Math.max(0, Math.ceil(add.next-game.time))}s`;
+  for (const m of game.mechanics) {
+    const row = $('[data-mechanic="'+m.id+'"]');
+    row.querySelector('b').textContent = `· ${Math.max(0, Math.ceil(m.next-game.time))}s`;
+    row.classList.toggle('warning', m.warned);
   }
   view.refreshTooltip();
   const warning=game.mechanics.filter(m=>m.warned).sort((a,b)=>a.next-b.next)[0];$('#mechanic-alert').hidden=!warning||game.status!=='running';
-  if(warning){$('#mechanic-alert').textContent=`${warning.name.toUpperCase()} · ${(warning.next-game.time).toFixed(1)}s`;$('#tactical-tip').textContent=warning.hint;}else{$('#tactical-tip').textContent='Build Post-Haste with Flash Heal before the Warden’s party-wide nova.';}
+  if(warning){$('#mechanic-alert').textContent=`${warning.name.toUpperCase()} · ${(warning.next-game.time).toFixed(1)}s · ${warning.target === 'party' ? 'Everyone' : (warning.targets || []).map(id=>game.party.find(p=>p.id===id)?.name).join(', ')}`;$('#tactical-tip').textContent=warning.hint;}else{$('#tactical-tip').textContent=game.encounter.lesson;}
   const logKey=game.history.map(l=>l.time+l.text).join('|');
   if(logKey!==lastLog){$('#combat-log').innerHTML=game.history.slice(0,6).map(l=>`<div class="log-entry ${l.kind}"><time>${clock(l.time)}</time><span>${l.text}</span></div>`).join('')||'<p class="empty-log">The sanctum is still.<br>For now.</p>';lastLog=logKey;}
   if(game.status!==lastStatus){
     document.body.classList.toggle('encounter-overlay', game.status !== 'running');
     lastStatus=game.status;$('#scene-overlay').hidden=game.status==='running';
-    $('#status-label').textContent=({ready:'AWAITING PULL',running:'ENCOUNTER ACTIVE',paused:'ENCOUNTER PAUSED',victory:'WARDEN DEFEATED',defeat:'PARTY DEFEATED'})[game.status];
+    $('#status-label').textContent=({ready:'AWAITING PULL',running:'ENCOUNTER ACTIVE',paused:'ENCOUNTER PAUSED',victory:'ENCOUNTER COMPLETE',defeat:'PARTY DEFEATED'})[game.status];
     $('#pause').disabled=!['running','paused'].includes(game.status);$('#pause').textContent=game.status==='paused'?'▷ Resume':'Ⅱ Pause';
     const data={
       ready:['YOUR VIGIL BEGINS','Be their saving grace.','The party will fight. You will keep them alive.<br>Hover a party frame and press <b>1–4</b> to heal.','Begin encounter'],
       paused:['TAKE A BREATH','The light can wait.','Your encounter is paused.<br>Resume when you are ready.','Resume encounter'],
-      victory:['ENCOUNTER COMPLETE','Their light endures.','The Hollow Warden has fallen.<br>Your vigil made the difference.','Play again'],
-      defeat:['THE VIGIL ENDS','Even light can falter.',game.time>=CONFIG.enrage?'The Warden enraged after 150 seconds.':game.party[4].hp<=0?'Your light faded. Remember to heal yourself.':game.party[0].hp<=0?'Aldric fell, and the front line collapsed.':'Too few allies remain to hold the sanctum.','Try again'],
+      victory:['ENCOUNTER COMPLETE','Their light endures.',ALL_ADVENTURES.find(node => node.encounter === game.encounter.id).kind === 'boss' ? `${CHAPTERS.find(chapter => chapter.nodes.some(node => node.encounter === game.encounter.id)).number} complete.<br>Your party has survived the vigil.` : `${game.encounter.name} has fallen.<br>Return to the map to choose your next encounter.`,'Play again'],
+      defeat:['THE VIGIL ENDS','Even light can falter.',game.time>=CONFIG.enrage?'The guardian enraged after 150 seconds.':game.party[4].hp<=0?'Your light faded. Remember to heal yourself.':game.party[0].hp<=0?'Aldric fell, and the front line collapsed.':'Too few allies remain to hold the sanctum.','Try again'],
     }[game.status];
     if(data){$('#overlay-eyebrow').textContent=data[0];$('#overlay-title').textContent=data[1];$('#overlay-text').innerHTML=data[2];$('#begin').innerHTML=`${data[3]} <span>→</span>`;}
     const ended=['victory','defeat'].includes(game.status);
+    $('#return-to-map').hidden=!ended;
     document.body.classList.toggle('encounter-ended', ended);
     $('#result-stats').innerHTML=ended?`<div><b>${clock(game.time)}</b>TIME</div><div><b>${number(game.stats.effective)}</b>HEALED</div><div><b>${Math.round(game.stats.overheal/Math.max(1,game.stats.effective+game.stats.overheal)*100)}%</b>OVERHEAL</div>`:'';
     $('#overlay-foot').hidden=ended;$('#overlay-foot').textContent=game.status==='paused'?'Press Space to resume.':'No movement. Just you, your spells, and five lives.';
@@ -146,5 +155,6 @@ function frame(now){
   requestAnimationFrame(frame);
 }
 const shell = setupShell({ game, view, resetEncounter: restart });
-const adventures = setupAdventures({ startEncounter: () => { shell.enterEncounter(); renderUI(); } });
+const chapters = setupChapters({ openChapter: chapter => { if (adventures.openChapter(chapter)) shell.openChapter(); } });
+const adventures = setupAdventures({ startEncounter: node => { shell.enterEncounter(CHAPTER_ENCOUNTERS[node.encounter]); renderUI(); }, onProgress: completed => chapters.refresh(completed) });
 renderUI();requestAnimationFrame(frame);

@@ -2,19 +2,21 @@ import { CONFIG, PARTY, SPELLS, ENCOUNTER } from './data.js';
 
 // Pure fixed-step simulation. Rendering and browser input only consume its state/events.
 export class Combat {
-  constructor() { this.reset(); }
-  reset() {
-    this.party = PARTY.map(p => ({ ...p, hp: p.maxHp, dots: [], nextAttack: 1 + PARTY.indexOf(p) * 0.2 }));
-    this.boss = { hp: ENCOUNTER.maxHp, maxHp: ENCOUNTER.maxHp };
+  constructor(encounter = ENCOUNTER, random = Math.random, party = PARTY) { this.random = random; this.partyTemplate = party; this.reset(encounter); }
+  reset(encounter = this.encounter) {
+    this.encounter = encounter;
+    this.party = this.partyTemplate.map((p, i) => ({ ...p, hp: p.maxHp, dots: [], nextAttack: 1 + i * 0.2 }));
+    this.boss = { hp: encounter.maxHp, maxHp: encounter.maxHp };
+    this.adds = (encounter.adds || []).map((add, i) => ({ ...add, id: `add-${i}`, name: add.name || `Pale Archer ${i + 1}`, next: add.first }));
     this.time = 0; this.status = 'ready'; this.mana = CONFIG.mana; this.buffs = { postHaste: 0 };
     this.cooldowns = {}; this.cast = null; this.events = []; this.history = []; this.serial = 0;
     this.stats = { effective: 0, overheal: 0, casts: 0, deaths: 0 };
-    this.nextStrike = ENCOUNTER.strike.first; this.nextShard = ENCOUNTER.shard.first; this.rotation = 0;
-    this.mechanics = ENCOUNTER.mechanics.map(m => ({ ...m, next: m.first, warned: false }));
+    this.nextStrike = encounter.strike.first; this.nextShard = encounter.shard?.first ?? Infinity; this.rotation = 0;
+    this.mechanics = encounter.mechanics.map(m => ({ ...m, next: m.first, warned: false }));
   }
   emit(type, data = {}) { const e = { type, time: this.time, id: this.serial++, ...data }; this.events.push(e); return e; }
   log(text, kind = 'neutral') { this.history.unshift({ text, kind, time: this.time }); this.history.length = Math.min(30, this.history.length); }
-  start() { if (this.status === 'ready') { this.status = 'running'; this.log('The Warden awakens. Keep your party alive.'); } }
+  start() { if (this.status === 'ready') { this.status = 'running'; this.log(`${this.encounter.name} awakens. Keep your party alive.`); } }
   pause() { if (this.status === 'running') this.status = 'paused'; else if (this.status === 'paused') this.status = 'running'; }
   cancel() { if (this.cast) { this.log(`${this.cast.spell.name} cancelled. Mana is not refunded.`, 'warning'); this.emit('cancel'); this.cast = null; } }
   begin(id, targetId) {
@@ -49,14 +51,30 @@ export class Combat {
     if (!target.hp) { target.dots = []; this.stats.deaths++; this.log(`${target.name} has fallen.`, 'danger'); this.emit('death', { target: target.id }); }
   }
   rotatingTarget() { const living = this.party.filter(p => p.hp > 0 && p.id !== 'tank'); return living[this.rotation++ % living.length]; }
+  randomTargets(count = 1) {
+    const pool = this.party.filter(p => p.hp > 0), targets = [];
+    while (pool.length && targets.length < count) targets.push(pool.splice(Math.floor(this.random() * pool.length), 1)[0]);
+    return targets;
+  }
+  mechanicTargets(m) {
+    if (m.target === 'party') return this.party.filter(p => p.hp > 0);
+    if (m.target === 'tank') return [this.party.find(p => p.id === 'tank')];
+    if (m.target === 'random') return this.randomTargets(m.count);
+    return [this.rotatingTarget()];
+  }
   resolveMechanic(m) {
+    const targets = m.targets ? m.targets.map(id => this.party.find(p => p.id === id)) : this.mechanicTargets(m);
     this.log(`${m.name}${m.target === 'party' ? ' hits the party.' : '.'}`, 'danger');
-    this.emit('mechanic', { mechanic: m.id });
-    const targets = m.target === 'party' ? this.party : [m.target === 'tank' ? this.party[0] : this.rotatingTarget()];
+    this.emit('mechanic', { mechanic: m.id, targetType: m.target, targets: targets.filter(Boolean).map(p => p.id), color: m.color, dot: !!m.dot });
     for (const target of targets) {
       if (!target || target.hp <= 0) continue;
-      if (m.dot) { target.dots.push({ ...m.dot, name: m.name, next: this.time + m.dot.interval }); this.log(target.id === 'priest' ? 'You are marked.' : `${target.name} is marked.`, 'warning'); }
-      else this.damage(target, m.damage, m.id);
+      if (m.damage) this.damage(target, m.damage, m.id);
+      if (m.dot && target.hp > 0) {
+        // Reapplications refresh their own effect; different wounds coexist.
+        target.dots = target.dots.filter(dot => dot.source !== m.id);
+        target.dots.push({ ...m.dot, source: m.id, name: m.name, next: this.time + m.dot.interval });
+        this.log(`${target.name}: ${m.name} (${m.dot.ticks * m.dot.interval}s).`, 'warning');
+      }
     }
   }
   step(dt = CONFIG.step) {
@@ -91,19 +109,31 @@ export class Combat {
         p.nextAttack += p.interval; this.emit('attack', { source: p.id });
       }
       for (const dot of p.dots) {
-        if (this.time >= dot.next) { this.damage(p, dot.damage, 'mark'); dot.ticks--; dot.next += dot.interval; }
+        if (this.time >= dot.next) { this.damage(p, dot.damage, dot.source || 'mark'); dot.ticks--; dot.next += dot.interval; }
       }
       p.dots = p.dots.filter(d => d.ticks > 0);
     }
-    if (this.time >= this.nextStrike) { this.damage(this.party[0], ENCOUNTER.strike.damage, 'strike'); this.nextStrike += ENCOUNTER.strike.every; this.emit('bossAttack'); }
-    if (this.time >= this.nextShard) { this.damage(this.rotatingTarget(), ENCOUNTER.shard.damage, 'shard'); this.nextShard += ENCOUNTER.shard.every; }
+    if (this.boss.hp > 0) {
+      if (this.time >= this.nextStrike) { this.damage(this.party[0], this.encounter.strike.damage, 'strike'); this.nextStrike += this.encounter.strike.every; this.emit('bossAttack'); }
+      if (this.time >= this.nextShard) { this.damage(this.rotatingTarget(), this.encounter.shard.damage, 'shard'); this.nextShard += this.encounter.shard.every; }
+      for (const add of this.adds) {
+        if (this.time < add.next) continue;
+        const target = add.target === 'tank' ? this.party[0] : this.randomTargets(1)[0];
+        if (target) { this.damage(target, add.damage, add.id); this.emit('rangedAttack', { source: add.id, target: target.id }); }
+        add.next += add.every;
+      }
+    }
     for (const m of this.mechanics) {
-      if (!m.warned && this.time >= m.next - m.warning) { this.emit('warning', { mechanic: m.id }); m.warned = true; }
-      if (this.time >= m.next) { this.resolveMechanic(m); m.next += m.every; m.warned = false; }
+      if (this.boss.hp <= 0) break;
+      if (!m.warned && this.time >= m.next - m.warning) {
+        m.targets = this.mechanicTargets(m).filter(Boolean).map(p => p.id);
+        this.emit('warning', { mechanic: m.id, targets: m.targets }); m.warned = true;
+      }
+      if (this.time >= m.next) { this.resolveMechanic(m); m.next += m.every; m.warned = false; delete m.targets; }
     }
     if (this.party[0].hp <= 0 || this.party[4].hp <= 0 || this.party.filter(p => p.hp > 0).length < 3 || this.time >= CONFIG.enrage) {
       this.status = 'defeat'; this.cast = null; this.log(this.time >= CONFIG.enrage ? 'The sanctum is consumed. Enrage.' : 'The party has fallen.', 'danger'); this.emit('end');
-    } else if (this.boss.hp <= 0) { this.status = 'victory'; this.cast = null; this.log('The Hollow Warden is defeated.', 'heal'); this.emit('end'); }
+    } else if (this.boss.hp <= 0) { this.status = 'victory'; this.cast = null; this.log(`${this.encounter.name} is defeated.${this.adds.length ? ' The remaining enemies flee.' : ''}`, 'heal'); this.emit('end'); }
   }
   drainEvents() { const events = this.events; this.events = []; return events; }
 }

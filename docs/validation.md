@@ -83,3 +83,31 @@ Full victory/defeat and timing edge cases were checked by simulation tests, not 
 - Home is now the default after reload. The main header keeps Adventures and Team as separate destinations; the Vesper logo/name takes the player to Home from Team and other non-blocked views.
 - Browser-checked Home → Adventures, Team → logo → Home, and the welcome layout. During an active encounter, clicking the logo continues to show the existing abandon-confirmation dialog; confirming returns to Home.
 - All 17 Node tests pass. Syntax and whitespace checks pass. No cross-browser matrix was performed.
+## BAT-12 — Adventures chapter selection
+
+- Adventures now presents a data-driven chapter-selection screen instead of the encounter map. It shows Chapter 1: The Forsaken Catacombs as available, plus two locked future chapter cards with titles, atmospheric descriptions, and explicit states.
+- Opening Chapter 1 leads to its dedicated encounter-map screen. The map keeps the existing encounter state, preview/confirmation step, and encounter launch behavior; an All chapters control returns to chapter selection.
+- Browser-checked Home → Adventures → Chapter 1 → encounter preview → active encounter, map → All chapters, and guarded navigation away from an active encounter. Locked chapters are disabled and convey their state in the accessibility tree.
+- All 18 Node tests pass, including chapter-state coverage. Syntax and whitespace checks pass. No cross-browser matrix was performed.
+
+## BAT-13 — Four-fight Chapter I
+
+- Replaced the branching placeholder with four required encounters in order: Silent Threshold, Ashen Gallery, Sunken Ossuary, and Hollow Sanctum (Chapter Boss). The compact map and selected-encounter panel include Encounter Mechanics and an empty Encounter Rewards section.
+- Added independent encounter tuning in src/data.js: steady tank damage, then one and two weak random-target archers, then a stronger guardian with two archers. The party focuses the guardian; archers flee on its defeat. The original encounter remains as a simulation regression fixture, not a Chapter I fight.
+- All 23 Node tests pass. New coverage includes sequential unlocks, all-four completion, invalid/old saved progress, no rewards for defeat or mismatched encounters, live random targets including tank/healer, paused add timers, encounter-preserving restart, and 30 seeded triage wins per fight without deaths. Idle parties lose every fight.
+- Played all four encounters through victory using actual browser party/spell controls (approximately 32, 37, 42, and 54 seconds). Checked confirmation/cancel, locked-node inspection, exactly one next unlock, two rendered archers, immersive boss play, defeat without progress, replay, pause, and guarded abandonment.
+- Reloaded after completion: all four clears and the chapter card's Completed / Replay state persisted; future chapters remained locked. The development browser now contains this completed test progress, so all four fights are available for replay.
+- Inspected desktop and 390×844 mobile map/combat layouts, with no horizontal overflow. Compacted immersive attack timers after finding their descriptions obscured the mobile battlefield. Browser warning/error logs were empty. Restored the normal viewport after testing.
+- Syntax and whitespace checks pass. Balance is an initial playable baseline; no cross-browser matrix or final human difficulty tuning was performed.
+- Map presentation follow-up: removed encounter-card backgrounds/borders and moved selection, hover, and keyboard-focus emphasis onto the framed icons. Routes now measure icon edges and redraw on layout changes; mobile curves sweep beside the labels. Browser-checked desktop and 390px layouts, selection, and returning to the map; no browser errors.
+- Global background follow-up: replaced the page-level fading radial with a single full-viewport dark green canvas. Browser-checked Home, Adventures, Team, and the Chapter I map; their content backgrounds now remain consistent beneath and beyond the content area. Combat retains its separate intentional battlefield treatment.
+
+## BAT-14 — Chapters 2–4
+
+- Added 24 encounters across three branching chapters: 6/9/9 nodes with 4/6/6 fights on a successful route. Each chapter has one final boss; defeating it unlocks the next chapter without requiring skipped branches. Existing Chapter 1 saves migrate into the validated campaign save.
+- Added party-wide pulses, distinct warned split targets, and timed heal-through bleeds. Encounter timing, damage, target counts, enemy compositions, and appearance are defined in src/data.js. Later bosses combine the new lesson with earlier pressures. Added themed creature silhouettes and chapter atmosphere.
+- All 31 tests pass, including every alternative route, save validation, target selection, pause/restart behavior, bleed duration/refresh/overlap, and 480 seeded wins across the 24 new encounters. Future party-power injection leaves incoming encounter damage fixed.
+- Browser-played one complete route through each new chapter (16 fights, including all three bosses), with all five allies surviving each successful run. Chapter 2 used Mothlight/Root Choir; Chapter 3 used Scorched Aerie/Hall of Judgment/Broken Belfry; Chapter 4 used Weeping Arbor/Vein Loom/Severed Garden. Boss durations were approximately 62, 68, and 73 seconds.
+- Verified fork unlocks, skipped branches remaining optional, chapter gating, completed states after reload, replay, paused combat, guarded abandonment, and visible bleed duration/tick details. An unattended first attempt lost without granting progress before a successful retry.
+- Inspected desktop panel/immersive layouts and 390×844 map/combat layouts. Long maps scroll inside their own region; compacted mobile boss timers after finding they covered too much battlefield. Restored the normal viewport and immersive preference. Browser warning/error logs were empty.
+- The development browser now has completed routes for all four chapters, leaving optional fights available and completed fights replayable. Balance remains an initial baseline for human review; no cross-browser matrix was performed. Changes remain uncommitted on dev.

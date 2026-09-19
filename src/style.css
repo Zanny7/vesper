@@ -1,7 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=DM+Sans:wght@400;500;600;700&display=swap');
 :root {
   color-scheme:dark;
-  --bg:#0d1316;
+  --bg:#111c1f;
   --panel:#141c20;
   --line:#293336;
   --gold:#ccb68a;
@@ -16,7 +16,8 @@
 }
 body {
   margin:0;
-  background:radial-gradient(ellipse at 45% 0,#202a2c55,transparent 60%),var(--bg);
+  min-height:100vh;
+  background:var(--bg);
   color:var(--text)
 }
 button,a {

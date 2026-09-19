@@ -3,6 +3,7 @@ export function setupShell({ game, view, resetEncounter }) {
   const screens = {
     home: document.querySelector('#home-view'),
     adventures: document.querySelector('#adventures-view'),
+    chapter: document.querySelector('#chapter-view'),
     team: document.querySelector('#team-view'),
     encounter: document.querySelector('#encounter-view'),
   };
@@ -40,7 +41,7 @@ export function setupShell({ game, view, resetEncounter }) {
     document.body.dataset.screen = destination;
     for (const [name, screen] of Object.entries(screens)) screen.hidden = name !== destination;
     for (const button of navigation) {
-      if (button.dataset.navigate === destination) button.setAttribute('aria-current', 'page');
+      if (button.dataset.navigate === destination || (destination === 'chapter' && button.dataset.navigate === 'adventures')) button.setAttribute('aria-current', 'page');
       else button.removeAttribute('aria-current');
     }
     view.setEncounterVisible(destination === 'encounter');
@@ -117,12 +118,12 @@ export function setupShell({ game, view, resetEncounter }) {
     }
   }, true);
   navigate('home', false);
-  return { refresh, isEncounter: () => current === 'encounter', enterEncounter() {
-    resetEncounter();
+  return { refresh, isEncounter: () => current === 'encounter', enterEncounter(encounter) {
+    resetEncounter(encounter);
     navigate('encounter', false);
     game.start();
     refresh();
     document.querySelector('#view-toggle').focus({ preventScroll: true });
     window.scrollTo(0, 0);
-  } };
+  }, openChapter() { navigate('chapter'); } };
 }

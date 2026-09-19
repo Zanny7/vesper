@@ -2,6 +2,8 @@ import { PARTY } from './data.js';
 const TAU = Math.PI * 2;
 const positions = Object.fromEntries(PARTY.map(p => [p.id, { x: p.x, y: p.y - 40 }]));
 positions.boss = { x: 495, y: 225 };
+positions['add-0'] = { x: 335, y: 242 };
+positions['add-1'] = { x: 665, y: 222 };
 
 // Original procedural artwork. All art lives behind this renderer, outside combat rules.
 export class Battlefield {
@@ -33,6 +35,7 @@ export class Battlefield {
       if (e.type === 'heal') { this.effects.push({ ...base, duration: 1.3 }); this.hits[e.target] = { time: this.clock, heal: true }; }
       if (e.type === 'damage') { this.hits[e.target] = { time: this.clock, heal: false }; this.effects.push({ ...base, duration: 1.1 }); }
       if (e.type === 'bolt') this.effects.push({ ...base, duration: e.travel });
+      if (e.type === 'rangedAttack') { this.effects.push({ ...base, duration: 0.4 }); this.attacks[e.source] = this.clock; }
       if (e.type === 'attack') { this.attacks[e.source] = this.clock; this.effects.push({ ...base, duration: 0.45 }); }
       if (e.type === 'bossAttack') this.attacks.boss = this.clock;
       if (e.type === 'mechanic') { this.effects.push({ ...base, duration: 1.2 }); this.attacks.boss = this.clock; }
@@ -101,6 +104,7 @@ export class Battlefield {
     const vignette=c.createRadialGradient(480,310,140,480,310,540);vignette.addColorStop(0,'transparent');vignette.addColorStop(1,'#050f18b0');c.fillStyle=vignette;c.fillRect(0,0,960,590);
   }
   drawBoss(c,state,t) {
+    if (state.encounter.appearance) return this.drawCreature(c, state, t);
     const dead=state.boss.hp<=0,attack=Math.max(0,1-(this.clock-(this.attacks.boss ?? -10))/.65);
     c.save();c.translate(495,281);this.ellipse(c,0,12,77,20,'#06121899');
     if(dead){c.rotate(-1.2);c.globalAlpha=.45;}else{c.translate(Math.sin(t*.8)*3,Math.sin(t*1.5)*4);c.rotate(Math.sin(attack*Math.PI)*.06);}
@@ -170,9 +174,134 @@ export class Battlefield {
     c.restore();
     c.save();c.font='10px "DM Sans",sans-serif';c.textAlign='center';c.fillStyle=alive?'#c6d4cd':'#768583';c.shadowColor='#000';c.shadowBlur=4;c.fillText(p.name==='You'?'YOU':p.name.toUpperCase(),p.x,p.y+23);c.restore();
   }
+  drawCreature(c, state, t) {
+    const { appearance: form, color, isBoss } = state.encounter;
+    const attack = Math.max(0, 1 - (this.clock - (this.attacks.boss ?? -10)) / .65);
+    c.save(); c.translate(495, 274);
+    this.ellipse(c, 0, 16, 78, 20, '#04111799');
+    if (state.boss.hp <= 0) { c.rotate(-1.15); c.globalAlpha = .4; }
+    else c.translate(Math.sin(t) * 3 + attack * 5, Math.sin(t * 1.5) * 3);
+    const size = isBoss ? 1.12 : .92; c.scale(size, size);
+    this.glow(c, 0, -70, 100, color + '25');
+    if (form === 'treant') {
+      this.poly(c, [[-28,-130],[-47,-64],[-38,-8],[-66,24],[-14,12],[0,-2],[25,23],[64,19],[34,-13],[40,-72],[24,-132]], '#344c43', color, 2);
+      for (const side of [-1, 1]) {
+        this.line(c, [[side*27,-96],[side*70,-118],[side*87,-159]], color, 8);
+        this.line(c, [[side*66,-118],[side*100,-112],[side*111,-139]], '#668476', 4);
+        this.line(c, [[side*20,-127],[side*38,-168],[side*28,-185]], color, 5);
+        this.poly(c, [[side*70,-125],[side*53,-165],[side*96,-158]], '#445d48', color);
+      }
+      this.line(c, [[-23,-48],[-10,-90],[-17,-122]], '#172d2c', 5);
+      this.line(c, [[10,-13],[20,-70],[12,-94]], '#172d2c', 5);
+      this.poly(c, [[-14,-90],[0,-82],[14,-90],[8,-64],[-7,-64]], '#142d2b', color);
+    } else if (form === 'spider') {
+      for (const side of [-1, 1]) for (let i = 0; i < 4; i++) {
+        this.line(c, [[side*25,-47],[side*(75+i*9),-95+i*23],[side*(112-i*5),6+i*5]], color, 5);
+      }
+      this.ellipse(c, 0, -65, 48, 58, '#35404b', color, 2);
+      this.ellipse(c, 0, -19, 30, 27, '#253139', color, 2);
+      this.poly(c, [[-17,-4],[-21,25],[-6,9],[6,9],[21,25],[17,-4]], '#c3b5ae', color);
+      for (const x of [-16, -5, 5, 16]) this.ellipse(c,x,-25,3,4,'#f4c4cf');
+    } else if (form === 'moth') {
+      for (const side of [-1, 1]) {
+        c.save(); c.scale(side * (1 + Math.sin(t*3)*.035), 1);
+        this.poly(c, [[5,-74],[93,-145],[112,-100],[80,-55],[94,-17],[40,-5],[7,-47]], '#493e51', color, 2);
+        this.ellipse(c,66,-91,15,23,'#1d2d34',color,2);
+        this.line(c,[[16,-61],[76,-26]],color,2); c.restore();
+      }
+      this.ellipse(c,0,-60,16,53,'#303941',color,2);
+      this.line(c,[[-7,-101],[-23,-133]],color,2);this.line(c,[[7,-101],[23,-133]],color,2);
+    } else if (form === 'beast') {
+      this.ellipse(c,0,-43,70,40,'#423d3f',color,2);
+      for (const x of [-46,-24,30,48]) this.poly(c,[[x,-25],[x-8,24],[x+9,24],[x+12,-28]],'#3b373b',color);
+      this.poly(c,[[-48,-60],[-80,-78],[-98,-47],[-74,-20],[-38,-32]],'#504148',color,2);
+      this.poly(c,[[-75,-57],[-90,-95],[-59,-68]],'#51464b',color);
+      this.line(c,[[-83,-25],[-102,-16],[-107,-38]],'#d7cab2',5);
+      this.ellipse(c,-79,-53,4,3,'#ffcf9a');
+      this.line(c,[[59,-56],[87,-82],[98,-63]],color,5);
+    } else {
+      // Spectral robes, armored citadel knights, and the court's veiled nobles.
+      const robe = form === 'vampire' ? '#4d2c43' : form === 'wraith' ? '#3e3b52' : '#3b454d';
+      this.poly(c,[[-29,-135],[-63,-78],[-72,27],[-34,14],[0,31],[35,13],[72,25],[55,-82],[29,-135]],robe,color,2);
+      this.poly(c,[[-32,-115],[0,-134],[33,-113],[24,-58],[0,-37],[-27,-63]],'#25353b',color,2);
+      this.ellipse(c,0,-143,21,26,'#262e35',color,2);
+      if(form === 'knight') {
+        this.poly(c,[[-27,-158],[0,-182],[27,-158],[21,-120],[-21,-120]],'#4b4d4f',color,2);
+        this.line(c,[[-17,-144],[17,-144]],'#191f28',7);
+        this.poly(c,[[60,-105],[67,-163],[75,-104],[70,7],[60,7]],'#c4b6a0',color);
+        this.poly(c,[[-50,-103],[-83,-88],[-76,-35],[-47,-15],[-34,-53]],robe,color,2);
+      } else if(form === 'vampire') {
+        this.poly(c,[[-25,-128],[-54,-159],[-37,-100],[0,-73],[36,-103],[54,-159],[25,-128]],'#763d53',color);
+        this.poly(c,[[-20,-164],[0,-179],[22,-161],[19,-126],[0,-111],[-20,-128]],'#ae8f9e',color);
+        this.poly(c,[[-23,-151],[25,-151],[17,-111],[-17,-113]],'#392d4399',color);
+      } else {
+        this.ellipse(c,0,-145,36,43,null,color+'88',2);
+        for (const side of [-1,1]) this.line(c,[[side*38,-95],[side*80,-61],[side*94,-96]],color,4);
+      }
+      this.line(c,[[-12,-143],[-4,-142]],'#f7d6c8',3);this.line(c,[[4,-142],[12,-143]],'#f7d6c8',3);
+    }
+    if (form === 'treant' || form === 'moth') {
+      this.line(c,[[-15,-105],[-5,-102]],'#f3e8b7',3);this.line(c,[[5,-102],[15,-105]],'#f3e8b7',3);
+    }
+    if (isBoss) {
+      this.ellipse(c,0,-191,45,8,null,color,2);
+      for (const x of [-30,-15,0,15,30]) this.poly(c,[[x-5,-191],[x,-209],[x+5,-191]],color);
+    }
+    c.restore();
+  }
+  drawChapterAtmosphere(c, chapter) {
+    if (!chapter || chapter === 'catacombs') return;
+    c.save();
+    c.fillStyle = chapter === 'wilds' ? '#27492b33' : chapter === 'citadel' ? '#70402522' : '#57253e33';
+    c.fillRect(0,0,960,590);
+    for (const x of [65, 175, 790, 900]) {
+      if(chapter === 'citadel') {
+        this.poly(c,[[x-20,115],[x+20,115],[x+16,275],[x,297],[x-16,275]],'#522f2d','#a6765555');
+        this.line(c,[[x,135],[x,241]],'#cc955b55',3);
+      } else {
+        this.line(c,[[x,590],[x+23,363],[x-12,207],[x+9,69]],'#233b35',11);
+        for(let i=0;i<5;i++) {
+          const y=110+i*77;
+          this.line(c,[[x,y],[x+(i%2?65:-55),y-40],[x+(i%2?81:-75),y-70]],chapter==='wilds'?'#50705a77':'#86495d88',4);
+        }
+      }
+    }
+    c.restore();
+  }
+  drawArcher(c,add,t) {
+    const p=this.point(add.id),recoil=Math.max(0,1-(this.clock-(this.attacks[add.id]??-10))*3);
+    c.save();c.translate(p.x,p.y+Math.sin(t*1.5)*1.5);
+    this.ellipse(c,0,24,22,7,'#0006');
+    if (add.appearance === 'wisp') {
+      this.glow(c,0,-12,36,'#b6a4dd44');
+      this.poly(c,[[0,-42],[-18,-12],[-9,17],[0,7],[12,17],[19,-12]],'#586073','#cebad6',2);
+      this.ellipse(c,0,-14,7,10,'#e5d5cd');
+      c.font='9px sans-serif';c.textAlign='center';c.fillStyle='#c0aaaf';c.fillText(add.name.toUpperCase(),0,39);
+      c.restore(); return;
+    }
+    this.poly(c,[[-13,-13],[-20,23],[19,23],[12,-13]],'#35424d','#849590');
+    this.poly(c,[[-13,-13],[-10,-29],[0,-37],[12,-28],[14,-12]],'#2c363f','#8b9992');
+    this.ellipse(c,0,-20,7,10,'#b2b8a2');
+    this.line(c,[[-5,-23],[-1,-23]],'#db9aaa',2);this.line(c,[[3,-23],[6,-23]],'#db9aaa',2);
+    this.line(c,[[-11,-9],[-24+recoil*4,3]],'#b0b19c',4);
+    if (add.appearance === 'melee') {
+      this.line(c,[[-24,7],[-30,-30-recoil*8]],'#d1c7b4',4);
+      this.line(c,[[-34,-3],[-18,-7]],'#b7a98f',3);
+    } else {
+      c.beginPath();c.ellipse(-23,0,10,25,0,-Math.PI/2,Math.PI/2);c.strokeStyle='#b6a281';c.lineWidth=2;c.stroke();
+      this.line(c,[[-23,-25],[-23+recoil*7,0],[-23,25]],'#c9c2a488',1);
+    }
+    c.font='9px sans-serif';c.textAlign='center';c.fillStyle='#c0aaaF';c.fillText(add.name.toUpperCase(),0,39);
+    c.restore();
+  }
   drawEffect(c,e) {
     const age=this.clock-e.born,progress=age/e.duration,p=this.point(e.target),from=this.point('priest');
     c.save();
+    if(e.type==='rangedAttack'){
+      const a=this.point(e.source),x=a.x+(p.x-a.x)*progress,y=a.y+(p.y-a.y)*progress;
+      this.line(c,[[x-(p.x-a.x)*.08,y-(p.y-a.y)*.08],[x,y]],'#d6a6bd',2);
+      this.glow(c,x,y,9,'#c67da755');
+    }
     if(e.type==='bolt'){
       const x=from.x+(p.x-from.x)*progress,y=from.y+(p.y-from.y)*progress-Math.sin(progress*Math.PI)*35;
       const tail=Math.max(0,progress-.25),tx=from.x+(p.x-from.x)*tail,ty=from.y+(p.y-from.y)*tail-Math.sin(tail*Math.PI)*35;
@@ -199,6 +328,12 @@ export class Battlefield {
     }
     if(e.type==='mechanic'){
       c.globalAlpha=(1-progress)*.7;
+      if(e.targetType==='party'){
+        this.ellipse(c,495,290,progress*580,progress*210,null,e.color || '#c398d8',4);
+      } else for(const id of e.targets || []) {
+        const target=this.point(id);
+        this.ellipse(c,target.x,target.y+20,22+progress*25,10+progress*12,null,e.color || '#d78d9d',3);
+      }
       if(e.mechanic==='pulse'){this.ellipse(c,495,290,progress*580,progress*210,null,'#c398d8',5);this.ellipse(c,495,290,progress*560,progress*202,null,'#d0ade577',12);this.glow(c,495,290,progress*300+40,'#b395cb33');}
       if(e.mechanic==='crush'){this.line(c,[[475,210],[485,335]],'#dcb58c',5);this.ellipse(c,485,348,progress*70,progress*24,null,'#d6af86',3);}
     }
@@ -218,6 +353,7 @@ export class Battlefield {
       c.scale(cover, cover);
     } else { c.translate(x,y);c.scale(scale,scale); }
     c.drawImage(this.background,0,0);
+    this.drawChapterAtmosphere(c, state.encounter.chapterId);
     for(const bx of [110,830]){
       this.glow(c,bx,281,35+Math.sin(t*3)*3,'#f6bf5c55');
       this.poly(c,[[bx-7,290],[bx-10,279],[bx-3,264+Math.sin(t*8)*4],[bx,273],[bx+4,260+Math.cos(t*7)*3],[bx+10,281],[bx+6,290]],'#e4b774');
@@ -236,9 +372,12 @@ export class Battlefield {
     }
     const warning=state.mechanics.find(m=>m.warned);
     if(warning&&state.status==='running'){
-      c.globalAlpha=.2+Math.sin(t*5)*.08;this.ellipse(c,495,365,warning.id==='pulse'?280:80,warning.id==='pulse'?103:30,null,warning.color,3);c.globalAlpha=1;
+      c.globalAlpha=.45+Math.sin(t*5)*.1;
+      for(const id of warning.targets || []) { const p=this.point(id);this.ellipse(c,p.x,p.y+25,30,12,null,warning.color,2); }
+      c.globalAlpha=1;
     }
     this.drawBoss(c,state,t);
+    if(state.status !== 'victory') for(const add of state.adds) this.drawArcher(c,add,t);
     for(const p of [...state.party].sort((a,b)=>a.y-b.y))this.drawCharacter(c,p,state,t,selected,hovered);
     if(state.cast){const p=this.point(state.cast.target);c.save();c.globalAlpha=.18;this.line(c,[[485,444],[p.x,p.y]],'#f8dc91',1);c.restore();}
     this.effects=this.effects.filter(e=>this.clock-e.born<e.duration);

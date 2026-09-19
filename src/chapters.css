@@ -1,0 +1,15 @@
+.chapter-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
+.chapter-card { min-height: 330px; padding: 29px; border: 1px solid #4c5c55; border-radius: 8px; background: radial-gradient(ellipse at 50% 35%, #4d675a45, transparent 65%), #142329; text-align: left; display: flex; flex-direction: column; align-items: flex-start; }
+.chapter-card[data-state="available"] { border-color: #a8996eaa; box-shadow: inset 0 0 40px #c9a65b10; }
+.chapter-card[data-state="available"]:hover { border-color: #e3c987; background-color: #203239; }
+.chapter-card[data-state="locked"] { opacity: .68; cursor: not-allowed; }
+.chapter-number { color: #bbc4ad; text-transform: uppercase; letter-spacing: 1.5px; font-size: 10px; }
+.chapter-sigil { display: grid; place-items: center; width: 58px; height: 58px; margin: 34px 0 24px; border: 1px solid #7d8d79; border-radius: 50%; color: #d5c18c; font-size: 28px; }
+.chapter-card[data-state="available"] .chapter-sigil { border-color: #d6bd7c; box-shadow: 0 0 24px #e1c37226; }
+.chapter-card strong { font: 500 32px/1 'Cormorant Garamond', Georgia, serif; color: #ece4ce; }
+.chapter-card p { margin: 14px 0 25px; color: #acbbb1; font-size: 12px; line-height: 1.85; }
+.chapter-state { margin-top: auto; color: #d5c18c; font-size: 11px; }
+.chapter-card[data-state="locked"] .chapter-state { color: #9ca99f; }
+.chapter-back { margin-bottom: 30px; }
+.chapter-back span { margin-right: 7px; }
+@media (max-width: 800px) { .chapter-list { grid-template-columns: 1fr; }.chapter-card { min-height: 235px; }.chapter-sigil { margin: 22px 0 17px; } }
