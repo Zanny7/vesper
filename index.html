@@ -1,8 +1,18 @@
 <!doctype html>
 <html lang="en">
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Vesper — The Hollow Sanctum</title><meta name="theme-color" content="#101719"><link rel="stylesheet" href="/src/style.css"><link rel="stylesheet" href="/src/immersive.css"><link rel="stylesheet" href="/src/ability-bar.css"><link rel="stylesheet" href="/src/shell.css"><link rel="stylesheet" href="/src/adventures.css"><link rel="stylesheet" href="/src/team.css"><link rel="stylesheet" href="/src/equipment.css"></head>
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Vesper — The Hollow Sanctum</title><meta name="theme-color" content="#101719"><link rel="stylesheet" href="/src/style.css"><link rel="stylesheet" href="/src/immersive.css"><link rel="stylesheet" href="/src/ability-bar.css"><link rel="stylesheet" href="/src/shell.css"><link rel="stylesheet" href="/src/home.css"><link rel="stylesheet" href="/src/adventures.css"><link rel="stylesheet" href="/src/team.css"><link rel="stylesheet" href="/src/equipment.css"></head>
 <body>
   <header class="masthead"><a class="brand" href="/" aria-label="Vesper home"><span class="brand-mark">✧</span> VESPER <span class="brand-sub">A HEALER'S VIGIL</span></a><nav class="primary-nav" aria-label="Main navigation"><button data-navigate="adventures" aria-current="page">Adventures</button><button data-navigate="team">Team</button></nav><div class="header-right"><span class="build"><i></i> FIRST LIGHT · v0.1</span><button class="quiet" id="help-button">How to play <kbd>?</kbd></button></div></header>
+  <main id="home-view" class="home-view" aria-labelledby="home-title">
+    <section class="home-welcome">
+      <div class="home-sigil" aria-hidden="true"><span>✧</span></div>
+      <span class="eyebrow">A HEALER'S VIGIL</span>
+      <h1 id="home-title" tabindex="-1">A moment of light<br>in the dark.</h1>
+      <p>Vesper is a quiet test of attention. Your party will face the darkness; you will keep their light alive.</p>
+      <button class="primary" data-navigate="adventures">Begin your vigil <span>→</span></button>
+    </section>
+    <div class="home-ritual" aria-hidden="true"><span></span><i></i><b></b></div>
+  </main>
   <main id="adventures-view" class="hub-view" aria-labelledby="adventures-title">
     <div class="hub-heading"><span class="eyebrow">YOUR NEXT VIGIL</span><h1 id="adventures-title" tabindex="-1">Adventures</h1><p>Choose where your party's journey begins.</p></div>
     <section class="journey" aria-label="The Forsaken Halls progression map">

@@ -1,6 +1,7 @@
 // Global navigation owns screens and utility panels, never combat mechanics.
 export function setupShell({ game, view, resetEncounter }) {
   const screens = {
+    home: document.querySelector('#home-view'),
     adventures: document.querySelector('#adventures-view'),
     team: document.querySelector('#team-view'),
     encounter: document.querySelector('#encounter-view'),
@@ -11,7 +12,7 @@ export function setupShell({ game, view, resetEncounter }) {
   const utilityButtons = [...document.querySelectorAll('[data-utility]')];
   const navigation = [...document.querySelectorAll('.primary-nav [data-navigate]')];
   const leaveDialog = document.querySelector('#leave-encounter');
-  let current = 'adventures';
+  let current = 'home';
   let utility = null;
   let pendingNavigation = null;
   let resumeOnCancel = false;
@@ -66,10 +67,10 @@ export function setupShell({ game, view, resetEncounter }) {
   for (const button of document.querySelectorAll('[data-navigate]')) {
     button.addEventListener('click', () => requestNavigation(button.dataset.navigate));
   }
-  // The brand is also a safe route home, not an unguarded page reload.
+  // The brand is always the route back to the introductory Home screen.
   document.querySelector('.brand').addEventListener('click', event => {
     event.preventDefault();
-    requestNavigation('adventures');
+    requestNavigation('home');
   });
   document.querySelector('#stay-encounter').addEventListener('click', () => leaveDialog.close());
   leaveDialog.addEventListener('close', () => {
@@ -115,7 +116,7 @@ export function setupShell({ game, view, resetEncounter }) {
       event.stopImmediatePropagation();
     }
   }, true);
-  navigate('adventures', false);
+  navigate('home', false);
   return { refresh, isEncounter: () => current === 'encounter', enterEncounter() {
     resetEncounter();
     navigate('encounter', false);

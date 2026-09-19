@@ -1,0 +1,13 @@
+.home-view { position: relative; min-height: calc(100vh - 75px); overflow: hidden; display: grid; place-items: center; padding: 70px 24px 120px; background: radial-gradient(ellipse at 50% 42%, #49645d48, transparent 34%), radial-gradient(ellipse at 50% 110%, #a9874b19, transparent 47%); }
+.home-welcome { position: relative; z-index: 1; width: min(610px, 100%); text-align: center; }
+.home-welcome h1 { margin: 18px 0; font: 500 clamp(50px, 7vw, 82px)/.88 'Cormorant Garamond', Georgia, serif; letter-spacing: -.02em; color: #eee6d0; }
+.home-welcome h1:focus { outline: none; }
+.home-welcome p { max-width: 430px; margin: 0 auto 30px; color: #adbbb2; font-size: 14px; line-height: 1.9; }
+.home-sigil { display: grid; place-items: center; width: 128px; height: 128px; margin: 0 auto 30px; border: 1px solid #cdb87977; border-radius: 50%; color: #ead49e; font-size: 61px; box-shadow: inset 0 0 45px #e0bc6f18, 0 0 55px #bd9e6020; }
+.home-sigil::before, .home-sigil::after { content: ''; position: absolute; width: 168px; height: 168px; border: 1px solid #8ba4972d; border-radius: 50%; }
+.home-sigil::after { width: 200px; height: 200px; border-style: dashed; }
+.home-sigil span { text-shadow: 0 0 24px #f4d88d; }
+.home-ritual { position: absolute; inset: auto 50% -280px; width: 760px; height: 460px; transform: translateX(-50%); border: 1px solid #b9b2782b; border-radius: 50%; box-shadow: inset 0 0 90px #bba86a16, 0 0 100px #75a28e0d; }
+.home-ritual::before, .home-ritual::after, .home-ritual span, .home-ritual i, .home-ritual b { content: ''; position: absolute; display: block; border: 1px solid #9cae8130; border-radius: 50%; }
+.home-ritual::before { inset: 35px; }.home-ritual::after { inset: 75px; }.home-ritual span { inset: 120px; }.home-ritual i { inset: 165px; }.home-ritual b { inset: 207px; }
+@media (max-width: 600px) { .home-view { min-height: calc(100svh - 56px); padding-top: 45px; }.home-welcome h1 { font-size: 54px; }.home-sigil { width: 105px; height: 105px; margin-bottom: 26px; font-size: 50px; }.home-sigil::before { width: 140px; height: 140px; }.home-sigil::after { width: 165px; height: 165px; }.home-ritual { width: 600px; height: 370px; bottom: -230px; } }

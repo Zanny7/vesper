@@ -77,3 +77,9 @@ Full victory/defeat and timing edge cases were checked by simulation tests, not 
 - Verified a spell tooltip by pointer interaction and then Tab navigation to Prayer of Healing, which exposed its name, cast time, cost, healing, and effect.
 - At 390×844, measured all icons at 54×54 and all badges at 30×18; no horizontal overflow.
 - Added formatter tests for modifier aliases, combined modifiers, fractional seconds, the 60-second boundary, padded seconds, and multi-minute cooldowns. These cover long cooldowns and modifier labels without changing actual ability balance or keybindings. All 15 tests pass.
+## BAT-11 — Introductory Home and logo navigation
+
+- Added a dedicated Home landing screen with a lightweight Vesper welcome, identity copy, and one clear route into Adventures. It contains no progression map, team management, inventory, or encounter controls.
+- Home is now the default after reload. The main header keeps Adventures and Team as separate destinations; the Vesper logo/name takes the player to Home from Team and other non-blocked views.
+- Browser-checked Home → Adventures, Team → logo → Home, and the welcome layout. During an active encounter, clicking the logo continues to show the existing abandon-confirmation dialog; confirming returns to Home.
+- All 17 Node tests pass. Syntax and whitespace checks pass. No cross-browser matrix was performed.
