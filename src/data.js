@@ -28,6 +28,13 @@ export const SPELLS = [
   { id: 'prayer', name: 'Prayer of Healing', key: '3', icon: 'wings', cast: 3, cost: 2.5, heal: 100, party: true, color: '#9fdfc6', description: 'Restores 100 health to every living ally, including you. Benefits from Post-Haste.', consumes: { buff: 'postHaste', castMultiplier: 0.6 } },
   { id: 'penance', name: 'Penance', key: '4', icon: 'bolts', cast: 2, cost: 1.2, heal: 250, channel: true, cooldown: 10, ticks: [{ at: 0.5, heal: 83 }, { at: 1.25, heal: 83 }, { at: 2, heal: 84 }], description: 'Channel three holy bolts for 250 total healing. 10s cooldown.', color: '#f4c16c' },
 ];
+// Healer identity and spell kits are separate from the companion roster. The
+// Druid keeps the proven training kit until its dedicated healing-kit issue.
+export const HEALERS = {
+  priest: { id: 'priest', name: 'You', role: 'Priest', label: 'HEALER', maxHp: 400, color: '#e2cc94', damage: 0, interval: 2, x: 485, y: 484, spellBook: SPELLS, combatSpells: SPELLS, description: 'A disciplined keeper of the party’s light. Uses the current healing kit.' },
+  druid: { id: 'druid', name: 'You', role: 'Druid', label: 'HEALER', maxHp: 400, color: '#9acb91', damage: 0, interval: 2, x: 485, y: 484, spellBook: [], combatSpells: SPELLS, description: 'A guardian of living things. Their distinct healing kit will arrive in a later vigil.' },
+};
+export const partyForHealer = healerId => [...PARTY.filter(member => member.label !== 'HEALER'), HEALERS[healerId] || HEALERS.priest];
 export const ENCOUNTER = {
   name: 'The Hollow Warden', maxHp: 4200,
   mechanics: [

@@ -2,7 +2,8 @@ import { CONFIG, PARTY, SPELLS, ENCOUNTER } from './data.js';
 
 // Pure fixed-step simulation. Rendering and browser input only consume its state/events.
 export class Combat {
-  constructor(encounter = ENCOUNTER, random = Math.random, party = PARTY) { this.random = random; this.partyTemplate = party; this.reset(encounter); }
+  constructor(encounter = ENCOUNTER, random = Math.random, party = PARTY, spells = SPELLS) { this.random = random; this.partyTemplate = party; this.spells = spells; this.reset(encounter); }
+  setLoadout(party, spells = this.spells) { this.partyTemplate = party; this.spells = spells; this.reset(); }
   reset(encounter = this.encounter) {
     this.encounter = encounter;
     this.party = this.partyTemplate.map((p, i) => ({ ...p, hp: p.maxHp, dots: [], nextAttack: 1 + i * 0.2 }));
@@ -20,7 +21,7 @@ export class Combat {
   pause() { if (this.status === 'running') this.status = 'paused'; else if (this.status === 'paused') this.status = 'running'; }
   cancel() { if (this.cast) { this.log(`${this.cast.spell.name} cancelled. Mana is not refunded.`, 'warning'); this.emit('cancel'); this.cast = null; } }
   begin(id, targetId) {
-    const spell = SPELLS.find(s => s.id === id);
+    const spell = this.spells.find(s => s.id === id);
     const target = this.party.find(p => p.id === targetId);
     if (this.status !== 'running') return { ok: false, reason: 'Begin or resume the encounter first.' };
     if (this.cast) return { ok: false, reason: 'Already casting. Press Esc to cancel.' };
@@ -131,7 +132,8 @@ export class Combat {
       }
       if (this.time >= m.next) { this.resolveMechanic(m); m.next += m.every; m.warned = false; delete m.targets; }
     }
-    if (this.party[0].hp <= 0 || this.party[4].hp <= 0 || this.party.filter(p => p.hp > 0).length < 3 || this.time >= CONFIG.enrage) {
+    const healer = this.party.find(p => p.label === 'HEALER');
+    if (this.party[0].hp <= 0 || healer?.hp <= 0 || this.party.filter(p => p.hp > 0).length < 3 || this.time >= CONFIG.enrage) {
       this.status = 'defeat'; this.cast = null; this.log(this.time >= CONFIG.enrage ? 'The sanctum is consumed. Enrage.' : 'The party has fallen.', 'danger'); this.emit('end');
     } else if (this.boss.hp <= 0) { this.status = 'victory'; this.cast = null; this.log(`${this.encounter.name} is defeated.${this.adds.length ? ' The remaining enemies flee.' : ''}`, 'heal'); this.emit('end'); }
   }

@@ -1,5 +1,5 @@
 /* Shared action bar in both panel and immersive layouts. */
-#spellbook {
+:is(#spellbook, .team-ability-bar) {
   --ability-size: 64px;
   display: flex;
   flex-direction: row;
@@ -13,7 +13,7 @@
   box-shadow: inset 0 1px 0 #ddc59a12, 0 6px 24px #0004;
   backdrop-filter: blur(10px);
 }
-#spellbook .spell {
+:is(#spellbook, .team-ability-bar) .spell {
   position: relative;
   display: block;
   flex: 0 0 var(--ability-size);
@@ -31,7 +31,7 @@
   filter: none;
   overflow: visible;
 }
-#spellbook .spell-icon {
+:is(#spellbook, .team-ability-bar) .spell-icon {
   display: grid;
   place-items: center;
   width: 100%;
@@ -41,16 +41,16 @@
   background: radial-gradient(circle, #9883484d, #202925 85%);
   box-shadow: inset 0 0 14px #ccac561c;
 }
-#spellbook .spell:nth-child(3) .spell-icon {
+:is(#spellbook, .team-ability-bar) .spell[data-icon="wings"] .spell-icon {
   background: radial-gradient(circle, #84c4a044, #192a27);
   border-color: #719a7d77;
 }
-#spellbook .spell-icon svg { width: 40px; height: 40px; }
-#spellbook .spell:hover .spell-icon,
-#spellbook .spell:focus-visible .spell-icon,
-#spellbook .spell.active .spell-icon { border-color: #ead2a0; }
-#spellbook .spell.on-cooldown .spell-icon { filter: grayscale(1) brightness(.48); }
-#spellbook .spell kbd {
+:is(#spellbook, .team-ability-bar) .spell-icon svg { width: 40px; height: 40px; }
+:is(#spellbook, .team-ability-bar) .spell:hover .spell-icon,
+:is(#spellbook, .team-ability-bar) .spell:focus-visible .spell-icon,
+:is(#spellbook, .team-ability-bar) .spell.active .spell-icon { border-color: #ead2a0; }
+:is(#spellbook, .team-ability-bar) .spell.on-cooldown .spell-icon { filter: grayscale(1) brightness(.48); }
+:is(#spellbook, .team-ability-bar) .spell kbd {
   position: absolute;
   top: 0;
   left: 0;
@@ -71,7 +71,7 @@
   overflow: hidden;
   opacity: 1;
 }
-#spellbook .cooldown-mask {
+:is(#spellbook, .team-ability-bar) .cooldown-mask {
   position: absolute;
   inset: 0;
   z-index: 1;
@@ -84,12 +84,12 @@
   text-shadow: 0 2px 5px #000, 0 0 10px #000;
   pointer-events: none;
 }
-#spellbook .cooldown-mask[hidden] { display: none; }
+:is(#spellbook, .team-ability-bar) .cooldown-mask[hidden] { display: none; }
 @media (max-width: 600px), (max-height: 600px) {
-  #spellbook { --ability-size: 54px; gap: 12px; padding: 10px; }
-  #spellbook .spell-icon svg { width: 34px; height: 34px; }
-  #spellbook .cooldown-mask { font-size: 18px; }
+  :is(#spellbook, .team-ability-bar) { --ability-size: 54px; gap: 12px; padding: 10px; }
+  :is(#spellbook, .team-ability-bar) .spell-icon svg { width: 34px; height: 34px; }
+  :is(#spellbook, .team-ability-bar) .cooldown-mask { font-size: 18px; }
 }
 @media (max-width: 360px) {
-  #spellbook { gap: 8px; padding: 8px; }
+  :is(#spellbook, .team-ability-bar) { gap: 8px; padding: 8px; }
 }

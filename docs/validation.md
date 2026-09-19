@@ -111,3 +111,21 @@ Full victory/defeat and timing edge cases were checked by simulation tests, not 
 - Verified fork unlocks, skipped branches remaining optional, chapter gating, completed states after reload, replay, paused combat, guarded abandonment, and visible bleed duration/tick details. An unattended first attempt lost without granting progress before a successful retry.
 - Inspected desktop panel/immersive layouts and 390×844 map/combat layouts. Long maps scroll inside their own region; compacted mobile boss timers after finding they covered too much battlefield. Restored the normal viewport and immersive preference. Browser warning/error logs were empty.
 - The development browser now has completed routes for all four chapters, leaving optional fights available and completed fights replayable. Balance remains an initial baseline for human review; no cross-browser matrix was performed. Changes remain uncommitted on dev.
+
+## BAT-15 — Healer selection
+
+- Added a persistent Priest/Druid selector beside the Team heading. It rebuilds the player-healer card and details while preserving the companion cards and inspection behavior.
+- Added a healer registry, active-healer persistence, and party/loadout factories. Combat now receives the selected five-person party and spell kit rather than assuming a fixed priest. The renderer similarly resolves the active healer for portraits, casting effects, and battlefield placement.
+- Priest keeps the existing healing kit. Druid has a distinct character record and an intentionally empty Team Spell Book until the dedicated Druid-kit issue; encounters retain the existing shared training controls so the selection is playable without defining Druid mechanics early.
+- Browser-checked desktop Team layout, Priest → Druid selection, Druid’s card/details, starting an encounter as Druid, guarded abandonment, and selection persistence after reload. The renderer portrait fallback was corrected after the initial reload error; no new browser errors occurred afterward.
+- All 33 Node tests pass, including active-healer save validation and combat composition checks for both healers. No cross-browser matrix was performed. Changes remain uncommitted on dev.
+
+## BAT-16 — Team ability configuration
+
+- Team now places the selected healer's configurable Ability Bar below character cards/stats and above Spell Book. Companion inspection preserves the healer configuration sections. Team and encounter bars share icon markup, styling, compact key labels, and the same saved configuration model.
+- Added pointer dragging within each ability section, with drop highlighting and cancellation outside the bar. Right-click or click/Enter opens key capture and accessible move controls; Alt + left/right moves a focused spell. Team interactions never call combat casting.
+- Keybind collisions swap bindings. Letter/number keys, Shift combinations, and Ctrl + Alt combinations use one normalization/matching function in configuration and combat; navigation/game controls and browser shortcuts are reserved. Settings persist separately per healer, validate old/invalid saves, and retain session changes when storage is unavailable.
+- All 38 tests pass, covering independent persisted orders/bindings, deterministic swaps, malformed save recovery, section boundaries, unavailable storage, input matching, and unchanged healing mechanics after configuring a key.
+- Browser-tested right-most → far-left drag and the reverse, outside-bar cancellation, Enter after dragging, right-click capture, occupied-key swapping, Shift+Q, reserved Space rejection, Escape cancellation, keyboard/dialog movement, and separate Priest/Druid settings after reload.
+- Entered an encounter as Druid and confirmed its saved order, compact SQ badge, and Shift+Q casting Flash Heal with the expected mana cost. Team configuration left combat idle and mana full. Checked desktop and 390×844 Team layouts and mobile move controls; no horizontal page overflow or browser warning/error logs. Restored normal viewport and both healers' original order/bindings after QA, leaving Druid selected as before.
+- BAT-15 and BAT-16 remain uncommitted on dev for review. Druid continues using the existing temporary combat kit pending its separate kit issue.

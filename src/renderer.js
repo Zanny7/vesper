@@ -27,7 +27,7 @@ export class Battlefield {
     c.translate(width / 2, 220); c.scale(2.2, 2.2);
     this.drawCharacter(c, { ...member, x: 0, y: 0, hp: member.maxHp }, { status: 'ready', cast: null }, 0, null, null);
   }
-  point(id) { return positions[id] || positions.priest; }
+  point(id) { return positions[id] || positions[this.healerId] || positions.priest; }
   receive(events) {
     for (const e of events) {
       if (e.type === 'cancel' || e.type === 'end') this.effects = this.effects.filter(effect => effect.type !== 'bolt');
@@ -142,9 +142,9 @@ export class Battlefield {
     if(p.id===selected||p.id===hovered)this.ellipse(c,0,4,28,10,null,p.id===hovered?'#f0e2b0':'#b9a67499',1.5);
     if(alive&&hit&&age<.6){this.ellipse(c,0,2,28+age*15,10+age*5,null,hit.heal?`rgba(215,226,153,${1-age/.6})`:`rgba(206,103,98,${1-age/.6})`,2);}
     if(!alive){c.rotate(-Math.PI/2);c.translate(20,0);c.globalAlpha=.42;}
-    else {c.translate(age<.2&&!hit.heal?Math.sin(age*50)*4:0,Math.sin(t*2+PARTY.indexOf(p))*1.4);if(attacking)c.rotate(Math.sin(attackAge/.45*Math.PI)*-.14);}
-    const colors={tank:['#394e5a','#81939b'],rogue:['#332d46','#978caa'],mage:['#2b3e60','#849fce'],ranger:['#34473f','#97a481'],priest:['#b6ad8e','#f2dfad']};const [dark,light]=colors[p.id];
-    const caster=p.id==='mage'||p.id==='priest';
+    else {c.translate(age<.2&&!hit.heal?Math.sin(age*50)*4:0,Math.sin(t*2+(state.party?.indexOf(p) ?? PARTY.indexOf(p)))*1.4);if(attacking)c.rotate(Math.sin(attackAge/.45*Math.PI)*-.14);}
+    const colors={tank:['#394e5a','#81939b'],rogue:['#332d46','#978caa'],mage:['#2b3e60','#849fce'],ranger:['#34473f','#97a481'],priest:['#b6ad8e','#f2dfad'],druid:['#38513d','#a4d59b']};const [dark,light]=colors[p.id];
+    const caster=p.id==='mage'||p.label==='HEALER';
     // Articulated silhouette: boots, cloak, torso, pauldrons, hood, hands, weapon.
     this.poly(c,[[-10,-26],[-12,0],[-3,0],[0,-23],[3,0],[13,0],[10,-29]],'#16282d','#586661');
     this.poly(c,[[-12,-52],[-19,-9],[0,-2],[19,-9],[12,-52]],dark,light);
@@ -154,13 +154,13 @@ export class Battlefield {
     this.poly(c,[[-14,-54],[-24,-47],[-17,-37],[-10,-45]],dark,light);
     this.poly(c,[[14,-54],[23,-47],[17,-37],[10,-45]],dark,light);
     c.save();c.translate(17,-42);
-    const casting=p.id==='priest'&&state.cast;
+    const casting=p.label==='HEALER'&&state.cast;
     c.rotate(casting?-.65:attacking?-1.2*Math.sin(attackAge/.45*Math.PI):Math.sin(t*1.5)*.05);
     this.line(c,[[0,0],[5,15],[11,17]],light,6);
     if(caster){
       this.line(c,[[11,-35],[11,38]],'#b4a381',3);
-      this.ellipse(c,11,-35,7,9,null,light,2);this.glow(c,11,-35,casting?32:15,p.id==='priest'?'#ffe7a66a':'#a7bfff6a');
-      this.poly(c,[[11,-42],[15,-35],[11,-28],[7,-35]],p.id==='priest'?'#fff0bf':'#a1c3ff');
+      this.ellipse(c,11,-35,7,9,null,light,2);this.glow(c,11,-35,casting?32:15,p.label==='HEALER'?'#ffe7a66a':'#a7bfff6a');
+      this.poly(c,[[11,-42],[15,-35],[11,-28],[7,-35]],p.label==='HEALER'?'#fff0bf':'#a1c3ff');
       if(casting){this.glow(c,-23,4,24,'#ffe9a455');this.ellipse(c,-23,4,7,7,'#fff3c2');}
     }else if(p.id==='ranger'){
       c.beginPath();c.ellipse(14,1,13,30,0,-Math.PI/2,Math.PI/2);c.strokeStyle='#b5b78f';c.lineWidth=3;c.stroke();this.line(c,[[14,-29],[10,1],[14,31]],'#bfc1a3');
@@ -170,7 +170,7 @@ export class Battlefield {
     this.ellipse(c,0,-62,10,12,'#b9a58c',light);
     if(p.id==='tank'){this.poly(c,[[-12,-61],[-10,-73],[0,-78],[11,-72],[12,-59],[5,-54],[5,-67],[-5,-67],[-5,-54]],'#617880','#a8b9b9');this.line(c,[[-7,-63],[7,-63]],'#172c32',3);}
     else{this.poly(c,[[-12,-55],[-13,-68],[-5,-77],[7,-76],[14,-63],[11,-53],[6,-66],[0,-70],[-6,-66],[-6,-55]],dark,light);this.line(c,[[-5,-60],[4,-59]],'#263b3c',2);}
-    if(p.id==='priest'){this.ellipse(c,0,-83,14,4,null,'#ddca9388');}
+    if(p.label==='HEALER'){this.ellipse(c,0,-83,14,4,null,'#ddca9388');}
     c.restore();
     c.save();c.font='10px "DM Sans",sans-serif';c.textAlign='center';c.fillStyle=alive?'#c6d4cd':'#768583';c.shadowColor='#000';c.shadowBlur=4;c.fillText(p.name==='You'?'YOU':p.name.toUpperCase(),p.x,p.y+23);c.restore();
   }
@@ -295,7 +295,7 @@ export class Battlefield {
     c.restore();
   }
   drawEffect(c,e) {
-    const age=this.clock-e.born,progress=age/e.duration,p=this.point(e.target),from=this.point('priest');
+    const age=this.clock-e.born,progress=age/e.duration,p=this.point(e.target),from=this.point(this.healerId);
     c.save();
     if(e.type==='rangedAttack'){
       const a=this.point(e.source),x=a.x+(p.x-a.x)*progress,y=a.y+(p.y-a.y)*progress;
@@ -340,6 +340,8 @@ export class Battlefield {
     c.restore();
   }
   render(state,dt,selected,hovered) {
+    for (const p of state.party) positions[p.id] = { x: p.x, y: p.y - 40 };
+    this.healerId = state.party.find(p => p.label === 'HEALER')?.id;
     // Visual time freezes with combat, so impacts and channels stay synchronized on pause.
     if(state.status==='running'||state.status==='ready')this.clock+=dt;
     const c=this.ctx,t=this.reducedMotion?0:this.clock;
@@ -379,7 +381,7 @@ export class Battlefield {
     this.drawBoss(c,state,t);
     if(state.status !== 'victory') for(const add of state.adds) this.drawArcher(c,add,t);
     for(const p of [...state.party].sort((a,b)=>a.y-b.y))this.drawCharacter(c,p,state,t,selected,hovered);
-    if(state.cast){const p=this.point(state.cast.target);c.save();c.globalAlpha=.18;this.line(c,[[485,444],[p.x,p.y]],'#f8dc91',1);c.restore();}
+    if(state.cast){const p=this.point(state.cast.target), healer=this.point(this.healerId);c.save();c.globalAlpha=.18;this.line(c,[[healer.x,healer.y],[p.x,p.y]],'#f8dc91',1);c.restore();}
     this.effects=this.effects.filter(e=>this.clock-e.born<e.duration);
     for(const e of this.effects)this.drawEffect(c,e);
     c.restore();
