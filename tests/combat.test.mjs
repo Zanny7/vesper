@@ -31,7 +31,7 @@ test('Penance launches three bolts before distinct heals totaling 250',()=>{
 });
 test('cancelling a channel prevents unlanded ticks and retains spent resources',()=>{
   const g=isolated();g.party[0].hp=100;g.begin('penance','tank');advance(g,.5);g.cancel();advance(g,1.5);
-  assert.equal(g.party[0].hp,183);assert.ok(Math.abs(g.mana-(CONFIG.mana-36+8))<1e-8);assert.equal(g.begin('penance','tank').ok,false);
+  assert.equal(g.party[0].hp,183);assert.ok(Math.abs(g.mana-(CONFIG.mana-36+2*CONFIG.manaRegen))<1e-8);assert.equal(g.begin('penance','tank').ok,false);
 });
 test('mana, cooldown, dead targets and busy casts reject without spending',()=>{
   const g=isolated();g.mana=20;assert.equal(g.begin('flash','tank').ok,false);assert.equal(g.mana,20);g.mana=200;g.party[1].hp=0;

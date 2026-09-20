@@ -1,4 +1,6 @@
 import { renderPartyEffects } from './party-effects.js';
+import { ChapterRuns } from './chapter-runs.js';
+import { healingParts } from './stats.js';
 import { Combat } from './combat.js';
 import { Battlefield } from './renderer.js';
 import { setupView } from './view.js';
@@ -18,6 +20,7 @@ let activeHealerId = loadActiveHealer();
 let abilityStorage;
 try { abilityStorage = localStorage; } catch { /* Settings remain available in memory. */ }
 const abilitySettings = createAbilitySettings(abilityStorage);
+const runs = new ChapterRuns(abilityStorage);
 const game = new Combat(CHAPTER_ENCOUNTERS.sentinel, Math.random, activeParty(activeHealerId), abilitySettings.spells(activeHealerId)), scene = new Battlefield($('#battlefield'));
 const view = setupView(scene);
 setupEquipment((canvas, member) => scene.paintPortrait(canvas, member, 200));
@@ -62,10 +65,11 @@ function prepareEncounterUI() {
 prepareEncounterUI();
 function toast(message){$('#toast').textContent=message;$('#toast').classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>$('#toast').classList.remove('show'),2200);}
 function cast(id){const result=game.begin(id,hovered||selected);if(!result.ok)toast(result.reason);}
-function restart(encounter){game.reset(encounter);prepareEncounterUI();scene.reset();selected='tank';hovered=null;accumulator=0;lastStatus='';lastLog='';$('#toast').classList.remove('show');renderUI();}
-function begin(){if(game.status==='paused')game.pause();else{if(game.status!=='ready')restart();game.start();}renderUI();}
+function restart(encounter, resources){game.reset(encounter, resources);prepareEncounterUI();scene.reset();selected='tank';hovered=null;accumulator=0;lastStatus='';lastLog='';$('#toast').classList.remove('show');renderUI();}
+function begin(){if(['victory','defeat'].includes(game.status)){shell.openChapter();return;}if(game.status==='paused')game.pause();else game.start();renderUI();}
 $('#begin').addEventListener('click',begin);
-$('#restart').addEventListener('click',()=>restart());
+$('#restart').textContent = '↻ Restart chapter';
+$('#restart').addEventListener('click',()=>{adventures.restartChapter();restart();shell.openChapter();});
 $('#pause').addEventListener('click',()=>{game.pause();renderUI();});
 function openHelp(){if(game.status==='running')game.pause();$('#help').showModal();renderUI();}
 function closeHelp(){$('#help').close();}
@@ -86,7 +90,7 @@ document.addEventListener('keydown',e=>{
 document.addEventListener('visibilitychange',()=>{if(document.hidden&&game.status==='running'){game.pause();renderUI();}last=performance.now();accumulator=0;});
 window.addEventListener('blur',()=>{hovered=null;if(game.status==='running'){game.pause();renderUI();}});
 function renderUI(){
-  if (game.status === 'victory') adventures.recordVictory(game);
+  if (['victory', 'defeat'].includes(game.status)) adventures.recordVictory(game);
   shell.refresh();
   for(const frame of frames){
     const p=game.party.find(p=>p.id===frame.dataset.target),percentage=p.hp/p.maxHp*100;
@@ -98,11 +102,11 @@ function renderUI(){
     frame.setAttribute('aria-pressed',String(selected===p.id));frame.setAttribute('aria-label',`${p.name}, ${p.role}, ${number(p.hp)} of ${p.maxHp} health${effectLabel ? ', ' + effectLabel : ''}`);
     frame.classList.toggle('threatened', game.mechanics.some(m => m.warned && m.targets?.includes(p.id)));
     const incoming=frame.querySelector('.incoming-fill');let amount=0;
-    if(game.cast&&p.hp>0&&(game.cast.spell.party||game.cast.target===p.id))amount=game.cast.spell.channel?game.cast.spell.ticks.slice(game.cast.landed).reduce((n,t)=>n+t.heal,0):game.directHealing(game.cast.spell,p);
+    if(game.cast&&p.hp>0&&(game.cast.spell.party||game.cast.target===p.id))amount=game.cast.spell.channel?game.cast.spell.ticks.slice(game.cast.landed).reduce((n,t)=>n+t.heal,0)*healingParts(game.cast.spell,game.spellPower).factor:game.directHealing(game.cast.spell,p);
     incoming.style.left=`${percentage}%`;incoming.style.width=`${Math.min(p.maxHp-p.hp,amount)/p.maxHp*100}%`;
   }
   const target=game.party.find(p=>p.id===(hovered||selected));$('#target-label').textContent=`${hovered?'Mouseover':'Selected'}: ${target.name}`;
-  $('#mana-number').textContent=`${number(game.mana)} / ${number(CONFIG.mana)}`;$('#mana-fill').style.width=`${game.mana/CONFIG.mana*100}%`;
+  $('#mana-number').textContent=`${number(game.mana)} / ${number(game.maxMana)}`;$('#mana-fill').style.width=`${game.mana/game.maxMana*100}%`;
   [...document.querySelectorAll('.charges span')].forEach((el,i)=>el.classList.toggle('active',i<game.buffs.postHaste));$('.charges').setAttribute('aria-label',`${game.buffs.postHaste} Post-Haste charges`);
   $('#boss-fill').style.width=`${game.boss.hp/game.boss.maxHp*100}%`;$('#boss-percent').textContent=`${Math.ceil(game.boss.hp/game.boss.maxHp*100)}%`;$('#boss-hp').textContent=`${number(game.boss.hp)} / ${number(game.boss.maxHp)}`;
   $('#timer').textContent=clock(game.time);$('#enrage').textContent=clock(Math.max(0,CONFIG.enrage-game.time));
@@ -146,9 +150,11 @@ function renderUI(){
       victory:['ENCOUNTER COMPLETE','Their light endures.',ALL_ADVENTURES.find(node => node.encounter === game.encounter.id).kind === 'boss' ? `${CHAPTERS.find(chapter => chapter.nodes.some(node => node.encounter === game.encounter.id)).number} complete.<br>Your party has survived the vigil.` : `${game.encounter.name} has fallen.<br>Return to the map to choose your next encounter.`,'Play again'],
       defeat:['THE VIGIL ENDS','Even light can falter.',game.time>=CONFIG.enrage?'The guardian enraged after 150 seconds.':game.party.find(p=>p.label==='HEALER').hp<=0?'Your light faded. Remember to heal yourself.':game.party[0].hp<=0?'Aldric fell, and the front line collapsed.':'Too few allies remain to hold the sanctum.','Try again'],
     }[game.status];
+    if (game.status === 'victory') data[3] = 'Continue to chapter map';
+    if (game.status === 'defeat') { data[2] += '<br>This chapter run has ended. Restart from its first encounter; permanent unlocks are safe.'; data[3] = 'Return to chapter map'; }
     if(data){$('#overlay-eyebrow').textContent=data[0];$('#overlay-title').textContent=data[1];$('#overlay-text').innerHTML=data[2];$('#begin').innerHTML=`${data[3]} <span>→</span>`;}
     const ended=['victory','defeat'].includes(game.status);
-    $('#return-to-map').hidden=!ended;
+    $('#return-to-map').hidden=true; // The primary outcome action now returns to the map.
     document.body.classList.toggle('encounter-ended', ended);
     $('#result-stats').innerHTML=ended?`<div><b>${clock(game.time)}</b>TIME</div><div><b>${number(game.stats.effective)}</b>HEALED</div><div><b>${Math.round(game.stats.overheal/Math.max(1,game.stats.effective+game.stats.overheal)*100)}%</b>OVERHEAL</div>`:'';
     $('#overlay-foot').hidden=ended;$('#overlay-foot').textContent=game.status==='paused'?'Press Space to resume.':'No movement. Just you, your spells, and five lives.';
@@ -165,11 +171,11 @@ function frame(now){
   uiElapsed+=dt;if(uiElapsed>=1/30){renderUI();uiElapsed=0;}
   requestAnimationFrame(frame);
 }
-const shell = setupShell({ game, view, resetEncounter: restart });
+const shell = setupShell({ game, view, resetEncounter: restart, onAbandon: () => adventures.abandon(), onNavigate: destination => { if (destination === 'chapter') adventures.refresh(); } });
 const team = setupTeam({ settings: abilitySettings, onAbilitiesChange: () => { buildHealerUI(); renderUI(); }, paintPortrait: (canvas, member) => scene.paintPortrait(canvas, member), onHealerChange: healerId => {
   activeHealerId = healerId; game.setLoadout(activeParty(healerId), abilitySettings.spells(healerId));
   selected = 'tank'; hovered = null; buildHealerUI(); prepareEncounterUI(); scene.reset(); renderUI();
 } });
 const chapters = setupChapters({ openChapter: chapter => { if (adventures.openChapter(chapter)) shell.openChapter(); } });
-const adventures = setupAdventures({ startEncounter: node => { shell.enterEncounter(CHAPTER_ENCOUNTERS[node.encounter]); renderUI(); }, onProgress: completed => chapters.refresh(completed) });
+const adventures = setupAdventures({ runs, getParty: () => activeParty(activeHealerId), startEncounter: (node, resources) => { shell.enterEncounter(CHAPTER_ENCOUNTERS[node.encounter], resources); renderUI(); }, onProgress: completed => chapters.refresh(completed) });
 renderUI();requestAnimationFrame(frame);

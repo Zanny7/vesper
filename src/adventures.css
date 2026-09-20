@@ -1,4 +1,9 @@
 .chapter-layout { display: grid; grid-template-columns: minmax(0, 1fr) 310px; gap: 22px; align-items: stretch; }
+.chapter-run { margin: 10px 28px 20px; color: #b9cec4; font-size: 12px; }
+.chapter-run > p { line-height: 1.6; }
+#run-resources { display: flex; flex-wrap: wrap; gap: 8px 18px; margin: 12px 0; font-variant-numeric: tabular-nums; }
+#run-resources span { display: grid; gap: 3px; }
+#run-resources small { color: #8eaaa3; }
 .map-scroll { overflow-x: auto; }
 .map-scroll:focus-visible { outline: 2px solid #eed2a0; outline-offset: -3px; }
 #adventure-map.branching { min-width: 720px; height: 520px; }

@@ -1,19 +1,33 @@
 import { CONFIG, PARTY, SPELLS, ENCOUNTER } from './data.js';
+import { adjustedResource, resourceKey, healingParts, mitigatedDamage } from './stats.js';
 
 // Pure fixed-step simulation. Rendering and browser input only consume its state/events.
 export class Combat {
   constructor(encounter = ENCOUNTER, random = Math.random, party = PARTY, spells = SPELLS) { this.random = random; this.partyTemplate = party; this.spells = spells; this.reset(encounter); }
   setLoadout(party, spells = this.spells) { this.partyTemplate = party; this.spells = spells; this.reset(); }
-  reset(encounter = this.encounter) {
+  reset(encounter = this.encounter, resources = null) {
     this.encounter = encounter;
     this.party = this.partyTemplate.map((p, i) => ({ ...p, hp: p.maxHp, dots: [], hots: [], nextAttack: 1 + i * 0.2 }));
     this.boss = { hp: encounter.maxHp, maxHp: encounter.maxHp };
     this.adds = (encounter.adds || []).map((add, i) => ({ ...add, id: `add-${i}`, name: add.name || `Pale Archer ${i + 1}`, next: add.first }));
-    this.time = 0; this.status = 'ready'; this.mana = CONFIG.mana; this.buffs = { postHaste: 0 };
+    this.time = 0; this.status = 'ready'; this.mana = this.maxMana; this.buffs = { postHaste: 0 };
+    if (resources) {
+      for (const p of this.party) {
+        const saved = resources.health[resourceKey(p)];
+        if (saved) p.hp = saved.current <= 0 ? 0 : adjustedResource(saved.current, saved.max, p.maxHp);
+      }
+      this.mana = adjustedResource(resources.mana.current, resources.mana.max, this.maxMana);
+    }
     this.cooldowns = {}; this.cast = null; this.events = []; this.history = []; this.serial = 0;
     this.stats = { effective: 0, overheal: 0, casts: 0, deaths: 0 };
     this.nextStrike = encounter.strike.first; this.nextShard = encounter.shard?.first ?? Infinity; this.rotation = 0;
     this.mechanics = encounter.mechanics.map(m => ({ ...m, next: m.first, warned: false }));
+  }
+  get healer() { return this.party.find(p => p.label === 'HEALER'); }
+  get maxMana() { return this.healer?.maxMana ?? CONFIG.mana; }
+  get spellPower() { return this.healer?.spellPower || 0; }
+  resources() {
+    return { health: Object.fromEntries(this.party.map(p => [resourceKey(p), { current: p.hp, max: p.maxHp }])), mana: { current: this.mana, max: this.maxMana } };
   }
   emit(type, data = {}) { const e = { type, time: this.time, id: this.serial++, ...data }; this.events.push(e); return e; }
   log(text, kind = 'neutral') { this.history.unshift({ text, kind, time: this.time }); this.history.length = Math.min(30, this.history.length); }
@@ -46,12 +60,12 @@ export class Combat {
   }
   directHealing(spell, target) {
     const bonus = spell.hotBonus;
-    return spell.heal + (bonus ? Math.min(bonus.max, this.activeHots(target, bonus.sources).length) * bonus.amount : 0);
+    return healingParts(spell, this.spellPower).direct + (bonus ? Math.min(bonus.max, this.activeHots(target, bonus.sources).length) * bonus.amount : 0);
   }
   applyHot(target, spell) {
     // One independently timed instance per source and target. Refresh has no carryover.
     target.hots = target.hots.filter(hot => hot.source !== spell.id);
-    target.hots.push({ ...spell.hot, source: spell.id, name: spell.name, icon: spell.icon, color: spell.color, applied: this.time, expires: this.time + spell.hot.duration, next: this.time + spell.hot.interval, ticks: Math.round(spell.hot.duration / spell.hot.interval) });
+    target.hots.push({ ...spell.hot, heal: healingParts(spell, this.spellPower).hotTick, source: spell.id, name: spell.name, icon: spell.icon, color: spell.color, applied: this.time, expires: this.time + spell.hot.duration, next: this.time + spell.hot.interval, ticks: Math.round(spell.hot.duration / spell.hot.interval) });
   }
   completeCast() {
     const cast = this.cast, spell = cast.spell;
@@ -79,10 +93,12 @@ export class Combat {
     target.hp += effective; this.stats.effective += effective; this.stats.overheal += amount - effective;
     this.emit('heal', { target: target.id, amount: effective, raw: amount, spell });
   }
-  damage(target, amount, source) {
+  damage(target, amount, source, damageType = 'Physical') {
     if (!target || target.hp <= 0) return;
+    const raw = amount;
+    amount = mitigatedDamage(amount, damageType, target);
     target.hp = Math.max(0, target.hp - amount);
-    this.emit('damage', { target: target.id, amount, source });
+    this.emit('damage', { target: target.id, amount, raw, source, damageType });
     if (!target.hp) { target.dots = []; target.hots = []; this.stats.deaths++; this.log(`${target.name} has fallen.`, 'danger'); this.emit('death', { target: target.id }); }
   }
   rotatingTarget() { const living = this.party.filter(p => p.hp > 0 && p.id !== 'tank'); return living[this.rotation++ % living.length]; }
@@ -103,7 +119,7 @@ export class Combat {
     this.emit('mechanic', { mechanic: m.id, targetType: m.target, targets: targets.filter(Boolean).map(p => p.id), color: m.color, dot: !!m.dot });
     for (const target of targets) {
       if (!target || target.hp <= 0) continue;
-      if (m.damage) this.damage(target, m.damage, m.id);
+      if (m.damage) this.damage(target, m.damage, m.id, m.damageType);
       if (m.dot && target.hp > 0) {
         // Reapplications refresh their own effect; different wounds coexist.
         target.dots = target.dots.filter(dot => dot.source !== m.id);
@@ -114,7 +130,7 @@ export class Combat {
   }
   step(dt = CONFIG.step) {
     if (this.status !== 'running') return;
-    this.time += dt; this.mana = Math.min(CONFIG.mana, this.mana + CONFIG.manaRegen * dt);
+    this.time += dt; this.mana = Math.min(this.maxMana, this.mana + (this.healer?.manaRegen ?? CONFIG.manaRegen) * dt);
     // Resolve due ticks before a finishing cast can refresh/consume an effect.
     for (const p of this.party) {
       if (p.hp <= 0) continue;
@@ -134,7 +150,7 @@ export class Combat {
           this.emit('bolt', { target: cast.target, spell: cast.spell.id, travel: 0.3, bolt: cast.launched }); cast.launched++;
         }
         while (cast.landed < ticks.length && cast.elapsed + 1e-8 >= ticks[cast.landed].at) {
-          this.heal(this.party.find(p => p.id === cast.target), ticks[cast.landed].heal, cast.spell.id); cast.landed++;
+          this.heal(this.party.find(p => p.id === cast.target), ticks[cast.landed].heal * healingParts(cast.spell, this.spellPower).factor, cast.spell.id); cast.landed++;
         }
       }
       if (cast.elapsed + 1e-8 >= cast.duration) {
@@ -148,17 +164,17 @@ export class Combat {
         p.nextAttack += p.interval; this.emit('attack', { source: p.id });
       }
       for (const dot of p.dots) {
-        if (this.time >= dot.next) { this.damage(p, dot.damage, dot.source || 'mark'); dot.ticks--; dot.next += dot.interval; }
+        if (this.time >= dot.next) { this.damage(p, dot.damage, dot.source || 'mark', dot.damageType); dot.ticks--; dot.next += dot.interval; }
       }
       p.dots = p.dots.filter(d => d.ticks > 0);
     }
     if (this.boss.hp > 0) {
-      if (this.time >= this.nextStrike) { this.damage(this.party[0], this.encounter.strike.damage, 'strike'); this.nextStrike += this.encounter.strike.every; this.emit('bossAttack'); }
-      if (this.time >= this.nextShard) { this.damage(this.rotatingTarget(), this.encounter.shard.damage, 'shard'); this.nextShard += this.encounter.shard.every; }
+      if (this.time >= this.nextStrike) { this.damage(this.party[0], this.encounter.strike.damage, 'strike', this.encounter.strike.damageType); this.nextStrike += this.encounter.strike.every; this.emit('bossAttack'); }
+      if (this.time >= this.nextShard) { this.damage(this.rotatingTarget(), this.encounter.shard.damage, 'shard', this.encounter.shard.damageType); this.nextShard += this.encounter.shard.every; }
       for (const add of this.adds) {
         if (this.time < add.next) continue;
         const target = add.target === 'tank' ? this.party[0] : this.randomTargets(1)[0];
-        if (target) { this.damage(target, add.damage, add.id); this.emit('rangedAttack', { source: add.id, target: target.id }); }
+        if (target) { this.damage(target, add.damage, add.id, add.damageType); this.emit('rangedAttack', { source: add.id, target: target.id }); }
         add.next += add.every;
       }
     }

@@ -20,7 +20,7 @@ export function setupTeam({ paintPortrait, onHealerChange, settings, onAbilities
     card.style.setProperty('--hero-color', member.color);
     card.setAttribute('aria-controls', 'team-details');
     card.setAttribute('aria-label', `Inspect ${member.name}, ${member.role}, ${roles[member.label]}`);
-    card.innerHTML = `<span class="team-card-role">${roles[member.label]}${member.label === 'HEALER' ? ' · Your hero' : ''}</span><canvas aria-hidden="true"></canvas><strong>${member.name}</strong><span class="team-class">${member.role}</span><span class="team-card-stats">${format(member.maxHp)} health<span>${member.damage ? `${member.damage} damage / hit` : `${format(CONFIG.mana)} mana`}</span></span><span class="team-selection"></span>`;
+    card.innerHTML = `<span class="team-card-role">${roles[member.label]}${member.label === 'HEALER' ? ' · Your hero' : ''}</span><canvas aria-hidden="true"></canvas><strong>${member.name}</strong><span class="team-class">${member.role}</span><span class="team-card-stats">${format(member.maxHp)} health<span>${member.damage ? `${member.damage} damage / hit` : `${format(member.maxMana)} mana`}</span></span><span class="team-selection"></span>`;
     paintPortrait(card.querySelector('canvas'), member);
     card.addEventListener('click', () => {
       selected = member.id;
@@ -55,7 +55,9 @@ export function setupTeam({ paintPortrait, onHealerChange, settings, onAbilities
     details.style.setProperty('--hero-color', member.color);
     const stats = member.damage
       ? [['Maximum health', format(member.maxHp)], ['Damage per attack', member.damage], ['Attack interval', `${member.interval}s`]]
-      : [['Maximum health', format(member.maxHp)], ['Maximum mana', format(CONFIG.mana)], ['Mana regeneration', `${CONFIG.manaRegen} / second`]];
+      : [['Maximum health', format(member.maxHp)], ['Maximum mana', format(member.maxMana)], ['Mana regeneration', `${member.manaRegen} / second`]];
+    stats.push(['Armor', member.armor], ['Resistance', member.resistance]);
+    if (member.label === 'HEALER') stats.push(['Spell Power', member.spellPower]);
     const spells = healer.spellBook;
     const spellBook = spells.length
       ? `<div class="team-spells">${spells.map(spell => `<article><h4>${spell.name}</h4><p>${spell.description}</p><dl><div><dt>Healing</dt><dd>${healingSummary(spell)}</dd></div><div><dt>Mana cost</dt><dd>${format(spell.cost * CONFIG.baseMana)}</dd></div><div><dt>${spell.channel ? 'Channel' : 'Base cast'}</dt><dd>${spell.cast ? spell.cast + 's' : 'Instant'}</dd></div>${spell.cooldown ? `<div><dt>Cooldown</dt><dd>${spell.cooldown}s</dd></div>` : ''}</dl></article>`).join('')}</div>`

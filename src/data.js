@@ -1,4 +1,5 @@
-export const CONFIG = { mana: 1200, baseMana: 30, manaRegen: 4, step: 1 / 60, enrage: 150 };
+export const CONFIG = { mana: 600, baseMana: 30, manaRegen: 2, step: 1 / 60, enrage: 150 };
+export const DAMAGE_TYPES = ['Physical', 'Magic', 'Bleed', 'Chaos'];
 // Chapter selection stays separate from the encounter map so future chapters can add their own maps.
 // Four required encounters. Routes are independent of combat tuning below.
 export const ADVENTURES = [
@@ -42,6 +43,11 @@ export const HEALERS = {
   druid: { id: 'druid', name: 'You', role: 'Druid', label: 'HEALER', maxHp: 400, color: '#9acb91', damage: 0, interval: 2, x: 485, y: 484, spellBook: DRUID_SPELLS, combatSpells: DRUID_SPELLS, description: 'Prepare allies with healing over time. Nourish rewards layered HoTs; Swiftmend trades one for an immediate burst.' },
 };
 export const partyForHealer = healerId => [...PARTY.filter(member => member.label !== 'HEALER'), HEALERS[healerId] || HEALERS.priest];
+// Neutral starting defenses/power: gear may supply bonuses without changing encounter tuning.
+for (const member of [...PARTY, ...Object.values(HEALERS)]) {
+  Object.assign(member, { armor: 0, resistance: 0 });
+  if (member.label === 'HEALER') Object.assign(member, { maxMana: CONFIG.mana, manaRegen: CONFIG.manaRegen, spellPower: 0 });
+}
 export const ENCOUNTER = {
   name: 'The Hollow Warden', maxHp: 4200,
   mechanics: [
@@ -153,4 +159,14 @@ export const ALL_ADVENTURES = CHAPTERS.flatMap(chapter => chapter.nodes);
 // Presentation metadata travels with an encounter; power/timing stays above.
 for (const chapter of CHAPTERS) for (const node of chapter.nodes) {
   Object.assign(CHAPTER_ENCOUNTERS[node.encounter], { chapterId: chapter.id, isBoss: node.kind === 'boss' });
+}
+// Types are explicit on every runtime damage source. No damage/timing rebalance.
+for (const encounter of [ENCOUNTER, ...Object.values(CHAPTER_ENCOUNTERS)]) {
+  encounter.strike.damageType = 'Physical';
+  if (encounter.shard) encounter.shard.damageType = 'Magic';
+  for (const add of encounter.adds || []) add.damageType = add.appearance === 'wisp' ? 'Magic' : 'Physical';
+  for (const mechanic of encounter.mechanics) {
+    if (mechanic.damage) mechanic.damageType = mechanic.target === 'party' ? 'Magic' : 'Physical';
+    if (mechanic.dot) mechanic.dot.damageType = 'Bleed';
+  }
 }

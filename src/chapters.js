@@ -20,7 +20,7 @@ export function setupChapters({ openChapter }) {
       const card = cards[index], state = chapterState(chapter, completed);
       card.dataset.state = state; card.disabled = state === 'locked';
       card.querySelector('.chapter-sigil').textContent = state === 'completed' ? '✓' : state === 'available' ? '✧' : '◇';
-      card.querySelector('.chapter-state').textContent = state === 'completed' ? 'Completed · Explore / Replay' : state === 'available' ? 'Enter chapter →' : `Locked · Complete ${CHAPTERS[index - 1].number}`;
+      card.querySelector('.chapter-state').textContent = state === 'completed' ? 'Completed · Start / Resume run' : state === 'available' ? 'Enter chapter →' : `Locked · Complete ${CHAPTERS[index - 1].number}`;
     });
   } };
 }

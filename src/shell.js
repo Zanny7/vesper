@@ -1,5 +1,5 @@
 // Global navigation owns screens and utility panels, never combat mechanics.
-export function setupShell({ game, view, resetEncounter }) {
+export function setupShell({ game, view, resetEncounter, onAbandon = () => {}, onNavigate = () => {} }) {
   const screens = {
     home: document.querySelector('#home-view'),
     adventures: document.querySelector('#adventures-view'),
@@ -46,6 +46,7 @@ export function setupShell({ game, view, resetEncounter }) {
     }
     view.setEncounterVisible(destination === 'encounter');
     refresh();
+    onNavigate(destination);
     if (focus) {
       const target = destination === 'encounter' ? document.querySelector('#begin') : screens[destination].querySelector('h1');
       target.focus({ preventScroll: true });
@@ -84,6 +85,7 @@ export function setupShell({ game, view, resetEncounter }) {
     pendingNavigation = null;
     resumeOnCancel = false;
     leaveDialog.close();
+    onAbandon();
     resetEncounter();
     navigate(destination);
   });
@@ -118,8 +120,8 @@ export function setupShell({ game, view, resetEncounter }) {
     }
   }, true);
   navigate('home', false);
-  return { refresh, isEncounter: () => current === 'encounter', enterEncounter(encounter) {
-    resetEncounter(encounter);
+  return { refresh, isEncounter: () => current === 'encounter', enterEncounter(encounter, resources) {
+    resetEncounter(encounter, resources);
     navigate('encounter', false);
     game.start();
     refresh();
