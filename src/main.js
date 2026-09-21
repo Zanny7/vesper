@@ -1,5 +1,6 @@
 import { renderPartyEffects } from './party-effects.js';
 import { ChapterRuns } from './chapter-runs.js';
+import { TalentProgression } from './talents.js';
 import { healingParts } from './stats.js';
 import { Combat } from './combat.js';
 import { Battlefield } from './renderer.js';
@@ -9,7 +10,8 @@ import { setupAdventures } from './adventures.js';
 import { setupChapters } from './chapters.js';
 import { setupTeam } from './team.js';
 import { Equipment } from './gear.js';
-import { setupEquipment } from './equipment.js';
+import { setupEquipment, itemIcon } from './equipment.js';
+import { BOSS_BONUS_LOOT_TABLES, NORMAL_LOOT_TABLES, rollBossBonusLoot, rollNormalLoot } from './loot.js';
 import { activeHealer, loadActiveHealer, healerHint } from './healers.js';
 import { formatCooldown, healingSummary } from './ability-presentation.js';
 import { abilityIcon } from './ability-icons.js';
@@ -26,9 +28,11 @@ const equipment = new Equipment(abilityStorage);
 const party = healerId => equipment.party(healerId);
 const game = new Combat(CHAPTER_ENCOUNTERS.sentinel, Math.random, party(activeHealerId), abilitySettings.spells(activeHealerId)), scene = new Battlefield($('#battlefield'));
 const equipmentLocked = () => ['running', 'paused'].includes(game.status);
+const talents = new TalentProgression(abilityStorage, {}, equipmentLocked);
 equipment.isLocked = equipmentLocked;
 const view = setupView(scene);
 let selected = 'tank', hovered = null, lastStatus = '', lastLog = '', last = performance.now(), accumulator = 0, toastTimer;
+let lastLoot = [];
 const clock = t => `${String(Math.floor(t / 60)).padStart(2,'0')}:${String(Math.floor(t % 60)).padStart(2,'0')}`;
 const number = n => Math.round(n).toLocaleString('en-US');
 const roleIcons={tank:'♜',rogue:'⚔',mage:'✦',ranger:'⌁',priest:'✧',druid:'♣'};
@@ -69,7 +73,7 @@ function prepareEncounterUI() {
 prepareEncounterUI();
 function toast(message){$('#toast').textContent=message;$('#toast').classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>$('#toast').classList.remove('show'),2200);}
 function cast(id){const result=game.begin(id,hovered||selected);if(!result.ok)toast(result.reason);}
-function restart(encounter, resources){game.reset(encounter, resources);prepareEncounterUI();scene.reset();selected='tank';hovered=null;accumulator=0;lastStatus='';lastLog='';$('#toast').classList.remove('show');renderUI();}
+function restart(encounter, resources){game.reset(encounter, resources);prepareEncounterUI();scene.reset();selected='tank';hovered=null;accumulator=0;lastStatus='';lastLog='';lastLoot=[];$('#toast').classList.remove('show');renderUI();}
 function begin(){if(['victory','defeat'].includes(game.status)){shell.openChapter();return;}if(game.status==='paused')game.pause();else game.start();renderUI();}
 $('#begin').addEventListener('click',begin);
 $('#restart').textContent = '↻ Restart chapter';
@@ -154,7 +158,10 @@ function renderUI(){
       victory:['ENCOUNTER COMPLETE','Their light endures.',ALL_ADVENTURES.find(node => node.encounter === game.encounter.id).kind === 'boss' ? `${CHAPTERS.find(chapter => chapter.nodes.some(node => node.encounter === game.encounter.id)).number} complete.<br>Your party has survived the vigil.` : `${game.encounter.name} has fallen.<br>Return to the map to choose your next encounter.`,'Play again'],
       defeat:['THE VIGIL ENDS','Even light can falter.',game.time>=CONFIG.enrage?'The guardian enraged after 150 seconds.':game.party.find(p=>p.label==='HEALER').hp<=0?'Your light faded. Remember to heal yourself.':game.party[0].hp<=0?'Aldric fell, and the front line collapsed.':'Too few allies remain to hold the sanctum.','Try again'],
     }[game.status];
-    if (game.status === 'victory') data[3] = 'Continue to chapter map';
+    if (game.status === 'victory') {
+      data[3] = 'Continue to chapter map';
+      data[2] += lastLoot.length ? `<div class="loot-awarded"><small>LOOT ACQUIRED</small>${lastLoot.map(item => `<div class="loot-item"><span class="gear-slot is-equipped">${itemIcon(item)}</span><span><strong>${item.name}</strong><small>Item level ${item.itemLevel}</small></span></div>`).join('')}</div>` : '<div class="loot-awarded"><small>NO GEAR FOUND</small></div>';
+    }
     if (game.status === 'defeat') { data[2] += '<br>This chapter run has ended. Restart from its first encounter; permanent unlocks are safe.'; data[3] = 'Return to chapter map'; }
     if(data){$('#overlay-eyebrow').textContent=data[0];$('#overlay-title').textContent=data[1];$('#overlay-text').innerHTML=data[2];$('#begin').innerHTML=`${data[3]} <span>→</span>`;}
     const ended=['victory','defeat'].includes(game.status);
@@ -185,5 +192,18 @@ const team = setupTeam({ settings: abilitySettings, onAbilitiesChange: () => { b
   selected = 'tank'; hovered = null; buildHealerUI(); prepareEncounterUI(); scene.reset(); renderUI();
 }, equipment, gearUI, equipmentLocked });
 const chapters = setupChapters({ openChapter: chapter => { if (adventures.openChapter(chapter)) shell.openChapter(); } });
-const adventures = setupAdventures({ runs, getParty: () => party(activeHealerId), startEncounter: (node, resources) => { shell.enterEncounter(CHAPTER_ENCOUNTERS[node.encounter], resources); renderUI(); }, onProgress: completed => chapters.refresh(completed) });
+const adventures = setupAdventures({
+  runs,
+  getParty: () => party(activeHealerId),
+  startEncounter: (node, resources) => { shell.enterEncounter(CHAPTER_ENCOUNTERS[node.encounter], resources); renderUI(); },
+  onProgress: completed => { talents.migrateLegacyCampaign(activeHealerId, completed); chapters.refresh(completed); },
+  onVictory: (node, chapter) => talents.awardEncounter(activeHealerId, chapter, node),
+  awardLoot: node => {
+    const rewards = rollNormalLoot(NORMAL_LOOT_TABLES[node.encounter], equipment.ownedIds, activeHealerId);
+    if (node.kind === 'boss') rewards.push(...rollBossBonusLoot(BOSS_BONUS_LOOT_TABLES[node.encounter], [...equipment.ownedIds, ...rewards.map(item => item.id)], activeHealerId));
+    for (const item of rewards) equipment.acquire(item.id);
+    return rewards;
+  },
+  onLoot: rewards => { lastLoot = rewards; gearUI.renderInventory(); team.refresh(); },
+});
 renderUI();requestAnimationFrame(frame);

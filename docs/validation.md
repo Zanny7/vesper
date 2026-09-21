@@ -196,3 +196,35 @@ Full victory/defeat and timing edge cases were checked by simulation tests, not 
 - Maintained development review page lives at /dev/catalogue.html, linked from the home screen on loopback hosts in a separate tab. It automatically lists all authored chapters and uses real equipment/Inventory presentation against an isolated in-memory collection. No player save reads/writes or production item grants. It replaces the temporary artifacts/bat26-gallery.html as the durable review URL.
 - Browser-tested 32px thumbnails, equipment-size icons, Priest weapon choice/equip/unequip, Aldric shield filtering and defensive bonuses, multi-stat/flavor tooltips, and Inventory page 4 of 4. At 390×844 the picker remains within the viewport, images load and the page has no horizontal overflow. Normal game Inventory remains empty. No browser warnings/errors in those checks; no full-campaign balance or cross-browser pass performed.
 - Automated checks cover all chapter/owner/slot combinations, stat validity, unique assets and shared references, chapter progression, ownership isolation, and loopback-only development-link visibility. Final test count is 75. Changes remain uncommitted on dev for review; BAT-27 is next.
+
+## BAT-27 — Chapter 3–4 catalogue and icons
+
+- Added 66 fixed items, 33 per chapter, covering every slot for Priest, Druid and the four companions. Ember Citadel items use ilvl 7–9; Thornveiled Court items use ilvl 10–12. Complete sets average approximately 8 and 11. All Chapter 1–2 definitions remain unchanged, and retired prototype IDs stay retired.
+- Every new item has two explicit supported stat bonuses and individual name/flavor text. Full-set output, health, sustain and combined defenses grow by tier, while each character has individual slot tradeoffs in both later chapters. For example, the Priest trades the lantern's Mana for the scepter's Health, and Druid chest pieces alternate Resistance and Armor. Haste/Crit remain unauthored pending combat support. No encounter balancing, drops, loot tables or hidden bonuses were added.
+- Added 66 distinct SVGs using warmer forge/ember materials in Chapter 3 and pale moon/silver motifs in Chapter 4. Weapons, shields, books and trinkets have distinct forms; armor uses character silhouettes and tier details. Canonical icon references feed existing shared presentation without UI changes.
+- The maintained /dev/catalogue.html automatically displays all 132 items in four chapter sections and a seven-page sandbox inventory. Browser checks verified all images loaded; inspected the new chapter artwork at slot and 32px thumbnail sizes. Tested the four-tier Priest weapon picker, changing authored bonuses, Aldric-only shields, and the final Inventory page and multi-stat tooltip. At 390×844, the four-option picker fit within the viewport and there was no horizontal overflow. No browser warnings/errors. Restored the default viewport; player saves were not touched by the sandbox.
+- All 77 tests pass, including four-chapter coverage and bands, distinct SVG content, full-set growth, actual per-slot tradeoffs and mixed-tier ownership/equipment persistence with no automatic grants. git diff --check passes. No full-campaign or cross-browser balance pass was performed.
+- BAT-27 is ready for review on dev, not committed or pushed. BAT-28 (normal encounter loot tables and weighted drops) is next.
+
+## BAT-28 — Normal encounter loot tables and weighted drops
+
+- Every Chapter 1–4 encounter now exposes a six-item normal loot table in its map detail, using the canonical catalogue records and item icons. Tables contain one option for each healer plus Aldric, Nyx, Sera and Theron; only the currently active healer's option is eligible.
+- Accepted victories roll 50% no item / 35% one item / 15% two items. Each item independently uses 30% active-healer weight and 17.5% for each companion, renormalizing only when an owner's listed item is already owned.
+- Awards enter the persistent equipment collection once, after chapter-run victory validation. Owned items and an earlier item in the same two-drop result are excluded; exhausted tables safely award fewer items. The result overlay reports acquired canonical items or that no gear was found.
+- Hidden Chapter Boss bonus drops remain unimplemented for BAT-29. Item stats and encounter combat tuning were not changed for BAT-28.
+
+## BAT-29 — Hidden Chapter Boss bonus drops
+
+- Each Chapter 1–4 boss now grants one additional weighted item, when an eligible item remains. The bonus pool is chapter-local and excludes that boss's displayed normal loot table, so it remains unrevealed until the victory overlay.
+- The active healer receives the same 30% owner weight as normal loot; each companion receives 17.5%. Already-owned rewards and normal rewards rolled in that same victory are excluded. The normal 50% / 35% / 15% behavior is unchanged.
+- The persistent collection, result overlay, Team sheet and Inventory receive the boss bonus through the existing acquisition flow. No item stats, encounter tuning, map reward preview, or run/progression rules changed.
+- `node --test tests/*.test.mjs` passes all 82 tests; `git diff --check` passes. The local `npm test` launcher could not run because its configured global npm CLI is missing on this machine.
+- `npm test` passes all 81 tests. Browser QA at `127.0.0.1:5173` confirmed the Chapter 1 encounter detail renders all six named icons legibly without crowding the map or action area.
+
+## BAT-30 — Per-healer talent state and progression framework
+
+- Added a reusable four-row talent-tree model with exactly three nodes per row, one- and two-rank validation, 0/2/4/6-point row gates, independent healer allocations, safe save restoration, and free spend/refund/respec operations.
+- Talent changes use the same active-combat lock as equipment. Refunds cannot leave invested talents in a row whose spent-point requirement is no longer met, and respeccing only changes talent allocations; chapter Health and Mana remain untouched.
+- Accepted victories permanently award the active healer once for each chapter's first encounter and boss. Milestones live outside chapter-run attempts, so defeat/restart cannot remove or farm them. Four chapters currently expose eight points per healer, while milestone keys and healer records remain open-ended.
+- Existing valid campaign progress migrates once to the healer active when the upgraded save first loads. The one-time marker prevents account-wide historical clears from being duplicated onto a different healer after switching or reloading.
+- `npm test` passes all 88 tests and `git diff --check` passes. Browser smoke testing at `127.0.0.1:5173` confirmed the app loads, chapter navigation works, and no browser warnings/errors are emitted. BAT-31's Team talent UI and concrete healer talent effects remain intentionally out of scope.

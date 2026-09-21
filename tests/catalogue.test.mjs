@@ -6,20 +6,20 @@ import { ITEM_OWNERS, slotsForOwner, validateCatalogue, averageItemLevel } from 
 import { Equipment } from '../src/gear.js';
 import { itemIcon, equipmentSlot } from '../src/equipment.js';
 
-test('Chapters 1 and 2 cover every character slot with fixed, valid metadata', () => {
+test('Chapters 1–4 cover every character slot with fixed, valid metadata', () => {
   assert.deepEqual(validateCatalogue(GEAR), []);
-  assert.equal(GEAR.length, 66);
+  assert.equal(GEAR.length, 132);
   assert.equal(new Set(GEAR.map(item => item.name)).size, GEAR.length);
-  for (const chapter of [1, 2]) for (const owner of ITEM_OWNERS) {
+  for (const chapter of [1, 2, 3, 4]) for (const owner of ITEM_OWNERS) {
     const items = GEAR.filter(item => item.chapter === chapter && item.owner === owner);
     assert.deepEqual(items.map(item => item.slot).sort(), [...slotsForOwner(owner)].sort());
     const equipment = { [owner]: Object.fromEntries(items.map(item => [item.slot, item.id])) };
-    assert.ok(Math.abs(averageItemLevel({ id: owner }, equipment) - (chapter === 1 ? 2 : 5)) < .2);
+    assert.ok(Math.abs(averageItemLevel({ id: owner }, equipment) - (chapter * 3 - 1)) < .2);
   }
   for (const item of GEAR) {
     const [min, max] = GEAR_CHAPTER_BANDS[item.chapter];
     assert.ok(item.itemLevel >= min && item.itemLevel <= max);
-    assert.match(item.id, /^ch[12]-/);
+    assert.match(item.id, /^ch[1-4]-/);
     assert.ok(item.flavor.length > 15);
     assert.ok(Object.values(item.stats).every(value => value > 0));
     assert.ok(!('haste' in item.stats) && !('crit' in item.stats), 'do not sell inert combat bonuses');
@@ -42,7 +42,7 @@ test('each item has a distinct local SVG illustration used by shared presentatio
 
 test('authored chapter upgrades increase main output and total survivability without auto-grants', () => {
   const totals = {};
-  for (const chapter of [1, 2]) {
+  for (const chapter of [1, 2, 3, 4]) {
     const gear = new Equipment();
     assert.deepEqual(gear.collection(), []);
     for (const item of GEAR.filter(item => item.chapter === chapter)) {
@@ -52,8 +52,8 @@ test('authored chapter upgrades increase main output and total survivability wit
     }
     totals[chapter] = Object.fromEntries(ITEM_OWNERS.map(id => [id, gear.apply({ id })]));
   }
-  for (const owner of ITEM_OWNERS) {
-    const lower = totals[1][owner], upper = totals[2][owner];
+  for (const chapter of [2, 3, 4]) for (const owner of ITEM_OWNERS) {
+    const lower = totals[chapter - 1][owner], upper = totals[chapter][owner];
     const output = ['priest', 'druid'].includes(owner) ? 'spellPower' : 'damage';
     assert.ok(upper[output] > lower[output]);
     assert.ok(upper.maxHp > lower.maxHp);
@@ -63,4 +63,31 @@ test('authored chapter upgrades increase main output and total survivability wit
       assert.ok(upper.manaRegen > lower.manaRegen);
     }
   }
+});
+
+test('late chapters retain per-slot tradeoffs rather than raising every stat', () => {
+  for (const chapter of [3, 4]) for (const owner of ITEM_OWNERS) {
+    const items = GEAR.filter(item => item.chapter === chapter && item.owner === owner);
+    assert.ok(items.every(item => Object.keys(item.stats).length >= 2));
+    assert.ok(items.some(item => {
+      const earlier = GEAR.find(previous => previous.chapter === chapter - 1 && previous.owner === owner && previous.slot === item.slot);
+      return Object.entries(earlier.stats).some(([stat, value]) => (item.stats[stat] || 0) < value);
+    }), `${owner} chapter ${chapter} needs an actual stat tradeoff`);
+  }
+});
+
+test('mixed-tier ownership and equipment survive reload without granting other new items', () => {
+  const data = new Map(), storage = { getItem: key => data.get(key), setItem: (key, value) => data.set(key, value) };
+  const gear = new Equipment(storage);
+  for (const id of ['ch1-book-of-last-names', 'ch3-lantern-of-unspent-dawn', 'ch4-moonthorn-bulwark']) {
+    const item = GEAR.find(candidate => candidate.id === id);
+    gear.acquire(id);
+    gear.equip({ id: item.owner }, item.slot, id);
+  }
+  const restored = new Equipment(storage);
+  assert.equal(restored.collection().length, 3);
+  assert.deepEqual(restored.apply({ id: 'priest' }), { id: 'priest', maxMana: 80, spellPower: 25 });
+  assert.deepEqual(restored.apply({ id: 'tank' }), { id: 'tank', armor: 16, maxHp: 35 });
+  assert.equal(restored.equip({ id: 'priest' }, 'Weapon', 'ch4-scepter-of-the-last-mercy'), false);
+  assert.equal(restored.equip({ id: 'druid' }, 'Weapon', 'ch3-lantern-of-unspent-dawn'), false);
 });

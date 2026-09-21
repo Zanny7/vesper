@@ -2,9 +2,11 @@ import { healerHint, loadActiveHealer } from './healers.js';
 import { CHAPTERS, CHAPTER_ENCOUNTERS } from './data.js';
 import { resourceKey } from './stats.js';
 import { nodeState, chapterComplete, chapterUnlocked, restoreCampaign } from './progression.js';
+import { normalLootForEncounter } from './loot.js';
+import { itemIcon } from './equipment.js';
 export { nodeState, chapterComplete, restoreProgress, awardVictory } from './progression.js';
 
-export function setupAdventures({ startEncounter, onProgress, runs, getParty }) {
+export function setupAdventures({ startEncounter, onProgress, runs, getParty, awardLoot, onLoot, onVictory }) {
   const $ = selector => document.querySelector(selector);
   const map = $('#adventure-map'), dialog = $('#encounter-preview');
   // Preserve Chapter I progress when upgrading to the multi-chapter campaign.
@@ -95,6 +97,8 @@ export function setupAdventures({ startEncounter, onProgress, runs, getParty }) 
     $('#detail-enemies').textContent = `${encounter.name}${count ? ` + ${encounter.adds.map((add, i) => add.name || `Pale Archer ${i + 1}`).join(', ')}` : ' · Alone'}`;
     $('#detail-mechanics').innerHTML = `<li><strong>Tank strikes</strong><p>${encounter.strike.damage} damage to Aldric every ${encounter.strike.every}s.</p></li>${encounter.mechanics.map(m => `<li><strong>${m.name}</strong><p>${healerHint(m.hint, loadActiveHealer())}</p></li>`).join('')}${count ? `<li><strong>Supporting enemies</strong><p>${encounter.adds.map(add => `${add.name || 'Pale Archer'} attacks ${add.target === 'tank' ? 'Aldric' : 'random living allies'}.`).join(' ')} Your party focuses the main enemy; the others flee when it falls.</p></li>` : ''}`;
     $('#detail-lesson').textContent = healerHint(encounter.lesson, loadActiveHealer());
+    const loot = normalLootForEncounter(encounter.id);
+    $('#detail-loot').innerHTML = loot.map(item => `<div class="loot-item"><span class="gear-slot is-equipped">${itemIcon(item)}</span><span><strong>${item.name}</strong><small>Item level ${item.itemLevel}</small></span></div>`).join('');
     $('#preview-encounter').disabled = run.status !== 'active' || state !== 'available';
     $('#preview-encounter').textContent = run.status !== 'active' ? 'Restart chapter to continue' : state === 'locked' ? 'Encounter locked' : state === 'completed' ? 'Cleared this run' : 'Prepare encounter →';
     $('#detail-state').textContent = state === 'locked' ? `Complete ${node.from.map(id => nodes.find(item => item.id === id).name).join(' or ')} in this run first.` : state === 'completed' ? 'Health and mana saved. Choose your next encounter.' : 'Enter with the resources shown on the map.';
@@ -126,6 +130,8 @@ export function setupAdventures({ startEncounter, onProgress, runs, getParty }) 
       const node = nodes.find(n => n.id === active);
       if (!runs.finish(chapter, node, game)) return;
       if (game.status === 'defeat') { active = null; selected = nodes[0].id; render(); return; }
+      onVictory?.(node, chapter);
+      onLoot?.(awardLoot?.(node) || []);
       completed.add(node.id);
       try { localStorage.setItem(storageKey, JSON.stringify([...completed])); } catch { /* Keep session progress. */ }
       runCompleted = new Set(currentRun().completed);
