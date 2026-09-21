@@ -1,27 +1,62 @@
-.utility-surface.equipment-open { width: min(950px, calc(100% - 40px)); max-height: calc(100dvh - 155px); overflow-y: auto; background: #132129; }
-.equipment-layout { display: grid; grid-template-columns: minmax(150px, 1fr) minmax(180px, 1.6fr) minmax(110px, .8fr); gap: 24px; }
-.equipment-layout h3 { margin: 0 0 18px; color: #aebeaf; font-size: 11px; font-family: 'DM Sans', sans-serif; letter-spacing: 1.2px; text-transform: uppercase; }
-#equipment-slots { padding: 0; margin: 0; list-style: none; display: grid; gap: 10px; }
-#equipment-slots li { display: flex; align-items: center; gap: 12px; padding: 10px; border: 1px solid #66745c55; border-radius: 4px; background: #1b2c30; }
-.empty-slot { display: grid; place-items: center; width: 35px; height: 35px; color: #8b9d8f; border: 1px dashed #7e8a6877; border-radius: 3px; font-size: 22px; }
-#equipment-slots strong { display: block; font-size: 12px; font-weight: 500; color: #e0d4b6; }
-#equipment-slots li div > span { display: block; font-size: 10px; color: #a2b0a7; margin-top: 4px; }
-.equipment-hero { min-width: 0; text-align: center; display: flex; flex-direction: column; justify-content: center; background: radial-gradient(ellipse, #72855a25, transparent 70%); border-inline: 1px solid #62725433; }
-#equipment-portrait { width: 100%; height: 240px; object-fit: contain; }
-#equipment-hero-name { font-size: 32px; font-family: 'Cormorant Garamond', Georgia, serif; }
-#equipment-hero-role { color: #ceb889; font-size: 12px; margin-top: 8px; }
-#equipment-stats { display: grid; gap: 22px; margin: 0; }
-#equipment-stats dt { color: #b1c0b6; font-size: 12px; }
-#equipment-stats dd { margin: 6px 0 0; font-size: 27px; color: #e5cfa4; }
-.utility-surface .equipment-note { margin: 24px 0 0; font-size: 11px; color: #a0b0a5; border-top: 1px solid #62725444; padding-top: 16px; }
+/* Equipment surfaces share the same icon component across sheet, picker and bag. */
+.gear-slot { position: relative; display: grid; place-items: center; width: 62px; aspect-ratio: 1; padding: 7px; flex-shrink: 0; border: 1px solid #687568; border-radius: 4px; background: linear-gradient(135deg, #243236, #101e23); box-shadow: inset 0 0 0 3px #101b20, 0 3px 9px #0003; color: #ddc38e; }
+.gear-slot svg, .gear-slot img { display: block; width: 100%; height: 100%; object-fit: contain; }
+.gear-slot.is-empty { color: #82968a; border-color: #40544c; }
+.gear-slot.is-empty svg { opacity: .32; }
+button.gear-slot:hover, button.gear-slot[aria-expanded="true"], button.gear-slot:focus-visible { border-color: #e1c493; background: #304039; outline: 2px solid #b4c3a5; outline-offset: 3px; }
+.gear-slot.is-equipped { border-color: #ab9566; background: radial-gradient(ellipse at 50% 40%, #77623f66, #152229 85%); }
+.gear-slot:disabled { opacity: .5; cursor: not-allowed; }
+.character-sheet { display: grid; grid-template-columns: 1.15fr 1fr; gap: 28px; align-items: stretch; }
+.paper-doll { min-width: 0; display: grid; grid-template-columns: 64px minmax(0, 1fr) 64px; align-items: center; gap: 6px; min-height: 360px; padding: 18px; border: 1px solid #40534a; border-radius: 5px; background: radial-gradient(ellipse, #61745a26, transparent 70%), #101e22; }
+.paper-slots { display: flex; flex-direction: column; justify-content: space-evenly; gap: 18px; align-self: stretch; }
+.paper-slot { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.paper-slot > span { font-size: 10px; color: #a0b1a6; }
+.paper-portrait { min-width: 0; text-align: center; position: relative; }
+.paper-portrait canvas { display: block; width: 100%; height: 300px; object-fit: contain; }
+.paper-caption { color: var(--hero-color); font-size: 10px; letter-spacing: 2px; text-transform: uppercase; }
+.character-stats { display: flex; flex-direction: column; min-width: 0; padding: 20px 0; }
+.character-stats h3 { margin: 0 0 16px; font-size: 23px; color: #d9c7a2; }
+.character-stats .team-stat-grid { display: flex; flex-direction: column; gap: 0; }
+.character-stats .team-stat-grid > div { display: flex; justify-content: space-between; gap: 12px; align-items: baseline; padding: 9px 0; border: 0; border-bottom: 1px solid #53685833; }
+.character-stats .team-stat-grid dd { margin: 0; font-size: 18px; }
+.stat-note { margin: auto 0 0; padding-top: 14px; font-size: 10px; color: #8c9e96; }
+.gear-picker, .gear-tooltip { position: fixed; z-index: 60; width: min(295px, calc(100vw - 16px)); padding: 15px; border: 1px solid #a08b60; border-radius: 5px; background: #112127; box-shadow: 0 12px 40px #000a; }
+.gear-picker { max-height: calc(100dvh - 16px); overflow-y: auto; }
+.gear-picker-heading { display: flex; align-items: center; justify-content: space-between; }
+.gear-picker-heading > strong { font: 24px 'Cormorant Garamond', Georgia, serif; color: #e1cfa6; }
+.gear-picker-heading button { border: 0; background: transparent; color: #bcc8bb; padding: 6px; }
+.gear-picker p { color: #99ada1; font-size: 11px; margin: 6px 0 14px; }
+.gear-choices { display: grid; gap: 8px; }
+.gear-choice { display: flex; align-items: center; gap: 12px; width: 100%; padding: 8px; text-align: left; background: #1b2e31; border: 1px solid #3b5149; border-radius: 3px; }
+.gear-choice:hover, .gear-choice:focus-visible { background: #304139; border-color: #c9b782; }
+.gear-choice .gear-slot { width: 44px; padding: 4px; }
+.gear-choice strong { display: block; font-size: 12px; color: #e4d2a8; }
+.gear-choice small, .gear-tooltip small { display: block; margin-top: 5px; font-size: 10px; color: #a4b5a8; }
+.gear-unequip { width: 100%; margin-top: 12px; }
+.gear-tooltip { z-index: 70; width: min(255px, calc(100vw - 16px)); pointer-events: none; }
+.gear-tooltip > strong { color: #e6cea0; font-size: 14px; }
+.gear-tooltip dl { margin: 14px 0 0; display: grid; gap: 6px; font-size: 11px; }
+.gear-tooltip dl div { display: flex; justify-content: space-between; gap: 12px; color: #b7cbb4; }
+.gear-tooltip dd { margin: 0; color: #cee5bc; }
+.gear-tooltip p { font-style: italic; font-size: 11px; color: #b2a68a; margin: 13px 0 0; }
+.bag-grid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 7px; }
+.bag-grid .gear-slot { width: 100%; }
+.bag-footer { display: flex; gap: 8px; align-items: center; margin-top: 14px; color: #9bad9e; font-size: 11px; }
+.bag-footer > span { margin-right: auto; }
+.bag-footer button { padding: 5px 9px; }
+.bag-equipped { position: absolute; right: 3px; bottom: 1px; font-size: 9px; color: #a7cfa7; }
+.utility-surface .bag-help { font-size: 10px; margin: 10px 0 0; }
+@media (max-width: 780px) {
+  .character-sheet { grid-template-columns: 1fr; gap: 8px; }
+  .paper-doll { min-height: 340px; }
+  .character-stats { min-height: 340px; }
+}
 @media (max-width: 600px) {
-  .utility-surface.equipment-open { width: calc(100% - 24px); padding: 16px; max-height: calc(100dvh - 140px); }
-  .equipment-layout { grid-template-columns: minmax(80px, 1fr) minmax(85px, 1.2fr) minmax(60px, .8fr); gap: 10px; }
-  .equipment-layout h3 { font-size: 9px; letter-spacing: .6px; }
-  #equipment-slots li { padding: 10px 7px; gap: 5px; }
-  .empty-slot { display: none; }
-  #equipment-portrait { height: 180px; }
-  #equipment-hero-name { font-size: 26px; }
-  #equipment-hero-role { font-size: 10px; }
-  #equipment-stats dd { font-size: 22px; }
+  .paper-doll { grid-template-columns: 50px minmax(0, 1fr) 50px; padding: 12px 8px; gap: 0; }
+  .paper-slot .gear-slot { width: 48px; }
+  .paper-portrait canvas { height: 280px; }
+  .paper-caption { font-size: 9px; letter-spacing: .5px; }
+  .team-heading-row { display: block; }
+  .healer-selector { margin-top: 20px; min-width: 0; }
+  .utility-surface { max-height: calc(100dvh - 90px); overflow-y: auto; }
 }

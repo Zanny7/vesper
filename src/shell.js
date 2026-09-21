@@ -1,5 +1,5 @@
 // Global navigation owns screens and utility panels, never combat mechanics.
-export function setupShell({ game, view, resetEncounter, onAbandon = () => {}, onNavigate = () => {} }) {
+export function setupShell({ game, view, resetEncounter, onAbandon = () => {}, onNavigate = () => {}, onEquipmentShortcut = () => {}, onInventoryOpen = () => {}, onUtilityClose = () => {} }) {
   const screens = {
     home: document.querySelector('#home-view'),
     adventures: document.querySelector('#adventures-view'),
@@ -8,8 +8,6 @@ export function setupShell({ game, view, resetEncounter, onAbandon = () => {}, o
     encounter: document.querySelector('#encounter-view'),
   };
   const utilitySurface = document.querySelector('#utility-surface');
-  const equipmentContent = document.querySelector('#equipment-content');
-  const utilityDescription = document.querySelector('#utility-description');
   const utilityButtons = [...document.querySelectorAll('[data-utility]')];
   const navigation = [...document.querySelectorAll('.primary-nav [data-navigate]')];
   const leaveDialog = document.querySelector('#leave-encounter');
@@ -21,9 +19,10 @@ export function setupShell({ game, view, resetEncounter, onAbandon = () => {}, o
   const activeEncounter = () => current === 'encounter' && ['running', 'paused'].includes(game.status);
 
   function closeUtility() {
+    if (utility) onUtilityClose();
     utility = null;
     utilitySurface.hidden = true;
-    for (const button of utilityButtons) button.setAttribute('aria-expanded', 'false');
+    for (const button of utilityButtons) if (button.dataset.utility === 'inventory') button.setAttribute('aria-expanded', 'false');
   }
 
   function refresh() {
@@ -93,15 +92,14 @@ export function setupShell({ game, view, resetEncounter, onAbandon = () => {}, o
     button.addEventListener('click', () => {
       if (activeEncounter()) return;
       const next = button.dataset.utility;
+      if (next === 'equipment') { onEquipmentShortcut(); requestNavigation('team'); return; }
       if (utility === next) return closeUtility();
       closeUtility();
       utility = next;
       const name = next === 'inventory' ? 'Inventory' : 'Equipment';
       document.querySelector('#utility-title').textContent = name;
-      utilityDescription.textContent = 'Your pack is empty. Collected items will appear here.';
-      utilityDescription.hidden = next === 'equipment';
-      equipmentContent.hidden = next !== 'equipment';
-      utilitySurface.classList.toggle('equipment-open', next === 'equipment');
+      document.querySelector('#utility-description').hidden = true;
+      onInventoryOpen();
       utilitySurface.hidden = false;
       button.setAttribute('aria-expanded', 'true');
       document.querySelector('#utility-title').focus({ preventScroll: true });

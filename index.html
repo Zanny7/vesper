@@ -10,6 +10,7 @@
       <h1 id="home-title" tabindex="-1">A moment of light<br>in the dark.</h1>
       <p>Vesper is a quiet test of attention. Your party will face the darkness; you will keep their light alive.</p>
       <button class="primary" data-navigate="adventures">Begin your vigil <span>→</span></button>
+      <p class="dev-tools"><a id="dev-catalogue-link" href="/dev/catalogue.html" target="_blank" rel="noopener" hidden>Development · Gear catalogue ↗</a></p>
     </section>
     <div class="home-ritual" aria-hidden="true"><span></span><i></i><b></b></div>
   </main>
@@ -64,18 +65,11 @@ Flash Heal grants a charge, up to two. Each Greater Heal or Prayer consumes one 
   <aside id="utility-surface" class="utility-surface" aria-labelledby="utility-title" hidden>
     <div class="utility-heading"><h2 id="utility-title" tabindex="-1"></h2><button class="quiet" id="close-utility" aria-label="Close utility panel">✕</button></div>
     <p id="utility-description"></p>
-    <div id="equipment-content" hidden>
-      <div class="equipment-layout">
-        <section aria-labelledby="equipment-slots-title"><h3 id="equipment-slots-title">Equipment slots</h3><ul id="equipment-slots"></ul></section>
-        <section class="equipment-hero" aria-label="Your priest"><canvas id="equipment-portrait" role="img" aria-label="Your priest holding a staff, wearing the familiar healer robes"></canvas><strong id="equipment-hero-name"></strong><span id="equipment-hero-role"></span></section>
-        <section aria-labelledby="equipment-stats-title"><h3 id="equipment-stats-title">Core stats</h3><dl id="equipment-stats"></dl></section>
-      </div>
-      <p class="equipment-note">Starting stats, before encounter effects. No items equipped. Haste and Crit are not yet provided and display as 0.</p>
-    </div>
+    <div id="inventory-content"></div>
   </aside>
   <div class="utility-controls" role="group" aria-label="Character utilities">
     <button class="utility-button" id="inventory-button" data-utility="inventory" aria-label="Inventory" title="Inventory" aria-expanded="false" aria-controls="utility-surface"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M8 6V4h8v2M6 7h12l2 14H4L6 7Z"/><path d="M8 7v4a4 4 0 0 0 8 0V7M8 16h8"/></svg></button>
-    <button class="utility-button" id="equipment-button" data-utility="equipment" aria-label="Equipment" title="Equipment" aria-expanded="false" aria-controls="utility-surface"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="m8 3-6 5 4 4 2-2-1 11h10l-1-11 2 2 4-4-6-5a4 4 0 0 1-8 0Z"/><path d="M8 16h8"/></svg></button>
+    <button class="utility-button" id="equipment-button" data-utility="equipment" aria-label="Equipment" title="Equipment" aria-controls="team-details"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="m8 3-6 5 4 4 2-2-1 11h10l-1-11 2 2 4-4-6-5a4 4 0 0 1-8 0Z"/><path d="M8 16h8"/></svg></button>
   </div>
   <dialog id="ability-config" aria-labelledby="ability-config-title" aria-describedby="ability-config-help">
     <span class="eyebrow">CONFIGURE ABILITY</span><h2 id="ability-config-title" tabindex="-1"></h2>
@@ -94,4 +88,5 @@ Flash Heal grants a charge, up to two. Each Greater Heal or Prayer consumes one 
   </dialog>
   <dialog id="help"><button id="close-help" class="quiet close-dialog" aria-label="Close help">✕</button><span class="eyebrow">THE HEALER'S FIELD GUIDE</span><h2>Keep their light alive.</h2><p>Hover over a party frame and press the key shown on a spell. Without a hovered frame, spells use your selected ally. Click a frame or use <b>↑ / ↓</b> to select. You can also click a spell.</p><div class="help-spells"></div><p id="help-haste"><b>Post-Haste:</b> Completed Flash Heals grant up to two charges. Greater Heal and Prayer each consume one charge when casting begins, reducing that cast to 1.8 seconds.</p><p><b>Watch the whole party.</b> Enemies strike Aldric while supporting enemies pressure the party. Your party focuses the leader; supporting enemies flee when it falls. Chapter 2 introduces party-wide damage. Chapter 3 highlights two or three allies before a split attack. Chapter 4 adds timed bleeds: heal through their ticks until they expire; there is no dispel.</p><p><b>Space</b> pauses. <b>Esc</b> cancels a cast; spent mana, cooldowns, and Post-Haste charges are not refunded. Switching targets during a cast does not redirect it. The game pauses when you leave the tab.</p><p>Defeat follows if you or the tank die, fewer than three allies remain, or the 150-second enrage expires. Defeat each leader to advance. Complete all four encounters in Chapter 1. In later chapters, follow either branch and defeat the final boss to unlock the next chapter; optional paths can be explored afterward.</p><button class="primary" id="help-done">Understood</button></dialog>
   <script type="module" src="/src/main.js"></script>
+  <script type="module" src="/src/dev-tools.js"></script>
 </body></html>

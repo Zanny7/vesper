@@ -43,6 +43,10 @@ export class ChapterRuns {
     const run = { status: 'active', completed: [], resources: fullResources(party), inEncounter: null };
     this.runs[chapter.id] = run; this.save(); return run;
   }
+  reconcileParty(party) {
+    for (const run of Object.values(this.runs)) if (run?.resources && run.status !== 'failed') run.resources = reconcileResources(run.resources, party);
+    this.save();
+  }
   begin(chapter, node, party) {
     const run = this.get(chapter, party);
     if (run.status !== 'active' || run.inEncounter || !chapter.nodes.includes(node) || nodeState(node, new Set(run.completed)) !== 'available') return null;

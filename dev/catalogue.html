@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Vesper — Catalogue review</title>
+  <link rel="stylesheet" href="/src/equipment.css">
+  <link rel="stylesheet" href="/dev/catalogue.css">
+</head>
+<body>
+  <header><a href="/">← Back to Vesper</a><h1>Gear catalogue review</h1>
+    <p>Development sandbox · All authored items are available here. No player saves are read or changed. Reload to reset.</p>
+  </header>
+  <section aria-labelledby="equipment-heading">
+    <h2 id="equipment-heading">Equipment sandbox</h2>
+    <label for="owner">Character</label> <select id="owner"></select>
+    <div id="sheet"></div>
+    <p id="totals" role="status" aria-live="polite"></p>
+    <h3>Inventory</h3><div id="inventory-content"></div>
+  </section>
+  <main id="catalogue" aria-label="Authored item catalogue"></main>
+  <script type="module" src="/dev/catalogue.js"></script>
+</body>
+</html>

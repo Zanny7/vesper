@@ -8,8 +8,9 @@ import { setupShell } from './shell.js';
 import { setupAdventures } from './adventures.js';
 import { setupChapters } from './chapters.js';
 import { setupTeam } from './team.js';
+import { Equipment } from './gear.js';
 import { setupEquipment } from './equipment.js';
-import { activeHealer, activeParty, loadActiveHealer, healerHint } from './healers.js';
+import { activeHealer, loadActiveHealer, healerHint } from './healers.js';
 import { formatCooldown, healingSummary } from './ability-presentation.js';
 import { abilityIcon } from './ability-icons.js';
 import { createAbilitySettings, bindingFromEvent } from './ability-settings.js';
@@ -21,9 +22,12 @@ let abilityStorage;
 try { abilityStorage = localStorage; } catch { /* Settings remain available in memory. */ }
 const abilitySettings = createAbilitySettings(abilityStorage);
 const runs = new ChapterRuns(abilityStorage);
-const game = new Combat(CHAPTER_ENCOUNTERS.sentinel, Math.random, activeParty(activeHealerId), abilitySettings.spells(activeHealerId)), scene = new Battlefield($('#battlefield'));
+const equipment = new Equipment(abilityStorage);
+const party = healerId => equipment.party(healerId);
+const game = new Combat(CHAPTER_ENCOUNTERS.sentinel, Math.random, party(activeHealerId), abilitySettings.spells(activeHealerId)), scene = new Battlefield($('#battlefield'));
+const equipmentLocked = () => ['running', 'paused'].includes(game.status);
+equipment.isLocked = equipmentLocked;
 const view = setupView(scene);
-setupEquipment((canvas, member) => scene.paintPortrait(canvas, member, 200));
 let selected = 'tank', hovered = null, lastStatus = '', lastLog = '', last = performance.now(), accumulator = 0, toastTimer;
 const clock = t => `${String(Math.floor(t / 60)).padStart(2,'0')}:${String(Math.floor(t % 60)).padStart(2,'0')}`;
 const number = n => Math.round(n).toLocaleString('en-US');
@@ -171,11 +175,15 @@ function frame(now){
   uiElapsed+=dt;if(uiElapsed>=1/30){renderUI();uiElapsed=0;}
   requestAnimationFrame(frame);
 }
-const shell = setupShell({ game, view, resetEncounter: restart, onAbandon: () => adventures.abandon(), onNavigate: destination => { if (destination === 'chapter') adventures.refresh(); } });
-const team = setupTeam({ settings: abilitySettings, onAbilitiesChange: () => { buildHealerUI(); renderUI(); }, paintPortrait: (canvas, member) => scene.paintPortrait(canvas, member), onHealerChange: healerId => {
-  activeHealerId = healerId; game.setLoadout(activeParty(healerId), abilitySettings.spells(healerId));
-  selected = 'tank'; hovered = null; buildHealerUI(); prepareEncounterUI(); scene.reset(); renderUI();
+const gearUI = setupEquipment({ equipment, isLocked: equipmentLocked, onChange: () => {
+  runs.reconcileParty(party(activeHealerId)); game.setLoadout(party(activeHealerId), abilitySettings.spells(activeHealerId));
+  buildHealerUI(); prepareEncounterUI(); scene.reset(); renderUI(); team.refresh();
 } });
+const shell = setupShell({ game, view, resetEncounter: restart, onAbandon: () => adventures.abandon(), onNavigate: destination => { gearUI.close(); if (destination === 'chapter') adventures.refresh(); }, onEquipmentShortcut: () => team.selectHealer(activeHealerId), onInventoryOpen: () => gearUI.renderInventory(), onUtilityClose: () => gearUI.close() });
+const team = setupTeam({ settings: abilitySettings, onAbilitiesChange: () => { buildHealerUI(); renderUI(); }, paintPortrait: (canvas, member, width) => scene.paintPortrait(canvas, member, width), onHealerChange: healerId => {
+  activeHealerId = healerId; runs.reconcileParty(party(healerId)); game.setLoadout(party(healerId), abilitySettings.spells(healerId));
+  selected = 'tank'; hovered = null; buildHealerUI(); prepareEncounterUI(); scene.reset(); renderUI();
+}, equipment, gearUI, equipmentLocked });
 const chapters = setupChapters({ openChapter: chapter => { if (adventures.openChapter(chapter)) shell.openChapter(); } });
-const adventures = setupAdventures({ runs, getParty: () => activeParty(activeHealerId), startEncounter: (node, resources) => { shell.enterEncounter(CHAPTER_ENCOUNTERS[node.encounter], resources); renderUI(); }, onProgress: completed => chapters.refresh(completed) });
+const adventures = setupAdventures({ runs, getParty: () => party(activeHealerId), startEncounter: (node, resources) => { shell.enterEncounter(CHAPTER_ENCOUNTERS[node.encounter], resources); renderUI(); }, onProgress: completed => chapters.refresh(completed) });
 renderUI();requestAnimationFrame(frame);

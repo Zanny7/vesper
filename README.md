@@ -18,6 +18,12 @@ npm test
 
 The 15 Node test cases cover spell timing, resource costs, Post-Haste consumption, separate Penance launches/impacts, cancellation, cooldowns, overheal, death, encounter schedules, damage-over-time, pause, outcomes, reset, full encounter feasibility, and ability-label formatting.
 
+## Development catalogue
+
+The home screen shows **Development · Gear catalogue** when served on localhost or a loopback address. It opens `/dev/catalogue.html` in a separate tab, leaving the game page intact. You can also open [the local catalogue](http://localhost:5173/dev/catalogue.html) directly while the server is running.
+
+This maintained review page shows every authored chapter, item stats/flavor, and icons at equipment-slot and thumbnail sizes. Its equipment picker and paginated inventory use the real shared UI with an in-memory collection. It never reads or writes player saves; reload resets sandbox equipment. New catalogue chapters appear automatically. The link is hidden on non-local hosts, but the page itself is a harmless static development asset, not access-controlled.
+
 ## Play
 
 - **Adventures** is the landing screen. Choose **Enter sanctum** to open the encounter. **Adventures** and **Team** remain available in the header; leaving a running or paused encounter requires confirmation. Cancel preserves the attempt; confirm resets it and opens the selected screen.

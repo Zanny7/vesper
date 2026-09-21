@@ -2,6 +2,8 @@
 .home-welcome { position: relative; z-index: 1; width: min(610px, 100%); text-align: center; }
 .home-welcome h1 { margin: 18px 0; font: 500 clamp(50px, 7vw, 82px)/.88 'Cormorant Garamond', Georgia, serif; letter-spacing: -.02em; color: #eee6d0; }
 .home-welcome h1:focus { outline: none; }
+.home-welcome .dev-tools { margin: 20px auto 0; font-size: 11px; }
+.dev-tools a { color: #a9b7a5; text-underline-offset: 4px; }
 .home-welcome p { max-width: 430px; margin: 0 auto 30px; color: #adbbb2; font-size: 14px; line-height: 1.9; }
 .home-sigil { display: grid; place-items: center; width: 128px; height: 128px; margin: 0 auto 30px; border: 1px solid #cdb87977; border-radius: 50%; color: #ead49e; font-size: 61px; box-shadow: inset 0 0 45px #e0bc6f18, 0 0 55px #bd9e6020; }
 .home-sigil::before, .home-sigil::after { content: ''; position: absolute; width: 168px; height: 168px; border: 1px solid #8ba4972d; border-radius: 50%; }

@@ -25,7 +25,7 @@ export class Battlefield {
     const c = canvas.getContext('2d');
     canvas.width = width; canvas.height = 280;
     c.translate(width / 2, 220); c.scale(2.2, 2.2);
-    this.drawCharacter(c, { ...member, x: 0, y: 0, hp: member.maxHp }, { status: 'ready', cast: null }, 0, null, null);
+    this.drawCharacter(c, { ...member, x: 0, y: 0, hp: member.maxHp, hideName: true }, { status: 'ready', cast: null }, 0, null, null);
   }
   point(id) { return positions[id] || positions[this.healerId] || positions.priest; }
   receive(events) {
@@ -172,7 +172,7 @@ export class Battlefield {
     else{this.poly(c,[[-12,-55],[-13,-68],[-5,-77],[7,-76],[14,-63],[11,-53],[6,-66],[0,-70],[-6,-66],[-6,-55]],dark,light);this.line(c,[[-5,-60],[4,-59]],'#263b3c',2);}
     if(p.label==='HEALER'){this.ellipse(c,0,-83,14,4,null,'#ddca9388');}
     c.restore();
-    c.save();c.font='10px "DM Sans",sans-serif';c.textAlign='center';c.fillStyle=alive?'#c6d4cd':'#768583';c.shadowColor='#000';c.shadowBlur=4;c.fillText(p.name==='You'?'YOU':p.name.toUpperCase(),p.x,p.y+23);c.restore();
+    if (!p.hideName) { c.save();c.font='10px "DM Sans",sans-serif';c.textAlign='center';c.fillStyle=alive?'#c6d4cd':'#768583';c.shadowColor='#000';c.shadowBlur=4;c.fillText(p.name==='You'?'YOU':p.name.toUpperCase(),p.x,p.y+23);c.restore(); }
   }
   drawCreature(c, state, t) {
     const { appearance: form, color, isBoss } = state.encounter;
