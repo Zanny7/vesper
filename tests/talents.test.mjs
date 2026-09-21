@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { CHAPTERS } from '../src/data.js';
 import { TALENT_ROW_REQUIREMENTS, TalentProgression, validateTalentTree } from '../src/talents.js';
+import { TALENT_TREES } from '../src/talent-trees.js';
 
 const tree = prefix => Array.from({ length: 12 }, (_, index) => ({
   id: `${prefix}-${index + 1}`,
@@ -19,6 +20,14 @@ test('talent trees require four rows of three talents and support one or two ran
   assert.deepEqual(validateTalentTree(trees.priest), []);
   assert.match(validateTalentTree(trees.priest.slice(1))[0], /12 talents/);
   assert.ok(validateTalentTree(trees.priest.map((talent, index) => index === 0 ? { ...talent, maxRank: 3 } : talent)).some(error => /one or two ranks/.test(error)));
+});
+
+test('production Priest and Druid definitions expose all twelve named talents', () => {
+  for (const [healerId, tree] of Object.entries(TALENT_TREES)) {
+    assert.deepEqual(validateTalentTree(tree), [], healerId);
+    assert.equal(new Set(tree.map(talent => talent.name)).size, 12);
+    assert.ok(tree.every(talent => talent.description.length > 12));
+  }
 });
 
 test('earned points, ranks and row rules remain independent per healer', () => {

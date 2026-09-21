@@ -12,23 +12,23 @@ function storage() {
 test('reordering and conflicting binds persist independently for each healer', () => {
   const disk = storage(), settings = createAbilitySettings(disk);
   settings.move('priest', 'penance', 'flash');
-  assert.deepEqual(settings.spells('priest').map(s => s.id), ['penance', 'flash', 'greater', 'prayer']);
+  assert.deepEqual(settings.spells('priest').map(s => s.id), ['penance', 'flash', 'greater', 'prayer', 'smite', 'holyFire']);
   assert.deepEqual(settings.bind('priest', 'penance', '1'), { ok: true, swapped: 'flash' });
-  assert.deepEqual(settings.spells('priest').map(s => s.key), ['1', '4', '2', '3']);
+  assert.deepEqual(settings.spells('priest').map(s => s.key), ['1', '4', '2', '3', '5', '6']);
   settings.move('druid', 'rejuvenation', 'swiftmend'); settings.bind('druid', 'swiftmend', 'shift+q');
   const restored = createAbilitySettings(disk);
   for (const id of ['priest', 'druid']) assert.deepEqual(restored.spells(id), settings.spells(id));
-  assert.deepEqual(restored.spells('priest').map(s => s.key), ['1', '4', '2', '3']);
+  assert.deepEqual(restored.spells('priest').map(s => s.key), ['1', '4', '2', '3', '5', '6']);
   assert.deepEqual(restored.spells('druid').map(s => s.id), ['regrowth', 'swiftmend', 'rejuvenation', 'wildGrowth', 'nourish']);
   assert.equal(restored.spells('druid').find(s => s.id === 'swiftmend').key, 'Shift+Q');
-  assert.deepEqual(SPELLS.map(s => s.key), ['1', '2', '3', '4']);
+  assert.deepEqual(SPELLS.map(s => s.key), ['1', '2', '3', '4', '5', '6']);
 });
 test('settings repair stale IDs, duplicates and invalid bindings while preserving valid choices', () => {
   const config = restoreAbilitySettings(SPELLS, { order: ['removed', 'prayer', 'prayer'], bindings: { flash: 'Q', greater: 'Q', prayer: 'Escape', penance: 'Ctrl+L' } });
-  assert.deepEqual(config.order, ['prayer', 'flash', 'greater', 'penance']);
+  assert.deepEqual(config.order, ['prayer', 'flash', 'greater', 'penance', 'smite', 'holyFire']);
   assert.equal(config.bindings.flash, 'Q');
   assert.equal(new Set(Object.values(config.bindings)).size, SPELLS.length);
-  for (const bad of [null, 42, [], { order: {}, bindings: null }]) assert.equal(restoreAbilitySettings(SPELLS, bad).order.length, 4);
+  for (const bad of [null, 42, [], { order: {}, bindings: null }]) assert.equal(restoreAbilitySettings(SPELLS, bad).order.length, 6);
   const sections = [{ id: 'a', key: '1', section: 'heals' }, { id: 'b', key: '2', section: 'heals' }, { id: 'c', key: '3', section: 'utility' }];
   assert.deepEqual(restoreAbilitySettings(sections, { order: ['c', 'b', 'a'] }).order, ['b', 'a', 'c']);
 });
@@ -59,5 +59,5 @@ test('configured order and keys keep spell mechanics intact when consumed by com
   assert.equal(game.begin(spell.id, 'tank').ok, true);
   for (let i = 0; i < 90; i++) game.step();
   assert.equal(game.party[0].hp, 200);
-  assert.equal(game.buffs.postHaste, 1);
+  assert.deepEqual(game.buffs, {});
 });

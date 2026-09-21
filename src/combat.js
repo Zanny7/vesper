@@ -8,9 +8,9 @@ export class Combat {
   reset(encounter = this.encounter, resources = null) {
     this.encounter = encounter;
     this.party = this.partyTemplate.map((p, i) => ({ ...p, hp: p.maxHp, dots: [], hots: [], nextAttack: 1 + i * 0.2 }));
-    this.boss = { hp: encounter.maxHp, maxHp: encounter.maxHp };
+    this.boss = { hp: encounter.maxHp, maxHp: encounter.maxHp, dots: [] };
     this.adds = (encounter.adds || []).map((add, i) => ({ ...add, id: `add-${i}`, name: add.name || `Pale Archer ${i + 1}`, next: add.first }));
-    this.time = 0; this.status = 'ready'; this.mana = this.maxMana; this.buffs = { postHaste: 0 };
+    this.time = 0; this.status = 'ready'; this.mana = this.maxMana; this.buffs = {};
     if (resources) {
       for (const p of this.party) {
         const saved = resources.health[resourceKey(p)];
@@ -36,17 +36,19 @@ export class Combat {
   cancel() { if (this.cast) { this.log(`${this.cast.spell.name} cancelled. Mana is not refunded.`, 'warning'); this.emit('cancel'); this.cast = null; } }
   begin(id, targetId) {
     const spell = this.spells.find(s => s.id === id);
+    const enemyTarget = targetId === 'boss';
     const target = this.party.find(p => p.id === targetId);
     if (this.status !== 'running') return { ok: false, reason: 'Begin or resume the encounter first.' };
     if (this.cast) return { ok: false, reason: 'Already casting. Press Esc to cancel.' };
     if (!spell) return { ok: false, reason: 'Unknown spell.' };
-    if (!spell.party && (!target || target.hp <= 0)) return { ok: false, reason: 'Select a living ally.' };
+    if (spell.enemy) targetId = 'boss';
+    else if (spell.dualTarget && !enemyTarget && (!target || target.hp <= 0)) return { ok: false, reason: 'Select a living ally or the enemy.' };
+    else if (!spell.party && !spell.dualTarget && (!target || target.hp <= 0)) return { ok: false, reason: 'Select a living ally.' };
     if ((this.cooldowns[id] || 0) > this.time + 0.00001) return { ok: false, reason: `${spell.name} is on cooldown.` };
     if (spell.consumesHot && !this.activeHots(target, spell.consumesHot).length) return { ok: false, reason: `${spell.name} requires Rejuvenation, Regrowth, or Wild Growth on this ally.` };
     const cost = spell.cost * CONFIG.baseMana;
     if (this.mana < cost) return { ok: false, reason: 'Not enough mana.' };
-    let duration = spell.cast;
-    if (spell.consumes && this.buffs[spell.consumes.buff] > 0) { this.buffs[spell.consumes.buff]--; duration *= spell.consumes.castMultiplier; }
+    const duration = spell.cast;
     this.mana -= cost;
     if (spell.cooldown) this.cooldowns[id] = this.time + spell.cooldown;
     this.cast = { spell, target: targetId, duration, elapsed: 0, launched: 0, landed: 0 };
@@ -67,9 +69,32 @@ export class Combat {
     target.hots = target.hots.filter(hot => hot.source !== spell.id);
     target.hots.push({ ...spell.hot, heal: healingParts(spell, this.spellPower).hotTick, source: spell.id, name: spell.name, icon: spell.icon, color: spell.color, applied: this.time, expires: this.time + spell.hot.duration, next: this.time + spell.hot.interval, ticks: Math.round(spell.hot.duration / spell.hot.interval) });
   }
+  atonement(amount, spell) {
+    const injured = this.party.filter(p => p.hp > 0 && p.hp < p.maxHp).sort((a, b) => a.hp / a.maxHp - b.hp / b.maxHp)[0];
+    if (injured) this.heal(injured, amount * 0.4, 'atonement');
+    this.emit('atonement', { target: injured?.id, amount: injured ? amount * 0.4 : 0, spell });
+  }
+  damageEnemy(amount, spell, triggersAtonement = true) {
+    if (this.boss.hp <= 0) return;
+    this.boss.hp = Math.max(0, this.boss.hp - amount);
+    this.emit('damage', { target: 'boss', amount, raw: amount, source: spell, damageType: 'Holy' });
+    if (triggersAtonement) this.atonement(amount, spell);
+  }
+  applyEnemyDot(spell) {
+    const old = this.boss.dots.find(dot => dot.source === spell.id);
+    const pool = (old?.remaining || 0) + spell.enemyDot.damage;
+    this.boss.dots = this.boss.dots.filter(dot => dot.source !== spell.id);
+    this.boss.dots.push({ source: spell.id, remaining: pool, ticks: Math.round(spell.enemyDot.duration / spell.enemyDot.interval), interval: spell.enemyDot.interval, next: this.time + spell.enemyDot.interval });
+  }
   completeCast() {
     const cast = this.cast, spell = cast.spell;
     if (!spell.channel) {
+      if (spell.enemy) {
+        this.damageEnemy(spell.damage, spell.id, spell.atonement);
+        if (spell.enemyDot) this.applyEnemyDot(spell);
+        this.log(`${spell.name} → ${this.encounter.name}`, 'heal');
+        this.emit('complete', { spell: spell.id }); this.cast = null; return;
+      }
       const targets = spell.party ? this.party : [this.party.find(p => p.id === cast.target)];
       for (const target of targets) {
         if (!target || target.hp <= 0) continue;
@@ -82,9 +107,8 @@ export class Combat {
         if (amount > 0) this.heal(target, amount, spell.id);
         if (spell.hot) this.applyHot(target, spell);
       }
-      if (spell.grants && targets.some(p => p?.hp > 0)) { const g = spell.grants; this.buffs[g.buff] = Math.min(g.max, this.buffs[g.buff] + g.amount); }
     }
-    this.log(`${spell.name} → ${spell.party ? 'Party' : this.party.find(p => p.id === cast.target)?.name}`, 'heal');
+    this.log(`${spell.name} → ${cast.target === 'boss' ? this.encounter.name : spell.party ? 'Party' : this.party.find(p => p.id === cast.target)?.name}`, 'heal');
     this.emit('complete', { spell: spell.id }); this.cast = null;
   }
   heal(target, amount, spell) {
@@ -150,7 +174,10 @@ export class Combat {
           this.emit('bolt', { target: cast.target, spell: cast.spell.id, travel: 0.3, bolt: cast.launched }); cast.launched++;
         }
         while (cast.landed < ticks.length && cast.elapsed + 1e-8 >= ticks[cast.landed].at) {
-          this.heal(this.party.find(p => p.id === cast.target), ticks[cast.landed].heal * healingParts(cast.spell, this.spellPower).factor, cast.spell.id); cast.landed++;
+          const tick = ticks[cast.landed];
+          if (cast.target === 'boss') this.damageEnemy(tick.damage, cast.spell.id);
+          else this.heal(this.party.find(p => p.id === cast.target), tick.heal * healingParts(cast.spell, this.spellPower).factor, cast.spell.id);
+          cast.landed++;
         }
       }
       if (cast.elapsed + 1e-8 >= cast.duration) {
@@ -168,6 +195,14 @@ export class Combat {
       }
       p.dots = p.dots.filter(d => d.ticks > 0);
     }
+    for (const dot of this.boss.dots) {
+      while (dot.ticks > 0 && this.time + 1e-8 >= dot.next) {
+        const amount = dot.remaining / dot.ticks;
+        dot.remaining -= amount; dot.ticks--; dot.next += dot.interval;
+        this.damageEnemy(amount, dot.source);
+      }
+    }
+    this.boss.dots = this.boss.dots.filter(dot => dot.ticks > 0 && this.boss.hp > 0);
     if (this.boss.hp > 0) {
       if (this.time >= this.nextStrike) { this.damage(this.party[0], this.encounter.strike.damage, 'strike', this.encounter.strike.damageType); this.nextStrike += this.encounter.strike.every; this.emit('bossAttack'); }
       if (this.time >= this.nextShard) { this.damage(this.rotatingTarget(), this.encounter.shard.damage, 'shard', this.encounter.shard.damageType); this.nextShard += this.encounter.shard.every; }

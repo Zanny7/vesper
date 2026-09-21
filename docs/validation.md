@@ -228,3 +228,18 @@ Full victory/defeat and timing edge cases were checked by simulation tests, not 
 - Accepted victories permanently award the active healer once for each chapter's first encounter and boss. Milestones live outside chapter-run attempts, so defeat/restart cannot remove or farm them. Four chapters currently expose eight points per healer, while milestone keys and healer records remain open-ended.
 - Existing valid campaign progress migrates once to the healer active when the upgraded save first loads. The one-time marker prevents account-wide historical clears from being duplicated onto a different healer after switching or reloading.
 - `npm test` passes all 88 tests and `git diff --check` passes. Browser smoke testing at `127.0.0.1:5173` confirmed the app loads, chapter navigation works, and no browser warnings/errors are emitted. BAT-31's Team talent UI and concrete healer talent effects remain intentionally out of scope.
+
+## BAT-31 — Team talent-tree management UI
+
+- Added a Team talent-tree panel for the active Priest or Druid with all four rows, three talents per row, authored names/descriptions, rank counters, unspent/earned/spent totals, and visible 2/4/6-point row progress. The tree switches with the healer selector and continues to leave companion equipment inspection intact.
+- Nodes expose direct Learn and Refund actions plus a free Refund all points control. Available, invested, and locked states have distinct treatment; controls are disabled during combat using the existing encounter lock.
+- Added the shared production talent-tree definitions without implementing their combat effects. Priest/Druid talent mechanics remain intentionally scoped to BAT-32–38.
+
+## BAT-32 — Priest Atonement and baseline offensive spell kit
+
+- Removed baseline Post-Haste. Flash Heal, Greater Heal, and Prayer retain their untalented cast times; the existing Post-Haste talent remains definition-only for a later issue.
+- Added repeatable Smite (1.5s, 4 Mana, 12 damage), Holy Fire (instant, 6s cooldown, 8 Mana, 11 direct plus 25 over five two-second ticks), and 40% Atonement healing to the living party member with the lowest current-health percentage. Priest is eligible; full-health parties waste Atonement; companion attacks do not trigger it.
+- Penance is now a 12-second-cooldown, two-second, two-bolt channel. It preserves 250 total friendly healing or deals two 15-damage hostile bolts, each triggering Atonement. The enemy heading is a mouse/keyboard-selectable combat target; offensive-only spells automatically target the enemy.
+- Holy Fire refresh carries its entire pending damage pool forward, adds a fresh 25, resets to ten seconds, and redistributes the combined pool across five ticks.
+- All 93 automated tests pass and `git diff --check` passes. Browser validation confirmed six Priest actions render, enemy selection works, hostile Penance damages the enemy and produces 12 effective Atonement healing across its two bolts, and Smite begins against the hostile target without console errors.
+- `npm test` passes all 89 tests and `git diff --check` passes. Browser QA verified both healer trees render, spending/refunding works, and switching healer updates the tree while preserving the existing Team sheet and ability controls.

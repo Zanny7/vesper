@@ -12,6 +12,8 @@ const icons = {
   sun: '<circle cx="20" cy="20" r="9"/><circle cx="20" cy="20" r="4"/><path d="M20 1v7m0 24v7M1 20h7m24 0h7M6 6l5 5m18 18 5 5M6 34l5-5M29 11l5-5"/>',
   wings: '<path d="M20 32C7 30 3 22 3 9l12 10M20 32c13-2 17-10 17-23L25 19M6 17l9 7M34 17l-9 7M20 7v19m-6-12h12"/>',
   bolts: '<path d="m10 3 4 9-5 10 10-7-3-9Zm11 7 4 9-5 10 10-7-3-9Zm9 7 4 9-5 10 10-7-3-9Z"/>',
+  smite: '<path d="M20 2v36M7 13h26M11 31l9 7 9-7"/>',
+  holyFire: '<path d="M20 3c8 9 11 15 8 23-2 7-13 10-18 3-5-8 2-14 8-20 0 7 8 8 2 18 8-5 5-14 0-24Z"/>',
 };
 
 export function abilityIcon(spell) {

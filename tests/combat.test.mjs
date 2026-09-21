@@ -6,32 +6,27 @@ import { CONFIG } from '../src/data.js';
 const advance=(g,seconds)=>{for(let i=0;i<Math.round(seconds/CONFIG.step);i++)g.step();};
 function isolated(){const g=new Combat();g.start();g.nextStrike=Infinity;g.nextShard=Infinity;g.mechanics.forEach(m=>m.next=Infinity);g.party.forEach(p=>{p.nextAttack=Infinity;});return g;}
 
-test('Flash completes at 1.5s, heals 100 and caps Post-Haste at two',()=>{
+test('Flash completes at 1.5s and heals 100 without baseline Post-Haste',()=>{
   const g=isolated();g.party[0].hp=100;
-  assert.equal(g.begin('flash','tank').ok,true);advance(g,1.4);assert.equal(g.party[0].hp,100);assert.equal(g.buffs.postHaste,0);
-  advance(g,.1);assert.equal(g.party[0].hp,200);assert.equal(g.buffs.postHaste,1);
-  for(let i=0;i<2;i++){g.begin('flash','tank');advance(g,1.5);}assert.equal(g.buffs.postHaste,2);
-});
-test('two charges accelerate separate casts, never stack on one',()=>{
-  const g=isolated();g.buffs.postHaste=2;g.begin('greater','tank');assert.ok(Math.abs(g.cast.duration-1.8)<1e-8);assert.equal(g.buffs.postHaste,1);
-  advance(g,1.8);g.begin('prayer','priest');assert.ok(Math.abs(g.cast.duration-1.8)<1e-8);assert.equal(g.buffs.postHaste,0);
-  advance(g,1.8);g.begin('greater','tank');assert.equal(g.cast.duration,3);
+  assert.equal(g.begin('flash','tank').ok,true);advance(g,1.4);assert.equal(g.party[0].hp,100);
+  advance(g,.1);assert.equal(g.party[0].hp,200);assert.deepEqual(g.buffs,{});
+  g.begin('greater','tank');assert.equal(g.cast.duration,3);
 });
 test('Prayer heals every living ally including Priest without reviving the dead',()=>{
   const g=isolated();g.party.forEach(p=>p.hp=100);g.party[1].hp=0;g.begin('prayer','rogue');advance(g,3);
   assert.deepEqual(g.party.map(p=>p.hp),[200,0,200,200,200]);assert.equal(g.stats.effective,400);
 });
-test('Penance launches three bolts before distinct heals totaling 250',()=>{
-  const g=isolated();g.party[0].hp=100;g.begin('penance','tank');advance(g,.2);
+test('Penance launches two bolts before distinct heals totaling 250',()=>{
+  const g=isolated();g.party[0].hp=100;g.begin('penance','tank');advance(g,.7);
   assert.equal(g.events.filter(e=>e.type==='bolt').length,1);assert.equal(g.party[0].hp,100);
-  advance(g,.3);assert.equal(g.party[0].hp,183);advance(g,.75);assert.equal(g.party[0].hp,266);advance(g,.75);assert.equal(g.party[0].hp,350);
-  const bolts=g.events.filter(e=>e.type==='bolt'),heals=g.events.filter(e=>e.type==='heal');assert.equal(bolts.length,3);assert.equal(heals.length,3);
+  advance(g,.3);assert.equal(g.party[0].hp,225);advance(g,1);assert.equal(g.party[0].hp,350);
+  const bolts=g.events.filter(e=>e.type==='bolt'),heals=g.events.filter(e=>e.type==='heal');assert.equal(bolts.length,2);assert.equal(heals.length,2);
   heals.forEach((heal,i)=>assert.ok(Math.abs(heal.time-bolts[i].time-.3)<.02));assert.equal(g.cast,null);
-  assert.equal(g.begin('penance','tank').ok,false);advance(g,8);assert.equal(g.begin('penance','tank').ok,true);
+  assert.equal(g.begin('penance','tank').ok,false);advance(g,10);assert.equal(g.begin('penance','tank').ok,true);
 });
 test('cancelling a channel prevents unlanded ticks and retains spent resources',()=>{
   const g=isolated();g.party[0].hp=100;g.begin('penance','tank');advance(g,.5);g.cancel();advance(g,1.5);
-  assert.equal(g.party[0].hp,183);assert.ok(Math.abs(g.mana-(CONFIG.mana-36+2*CONFIG.manaRegen))<1e-8);assert.equal(g.begin('penance','tank').ok,false);
+  assert.equal(g.party[0].hp,100);assert.ok(Math.abs(g.mana-(CONFIG.mana-36+2*CONFIG.manaRegen))<1e-8);assert.equal(g.begin('penance','tank').ok,false);
 });
 test('mana, cooldown, dead targets and busy casts reject without spending',()=>{
   const g=isolated();g.mana=20;assert.equal(g.begin('flash','tank').ok,false);assert.equal(g.mana,20);g.mana=200;g.party[1].hp=0;
@@ -43,7 +38,7 @@ test('healing clamps to max health and records overheal separately',()=>{
 });
 test('target is locked at cast start and dead targets receive no healing',()=>{
   const g=isolated();g.party[1].hp=50;g.begin('flash','rogue');g.damage(g.party[1],100,'test');advance(g,1.5);
-  assert.equal(g.party[1].hp,0);assert.equal(g.buffs.postHaste,0);
+  assert.equal(g.party[1].hp,0);assert.deepEqual(g.buffs,{});
 });
 test('mechanics warn ahead, repeat predictably and dots tick four times',()=>{
   const g=isolated();const pulse=g.mechanics.find(m=>m.id==='pulse');pulse.next=5;advance(g,1.1);assert.equal(pulse.warned,true);advance(g,4);

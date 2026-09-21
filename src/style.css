@@ -231,6 +231,8 @@ main {
   border-color:var(--gold);
   box-shadow:-3px 0 0 var(--gold)
 }
+.boss-title[role="button"] { cursor:pointer; border:1px solid transparent; border-radius:4px; padding:5px; margin:-5px; }
+.boss-title[role="button"]:hover, .boss-title[role="button"]:focus-visible, .boss-title.selected { border-color:var(--gold); box-shadow:0 0 0 1px #d8bd7255; outline:none; }
 .health-fill {
   position:absolute;
   inset:0 auto 0 0;

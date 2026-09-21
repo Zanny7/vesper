@@ -23,7 +23,7 @@ test('Spell Power adds once to direct, channel, mixed and per-target HoT totals'
   close(growth.direct, 50 * 180 / 170); close(growth.hotTick, 20 * 180 / 170); close(growth.direct + growth.hotTick * 6, 180);
 });
 test('combat delivers scaled healing for every kit spell without per-tick bonus inflation', () => {
-  for (const id of ['priest', 'druid']) for (const spell of HEALERS[id].combatSpells) {
+  for (const id of ['priest', 'druid']) for (const spell of HEALERS[id].combatSpells.filter(spell => spell.heal || spell.hot)) {
     const party = partyForHealer(id).map(p => ({ ...p, maxHp: 10000, damage: 0, ...(p.label === 'HEALER' ? { spellPower: 10 } : {}) }));
     const g = new Combat({ name: 'Test', maxHp: 9999, strike: { first: Infinity }, mechanics: [] }, () => 0, party, HEALERS[id].combatSpells);
     g.start(); g.party.forEach(p => p.hp = 1);

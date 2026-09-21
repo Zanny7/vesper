@@ -158,7 +158,7 @@ export const ADVENTURES = [
 // Initial Chapter 1 tuning: roughly 30–55 seconds per fight with the full party alive.
 // Adds supply light, random damage. The party focuses the primary; adds flee on its defeat.
 export const CHAPTER_ENCOUNTERS = {
-  sentinel: { id: 'sentinel', name: 'The Sepulchral Sentinel', maxHp: 1500, strike: { first: 2.4, every: 2.4, damage: 60 }, adds: [], mechanics: [], lesson: 'Keep Aldric healthy. Flash Heal builds Post-Haste for a faster Greater Heal.' },
+  sentinel: { id: 'sentinel', name: 'The Sepulchral Sentinel', maxHp: 1500, strike: { first: 2.4, every: 2.4, damage: 60 }, adds: [], mechanics: [], lesson: 'Keep Aldric healthy. When he is stable, damage the enemy to convert Atonement into extra healing.' },
   keeper: { id: 'keeper', name: 'The Cinder Keeper', maxHp: 1700, strike: { first: 2.4, every: 2.4, damage: 62 }, adds: [{ first: 4, every: 4.8, damage: 24 }], mechanics: [], lesson: 'The archer may hit anyone, including you. Switch targets when an ally needs healing, then return to Aldric.' },
   watcher: { id: 'watcher', name: 'The Bone Watcher', maxHp: 2000, strike: { first: 2.4, every: 2.4, damage: 64 }, adds: [{ first: 4, every: 4.8, damage: 24 }, { first: 6, every: 4.8, damage: 24 }], mechanics: [], lesson: 'Two archers spread wounds across the party. Use Prayer of Healing when several allies are hurt.' },
   warden: { id: 'warden', name: 'The Hollow Warden', maxHp: 2500, strike: { first: 2.3, every: 2.3, damage: 78 }, adds: [{ first: 4, every: 4.5, damage: 26 }, { first: 6, every: 4.5, damage: 26 }], mechanics: [], lesson: 'The Warden strikes harder and faster. Keep Penance ready for Aldric while watching the whole party.' },
@@ -171,10 +171,12 @@ export const PARTY = [
   { id: 'priest', name: 'You', role: 'Priest', label: 'HEALER', maxHp: 400, color: '#e2cc94', damage: 0, interval: 2, x: 485, y: 484 },
 ];
 export const SPELLS = [
-  { id: 'flash', name: 'Flash Heal', key: '1', icon: 'spark', cast: 1.5, cost: 1, heal: 100, color: '#e5ce8c', description: 'A quick, focused heal. Grants 1 Post-Haste charge.', grants: { buff: 'postHaste', amount: 1, max: 2 } },
-  { id: 'greater', name: 'Greater Heal', key: '2', icon: 'sun', cast: 3, cost: 1.5, heal: 200, color: '#f2dfad', description: 'An efficient, powerful heal. Post-Haste reduces cast time to 1.8s.', consumes: { buff: 'postHaste', castMultiplier: 0.6 } },
-  { id: 'prayer', name: 'Prayer of Healing', key: '3', icon: 'wings', cast: 3, cost: 2.5, heal: 100, party: true, color: '#9fdfc6', description: 'Restores 100 health to every living ally, including you. Benefits from Post-Haste.', consumes: { buff: 'postHaste', castMultiplier: 0.6 } },
-  { id: 'penance', name: 'Penance', key: '4', icon: 'bolts', cast: 2, cost: 1.2, heal: 250, channel: true, cooldown: 10, ticks: [{ at: 0.5, heal: 83 }, { at: 1.25, heal: 83 }, { at: 2, heal: 84 }], description: 'Channel three holy bolts for 250 total healing. 10s cooldown.', color: '#f4c16c' },
+  { id: 'flash', name: 'Flash Heal', key: '1', icon: 'spark', cast: 1.5, cost: 1, heal: 100, color: '#e5ce8c', description: 'A quick, focused heal for 100.' },
+  { id: 'greater', name: 'Greater Heal', key: '2', icon: 'sun', cast: 3, cost: 1.5, heal: 200, color: '#f2dfad', description: 'An efficient, powerful heal for 200.' },
+  { id: 'prayer', name: 'Prayer of Healing', key: '3', icon: 'wings', cast: 3, cost: 2.5, heal: 100, party: true, color: '#9fdfc6', description: 'Restores 100 health to every living ally, including you.' },
+  { id: 'penance', name: 'Penance', key: '4', icon: 'bolts', cast: 2, cost: 1.2, heal: 250, damage: 30, dualTarget: true, channel: true, cooldown: 12, ticks: [{ at: 1, heal: 125, damage: 15 }, { at: 2, heal: 125, damage: 15 }], description: 'Channel two holy bolts. Heal an ally for 250 total, or damage the enemy for 30 and trigger Atonement.', color: '#f4c16c' },
+  { id: 'smite', name: 'Smite', key: '5', icon: 'smite', cast: 1.5, cost: 4 / CONFIG.baseMana, heal: 0, damage: 12, enemy: true, atonement: true, description: 'Deal 12 damage to the enemy and heal the most injured ally through Atonement.', color: '#f3df9b' },
+  { id: 'holyFire', name: 'Holy Fire', key: '6', icon: 'holyFire', cast: 0, cost: 8 / CONFIG.baseMana, heal: 0, damage: 11, enemy: true, atonement: true, cooldown: 6, enemyDot: { damage: 25, duration: 10, interval: 2 }, description: 'Deal 11 damage, then 25 over 10s. Recasting carries pending damage into the refreshed effect. All damage triggers Atonement.', color: '#efad69' },
 ];
 export const DRUID_HOTS = ['rejuvenation', 'regrowth', 'wildGrowth'];
 export const DRUID_SPELLS = [
@@ -199,7 +201,7 @@ export const ENCOUNTER = {
   name: 'The Hollow Warden', maxHp: 4200,
   mechanics: [
     { id: 'crush', name: 'Crushing blow', first: 10, every: 18, warning: 3, damage: 105, target: 'tank', color: '#d99b78', hint: 'A heavy strike on Aldric. Prepare a strong single-target heal.' },
-    { id: 'pulse', name: 'Hollow nova', first: 18, every: 22, warning: 4, damage: 80, target: 'party', color: '#c491d6', hint: 'Party-wide damage. Save Post-Haste for Prayer of Healing.' },
+    { id: 'pulse', name: 'Hollow nova', first: 18, every: 22, warning: 4, damage: 80, target: 'party', color: '#c491d6', hint: 'Party-wide damage. Prepare Prayer of Healing and use Atonement to top off the weakest ally.' },
     { id: 'mark', name: 'Withering mark', first: 25, every: 20, warning: 2, target: 'rotating', dot: { damage: 18, ticks: 4, interval: 2 }, color: '#83b7a4', hint: 'An ally takes damage over 8 seconds. Watch their frame.' },
   ],
   strike: { first: 2.4, every: 2.4, damage: 32 },
@@ -207,7 +209,7 @@ export const ENCOUNTER = {
 };
 // Later chapters share the same graph and encounter model. Explicit values are
 // starting points for playtesting, not a scaling formula or permanent power curve.
-const pulse = (id, name, first, every, damage) => ({ id, name, first, every, damage, warning: 3, target: 'party', color: '#b8c98a', hint: 'Party-wide damage. Prepare Prayer of Healing, ideally with Post-Haste.' });
+const pulse = (id, name, first, every, damage) => ({ id, name, first, every, damage, warning: 3, target: 'party', color: '#b8c98a', hint: 'Party-wide damage. Prepare Prayer of Healing, then use Atonement to support the weakest ally.' });
 const split = (id, name, first, every, damage, count) => ({ id, name, first, every, damage, count, warning: 3, target: 'random', color: '#e4af7c', hint: `Hits ${count} different living allies. Check the marked targets and heal the most vulnerable first.` });
 const bleed = (id, name, first, every, count, damage, ticks, interval, target = 'random') => ({ id, name, first, every, count, warning: 3, target, color: '#d78d9d', dot: { damage, ticks, interval }, hint: `${target === 'tank' ? 'Aldric' : count === 1 ? 'One random living ally' : count + ' random living allies'} will bleed for ${ticks * interval}s. Heal through it; there is no dispel.` });
 const add = (name, first, every, damage, target = 'random', appearance = 'archer') => ({ name, first, every, damage, target, appearance });
@@ -224,7 +226,7 @@ Object.assign(CHAPTER_ENCOUNTERS, {
   mire: fight('mire', 'Mirelight Widow', 2200, 42, 2, 'spider', '#9aa875',
     [pulse('mist', 'Mire Mist', 7, 12, 46)], [add('Bog Wisp', 6, 6, 24, 'random', 'wisp')], 'Mist and wisp shots create different wounds. Balance group recovery with focused healing.'),
   matriarch: fight('matriarch', 'Elder of the Hollow Grove', 2900, 60, 2.4, 'treant', '#a8ce8d',
-    [pulse('bloom', 'Hollow Bloom', 10, 13, 66)], [add('Thorn Slinger', 5, 5, 26)], 'The Elder combines steady tank damage, thorns, and repeated blooms. Build Post-Haste before each pulse.'),
+    [pulse('bloom', 'Hollow Bloom', 10, 13, 66)], [add('Thorn Slinger', 5, 5, 26)], 'The Elder combines steady tank damage, thorns, and repeated blooms. Prepare Prayer before each pulse and weave damage when the party is stable.'),
   gatekeeper: fight('gatekeeper', 'The Cinder Gatekeeper', 2200, 55, 2.5, 'knight', '#c69e7e',
     [split('cleave', 'Forked Cleave', 9, 13, 85, 2)], [], 'Two allies are marked before the cleave. Restore the more vulnerable target first.'),
   twins: fight('twins', 'Ashblade Captain', 2350, 49, 2.2, 'knight', '#c48e80',
@@ -240,7 +242,7 @@ Object.assign(CHAPTER_ENCOUNTERS, {
   bridge: fight('bridge', 'Ironwake Bulwark', 2550, 83, 3.2, 'knight', '#aa9f8d',
     [split('shrapnel', 'Shattered Iron', 10, 13, 78, 2)], [add('Shield Retainer', 4, 5, 18, 'tank', 'melee')], 'Tank and split pressure compete for your next cast. Penance can buy time for group recovery.'),
   bells: fight('bells', 'The Bellbound Shade', 2450, 45, 2.2, 'wraith', '#ab9bbf',
-    [split('echoes', 'Broken Echoes', 8, 12, 70, 3), pulse('toll', 'Distant Toll', 19, 27, 38)], [], 'Frequent split wounds occasionally meet a full-party toll. Keep Post-Haste ready for that overlap.'),
+    [split('echoes', 'Broken Echoes', 8, 12, 70, 3), pulse('toll', 'Distant Toll', 19, 27, 38)], [], 'Frequent split wounds occasionally meet a full-party toll. Keep Prayer ready for that overlap.'),
   regent: fight('regent', 'The Cinder Regent', 3200, 62, 2.4, 'knight', '#e2b27e',
     [split('decree', 'Sundering Decree', 10, 14, 92, 3), pulse('crown', 'Crown of Embers', 20, 25, 48)],
     [add('Regent Guard', 5, 6, 18, 'tank', 'melee')], 'The Regent combines three-target decrees, tank pressure, and occasional AoE. Recover before the next overlap.'),
