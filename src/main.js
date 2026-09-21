@@ -2,6 +2,8 @@ import { renderPartyEffects } from './party-effects.js';
 import { ChapterRuns } from './chapter-runs.js';
 import { TalentProgression } from './talents.js';
 import { TALENT_TREES } from './talent-trees.js';
+import { priestTalentLoadout } from './priest-talents.js';
+import { druidTalentLoadout } from './druid-talents.js';
 import { healingParts } from './stats.js';
 import { Combat } from './combat.js';
 import { Battlefield } from './renderer.js';
@@ -26,10 +28,19 @@ try { abilityStorage = localStorage; } catch { /* Settings remain available in m
 const abilitySettings = createAbilitySettings(abilityStorage);
 const runs = new ChapterRuns(abilityStorage);
 const equipment = new Equipment(abilityStorage);
-const party = healerId => equipment.party(healerId);
-const game = new Combat(CHAPTER_ENCOUNTERS.sentinel, Math.random, party(activeHealerId), abilitySettings.spells(activeHealerId)), scene = new Battlefield($('#battlefield'));
+const loadout = healerId => {
+  const party = equipment.party(healerId), spells = abilitySettings.spells(healerId);
+  if (healerId === 'priest') return priestTalentLoadout(party, spells, talents?.state('priest').allocations);
+  if (healerId === 'druid') return druidTalentLoadout(party, spells, talents?.state('druid').allocations);
+  return { party, spells };
+};
+const party = healerId => loadout(healerId).party;
+const resetLoadout = healerId => { const next = loadout(healerId); game.setLoadout(next.party, next.spells); };
+let talents;
+const game = new Combat(CHAPTER_ENCOUNTERS.sentinel, Math.random, equipment.party(activeHealerId), abilitySettings.spells(activeHealerId)), scene = new Battlefield($('#battlefield'));
 const equipmentLocked = () => ['running', 'paused'].includes(game.status);
-const talents = new TalentProgression(abilityStorage, TALENT_TREES, equipmentLocked);
+talents = new TalentProgression(abilityStorage, TALENT_TREES, equipmentLocked);
+resetLoadout(activeHealerId);
 equipment.isLocked = equipmentLocked;
 const view = setupView(scene);
 let selected = 'tank', hovered = null, lastStatus = '', lastLog = '', last = performance.now(), accumulator = 0, toastTimer;
@@ -40,11 +51,11 @@ const roleIcons={tank:'♜',rogue:'⚔',mage:'✦',ranger:'⌁',priest:'✧',dru
 let frames = [], spellButtons = [], currentSpells = [];
 function buildHealerUI() {
   const healer = activeHealer(activeHealerId);
-  currentSpells = abilitySettings.spells(activeHealerId);
+  currentSpells = loadout(activeHealerId).spells;
   game.spells = currentSpells;
   $('#party-frames').innerHTML=game.party.map(p=>`<button class="party-frame ${p.id===selected?'selected':''}" data-target="${p.id}" style="--class-color:${p.color}" aria-label="${p.name}, ${p.role}"><div class="health-fill"></div><div class="incoming-fill"></div><div class="frame-top"><strong><i>${roleIcons[p.id]}</i>${p.name}</strong></div><div class="frame-bottom"><span>${p.role}</span></div><div class="frame-health"><span class="hp-percent">100%</span><span class="hp-values">${p.maxHp} / ${p.maxHp}</span></div><div class="frame-effects frame-effects-negative" aria-hidden="true"></div><div class="frame-effects frame-effects-helpful" aria-hidden="true"></div></button>`).join('');
-  $('#spellbook').innerHTML=currentSpells.map(s=>`<button class="spell" data-spell="${s.id}" data-icon="${s.icon}" aria-label="${s.name}, key ${s.key}. ${s.description}">${abilityIcon(s)}<div class="cooldown-mask" aria-hidden="true" hidden></div></button>`).join('');
-  $('.help-spells').innerHTML=currentSpells.map(s=>`<div><strong>${s.key} · ${s.name}</strong>${s.description}<small>${s.cast ? s.cast + 's ' + (s.channel?'channel':'cast') : 'Instant'} · ${s.damage ? `${s.damage} damage${s.heal ? ` / ${healingSummary(s)} healing` : ''}` : `${healingSummary(s)} healing`} · ${s.cost*CONFIG.baseMana} mana</small></div>`).join('');
+  $('#spellbook').innerHTML=currentSpells.map(s=>`<button class="spell" data-spell="${s.id}" data-icon="${s.icon}" aria-label="${s.name}, key ${s.key}. ${s.description}">${abilityIcon(s)}<span class="spell-charge-count" ${s.charges ? '' : 'hidden'}></span><div class="cooldown-mask" aria-hidden="true" hidden></div></button>`).join('');
+  $('.help-spells').innerHTML=currentSpells.map(s=>`<div><strong>${s.key} · ${s.name}</strong>${s.description}<small>${s.cast ? s.cast + 's ' + (s.channel?'channel':'cast') : 'Instant'} · ${s.effectSummary || (s.damage ? `${s.damage} damage${s.heal ? ` / ${healingSummary(s)} healing` : ''}` : `${healingSummary(s)} healing`)} · ${s.cost*CONFIG.baseMana} mana</small></div>`).join('');
   $('.haste-row').hidden = true;
   $('#help-haste').hidden = true;
   $('.priest-resource .resource-title span').textContent = `✧ ${healer.role} mana`;
@@ -130,13 +141,15 @@ function renderUI(){
   $('#cast-time').textContent=cast?`${Math.max(0,cast.duration-cast.elapsed).toFixed(1)}s`:'';
   $('#cast-fill').style.width=cast?`${Math.min(100,Math.max(0,(cast.spell.channel?1-cast.elapsed/cast.duration:cast.elapsed/cast.duration)*100))}%`:'0%';$('.cast-track').classList.toggle('channel',!!cast?.spell.channel);
   for(const button of spellButtons){
-    const spell=currentSpells.find(s=>s.id===button.dataset.spell),cooldown=Math.max(0,(game.cooldowns[spell.id]||0)-game.time);
-    const mask=button.querySelector('.cooldown-mask');mask.hidden=cooldown<=0;mask.textContent=formatCooldown(cooldown);
-    button.classList.toggle('on-cooldown', cooldown > 0);
-    button.setAttribute('aria-disabled', String(game.status!=='running'||cooldown>0||game.mana<spell.cost*CONFIG.baseMana||(spell.consumesHot&&!game.activeHots(target,spell.consumesHot).length)));
+    const spell=currentSpells.find(s=>s.id===button.dataset.spell),cooldown=Math.max(0,(game.cooldowns[spell.id]||0)-game.time),charges=game.availableCharges(spell.id);
+    const unavailable = charges === undefined ? cooldown > 0 && !spell.overgrowth : charges <= 0;
+    const mask=button.querySelector('.cooldown-mask');mask.hidden=!unavailable;mask.textContent=formatCooldown(cooldown);
+    button.classList.toggle('on-cooldown', unavailable);
+    button.querySelector('.spell-charge-count')?.replaceChildren(String(charges));
+    button.setAttribute('aria-disabled', String(game.status!=='running'||unavailable||game.mana<spell.cost*CONFIG.baseMana||(spell.consumesHot&&!game.activeHots(target,spell.consumesHot).length)));
     const duration = spell.cast;
-    const output = spell.damage ? `${spell.damage} damage${spell.heal ? ` / ${healingSummary(spell)} healing` : ''}` : `${healingSummary(spell)} healing`;
-    button.dataset.tooltip = `${spell.name} · ${spell.key}\n${duration ? duration.toFixed(1) + 's ' + (spell.channel?'channel':'cast') : 'Instant'} · ${spell.cost*CONFIG.baseMana} mana\n${output}${spell.cooldown?` · ${spell.cooldown}s cooldown`:''}\n${spell.description}${cooldown>0?`\nReady in ${cooldown.toFixed(1)}s`:''}`;
+    const output = spell.effectSummary || (spell.damage ? `${spell.damage} damage${spell.heal ? ` / ${healingSummary(spell)} healing` : ''}` : `${healingSummary(spell)} healing`);
+    button.dataset.tooltip = `${spell.name} · ${spell.key}\n${duration ? duration.toFixed(1) + 's ' + (spell.channel?'channel':'cast') : 'Instant'} · ${spell.cost*CONFIG.baseMana} mana\n${output}${spell.cooldown?` · ${spell.cooldown}s cooldown`:''}${charges === undefined ? '' : ` · ${charges}/${spell.charges} charges`}\n${spell.description}${cooldown>0?`\n${spell.overgrowth ? `Overgrowth cast · ${cooldown.toFixed(1)}s base cooldown remaining` : `Ready in ${cooldown.toFixed(1)}s`}`:''}`;
     button.classList.toggle('active',cast?.spell.id===spell.id);
   }
   $('#strike-countdown').textContent = `· ${Math.max(0, Math.ceil(game.nextStrike-game.time))}s`;
@@ -187,14 +200,17 @@ function frame(now){
   requestAnimationFrame(frame);
 }
 const gearUI = setupEquipment({ equipment, isLocked: equipmentLocked, onChange: () => {
-  runs.reconcileParty(party(activeHealerId)); game.setLoadout(party(activeHealerId), abilitySettings.spells(activeHealerId));
+  runs.reconcileParty(party(activeHealerId)); resetLoadout(activeHealerId);
   buildHealerUI(); prepareEncounterUI(); scene.reset(); renderUI(); team.refresh();
 } });
 const shell = setupShell({ game, view, resetEncounter: restart, onAbandon: () => adventures.abandon(), onNavigate: destination => { gearUI.close(); if (destination === 'chapter') adventures.refresh(); }, onEquipmentShortcut: () => team.selectHealer(activeHealerId), onInventoryOpen: () => gearUI.renderInventory(), onUtilityClose: () => gearUI.close() });
 const team = setupTeam({ settings: abilitySettings, onAbilitiesChange: () => { buildHealerUI(); renderUI(); }, paintPortrait: (canvas, member, width) => scene.paintPortrait(canvas, member, width), onHealerChange: healerId => {
-  activeHealerId = healerId; runs.reconcileParty(party(healerId)); game.setLoadout(party(healerId), abilitySettings.spells(healerId));
+  activeHealerId = healerId; runs.reconcileParty(party(healerId)); resetLoadout(healerId);
   selected = 'tank'; hovered = null; buildHealerUI(); prepareEncounterUI(); scene.reset(); renderUI();
-}, equipment, gearUI, equipmentLocked, talents });
+}, equipment, gearUI, equipmentLocked, talents, getLoadout: loadout, onTalentsChange: () => {
+  resetLoadout(activeHealerId);
+  buildHealerUI(); prepareEncounterUI(); scene.reset(); renderUI(); team.refresh();
+} });
 const chapters = setupChapters({ openChapter: chapter => { if (adventures.openChapter(chapter)) shell.openChapter(); } });
 const adventures = setupAdventures({
   runs,

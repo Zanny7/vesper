@@ -7,7 +7,7 @@ import { TALENT_TREES } from './talent-trees.js';
 import { TALENT_ROW_REQUIREMENTS } from './talents.js';
 
 // This screen reads starting character data; inspecting never changes combat.
-export function setupTeam({ paintPortrait, onHealerChange, settings, onAbilitiesChange, equipment, gearUI, equipmentLocked = () => false, talents }) {
+export function setupTeam({ paintPortrait, onHealerChange, settings, onAbilitiesChange, equipment, gearUI, equipmentLocked = () => false, talents, onTalentsChange = () => {}, getLoadout = healerId => ({ party: equipment.party(healerId), spells: equipment.healer(healerId).spellBook }) }) {
   const roster = document.querySelector('#team-roster');
   const details = document.querySelector('#team-details');
   const talentPanel = document.querySelector('#team-talents');
@@ -18,7 +18,7 @@ export function setupTeam({ paintPortrait, onHealerChange, settings, onAbilities
   const rankCap = talent => talent.maxRank ?? 1;
   function buildCards() {
     roster.innerHTML = '';
-    const party = equipment.party(healerId);
+    const party = getLoadout(healerId).party;
     cards = party.map(member => {
     const card = document.createElement('button');
     card.className = 'team-card';
@@ -47,7 +47,7 @@ export function setupTeam({ paintPortrait, onHealerChange, settings, onAbilities
   });
   function render() {
     gearUI.close();
-    const party = equipment.party(healerId), member = party.find(hero => hero.id === selected) || party.at(-1), healer = equipment.healer(healerId);
+    const { party, spells } = getLoadout(healerId), member = party.find(hero => hero.id === selected) || party.at(-1), healer = party.find(hero => hero.label === 'HEALER');
     healerOptions.querySelectorAll('[data-healer]').forEach(option => {
       const active = option.dataset.healer === healerId;
       option.setAttribute('aria-checked', String(active));
@@ -62,9 +62,8 @@ export function setupTeam({ paintPortrait, onHealerChange, settings, onAbilities
     const stats = member.label !== 'HEALER'
       ? [['Health', format(member.maxHp)], ['Damage', member.damage], ['Attack interval', `${member.interval}s`], ['Armor', member.armor], ['Resistance', member.resistance]]
       : [['Health', format(member.maxHp)], ['Mana', format(member.maxMana)], ['Mana regeneration', `${member.manaRegen} / second`], ['Spell Power', member.spellPower], ['Haste', `${member.haste || 0}%`], ['Crit', `${member.crit || 0}%`], ['Armor', member.armor], ['Resistance', member.resistance]];
-    const spells = healer.spellBook;
     const spellBook = spells.length
-      ? `<div class="team-spells">${spells.map(spell => `<article><h4>${spell.name}</h4><p>${spell.description}</p><dl><div><dt>${spell.damage ? 'Output' : 'Healing'}</dt><dd>${spell.damage ? `${spell.damage} damage${spell.heal ? ` / ${healingSummary(spell)} healing` : ''}` : healingSummary(spell)}</dd></div><div><dt>Mana cost</dt><dd>${format(spell.cost * CONFIG.baseMana)}</dd></div><div><dt>${spell.channel ? 'Channel' : 'Base cast'}</dt><dd>${spell.cast ? spell.cast + 's' : 'Instant'}</dd></div>${spell.cooldown ? `<div><dt>Cooldown</dt><dd>${spell.cooldown}s</dd></div>` : ''}</dl></article>`).join('')}</div>`
+      ? `<div class="team-spells">${spells.map(spell => `<article><h4>${spell.name}</h4><p>${spell.description}</p><dl><div><dt>${spell.effectSummary ? 'Effect' : spell.damage ? 'Output' : 'Healing'}</dt><dd>${spell.effectSummary || (spell.damage ? `${spell.damage} damage${spell.heal ? ` / ${healingSummary(spell)} healing` : ''}` : healingSummary(spell))}</dd></div><div><dt>Mana cost</dt><dd>${format(spell.cost * CONFIG.baseMana)}</dd></div><div><dt>${spell.channel ? 'Channel' : 'Base cast'}</dt><dd>${spell.cast ? spell.cast + 's' : 'Instant'}</dd></div>${spell.cooldown ? `<div><dt>Cooldown</dt><dd>${spell.cooldown}s</dd></div>` : ''}</dl></article>`).join('')}</div>`
       : `<p class="team-behavior">${healer.description}</p>`;
     const body = member.damage
       ? `<p class="team-behavior">${member.label === 'TANK' ? 'Holds the front line and takes the enemy’s heavy strikes.' : 'Attacks the enemy automatically while alive.'} Attacks deal ${format(member.damage * member.interval)} damage every ${member.interval} seconds during combat.</p>`
@@ -93,15 +92,15 @@ export function setupTeam({ paintPortrait, onHealerChange, settings, onAbilities
       const label = `${talent.name}, ${rank} of ${rankCap(talent)} ranks. ${talent.description}`;
       return `<article class="talent-node ${status}" data-talent="${talent.id}"><div class="talent-node-top"><span class="talent-glyph" aria-hidden="true">${rank ? '✦' : unlocked ? '◇' : '⊘'}</span><span class="talent-rank">${rank} / ${rankCap(talent)}</span></div><h4>${talent.name}</h4><p>${talent.description}</p><div class="talent-actions"><button type="button" data-spend="${talent.id}" aria-label="Learn ${label}" ${available ? '' : 'disabled'}>Learn</button><button type="button" class="quiet" data-refund="${talent.id}" aria-label="Refund ${talent.name}" ${rank && !locked ? '' : 'disabled'}>Refund</button></div></article>`;
     };
-    talentPanel.innerHTML = `<div class="talent-heading"><div><span class="eyebrow">${equipment.healer(healerId).role.toUpperCase()} PROGRESSION</span><h2 id="team-talents-title">Talent Tree</h2><p>Spend points freely between encounters. Each healer progresses independently.</p></div><div class="talent-points"><strong>${state?.unspentPoints ?? 0}</strong><span>Unspent<br>points</span></div></div><div class="talent-summary"><span><b>${state?.spentPoints ?? 0}</b> spent</span><span><b>${state?.earnedPoints ?? 0}</b> earned</span><button type="button" class="quiet" data-respec ${locked || !(state?.spentPoints) ? 'disabled' : ''}>Refund all points</button></div><p class="talent-status" aria-live="polite">${locked ? 'Talent changes are locked during combat.' : message || 'Select Learn to invest a point, or Refund to reclaim one.'}</p><div class="talent-rows">${[1, 2, 3, 4].map(index => { const needed = TALENT_ROW_REQUIREMENTS[index - 1]; const unlocked = state && talents.rowUnlocked(healerId, index); return `<section class="talent-row ${unlocked ? 'unlocked' : 'locked'}"><header><span>ROW ${index}</span><small>${index === 1 ? 'Available immediately' : unlocked ? `Unlocked · ${state.spentPoints} / ${needed} spent` : `${state?.spentPoints ?? 0} / ${needed} points to unlock`}</small></header><div class="talent-grid">${row(index).map(node).join('')}</div></section>`; }).join('')}</div>`;
+    talentPanel.innerHTML = `<div class="talent-heading"><div><span class="eyebrow">${getLoadout(healerId).party.find(member => member.label === 'HEALER').role.toUpperCase()} PROGRESSION</span><h2 id="team-talents-title">Talent Tree</h2><p>Spend points freely between encounters. Each healer progresses independently.</p></div><div class="talent-points"><strong>${state?.unspentPoints ?? 0}</strong><span>Unspent<br>points</span></div></div><div class="talent-summary"><span><b>${state?.spentPoints ?? 0}</b> spent</span><span><b>${state?.earnedPoints ?? 0}</b> earned</span><button type="button" class="quiet" data-respec ${locked || !(state?.spentPoints) ? 'disabled' : ''}>Refund all points</button></div><p class="talent-status" aria-live="polite">${locked ? 'Talent changes are locked during combat.' : message || 'Select Learn to invest a point, or Refund to reclaim one.'}</p><div class="talent-rows">${[1, 2, 3, 4].map(index => { const needed = TALENT_ROW_REQUIREMENTS[index - 1]; const unlocked = state && talents.rowUnlocked(healerId, index); return `<section class="talent-row ${unlocked ? 'unlocked' : 'locked'}"><header><span>ROW ${index}</span><small>${index === 1 ? 'Available immediately' : unlocked ? `Unlocked · ${state.spentPoints} / ${needed} spent` : `${state?.spentPoints ?? 0} / ${needed} points to unlock`}</small></header><div class="talent-grid">${row(index).map(node).join('')}</div></section>`; }).join('')}</div>`;
     talentPanel.querySelectorAll('[data-spend]').forEach(button => button.addEventListener('click', () => {
-      const result = talents.spend(healerId, button.dataset.spend); renderTalents(result.ok ? 'Talent learned.' : result.reason);
+      const result = talents.spend(healerId, button.dataset.spend); if (result.ok) onTalentsChange(); renderTalents(result.ok ? 'Talent learned.' : result.reason);
     }));
     talentPanel.querySelectorAll('[data-refund]').forEach(button => button.addEventListener('click', () => {
-      const result = talents.refund(healerId, button.dataset.refund); renderTalents(result.ok ? 'Talent point refunded.' : result.reason);
+      const result = talents.refund(healerId, button.dataset.refund); if (result.ok) onTalentsChange(); renderTalents(result.ok ? 'Talent point refunded.' : result.reason);
     }));
     talentPanel.querySelector('[data-respec]')?.addEventListener('click', () => {
-      const result = talents.respec(healerId); renderTalents(result.ok ? 'All talent points refunded.' : result.reason);
+      const result = talents.respec(healerId); if (result.ok) onTalentsChange(); renderTalents(result.ok ? 'All talent points refunded.' : result.reason);
     });
   }
   buildCards();

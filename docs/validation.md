@@ -243,3 +243,19 @@ Full victory/defeat and timing edge cases were checked by simulation tests, not 
 - Holy Fire refresh carries its entire pending damage pool forward, adds a fresh 25, resets to ten seconds, and redistributes the combined pool across five ticks.
 - All 93 automated tests pass and `git diff --check` passes. Browser validation confirmed six Priest actions render, enemy selection works, hostile Penance damages the enemy and produces 12 effective Atonement healing across its two bolts, and Smite begins against the hostile target without console errors.
 - `npm test` passes all 89 tests and `git diff --check` passes. Browser QA verified both healer trees render, spending/refunding works, and switching healer updates the tree while preserving the existing Team sheet and ability controls.
+
+## BAT-36 — Druid talent rows 1–2
+
+- Added an immutable Druid talent-loadout adapter. Preserved Growth keeps Swiftmend's HoT requirement without consuming the effect; Empowered Rejuvenation and Nourishing Touch derive their two ranks without changing baseline spell data.
+- Passing Bloom transfers the previous Regrowth to the lowest-health-percentage eligible ally with its pending state intact. Cenarion Ward uses the specified 45 Mana, 30-second cooldown, 20-second ward and 10-second healing-received trigger. Abundant Nourishment raises the per-type bonus to 25/30 while keeping the three-type cap.
+
+## BAT-37 — Druid row 3 advanced HoT behavior
+
+- Blooming Swiftmend heals each other living party member for 20% of the calculated primary heal and composes with Preserved Growth without recursion.
+- Overgrowth permits a one-second Wild Growth cast during its existing cooldown, preserves that cooldown, and rolls all pending healing into a fresh eight-second pool. Living Rejuvenation dynamically uses 2.5-second ticks below half Health, returns to normal cadence above it, and moves pending state to the lowest wounded eligible ally rather than duplicating it.
+
+## BAT-38 — Druid row 4 and cross-talent interactions
+
+- Genesis extends every active Druid HoT by ten seconds and adds normal ticks without losing pending Overgrowth healing. Twin Rejuvenation maintains two independent instances, replaces the shortest remaining third instance, respects the two-instance jump cap, and counts as one HoT type for Nourish.
+- Tranquility is a five-second, five-tick party channel with the specified 100 Mana and 90-second cooldown. Spell Power is distributed once across the full per-member channel rather than added to every tick.
+- All 115 automated tests pass via `node --test tests/*.test.mjs`; `git diff --check` passes. The local global `npm` launcher is currently missing its `npm-cli.js`, so the equivalent direct Node test command was used. Browser QA confirmed the Druid tree and spell book render cleanly with no browser warnings or errors.

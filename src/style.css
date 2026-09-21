@@ -376,6 +376,20 @@ main {
   border-color:#ffdf97;
   box-shadow:0 0 12px #d8b06877
 }
+.spell-charge-count {
+  position:absolute;
+  right:3px;
+  top:3px;
+  min-width:16px;
+  height:16px;
+  padding:0 4px;
+  border-radius:8px;
+  background:#111b1f;
+  color:#f3dea3;
+  font:700 10px/16px "DM Sans",sans-serif;
+  text-align:center;
+  box-shadow:0 0 0 1px #82744e
+}
 .party-bottom {
   border-top:1px solid var(--line);
   font-family:Georgia,serif;

@@ -5,7 +5,9 @@ export function adjustedResource(current, oldMax, newMax) {
 export const resourceKey = member => member.label === 'HEALER' ? 'healer' : member.id;
 export function healingParts(spell, power = 0) {
   const ticks = spell.hot ? Math.round(spell.hot.duration / spell.hot.interval) : 0;
-  const direct = spell.channel ? spell.ticks.reduce((n, t) => n + t.heal, 0) : spell.heal;
+  const direct = spell.channel
+    ? spell.ticks.reduce((n, t) => n + t.heal, 0) + (spell.smartHealingBolt?.heal || 0)
+    : spell.heal;
   const hot = ticks * (spell.hot?.heal || 0), total = direct + hot;
   const factor = total > 0 ? (total + Math.max(0, power)) / total : 1;
   return { direct: direct * factor, hotTick: ticks ? hot * factor / ticks : 0, factor };
