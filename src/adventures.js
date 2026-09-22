@@ -3,6 +3,7 @@ import { CHAPTERS, CHAPTER_ENCOUNTERS } from './data.js';
 import { nodeState, chapterComplete, chapterUnlocked, restoreCampaign } from './progression.js';
 import { normalLootForEncounter } from './loot.js';
 import { itemIcon } from './equipment.js';
+import { mechanicCategory, mechanicIcon } from './mechanic-icons.js';
 export { nodeState, chapterComplete, restoreProgress, awardVictory } from './progression.js';
 
 export function setupAdventures({ startEncounter, onProgress, runs, getParty, awardLoot, onLoot, onVictory }) {
@@ -22,6 +23,20 @@ export function setupAdventures({ startEncounter, onProgress, runs, getParty, aw
     runs.restart(chapter, getParty()); active = null; selected = chapter.nodes[0].id; render();
   }
   $('#restart-chapter').addEventListener('click', restartChapter);
+  const mechanicsList = $('#detail-mechanics');
+  mechanicsList.addEventListener('click', event => {
+    const button = event.target.closest('.mechanic-row');
+    if (!button || !mechanicsList.contains(button)) return;
+    const open = button.getAttribute('aria-expanded') !== 'true';
+    mechanicsList.querySelectorAll('.mechanic-row').forEach(row => {
+      row.setAttribute('aria-expanded', 'false');
+      document.getElementById(row.getAttribute('aria-controls')).hidden = true;
+    });
+    if (open) {
+      button.setAttribute('aria-expanded', 'true');
+      document.getElementById(button.getAttribute('aria-controls')).hidden = false;
+    }
+  });
   function buildMap() {
     routeObserver.disconnect();
     runCompleted = new Set(currentRun().completed);
@@ -76,6 +91,10 @@ export function setupAdventures({ startEncounter, onProgress, runs, getParty, aw
     });
   }
   const routeObserver = new ResizeObserver(drawRoutes);
+  function mechanicRow({ id, name, category, description }, index) {
+    const descriptionId = `mechanic-description-${index}`;
+    return `<li><button type="button" class="mechanic-row" data-mechanic="${id}" aria-expanded="false" aria-controls="${descriptionId}">${mechanicIcon(category)}<span>${name}</span><span class="mechanic-chevron" aria-hidden="true">⌄</span></button><p class="mechanic-description" id="${descriptionId}" hidden>${description}</p></li>`;
+  }
   function render() {
     const run = currentRun(); runCompleted = new Set(run.completed);
     for (const node of nodes) {
@@ -92,10 +111,15 @@ export function setupAdventures({ startEncounter, onProgress, runs, getParty, aw
     $('#detail-title').textContent = node.name;
     $('#detail-description').textContent = node.description;
     $('#detail-enemies').textContent = `${encounter.name}${count ? ` + ${encounter.adds.map((add, i) => add.name || `Pale Archer ${i + 1}`).join(', ')}` : ' · Alone'}`;
-    $('#detail-mechanics').innerHTML = `<li><strong>Tank strikes</strong><p>${encounter.strike.damage} damage to Aldric every ${encounter.strike.every}s.</p></li>${encounter.mechanics.map(m => `<li><strong>${m.name}</strong><p>${healerHint(m.hint, loadActiveHealer())}</p></li>`).join('')}${count ? `<li><strong>Supporting enemies</strong><p>${encounter.adds.map(add => `${add.name || 'Pale Archer'} attacks ${add.target === 'tank' ? 'Aldric' : 'random living allies'}.`).join(' ')} Your party focuses the main enemy; the others flee when it falls.</p></li>` : ''}`;
+    const mechanicRows = [
+      { id: 'tank-strikes', name: 'Tank strikes', category: 'physical', description: `${encounter.strike.damage} damage to Aldric every ${encounter.strike.every}s.` },
+      ...encounter.mechanics.map(mechanic => ({ id: mechanic.id, name: mechanic.name, category: mechanicCategory(mechanic), description: healerHint(mechanic.hint, loadActiveHealer()) })),
+      ...(count ? [{ id: 'supporting-enemies', name: 'Supporting enemies', category: 'adds', description: `${encounter.adds.map(add => `${add.name || 'Pale Archer'} attacks ${add.target === 'tank' ? 'Aldric' : 'random living allies'}.`).join(' ')} Your party focuses the main enemy; the others flee when it falls.` }] : []),
+    ];
+    mechanicsList.innerHTML = mechanicRows.map(mechanicRow).join('');
     $('#detail-lesson').textContent = healerHint(encounter.lesson, loadActiveHealer());
     const loot = normalLootForEncounter(encounter.id);
-    $('#detail-loot').innerHTML = loot.map(item => `<div class="loot-item"><span class="gear-slot is-equipped">${itemIcon(item)}</span><span><strong>${item.name}</strong><small>Item level ${item.itemLevel}</small></span></div>`).join('');
+    $('#detail-loot').innerHTML = loot.map(item => `<button type="button" class="loot-item gear-slot is-equipped" data-item-id="${item.id}" aria-label="${item.name}, item level ${item.itemLevel}">${itemIcon(item)}</button>`).join('');
     $('#preview-encounter').disabled = run.status !== 'active' || state !== 'available';
     $('#preview-encounter').textContent = run.status !== 'active' ? 'Restart chapter to continue' : state === 'locked' ? 'Encounter locked' : state === 'completed' ? 'Cleared this run' : 'Prepare encounter →';
     $('#detail-state').textContent = state === 'locked' ? `Complete ${node.from.map(id => nodes.find(item => item.id === id).name).join(' or ')} in this run first.` : state === 'completed' ? 'Health and mana saved. Choose your next encounter.' : 'Enter with the resources shown on the map.';

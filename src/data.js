@@ -200,8 +200,8 @@ for (const member of [...PARTY, ...Object.values(HEALERS)]) {
 export const ENCOUNTER = {
   name: 'The Hollow Warden', maxHp: 4200,
   mechanics: [
-    { id: 'crush', name: 'Crushing blow', first: 10, every: 18, warning: 3, damage: 105, target: 'tank', color: '#d99b78', hint: 'A heavy strike on Aldric. Prepare a strong single-target heal.' },
-    { id: 'pulse', name: 'Hollow nova', first: 18, every: 22, warning: 4, damage: 80, target: 'party', color: '#c491d6', hint: 'Party-wide damage. Prepare Prayer of Healing and use Atonement to top off the weakest ally.' },
+    { id: 'crush', name: 'Crushing blow', first: 10, every: 18, warning: 3, damage: 105, target: 'tank', iconCategory: 'physical', color: '#d99b78', hint: 'A heavy strike on Aldric. Prepare a strong single-target heal.' },
+    { id: 'pulse', name: 'Hollow nova', first: 18, every: 22, warning: 4, damage: 80, target: 'party', iconCategory: 'aoe', color: '#c491d6', hint: 'Party-wide damage. Prepare Prayer of Healing and use Atonement to top off the weakest ally.' },
     { id: 'mark', name: 'Withering mark', first: 25, every: 20, warning: 2, target: 'rotating', dot: { damage: 18, ticks: 4, interval: 2 }, color: '#83b7a4', hint: 'An ally takes damage over 8 seconds. Watch their frame.' },
   ],
   strike: { first: 2.4, every: 2.4, damage: 32 },
@@ -209,9 +209,9 @@ export const ENCOUNTER = {
 };
 // Later chapters share the same graph and encounter model. Explicit values are
 // starting points for playtesting, not a scaling formula or permanent power curve.
-const pulse = (id, name, first, every, damage) => ({ id, name, first, every, damage, warning: 3, target: 'party', color: '#b8c98a', hint: 'Party-wide damage. Prepare Prayer of Healing, then use Atonement to support the weakest ally.' });
-const split = (id, name, first, every, damage, count) => ({ id, name, first, every, damage, count, warning: 3, target: 'random', color: '#e4af7c', hint: `Hits ${count} different living allies. Check the marked targets and heal the most vulnerable first.` });
-const bleed = (id, name, first, every, count, damage, ticks, interval, target = 'random') => ({ id, name, first, every, count, warning: 3, target, color: '#d78d9d', dot: { damage, ticks, interval }, hint: `${target === 'tank' ? 'Aldric' : count === 1 ? 'One random living ally' : count + ' random living allies'} will bleed for ${ticks * interval}s. Heal through it; there is no dispel.` });
+const pulse = (id, name, first, every, damage) => ({ id, name, first, every, damage, warning: 3, target: 'party', iconCategory: 'aoe', color: '#b8c98a', hint: 'Party-wide damage. Prepare Prayer of Healing, then use Atonement to support the weakest ally.' });
+const split = (id, name, first, every, damage, count) => ({ id, name, first, every, damage, count, warning: 3, target: 'random', iconCategory: 'physical', color: '#e4af7c', hint: `Hits ${count} different living allies. Check the marked targets and heal the most vulnerable first.` });
+const bleed = (id, name, first, every, count, damage, ticks, interval, target = 'random') => ({ id, name, first, every, count, warning: 3, target, iconCategory: 'bleed', color: '#d78d9d', dot: { damage, ticks, interval }, hint: `${target === 'tank' ? 'Aldric' : count === 1 ? 'One random living ally' : count + ' random living allies'} will bleed for ${ticks * interval}s. Heal through it; there is no dispel.` });
 const add = (name, first, every, damage, target = 'random', appearance = 'archer') => ({ name, first, every, damage, target, appearance });
 const fight = (id, name, maxHp, damage, every, appearance, color, mechanics, adds, lesson) => ({ id, name, maxHp, strike: { first: every, every, damage }, appearance, color, mechanics, adds, lesson });
 Object.assign(CHAPTER_ENCOUNTERS, {

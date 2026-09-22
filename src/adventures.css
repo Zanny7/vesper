@@ -40,17 +40,30 @@
 #detail-enemies { color: #90d6c7; font-size: 11px; }
 .encounter-detail section { border-top: 1px solid #41605a55; padding-top: 18px; margin-top: 12px; }
 .encounter-detail h3 { font: 10px/1.5 sans-serif; text-transform: uppercase; letter-spacing: 1px; color: #a9bbb5; margin: 0 0 14px; }
-#detail-mechanics { list-style: none; margin: 0; padding: 0; }
-#detail-mechanics li { background: #192d3280; border: 1px solid #41605a50; padding: 12px; margin-bottom: 10px; border-radius: 4px; }
-#detail-mechanics strong { font-size: 12px; font-weight: 500; }
-#detail-mechanics p { margin: 5px 0 0; font-size: 11px; }
+#detail-mechanics { flex: 1 1 auto; min-height: 0; overflow-y: auto; overscroll-behavior: contain; scrollbar-color: #897b55 #142329; scrollbar-width: thin; list-style: none; margin: 0; padding: 0 5px 0 0; }
+#detail-mechanics::-webkit-scrollbar { width: 8px; }
+#detail-mechanics::-webkit-scrollbar-track { background: #142329; border-radius: 4px; }
+#detail-mechanics::-webkit-scrollbar-thumb { background: #776c4e; border: 2px solid #142329; border-radius: 4px; }
+#detail-mechanics li { background: #192d3280; border: 1px solid #41605a50; margin-bottom: 5px; border-radius: 4px; }
+.mechanics-section { display: flex; flex: 1 1 0; flex-direction: column; min-height: 190px; }
+.mechanics-section h3 { flex: 0 0 auto; }
+.mechanic-row { display: flex; align-items: center; gap: 10px; width: 100%; min-height: 38px; padding: 7px 9px; border: 0; border-radius: 3px; background: transparent; color: #d5ddd3; text-align: left; }
+.mechanic-row:hover, .mechanic-row[aria-expanded="true"] { background: #263b3b; color: #f1e2be; }
+.mechanic-row > span:nth-of-type(1) { flex: 1; font-size: 11px; font-weight: 500; }
+.mechanic-icon { width: 19px; height: 19px; flex: 0 0 19px; }
+.mechanic-icon--physical { color: #d9b88a; }
+.mechanic-icon--aoe { color: #9ed8c1; }
+.mechanic-icon--bleed { color: #dc929c; }
+.mechanic-icon--magic { color: #aab0e4; }
+.mechanic-icon--chaos { color: #c69bd2; }
+.mechanic-icon--adds { color: #b9c58e; }
+.mechanic-chevron { color: #91a79c; font-size: 14px; transition: transform .15s ease; }
+.mechanic-row[aria-expanded="true"] .mechanic-chevron { transform: rotate(180deg); }
+.mechanic-description { margin: 0; padding: 2px 12px 10px 38px; font-size: 10px !important; line-height: 1.55 !important; }
 #detail-lesson { color: #c2c8ab; }
-.encounter-loot { display: grid; gap: 8px; }
-.loot-item { display: flex; align-items: center; gap: 10px; min-width: 0; color: #dbe4dc; }
-.loot-item .gear-slot { width: 38px; height: 38px; flex: 0 0 38px; padding: 3px; pointer-events: none; }
-.loot-item span:last-child { display: grid; min-width: 0; }
-.loot-item strong { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font: 12px/1.4 Georgia, serif; }
-.loot-item small, .loot-note { color: #8fa9a1; font: 9px/1.5 sans-serif; }
+.encounter-loot { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 7px; }
+.encounter-loot .loot-item { justify-self: center; width: min(100%, 52px); aspect-ratio: 1; padding: 6px; cursor: help; }
+.loot-note { color: #8fa9a1; font: 9px/1.5 sans-serif; }
 .loot-note { margin-bottom: 0; }
 .loot-awarded { display: grid; gap: 8px; width: min(320px, 100%); margin: 16px auto 0; padding-top: 14px; border-top: 1px solid #8ba89d55; text-align: left; }
 .loot-awarded > small { color: #d6bd83; letter-spacing: 1.4px; text-align: center; }

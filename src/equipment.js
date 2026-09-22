@@ -1,4 +1,5 @@
 // Shared presentation surfaces; per-item artwork and loot progression belong to BAT-21.
+import { GEAR } from './data.js';
 export const statLabels = { maxHp: 'Health', maxMana: 'Mana', manaRegen: 'Mana regeneration', spellPower: 'Spell Power', haste: 'Haste', crit: 'Crit', armor: 'Armor', resistance: 'Resistance', damage: 'Damage' };
 const escape = value => String(value).replace(/[&<>"']/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch]));
 const silhouettes = {
@@ -28,7 +29,7 @@ export function setupEquipment({ equipment, onChange, isLocked }) {
   tooltip.id = 'gear-tooltip'; tooltip.className = 'gear-tooltip'; tooltip.hidden = true; tooltip.setAttribute('role', 'tooltip');
   document.body.append(popup, tooltip);
   let anchor = null, tipAnchor = null, page = 0;
-  const find = id => equipment.collection().find(item => item.id === id);
+  const find = id => equipment.collection().find(item => item.id === id) || GEAR.find(item => item.id === id);
   function place(panel, target) {
     const rect = target.getBoundingClientRect(), width = panel.offsetWidth, height = panel.offsetHeight;
     const right = rect.right + 10, left = rect.left - width - 10, viewportWidth = document.documentElement.clientWidth;
