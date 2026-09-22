@@ -19,12 +19,11 @@
     <section class="chapter-list" id="chapter-list" aria-label="Available chapters"></section>
   </main>
   <main id="chapter-view" class="hub-view" aria-labelledby="chapter-title" hidden>
-    <button class="quiet chapter-back" data-navigate="adventures"><span>←</span> All chapters</button>
+    <div class="chapter-actions" aria-label="Chapter actions"><button class="chapter-action chapter-back" data-navigate="adventures">← All chapters</button><button class="chapter-action" id="restart-chapter">Restart chapter</button></div>
     <div class="chapter-layout">
       <section class="journey" aria-label="Chapter 1 progression map">
         <div class="journey-heading"><div><span class="eyebrow">CHAPTER I · YOUR NEXT VIGIL</span><h1 id="chapter-title" tabindex="-1">The Forsaken Catacombs</h1></div><span id="journey-progress" aria-live="polite"></span></div>
         <p class="journey-intro">Four encounters. One descent. Keep their light alive.</p>
-        <div class="chapter-run"><p id="run-status" aria-live="polite"></p><div id="run-resources"></div><button class="quiet" id="restart-chapter">Restart chapter</button><p>Health and mana carry between encounters. No recovery outside combat. Failure, abandonment, or reloading during combat ends the run.</p></div>
         <div class="map-scroll" tabindex="0" role="region" aria-label="Encounter map; scroll sideways to explore longer routes"><div id="adventure-map" role="group" aria-label="Encounter routes"></div></div>
         <div class="map-legend" aria-label="Map legend"><span>✓ Completed</span><span>● Current</span><span>⊘ Locked</span><span>◎ Selected</span><span>♜ Chapter Boss</span></div>
       </section>

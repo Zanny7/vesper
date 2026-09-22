@@ -1,6 +1,5 @@
 import { healerHint, loadActiveHealer } from './healers.js';
 import { CHAPTERS, CHAPTER_ENCOUNTERS } from './data.js';
-import { resourceKey } from './stats.js';
 import { nodeState, chapterComplete, chapterUnlocked, restoreCampaign } from './progression.js';
 import { normalLootForEncounter } from './loot.js';
 import { itemIcon } from './equipment.js';
@@ -79,8 +78,6 @@ export function setupAdventures({ startEncounter, onProgress, runs, getParty, aw
   const routeObserver = new ResizeObserver(drawRoutes);
   function render() {
     const run = currentRun(); runCompleted = new Set(run.completed);
-    $('#run-status').textContent = run.status === 'failed' ? 'Run ended. Restart this chapter from the first encounter with full resources.' : run.status === 'complete' ? 'Chapter run complete. Restart to begin a new run.' : 'Current chapter run';
-    $('#run-resources').innerHTML = getParty().map(p => { const r = run.resources.health[resourceKey(p)]; return `<span>${p.name}<small>${Math.round(r.current)} / ${r.max} health</small></span>`; }).join('') + `<span>Mana<small>${Math.round(run.resources.mana.current)} / ${run.resources.mana.max}</small></span>`;
     for (const node of nodes) {
       const button = buttons.get(node.id), state = nodeState(node, runCompleted);
       button.dataset.state = state;
