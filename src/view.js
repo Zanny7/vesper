@@ -12,9 +12,11 @@ export function setupView(scene) {
     tooltip.hidden = true;
   }
 
-  function refreshTooltip() {
+  function refreshTooltip(force = false) {
     if (!source) return;
-    if (!source.isConnected || !source.getClientRects().length) return hideTooltip();
+    if (!source.isConnected) return hideTooltip();
+    if (!force && tooltip.textContent === source.dataset.tooltip) return;
+    if (!source.getClientRects().length) return hideTooltip();
     tooltip.textContent = source.dataset.tooltip;
     const rect = source.getBoundingClientRect();
     const width = tooltip.offsetWidth;
@@ -29,7 +31,7 @@ export function setupView(scene) {
     source = element;
     source.setAttribute('aria-describedby', tooltip.id);
     tooltip.hidden = false;
-    refreshTooltip();
+    refreshTooltip(true);
   }
 
   function setImmersive(enabled) {

@@ -35,11 +35,21 @@ export class Combat {
   log(text, kind = 'neutral') { this.history.unshift({ text, kind, time: this.time }); this.history.length = Math.min(30, this.history.length); }
   start() { if (this.status === 'ready') { this.status = 'running'; this.log(`${this.encounter.name} awakens. Keep your party alive.`); } }
   pause() { if (this.status === 'running') this.status = 'paused'; else if (this.status === 'paused') this.status = 'running'; }
-  cancel() { if (this.cast) { this.log(`${this.cast.spell.name} cancelled. Mana is not refunded.`, 'warning'); this.emit('cancel'); this.cast = null; } }
+  cancel() {
+    if (!this.cast) return;
+    const { manaSpent: spent, postHaste } = this.cast;
+    if (postHaste) this.buffs.postHaste = (this.buffs.postHaste || 0) + 1;
+    this.log(`${this.cast.spell.name} cancelled. ${spent ? 'Mana is not refunded.' : 'No Mana spent.'}`, 'warning');
+    this.emit('cancel'); this.cast = null;
+  }
   availableCharges(id) { return this.charges[id]?.current; }
   haste() {
     const fervor = this.buffs.divineFervor;
     return (this.healer?.haste || 0) + (fervor?.target === this.healer?.id && fervor.expires > this.time ? fervor.speed * 100 : 0);
+  }
+  manaCost(spell) {
+    const postHaste = Boolean(spell.postHaste && this.buffs.postHaste > 0 && ['greater', 'prayer'].includes(spell.id));
+    return spell.cost * CONFIG.baseMana * (postHaste ? .8 : 1);
   }
   begin(id, targetId) {
     const spell = this.spells.find(s => s.id === id);
@@ -57,11 +67,12 @@ export class Combat {
     if (charge ? charge.current <= 0 : cooldownActive && !overgrowth) return { ok: false, reason: `${spell.name} is on cooldown.` };
     if (spell.consumesHot && !this.activeHots(target, spell.consumesHot).length) return { ok: false, reason: `${spell.name} requires Rejuvenation, Regrowth, or Wild Growth on this ally.` };
     const postHaste = Boolean(spell.postHaste && this.buffs.postHaste > 0 && ['greater', 'prayer'].includes(spell.id));
-    const cost = spell.cost * CONFIG.baseMana * (postHaste ? .8 : 1);
+    const cost = this.manaCost(spell);
     if (this.mana < cost) return { ok: false, reason: 'Not enough mana.' };
     const hasteMultiplier = 1 + this.haste() / 100;
     const duration = (overgrowth ? 1 : spell.cast) / hasteMultiplier * (postHaste ? .8 : 1);
-    this.mana -= cost;
+    const spendAtStart = duration === 0 || spell.channel;
+    if (spendAtStart) this.mana -= cost;
     if (postHaste) {
       this.buffs.postHaste--;
       if (!this.buffs.postHaste) delete this.buffs.postHaste;
@@ -71,7 +82,10 @@ export class Combat {
       if (charge.recharge === null) charge.recharge = this.time + charge.duration;
       this.cooldowns[id] = charge.recharge;
     } else if (spell.cooldown && !overgrowth) this.cooldowns[id] = this.time + spell.cooldown;
-    this.cast = { spell, target: targetId, duration, elapsed: 0, launched: 0, landed: 0, postHaste, hasteMultiplier, overgrowth };
+    this.cast = {
+      spell, target: targetId, duration, elapsed: 0, launched: 0, landed: 0,
+      postHaste, hasteMultiplier, overgrowth, manaCost: cost, manaSpent: spendAtStart,
+    };
     this.emit('cast', { spell: id, target: targetId });
     this.stats.casts++;
     if (duration === 0) this.completeCast();
@@ -166,6 +180,10 @@ export class Combat {
   }
   completeCast() {
     const cast = this.cast, spell = cast.spell;
+    if (!cast.manaSpent) {
+      this.mana -= cast.manaCost;
+      cast.manaSpent = true;
+    }
     if (!spell.channel) {
       if (spell.enemy) {
         this.damageEnemy(spell.damage, spell.id, spell.atonement);

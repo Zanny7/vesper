@@ -18,6 +18,7 @@ import { BOSS_BONUS_LOOT_TABLES, NORMAL_LOOT_TABLES, rollBossBonusLoot, rollNorm
 import { activeHealer, loadActiveHealer, healerHint } from './healers.js';
 import { formatCooldown, healingSummary } from './ability-presentation.js';
 import { abilityIcon } from './ability-icons.js';
+import { renderHealerBuffs } from './healer-buffs.js';
 import { createAbilitySettings, bindingFromEvent } from './ability-settings.js';
 import { CONFIG, CHAPTER_ENCOUNTERS, ALL_ADVENTURES, CHAPTERS } from './data.js';
 
@@ -55,6 +56,7 @@ function buildHealerUI() {
   game.spells = currentSpells;
   $('#party-frames').innerHTML=game.party.map(p=>`<button class="party-frame ${p.id===selected?'selected':''}" data-target="${p.id}" style="--class-color:${p.color}" aria-label="${p.name}, ${p.role}"><div class="health-fill"></div><div class="incoming-fill"></div><div class="frame-top"><strong><i>${roleIcons[p.id]}</i>${p.name}</strong></div><div class="frame-bottom"><span>${p.role}</span></div><div class="frame-health"><span class="hp-percent">100%</span><span class="hp-values">${p.maxHp} / ${p.maxHp}</span></div><div class="frame-effects frame-effects-negative" aria-hidden="true"></div><div class="frame-effects frame-effects-helpful" aria-hidden="true"></div></button>`).join('');
   $('#spellbook').innerHTML=currentSpells.map(s=>`<button class="spell" data-spell="${s.id}" data-icon="${s.icon}" aria-label="${s.name}, key ${s.key}. ${s.description}">${abilityIcon(s)}<span class="spell-charge-count" ${s.charges ? '' : 'hidden'}></span><div class="cooldown-mask" aria-hidden="true" hidden></div></button>`).join('');
+  $('#healer-buffs').replaceChildren(); $('#healer-buffs').dataset.buffKey = ''; $('#healer-buffs').hidden = true;
   $('.help-spells').innerHTML=currentSpells.map(s=>`<div><strong>${s.key} · ${s.name}</strong>${s.description}<small>${s.cast ? s.cast + 's ' + (s.channel?'channel':'cast') : 'Instant'} · ${s.effectSummary || (s.damage ? `${s.damage} damage${s.heal ? ` / ${healingSummary(s)} healing` : ''}` : `${healingSummary(s)} healing`)} · ${s.cost*CONFIG.baseMana} mana</small></div>`).join('');
   $('.haste-row').hidden = true;
   $('#help-haste').hidden = true;
@@ -130,6 +132,7 @@ function renderUI(){
   const targetId=hovered||selected, target=game.party.find(p=>p.id===targetId);$('#target-label').textContent=`${hovered?'Mouseover':'Selected'}: ${target?.name || game.encounter.name}`;
   $('.boss-title').classList.toggle('selected',targetId==='boss');
   $('#mana-number').textContent=`${number(game.mana)} / ${number(game.maxMana)}`;$('#mana-fill').style.width=`${game.mana/game.maxMana*100}%`;
+  renderHealerBuffs($('#healer-buffs'), game);
   $('#boss-fill').style.width=`${game.boss.hp/game.boss.maxHp*100}%`;$('#boss-percent').textContent=`${Math.ceil(game.boss.hp/game.boss.maxHp*100)}%`;$('#boss-hp').textContent=`${number(game.boss.hp)} / ${number(game.boss.maxHp)}`;
   $('#timer').textContent=clock(game.time);$('#enrage').textContent=clock(Math.max(0,CONFIG.enrage-game.time));
   $('#alive-count').textContent=`${game.party.filter(p=>p.hp>0).length} / 5`;
@@ -142,14 +145,23 @@ function renderUI(){
   $('#cast-fill').style.width=cast?`${Math.min(100,Math.max(0,(cast.spell.channel?1-cast.elapsed/cast.duration:cast.elapsed/cast.duration)*100))}%`:'0%';$('.cast-track').classList.toggle('channel',!!cast?.spell.channel);
   for(const button of spellButtons){
     const spell=currentSpells.find(s=>s.id===button.dataset.spell),cooldown=Math.max(0,(game.cooldowns[spell.id]||0)-game.time),charges=game.availableCharges(spell.id);
+    const manaCost=game.manaCost(spell);
     const unavailable = charges === undefined ? cooldown > 0 && !spell.overgrowth : charges <= 0;
-    const mask=button.querySelector('.cooldown-mask');mask.hidden=!unavailable;mask.textContent=formatCooldown(cooldown);
+    const mask=button.querySelector('.cooldown-mask');
+    if (mask.hidden !== !unavailable) mask.hidden = !unavailable;
+    const cooldownText = formatCooldown(cooldown);
+    if (mask.textContent !== cooldownText) mask.textContent = cooldownText;
     button.classList.toggle('on-cooldown', unavailable);
-    button.querySelector('.spell-charge-count')?.replaceChildren(String(charges));
-    button.setAttribute('aria-disabled', String(game.status!=='running'||unavailable||game.mana<spell.cost*CONFIG.baseMana||(spell.consumesHot&&!game.activeHots(target,spell.consumesHot).length)));
+    if (charges !== undefined) {
+      const chargeLabel = button.querySelector('.spell-charge-count');
+      if (chargeLabel.textContent !== String(charges)) chargeLabel.textContent = charges;
+    }
+    const disabled = String(game.status!=='running'||unavailable||game.mana<manaCost||(spell.consumesHot&&!game.activeHots(target,spell.consumesHot).length));
+    if (button.getAttribute('aria-disabled') !== disabled) button.setAttribute('aria-disabled', disabled);
     const duration = spell.cast;
     const output = spell.effectSummary || (spell.damage ? `${spell.damage} damage${spell.heal ? ` / ${healingSummary(spell)} healing` : ''}` : `${healingSummary(spell)} healing`);
-    button.dataset.tooltip = `${spell.name} · ${spell.key}\n${duration ? duration.toFixed(1) + 's ' + (spell.channel?'channel':'cast') : 'Instant'} · ${spell.cost*CONFIG.baseMana} mana\n${output}${spell.cooldown?` · ${spell.cooldown}s cooldown`:''}${charges === undefined ? '' : ` · ${charges}/${spell.charges} charges`}\n${spell.description}${cooldown>0?`\n${spell.overgrowth ? `Overgrowth cast · ${cooldown.toFixed(1)}s base cooldown remaining` : `Ready in ${cooldown.toFixed(1)}s`}`:''}`;
+    const tooltip = `${spell.name} · ${spell.key}\n${duration ? duration.toFixed(1) + 's ' + (spell.channel?'channel':'cast') : 'Instant'} · ${manaCost} mana\n${output}${spell.cooldown?` · ${spell.cooldown}s cooldown`:''}${charges === undefined ? '' : ` · ${charges}/${spell.charges} charges`}\n${spell.description}${cooldown>0?`\n${spell.overgrowth ? `Overgrowth cast · ${cooldown.toFixed(1)}s base cooldown remaining` : `Ready in ${cooldown.toFixed(1)}s`}`:''}`;
+    if (button.dataset.tooltip !== tooltip) button.dataset.tooltip = tooltip;
     button.classList.toggle('active',cast?.spell.id===spell.id);
   }
   $('#strike-countdown').textContent = `· ${Math.max(0, Math.ceil(game.nextStrike-game.time))}s`;

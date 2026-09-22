@@ -35,11 +35,12 @@ test('Post-Haste stores up to its rank and consumes exactly one stack for an 80%
   assert.equal(game.buffs.postHaste, 2);
   const mana = game.mana;
   assert.ok(game.begin('greater', 'tank').ok); assert.ok(Math.abs(game.cast.duration - 2.4) < 1e-8);
-  assert.equal(game.mana, mana - 36); assert.equal(game.buffs.postHaste, 1);
+  assert.equal(game.mana, mana); assert.equal(game.cast.manaCost, 36); assert.equal(game.buffs.postHaste, 1);
   advance(game, 2.4);
   const prayerMana = game.mana;
   assert.ok(game.begin('prayer', 'tank').ok); assert.ok(Math.abs(game.cast.duration - 2.4) < 1e-8);
-  assert.equal(game.mana, prayerMana - 60); assert.equal(game.buffs.postHaste, undefined);
+  assert.equal(game.mana, prayerMana); assert.equal(game.cast.manaCost, 60); assert.equal(game.buffs.postHaste, undefined);
+  advance(game, 2.4); assert.ok(Math.abs(game.mana - (prayerMana + 2.4 * game.healer.manaRegen - 60)) < 1e-8);
 });
 
 test('Focused Penance and Lingering Prayer use the requested cooldown and refresh-only derived HoT', () => {

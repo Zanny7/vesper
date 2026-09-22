@@ -7,10 +7,11 @@ const encounter = { name: 'Training', maxHp: 10000, strike: { first: Infinity, e
 const advance = (game, seconds) => { for (let i = 0; i < Math.round(seconds / CONFIG.step); i++) game.step(); };
 function setup() { const game = new Combat(encounter); game.start(); game.party.forEach(member => member.nextAttack = Infinity); return game; }
 
-test('Smite costs 4 mana, lands after 1.5s, and Atonement heals lowest health percentage', () => {
+test('Smite costs 4 mana on completion, lands after 1.5s, and Atonement heals lowest health percentage', () => {
   const game = setup(); game.party[0].hp = 400; game.party[1].hp = 200; game.party[4].hp = 200;
-  assert.equal(game.begin('smite', 'tank').ok, true); assert.equal(game.mana, CONFIG.mana - 4);
+  assert.equal(game.begin('smite', 'tank').ok, true); assert.equal(game.mana, CONFIG.mana);
   advance(game, 1.5);
+  assert.equal(game.mana, CONFIG.mana - 4);
   assert.equal(game.boss.hp, encounter.maxHp - 12);
   assert.equal(game.party[4].hp, 204.8); // Priest is at 50%; the other injured allies are above 50%.
   assert.equal(game.cooldowns.smite, undefined);

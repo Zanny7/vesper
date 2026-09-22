@@ -305,7 +305,10 @@ export class Battlefield {
     if(e.type==='bolt'){
       const x=from.x+(p.x-from.x)*progress,y=from.y+(p.y-from.y)*progress-Math.sin(progress*Math.PI)*35;
       const tail=Math.max(0,progress-.25),tx=from.x+(p.x-from.x)*tail,ty=from.y+(p.y-from.y)*tail-Math.sin(tail*Math.PI)*35;
-      c.globalCompositeOperation='lighter';c.shadowColor='#ffcb69';c.shadowBlur=18;this.line(c,[[tx,ty],[x,y]],'#eec47277',10);this.line(c,[[tx,ty],[x,y]],'#fff1b7',3);this.glow(c,x,y,24,'#ffd786cc');this.ellipse(c,x,y,5,5,'#fffbea');
+      c.globalCompositeOperation='lighter';c.shadowColor='#ffcb69';c.shadowBlur=18;
+      this.line(c,[[tx,ty],[x,y]],'#eec47277',10);
+      c.shadowBlur=0;
+      this.line(c,[[tx,ty],[x,y]],'#fff1b7',3);this.glow(c,x,y,24,'#ffd786cc');this.ellipse(c,x,y,5,5,'#fffbea');
       for(let i=0;i<5;i++)this.ellipse(c,x-Math.sin(age*21+i)*12,y+Math.cos(age*19+i)*10,1.3,1.3,'#ffe8a7');
     }
     if(e.type==='heal'){

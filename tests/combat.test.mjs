@@ -28,10 +28,24 @@ test('cancelling a channel prevents unlanded ticks and retains spent resources',
   const g=isolated();g.party[0].hp=100;g.begin('penance','tank');advance(g,.5);g.cancel();advance(g,1.5);
   assert.equal(g.party[0].hp,100);assert.ok(Math.abs(g.mana-(CONFIG.mana-36+2*CONFIG.manaRegen))<1e-8);assert.equal(g.begin('penance','tank').ok,false);
 });
+test('normal casts reserve their final cost, spend on completion, and cost nothing when cancelled',()=>{
+  const g=isolated();g.mana=45;
+  assert.equal(g.begin('greater','tank').ok,true);assert.equal(g.mana,45);assert.equal(g.cast.manaCost,45);
+  advance(g,1);g.cancel();assert.ok(g.mana>45);assert.match(g.history[0].text,/No Mana spent/);
+  g.mana=44;assert.equal(g.begin('greater','tank').ok,false);assert.equal(g.mana,44);
+  g.mana=45;assert.equal(g.begin('greater','tank').ok,true);advance(g,3);
+  assert.ok(Math.abs(g.mana-(45+3*CONFIG.manaRegen-45))<1e-8);
+});
+test('instant spells and channels spend their final cost at activation',()=>{
+  const g=isolated();
+  assert.equal(g.begin('holyFire','boss').ok,true);assert.equal(g.mana,CONFIG.mana-8);
+  const mana=g.mana;assert.equal(g.begin('penance','tank').ok,true);assert.equal(g.mana,mana-36);
+  g.cancel();assert.equal(g.mana,mana-36);assert.match(g.history[0].text,/not refunded/);
+});
 test('mana, cooldown, dead targets and busy casts reject without spending',()=>{
   const g=isolated();g.mana=20;assert.equal(g.begin('flash','tank').ok,false);assert.equal(g.mana,20);g.mana=200;g.party[1].hp=0;
-  assert.equal(g.begin('flash','rogue').ok,false);assert.equal(g.mana,200);assert.equal(g.begin('greater','tank').ok,true);assert.equal(g.mana,155);
-  assert.equal(g.begin('flash','priest').ok,false);assert.equal(g.mana,155);
+  assert.equal(g.begin('flash','rogue').ok,false);assert.equal(g.mana,200);assert.equal(g.begin('greater','tank').ok,true);assert.equal(g.mana,200);
+  assert.equal(g.begin('flash','priest').ok,false);assert.equal(g.mana,200);
 });
 test('healing clamps to max health and records overheal separately',()=>{
   const g=isolated();g.party[0].hp=580;g.begin('greater','tank');advance(g,3);assert.equal(g.party[0].hp,600);assert.equal(g.stats.effective,20);assert.equal(g.stats.overheal,180);
