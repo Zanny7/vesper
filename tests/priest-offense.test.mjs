@@ -8,12 +8,12 @@ const advance = (game, seconds) => { for (let i = 0; i < Math.round(seconds / CO
 function setup() { const game = new Combat(encounter); game.start(); game.party.forEach(member => member.nextAttack = Infinity); return game; }
 
 test('Smite costs 4 mana on completion, lands after 1.5s, and Atonement heals lowest health percentage', () => {
-  const game = setup(); game.party[0].hp = 400; game.party[1].hp = 200; game.party[4].hp = 200;
+  const game = setup(); game.party[0].hp = 400; game.party[1].hp = 200; game.party[4].hp = 180;
   assert.equal(game.begin('smite', 'tank').ok, true); assert.equal(game.mana, CONFIG.mana);
   advance(game, 1.5);
   assert.equal(game.mana, CONFIG.mana - 4);
   assert.equal(game.boss.hp, encounter.maxHp - 12);
-  assert.equal(game.party[4].hp, 204.8); // Priest is at 50%; the other injured allies are above 50%.
+  assert.equal(game.party[4].hp, 184.8); // Priest is the most injured by Health percentage.
   assert.equal(game.cooldowns.smite, undefined);
 });
 
@@ -28,7 +28,7 @@ test('Atonement includes the Priest, ignores companion attacks, and is wasted at
 
 test('Penance heals allies or deals two hostile bolts and triggers Atonement', () => {
   const friendly = setup(); friendly.party[0].hp = 100; friendly.begin('penance', 'tank'); advance(friendly, 2);
-  assert.equal(friendly.party[0].hp, 350); assert.equal(friendly.boss.hp, encounter.maxHp);
+  assert.equal(friendly.party[0].hp, 220); assert.equal(friendly.boss.hp, encounter.maxHp);
   const hostile = setup(); hostile.party[4].hp = 100; hostile.begin('penance', 'boss'); advance(hostile, 2);
   assert.equal(hostile.boss.hp, encounter.maxHp - 30); assert.equal(hostile.party[4].hp, 112);
   assert.equal(hostile.events.filter(event => event.type === 'damage' && event.target === 'boss').length, 2);

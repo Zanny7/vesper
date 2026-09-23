@@ -12,7 +12,7 @@ export const SLOTS = {
 export const GEAR_CHAPTER_BANDS = { 1: [1, 3], 2: [4, 6], 3: [7, 9], 4: [10, 12] };
 // Fixed Chapter 1–4 catalogue. Retired prototype IDs must not be reused.
 // Budgets are deliberately modest: sustain/throughput and Physical/Magic defense
-// trade places across tiers. Haste/Crit await their combat rules; no inert bonuses.
+// trade places across tiers. Haste and Crit use the shared combat rules.
 export const GEAR = [
   {"id":"ch1-sepulcher-candle","owner":"priest","slot":"Weapon","name":"Sepulcher Candle","chapter":1,"itemLevel":3,"icon":"/assets/items/ch1-sepulcher-candle.svg","flavor":"Its flame leans toward the living.","stats":{"spellPower":10}},
   {"id":"ch1-book-of-last-names","owner":"priest","slot":"Tome","name":"Book of Last Names","chapter":1,"itemLevel":2,"icon":"/assets/items/ch1-book-of-last-names.svg","flavor":"No name is crossed out.","stats":{"maxMana":60}},
@@ -164,17 +164,17 @@ export const CHAPTER_ENCOUNTERS = {
   warden: { id: 'warden', name: 'The Hollow Warden', maxHp: 2500, strike: { first: 2.3, every: 2.3, damage: 78 }, adds: [{ first: 4, every: 4.5, damage: 26 }, { first: 6, every: 4.5, damage: 26 }], mechanics: [], lesson: 'The Warden strikes harder and faster. Keep Penance ready for Aldric while watching the whole party.' },
 };
 export const PARTY = [
-  { id: 'tank', name: 'Aldric', role: 'Guardian', label: 'TANK', maxHp: 600, color: '#78aabc', damage: 7, interval: 2, x: 485, y: 348 },
-  { id: 'rogue', name: 'Nyx', role: 'Nightblade', label: 'DPS', maxHp: 360, color: '#b598d3', damage: 15, interval: 1.65, x: 633, y: 327 },
-  { id: 'mage', name: 'Sera', role: 'Arcanist', label: 'DPS', maxHp: 340, color: '#729cdf', damage: 13, interval: 2.4, x: 697, y: 449 },
-  { id: 'ranger', name: 'Theron', role: 'Ranger', label: 'DPS', maxHp: 380, color: '#8fb58d', damage: 12, interval: 2.1, x: 322, y: 415 },
+  { id: 'tank', name: 'Aldric', role: 'Guardian', label: 'TANK', maxHp: 600, color: '#78aabc', damage: 8, interval: 2, x: 485, y: 348 },
+  { id: 'rogue', name: 'Nyx', role: 'Nightblade', label: 'DPS', maxHp: 400, color: '#b598d3', damage: 9, interval: 1.35, x: 633, y: 327 },
+  { id: 'mage', name: 'Sera', role: 'Arcanist', label: 'DPS', maxHp: 400, color: '#729cdf', damage: 16, interval: 2.4, x: 697, y: 449 },
+  { id: 'ranger', name: 'Theron', role: 'Ranger', label: 'DPS', maxHp: 400, color: '#8fb58d', damage: 12, interval: 1.8, x: 322, y: 415 },
   { id: 'priest', name: 'You', role: 'Priest', label: 'HEALER', maxHp: 400, color: '#e2cc94', damage: 0, interval: 2, x: 485, y: 484 },
 ];
 export const SPELLS = [
   { id: 'flash', name: 'Flash Heal', key: '1', icon: 'spark', cast: 1.5, cost: 1, heal: 100, color: '#e5ce8c', description: 'A quick, focused heal for 100.' },
   { id: 'greater', name: 'Greater Heal', key: '2', icon: 'sun', cast: 3, cost: 1.5, heal: 200, color: '#f2dfad', description: 'An efficient, powerful heal for 200.' },
   { id: 'prayer', name: 'Prayer of Healing', key: '3', icon: 'wings', cast: 3, cost: 2.5, heal: 100, party: true, color: '#9fdfc6', description: 'Restores 100 health to every living ally, including you.' },
-  { id: 'penance', name: 'Penance', key: '4', icon: 'bolts', cast: 2, cost: 1.2, heal: 250, damage: 30, dualTarget: true, channel: true, cooldown: 12, ticks: [{ at: 1, heal: 125, damage: 15 }, { at: 2, heal: 125, damage: 15 }], description: 'Channel two holy bolts. Heal an ally for 250 total, or damage the enemy for 30 and trigger Atonement.', color: '#f4c16c' },
+  { id: 'penance', name: 'Penance', key: '4', icon: 'bolts', cast: 2, cost: 1, heal: 120, damage: 30, dualTarget: true, channel: true, cooldown: 12, ticks: [{ at: 1, heal: 60, damage: 15 }, { at: 2, heal: 60, damage: 15 }], description: 'Channel two holy bolts. Each heals an ally for 60, or damages the enemy for 15 and triggers Atonement.', color: '#f4c16c' },
   { id: 'smite', name: 'Smite', key: '5', icon: 'smite', cast: 1.5, cost: 4 / CONFIG.baseMana, heal: 0, damage: 12, enemy: true, atonement: true, description: 'Deal 12 damage to the enemy and heal the most injured ally through Atonement.', color: '#f3df9b' },
   { id: 'holyFire', name: 'Holy Fire', key: '6', icon: 'holyFire', cast: 0, cost: 8 / CONFIG.baseMana, heal: 0, damage: 11, enemy: true, atonement: true, cooldown: 6, enemyDot: { damage: 25, duration: 10, interval: 2 }, description: 'Deal 11 damage, then 25 over 10s. Recasting carries pending damage into the refreshed effect. All damage triggers Atonement.', color: '#efad69' },
 ];
@@ -194,7 +194,7 @@ export const HEALERS = {
 export const partyForHealer = healerId => [...PARTY.filter(member => member.label !== 'HEALER'), HEALERS[healerId] || HEALERS.priest];
 // Neutral starting defenses/power: gear may supply bonuses without changing encounter tuning.
 for (const member of [...PARTY, ...Object.values(HEALERS)]) {
-  Object.assign(member, { armor: 0, resistance: 0 });
+  Object.assign(member, { armor: 0, resistance: 0, crit: 0, haste: 0 });
   if (member.label === 'HEALER') Object.assign(member, { maxMana: CONFIG.mana, manaRegen: CONFIG.manaRegen, spellPower: 0 });
 }
 export const ENCOUNTER = {

@@ -1,5 +1,6 @@
 import { DRUID_HOTS } from './data.js';
 import { effectGlyph } from './ability-icons.js';
+import { formatNumber } from './stats.js';
 
 // Adapt combat-owned effects to one presentation model. Future buffs/shields can
 // supply id/source, name, icon, color, expires (optional), and displayOrder.
@@ -18,7 +19,10 @@ const order = e => e.displayOrder ?? (DRUID_HOTS.includes(e.source) ? DRUID_HOTS
 const pressure = e => (e.damage || 0) / (e.interval || 1);
 const escape = text => String(text).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 export function effectDescription(effect, time) {
-  return `${effect.name}${effect.expires == null ? '' : `: ${Math.max(0, Math.ceil(effect.expires - time - 1e-8))}s remaining`}`;
+  const modifier = effect.defenseModifier
+    ? ` (${effect.modifier > 0 ? '+' : ''}${formatNumber(effect.modifier)} ${effect.stat === 'armor' ? 'Armor' : 'Resistance'})`
+    : '';
+  return `${effect.name}${modifier}${effect.expires == null ? '' : `: ${Math.max(0, Math.ceil(effect.expires - time - 1e-8))}s remaining`}`;
 }
 export function effectMarkup(effects, time) {
   return effects.map(effect => `<span class="frame-effect" data-effect="${escape(key(effect))}" title="${escape(effectDescription(effect, time))}">${effectGlyph(effect)}${effect.expires == null ? '' : `<b>${Math.max(0, Math.ceil(effect.expires - time - 1e-8))}</b>`}</span>`).join('');

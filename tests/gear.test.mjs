@@ -9,6 +9,7 @@ import { Combat } from '../src/combat.js';
 const disk = () => { const map = new Map(); return { getItem: key => map.get(key), setItem: (key, value) => map.set(key, value) }; };
 const stocked = (storage, lock) => { const gear = new Equipment(storage, lock, GEAR); GEAR.forEach(item => gear.acquire(item.id)); return gear; };
 const member = (id, healer = 'priest') => partyForHealer(healer).find(hero => hero.id === id);
+const close = (actual, expected) => assert.ok(Math.abs(actual - expected) < 1e-7, `${actual} != ${expected}`);
 
 test('every party member has only the specified character-specific slots', () => {
   assert.deepEqual(SLOTS.healer, ['Weapon', 'Tome', 'Trinket', 'Head', 'Chest', 'Legs']);
@@ -32,7 +33,7 @@ test('equipped gear derives healer, defense, and companion weapon stats without 
   equipment.equip(aldric, 'Weapon', 'test-aldric-blade'); equipment.equip(aldric, 'Shield', 'test-aldric-shield');
   equipment.equip(priest, 'Weapon', 'test-priest-censer'); equipment.equip(priest, 'Tome', 'test-priest-codex');
   const gearedAldric = equipment.apply(aldric), gearedPriest = equipment.apply(priest);
-  assert.equal(aldric.damage, 7); assert.equal(gearedAldric.damage, 11); assert.equal(gearedAldric.armor, 10);
+  assert.equal(aldric.damage, 8); assert.equal(gearedAldric.damage, 12); assert.equal(gearedAldric.armor, 10);
   assert.equal(priest.maxMana, 600); assert.equal(gearedPriest.maxMana, 680); assert.equal(gearedPriest.spellPower, 12);
 });
 
@@ -76,9 +77,9 @@ test('equipped weapons and defenses change real combat events without retuning e
     game.damage(game.party[0], 30, 'test', 'Physical');
     game.damage(game.party[2], 30, 'test', 'Magic');
   }
-  assert.equal(baseline.boss.hp - geared.boss.hp, 8);
-  assert.equal(geared.party[0].hp - baseline.party[0].hp, 10);
-  assert.equal(geared.party[2].hp - baseline.party[2].hp, 6);
+  assert.equal(baseline.boss.hp - geared.boss.hp, 4);
+  close(geared.party[0].hp - baseline.party[0].hp, 30 * (1 - 100 / 110));
+  close(geared.party[2].hp - baseline.party[2].hp, 30 * (1 - 100 / 106));
   assert.deepEqual(geared.encounter, baseline.encounter);
 });
 
@@ -87,6 +88,6 @@ test('invalid saved character/slot assignments never contribute stats', () => {
   storage.setItem('vesper-equipment-v1', JSON.stringify({ rogue: { Sword: 'test-aldric-blade' }, priest: { Weapon: 'sera-staff' }, tank: { Shield: 'test-aldric-shield', Head: 'test-aldric-shield' } }));
   const equipment = stocked(storage);
   assert.equal(equipment.apply(member('tank')).armor, 10);
-  assert.equal(equipment.apply(member('rogue')).damage, 15);
+  assert.equal(equipment.apply(member('rogue')).damage, 9);
   assert.equal(equipment.apply(member('priest')).damage, 0);
 });

@@ -6,6 +6,28 @@ import { itemIcon } from './equipment.js';
 import { mechanicCategory, mechanicIcon } from './mechanic-icons.js';
 export { nodeState, chapterComplete, restoreProgress, awardVictory } from './progression.js';
 
+function minimumMapExtent(nodes, axis, nodeSize, spacing) {
+  const points = [...new Set(nodes.map(node => node[axis]))].sort((a, b) => a - b);
+  if (!points.length) return 0;
+
+  const edgeSpace = nodeSize / 2 + 4;
+  let extent = Math.max(
+    nodeSize + spacing,
+    edgeSpace * 100 / Math.max(points[0], 1),
+    edgeSpace * 100 / Math.max(100 - points.at(-1), 1),
+  );
+  const lanes = axis === 'x'
+    ? [nodes]
+    : [...new Set(nodes.map(node => node.x))].map(x => nodes.filter(node => node.x === x));
+  for (const lane of lanes) {
+    const lanePoints = [...new Set(lane.map(node => node[axis]))].sort((a, b) => a - b);
+    for (let index = 1; index < lanePoints.length; index++) {
+      extent = Math.max(extent, (nodeSize + spacing) * 100 / (lanePoints[index] - lanePoints[index - 1]));
+    }
+  }
+  return Math.ceil(extent);
+}
+
 export function setupAdventures({ startEncounter, onProgress, runs, getParty, awardLoot, onLoot, onVictory }) {
   const $ = selector => document.querySelector(selector);
   const map = $('#adventure-map'), dialog = $('#encounter-preview');
@@ -45,7 +67,8 @@ export function setupAdventures({ startEncounter, onProgress, runs, getParty, aw
     $('#chapter-view .journey-heading .eyebrow').textContent = `${chapter.number.toUpperCase()} · YOUR NEXT VIGIL`;
     $('#chapter-view .journey-intro').textContent = chapter.id === 'catacombs' ? 'Four encounters. One descent. Keep their light alive.' : `${nodes.length} encounters · ${chapter.routeLength} fights along a route · Choose either path at each fork.`;
     map.classList.toggle('branching', chapter.id !== 'catacombs');
-    map.classList.toggle('long-route', nodes.length > 6);
+    map.style.setProperty('--map-min-width', `${minimumMapExtent(nodes, 'x', 132, 0)}px`);
+    map.style.setProperty('--map-min-height', `${minimumMapExtent(nodes, 'y', 160, 16)}px`);
     map.closest('.journey').setAttribute('aria-label', `${chapter.number} progression map`);
     map.setAttribute('aria-label', `${chapter.number} encounter routes`);
     routes = nodes.flatMap(node => node.from.map(id => ({ from: id, to: node.id })));
@@ -54,7 +77,7 @@ export function setupAdventures({ startEncounter, onProgress, runs, getParty, aw
       const button = document.createElement('button');
       button.className = `adventure-node ${node.kind}`;
       button.style.setProperty('--x', `${node.x}%`); button.style.setProperty('--y', `${node.y}%`);
-      button.innerHTML = `<span class="node-kind">${String(index + 1).padStart(2, '0')} · ${node.kind === 'boss' ? 'CHAPTER BOSS' : 'ENCOUNTER'}</span><span class="node-symbol" aria-hidden="true">${node.kind === 'boss' ? '♜' : '◇'}</span><strong>${node.name}</strong><span class="node-state"></span>`;
+      button.innerHTML = `<span class="node-kind">${String(index + 1).padStart(2, '0')} · ${node.kind === 'boss' ? 'CHAPTER BOSS' : 'ENCOUNTER'}</span><span class="node-symbol" aria-hidden="true">${node.kind === 'boss' ? '♜' : '◇'}</span><strong>${node.name}</strong>`;
       button.addEventListener('click', () => { selected = node.id; render(); });
       map.append(button);
       return [node.id, button];
@@ -93,7 +116,7 @@ export function setupAdventures({ startEncounter, onProgress, runs, getParty, aw
   const routeObserver = new ResizeObserver(drawRoutes);
   function mechanicRow({ id, name, category, description }, index) {
     const descriptionId = `mechanic-description-${index}`;
-    return `<li><button type="button" class="mechanic-row" data-mechanic="${id}" aria-expanded="false" aria-controls="${descriptionId}">${mechanicIcon(category)}<span>${name}</span><span class="mechanic-chevron" aria-hidden="true">⌄</span></button><p class="mechanic-description" id="${descriptionId}" hidden>${description}</p></li>`;
+    return `<li><button type="button" class="mechanic-row" data-mechanic="${id}" aria-expanded="false" aria-controls="${descriptionId}">${mechanicIcon(category)}<span>${name}</span><svg class="mechanic-chevron" viewBox="0 0 16 16" aria-hidden="true"><path d="m4 6 4 4 4-4"/></svg></button><p class="mechanic-description" id="${descriptionId}" hidden>${description}</p></li>`;
   }
   function render() {
     const run = currentRun(); runCompleted = new Set(run.completed);
@@ -101,7 +124,9 @@ export function setupAdventures({ startEncounter, onProgress, runs, getParty, aw
       const button = buttons.get(node.id), state = nodeState(node, runCompleted);
       button.dataset.state = state;
       button.setAttribute('aria-pressed', String(selected === node.id));
-      button.querySelector('.node-state').textContent = state === 'completed' ? '✓ Cleared this run' : state === 'available' ? chapter.id === 'catacombs' ? '● Current encounter' : '● Available route' : '⊘ Upcoming · Locked';
+      button.querySelector('.node-symbol').textContent = state === 'locked' ? '⊘' : node.kind === 'boss' ? '♜' : '◇';
+      const stateDescription = state === 'completed' ? 'Cleared this run' : state === 'available' ? chapter.id === 'catacombs' ? 'Current encounter' : 'Available route' : 'Locked';
+      button.setAttribute('aria-label', `${node.kind === 'boss' ? 'Chapter boss' : 'Encounter'}: ${node.name}. ${stateDescription}`);
     }
     for (const path of map.querySelectorAll('[data-route]')) path.classList.toggle('cleared', runCompleted.has(path.dataset.route));
     const node = nodes.find(node => node.id === selected), encounter = CHAPTER_ENCOUNTERS[node.encounter];

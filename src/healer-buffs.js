@@ -1,4 +1,5 @@
 import { effectGlyph } from './ability-icons.js';
+import { formatNumber } from './stats.js';
 
 const DEFINITIONS = {
   postHaste: {
@@ -37,7 +38,7 @@ export function renderHealerBuffs(root, game) {
   if (root.dataset.buffKey === key) return;
   root.dataset.buffKey = key;
   root.innerHTML = buffs.map(buff => {
-    const duration = buff.remaining === null ? '' : `\n${buff.remaining.toFixed(1)}s remaining`;
+    const duration = buff.remaining === null ? '' : `\n${formatNumber(buff.remaining)}s remaining`;
     const totalStacks = (buff.stacks || 0) + (buff.reserved || 0);
     const stacks = buff.stacks || buff.reserved
       ? `\n${buff.stacks || 0} available${buff.reserved ? `; ${buff.reserved} reserved for ${game.cast.spell.name}` : ''}`
@@ -45,6 +46,6 @@ export function renderHealerBuffs(root, game) {
     const stackLabel = buff.stacks || buff.reserved
       ? ` ${totalStacks} stack${totalStacks === 1 ? '' : 's'} active; ${buff.stacks || 0} available${buff.reserved ? `, ${buff.reserved} reserved for ${game.cast.spell.name}` : ''}.`
       : '';
-    return `<div class="healer-buff" tabindex="0" data-buff="${buff.id}" data-tooltip="${buff.name}\n${buff.effect}${stacks}${duration}" aria-label="${buff.name}. ${buff.effect}${stackLabel}${buff.remaining === null ? '' : ` ${buff.remaining.toFixed(1)} seconds remaining.`}">${effectGlyph(buff)}${totalStacks ? `<strong class="buff-stacks">${totalStacks}</strong>` : ''}${buff.remaining === null ? '' : `<span class="buff-duration">${Math.ceil(buff.remaining)}s</span>`}</div>`;
+    return `<div class="healer-buff" tabindex="0" data-buff="${buff.id}" data-tooltip="${buff.name}\n${buff.effect}${stacks}${duration}" aria-label="${buff.name}. ${buff.effect}${stackLabel}${buff.remaining === null ? '' : ` ${formatNumber(buff.remaining)} seconds remaining.`}">${effectGlyph(buff)}${totalStacks ? `<strong class="buff-stacks">${totalStacks}</strong>` : ''}${buff.remaining === null ? '' : `<span class="buff-duration">${Math.ceil(buff.remaining)}s</span>`}</div>`;
   }).join('');
 }

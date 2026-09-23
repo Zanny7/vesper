@@ -51,6 +51,7 @@ export function priestTalentLoadout(party, spells, allocations = {}) {
       cooldown: [12, 10, 8][focusedPenance],
       ...(twinPenance ? { charges: 2 } : {}),
       ...(threefoldPenance ? {
+        heal: spell.ticks[0].heal * 3,
         ticks: [2 / 3, 4 / 3, 2].map(at => ({ at, heal: spell.ticks[0].heal, damage: spell.ticks[0].damage })),
         smartHealingBolt: { at: 2, heal: spell.ticks[0].heal },
       } : {}),

@@ -51,7 +51,7 @@ test('Focused Penance and Lingering Prayer use the requested cooldown and refres
     const hot = ally.hots.find(effect => effect.source === 'lingering-prayer');
     assert.equal(hot.heal, 100 * .2 / 3); assert.equal(hot.ticks, 3);
   }
-  advance(game, 2); assert.equal(game.party[0].hp, 1 + 250 + 100 + 100 * .2 / 3);
+  advance(game, 2); assert.equal(game.party[0].hp, 1 + 120 + 100 + 100 * .2 / 3);
   const previous = game.party[0].hots.find(effect => effect.source === 'lingering-prayer');
   assert.ok(game.begin('prayer', 'tank').ok); advance(game, 3);
   assert.equal(game.party[0].hots.filter(effect => effect.source === 'lingering-prayer').length, 1);
@@ -64,14 +64,14 @@ test('Threefold Penance adds a third main bolt and smart-heals the current lowes
   friendly.party[0].hp = 100; friendly.party[1].hp = 100; friendly.party[2].hp = 120;
   assert.ok(friendly.begin('penance', 'tank').ok); advance(friendly, 1.5);
   friendly.party[2].hp = 1; advance(friendly, .5);
-  assert.equal(friendly.party[0].hp, 475);
-  assert.equal(friendly.party[2].hp, 126);
+  assert.equal(friendly.party[0].hp, 280);
+  assert.equal(friendly.party[2].hp, 61);
   assert.equal(friendly.events.filter(event => event.type === 'heal' && event.spell === 'penance').length, 3);
   const hostile = setup({ 'threefold-penance': 1 });
   hostile.party.forEach(member => member.hp = member.maxHp); hostile.party[4].hp = 1;
   assert.ok(hostile.begin('penance', 'boss').ok); advance(hostile, 2);
   assert.equal(hostile.boss.hp, encounter.maxHp - 45);
-  assert.equal(hostile.party[4].hp, 144);
+  assert.equal(hostile.party[4].hp, 79);
 });
 
 test('Echo of Grace heals the lowest-percent wounded ally other than the primary target', () => {
@@ -139,14 +139,14 @@ test('Divine Fervor grants healer Haste or companion Attack Speed for 20 seconds
   advance(healerGame, 2.5);
   healerGame.cooldowns.penance = 0; healerGame.party[1].hp = 1;
   assert.ok(healerGame.begin('penance', 'rogue').ok); assert.ok(Math.abs(healerGame.cast.duration - 2 / 1.2) < 1e-8);
-  advance(healerGame, 1.7); assert.equal(healerGame.party[1].hp, 251);
+  advance(healerGame, 1.7); assert.equal(healerGame.party[1].hp, 121);
   advance(healerGame, 20 - 2.5 - 1.7); assert.equal(healerGame.haste(), 0);
   const companionGame = setup({ 'divine-fervor': 1 });
   const rogue = companionGame.party[1]; rogue.nextAttack = rogue.interval;
   assert.ok(companionGame.begin('divineFervor', 'rogue').ok);
   assert.equal(rogue.nextAttack, rogue.interval / 1.2);
   advance(companionGame, 10);
-  assert.equal(companionGame.events.filter(event => event.type === 'attack' && event.source === 'rogue').length, 7);
+  assert.equal(companionGame.events.filter(event => event.type === 'attack' && event.source === 'rogue').length, 8);
   advance(companionGame, 10); assert.equal(rogue.attackSpeedBuff, undefined);
   assert.equal(companionGame.begin('divineFervor', 'rogue').ok, false);
 });

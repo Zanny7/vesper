@@ -6,6 +6,12 @@
 button.gear-slot:hover, button.gear-slot[aria-expanded="true"], button.gear-slot:focus-visible { border-color: #e1c493; background: #304039; outline: 2px solid #b4c3a5; outline-offset: 3px; }
 .gear-slot.is-equipped { border-color: #ab9566; background: radial-gradient(ellipse at 50% 40%, #77623f66, #152229 85%); }
 .gear-slot:disabled { opacity: .5; cursor: not-allowed; }
+.gear-slot[draggable="true"] { cursor: grab; }
+.gear-slot.is-dragging { opacity: .4; cursor: grabbing; }
+.gear-slot.drop-allowed { outline: 2px solid #9acb91; outline-offset: 3px; box-shadow: 0 0 18px #92cc8066; }
+.gear-slot.drop-rejected { outline: 2px solid #d77f72; outline-offset: 3px; box-shadow: 0 0 16px #d77f7255; }
+.bag-drop-slot { cursor: default; }
+.bag-drop-slot.drop-allowed { cursor: copy; }
 .character-sheet { display: grid; grid-template-columns: 1.15fr 1fr; gap: 28px; align-items: stretch; }
 .paper-doll { min-width: 0; display: grid; grid-template-columns: 64px minmax(0, 1fr) 64px; align-items: center; gap: 6px; min-height: 360px; padding: 18px; border: 1px solid #40534a; border-radius: 5px; background: radial-gradient(ellipse, #61745a26, transparent 70%), #101e22; }
 .paper-slots { display: flex; flex-direction: column; justify-content: space-evenly; gap: 18px; align-self: stretch; }
@@ -33,6 +39,12 @@ button.gear-slot:hover, button.gear-slot[aria-expanded="true"], button.gear-slot
 .gear-choice strong { display: block; font-size: 12px; color: #e4d2a8; }
 .gear-choice small, .gear-tooltip small { display: block; margin-top: 5px; font-size: 10px; color: #a4b5a8; }
 .gear-unequip { width: 100%; margin-top: 12px; }
+.discard-summary { display: flex; align-items: center; gap: 12px; min-height: 56px; }
+.discard-summary .gear-slot { width: 48px; }
+.discard-summary b { display: block; color: #e4d2a8; font-size: 12px; }
+.discard-summary small { display: block; margin-top: 4px; color: #a4b5a8; font-size: 10px; }
+.discard-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px; }
+.discard-confirm { border-color: #a75448; color: #f0c1ae; }
 .gear-tooltip { z-index: 70; width: min(255px, calc(100vw - 16px)); pointer-events: none; }
 .gear-tooltip > strong { color: #e6cea0; font-size: 14px; }
 .gear-tooltip dl { margin: 14px 0 0; display: grid; gap: 6px; font-size: 11px; }

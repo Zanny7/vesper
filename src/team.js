@@ -1,10 +1,12 @@
-import { healingSummary } from './ability-presentation.js';
-import { CONFIG, HEALERS } from './data.js';
+import { abilityTooltip } from './ability-presentation.js';
+import { HEALERS } from './data.js';
+import { Combat } from './combat.js';
 import { loadActiveHealer, saveActiveHealer } from './healers.js';
 import { setupTeamAbilities } from './team-abilities.js';
 import { equipmentSlot } from './equipment.js';
 import { TALENT_TREES } from './talent-trees.js';
 import { TALENT_ROW_REQUIREMENTS } from './talents.js';
+import { formatNumber } from './stats.js';
 
 // This screen reads starting character data; inspecting never changes combat.
 export function setupTeam({ paintPortrait, onHealerChange, settings, onAbilitiesChange, equipment, gearUI, equipmentLocked = () => false, talents, onTalentsChange = () => {}, getLoadout = healerId => ({ party: equipment.party(healerId), spells: equipment.healer(healerId).spellBook }) }) {
@@ -12,9 +14,9 @@ export function setupTeam({ paintPortrait, onHealerChange, settings, onAbilities
   const details = document.querySelector('#team-details');
   const talentPanel = document.querySelector('#team-talents');
   const roles = { TANK: 'Tank', DPS: 'Damage', HEALER: 'Healer' };
-  const format = value => value.toLocaleString('en-US');
+  const format = formatNumber;
   let healerId = loadActiveHealer(), selected = healerId, cards = [];
-  const abilityEditor = setupTeamAbilities({ settings, onChange: onAbilitiesChange });
+  const abilityEditor = setupTeamAbilities({ settings, onChange: onAbilitiesChange, getLoadout });
   const rankCap = talent => talent.maxRank ?? 1;
   function buildCards() {
     roster.innerHTML = '';
@@ -60,13 +62,14 @@ export function setupTeam({ paintPortrait, onHealerChange, settings, onAbilities
     });
     details.style.setProperty('--hero-color', member.color);
     const stats = member.label !== 'HEALER'
-      ? [['Health', format(member.maxHp)], ['Damage', member.damage], ['Attack interval', `${member.interval}s`], ['Armor', member.armor], ['Resistance', member.resistance]]
-      : [['Health', format(member.maxHp)], ['Mana', format(member.maxMana)], ['Mana regeneration', `${member.manaRegen} / second`], ['Spell Power', member.spellPower], ['Haste', `${member.haste || 0}%`], ['Crit', `${member.crit || 0}%`], ['Armor', member.armor], ['Resistance', member.resistance]];
+      ? [['Health', format(member.maxHp)], ['Attack damage', format(member.damage)], ['Attack interval', `${format(member.interval)}s`], ['DPS', format(member.damage / member.interval)], ['Haste', `${format(member.haste || 0)}%`], ['Crit', `${format(member.crit || 0)}%`], ['Armor', format(member.armor)], ['Resistance', format(member.resistance)]]
+      : [['Health', format(member.maxHp)], ['Mana', format(member.maxMana)], ['Mana regeneration', `${format(member.manaRegen)} / second`], ['Spell Power', format(member.spellPower)], ['Haste', `${format(member.haste || 0)}%`], ['Crit', `${format(member.crit || 0)}%`], ['Armor', format(member.armor)], ['Resistance', format(member.resistance)]];
+    const spellModel = new Combat(undefined, Math.random, party, spells);
     const spellBook = spells.length
-      ? `<div class="team-spells">${spells.map(spell => `<article><h4>${spell.name}</h4><p>${spell.description}</p><dl><div><dt>${spell.effectSummary ? 'Effect' : spell.damage ? 'Output' : 'Healing'}</dt><dd>${spell.effectSummary || (spell.damage ? `${spell.damage} damage${spell.heal ? ` / ${healingSummary(spell)} healing` : ''}` : healingSummary(spell))}</dd></div><div><dt>Mana cost</dt><dd>${format(spell.cost * CONFIG.baseMana)}</dd></div><div><dt>${spell.channel ? 'Channel' : 'Base cast'}</dt><dd>${spell.cast ? spell.cast + 's' : 'Instant'}</dd></div>${spell.cooldown ? `<div><dt>Cooldown</dt><dd>${spell.cooldown}s</dd></div>` : ''}</dl></article>`).join('')}</div>`
+      ? `<div class="team-spells">${spells.map(spell => { const [, timing, ...effects] = abilityTooltip(spellModel, spell).split('\n'); return `<article><h4>${spell.name}</h4><p>${effects.join(' ')}</p><dl><div><dt>Current cast and cost</dt><dd>${timing}</dd></div></dl></article>`; }).join('')}</div>`
       : `<p class="team-behavior">${healer.description}</p>`;
     const body = member.damage
-      ? `<p class="team-behavior">${member.label === 'TANK' ? 'Holds the front line and takes the enemy’s heavy strikes.' : 'Attacks the enemy automatically while alive.'} Attacks deal ${format(member.damage * member.interval)} damage every ${member.interval} seconds during combat.</p>`
+      ? `<p class="team-behavior">${member.label === 'TANK' ? 'Holds the front line and takes the enemy’s heavy strikes.' : 'Attacks the enemy automatically while alive.'} Attacks deal ${format(member.damage)} damage every ${format(member.interval)} seconds (${format(member.damage / member.interval)} DPS) before Haste.</p>`
       : `<p class="team-behavior">${healer.description}</p>`;
     const slots = equipment.slots(member);
     const locked = equipmentLocked();

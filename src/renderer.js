@@ -1,4 +1,5 @@
 import { PARTY } from './data.js';
+import { formatNumber } from './stats.js';
 const TAU = Math.PI * 2;
 const positions = Object.fromEntries(PARTY.map(p => [p.id, { x: p.x, y: p.y - 40 }]));
 positions.boss = { x: 495, y: 225 };
@@ -317,10 +318,10 @@ export class Battlefield {
       this.glow(c,p.x,p.y+10,45,color+'33');this.ellipse(c,p.x,p.y+32,24+progress*25,9+progress*8,null,color,2);
       for(let i=0;i<8;i++){const a=i/8*TAU;this.ellipse(c,p.x+Math.cos(a)*(15+progress*18),p.y+25-Math.sin(a)*20-progress*60,1.5,3,color);}
       if(e.spell==='greater'){this.line(c,[[p.x,p.y-90],[p.x,p.y+32]],'#ffeabb33',22);this.line(c,[[p.x,p.y-70],[p.x,p.y+32]],'#fff5d966',3);}
-      c.globalCompositeOperation='source-over';c.fillStyle=color;c.font='600 18px Georgia';c.textAlign='center';c.shadowBlur=6;c.shadowColor='#111';c.fillText(e.amount?`+${Math.round(e.amount)}`:'Full',p.x,p.y-36-progress*25);
+      c.globalCompositeOperation='source-over';c.fillStyle=color;c.font='600 18px Georgia';c.textAlign='center';c.shadowBlur=6;c.shadowColor='#111';c.fillText(e.amount?`+${formatNumber(e.amount)}`:'Full',p.x,p.y-36-progress*25);
     }
     if(e.type==='damage'){
-      c.globalAlpha=1-progress;c.font='12px "DM Sans",sans-serif';c.textAlign='center';c.fillStyle='#edaaa0';c.shadowColor='#000';c.shadowBlur=5;c.fillText(`−${e.amount}`,p.x+22,p.y-15-progress*30);
+      c.globalAlpha=1-progress;c.font='12px "DM Sans",sans-serif';c.textAlign='center';c.fillStyle='#edaaa0';c.shadowColor='#000';c.shadowBlur=5;c.fillText(`−${formatNumber(e.amount)}`,p.x+22,p.y-15-progress*30);
     }
     if(e.type==='attack'){
       const a=this.point(e.source),b=this.point('boss');

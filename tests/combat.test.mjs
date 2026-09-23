@@ -16,17 +16,17 @@ test('Prayer heals every living ally including Priest without reviving the dead'
   const g=isolated();g.party.forEach(p=>p.hp=100);g.party[1].hp=0;g.begin('prayer','rogue');advance(g,3);
   assert.deepEqual(g.party.map(p=>p.hp),[200,0,200,200,200]);assert.equal(g.stats.effective,400);
 });
-test('Penance launches two bolts before distinct heals totaling 250',()=>{
+test('Penance launches two bolts before distinct heals totaling 120',()=>{
   const g=isolated();g.party[0].hp=100;g.begin('penance','tank');advance(g,.7);
   assert.equal(g.events.filter(e=>e.type==='bolt').length,1);assert.equal(g.party[0].hp,100);
-  advance(g,.3);assert.equal(g.party[0].hp,225);advance(g,1);assert.equal(g.party[0].hp,350);
+  advance(g,.3);assert.equal(g.party[0].hp,160);advance(g,1);assert.equal(g.party[0].hp,220);
   const bolts=g.events.filter(e=>e.type==='bolt'),heals=g.events.filter(e=>e.type==='heal');assert.equal(bolts.length,2);assert.equal(heals.length,2);
   heals.forEach((heal,i)=>assert.ok(Math.abs(heal.time-bolts[i].time-.3)<.02));assert.equal(g.cast,null);
   assert.equal(g.begin('penance','tank').ok,false);advance(g,10);assert.equal(g.begin('penance','tank').ok,true);
 });
 test('cancelling a channel prevents unlanded ticks and retains spent resources',()=>{
   const g=isolated();g.party[0].hp=100;g.begin('penance','tank');advance(g,.5);g.cancel();advance(g,1.5);
-  assert.equal(g.party[0].hp,100);assert.ok(Math.abs(g.mana-(CONFIG.mana-36+2*CONFIG.manaRegen))<1e-8);assert.equal(g.begin('penance','tank').ok,false);
+  assert.equal(g.party[0].hp,100);assert.ok(Math.abs(g.mana-(CONFIG.mana-30+2*CONFIG.manaRegen))<1e-8);assert.equal(g.begin('penance','tank').ok,false);
 });
 test('normal casts reserve their final cost, spend on completion, and cost nothing when cancelled',()=>{
   const g=isolated();g.mana=45;
@@ -39,8 +39,8 @@ test('normal casts reserve their final cost, spend on completion, and cost nothi
 test('instant spells and channels spend their final cost at activation',()=>{
   const g=isolated();
   assert.equal(g.begin('holyFire','boss').ok,true);assert.equal(g.mana,CONFIG.mana-8);
-  const mana=g.mana;assert.equal(g.begin('penance','tank').ok,true);assert.equal(g.mana,mana-36);
-  g.cancel();assert.equal(g.mana,mana-36);assert.match(g.history[0].text,/not refunded/);
+  const mana=g.mana;assert.equal(g.begin('penance','tank').ok,true);assert.equal(g.mana,mana-30);
+  g.cancel();assert.equal(g.mana,mana-30);assert.match(g.history[0].text,/not refunded/);
 });
 test('mana, cooldown, dead targets and busy casts reject without spending',()=>{
   const g=isolated();g.mana=20;assert.equal(g.begin('flash','tank').ok,false);assert.equal(g.mana,20);g.mana=200;g.party[1].hp=0;

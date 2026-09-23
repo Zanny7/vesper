@@ -16,7 +16,7 @@ test('Spell Power adds once to direct, channel, mixed and per-target HoT totals'
   const byId = id => [...SPELLS, ...DRUID_SPELLS].find(s => s.id === id);
   close(healingParts(byId('flash'), 10).direct, 110);
   close(healingParts(byId('prayer'), 10).direct, 110);
-  close(healingParts(byId('penance'), 10).direct, 260);
+  close(healingParts(byId('penance'), 10).direct, 130);
   close(healingParts(byId('rejuvenation'), 10).hotTick, 27);
   close(healingParts(byId('wildGrowth'), 10).hotTick, 11.25);
   const growth = healingParts(byId('regrowth'), 10);
@@ -36,15 +36,55 @@ test('combat delivers scaled healing for every kit spell without per-tick bonus 
     if (spell.party) for (const p of g.party) close(p.hp, 1 + base + 10);
   }
 });
-test('flat mitigation applies per event only to matching types, with a floor of one', () => {
-  const p = { armor: 7, resistance: 3 };
-  assert.equal(mitigatedDamage(20, 'Physical', p), 13); assert.equal(mitigatedDamage(20, 'Magic', p), 17);
+test('scalable mitigation applies positive and negative Armor and Resistance only to matching types', () => {
+  for (const [defense, expected] of [[100, 50], [50, 200 / 3], [25, 80], [0, 100], [-25, 120], [-50, 400 / 3], [-100, 150]]) {
+    close(mitigatedDamage(100, 'Physical', { armor: defense }), expected);
+    close(mitigatedDamage(100, 'Magic', { resistance: defense }), expected);
+  }
+  const p = { armor: 100, resistance: 50 };
   for (const type of ['Bleed', 'Chaos']) assert.equal(mitigatedDamage(20, type, p), 20);
-  assert.equal(mitigatedDamage(2, 'Physical', p), 1); assert.equal(mitigatedDamage(0, 'Physical', p), 0);
-  const g = new Combat(); const tank = g.party[0]; tank.armor = 7; tank.resistance = 3;
+  assert.equal(mitigatedDamage(0, 'Physical', p), 0);
+  assert.equal(mitigatedDamage(0.5, 'Physical', p), 0.25);
+  const heavilyMitigated = mitigatedDamage(100, 'Physical', { armor: 1e308 });
+  assert.ok(Number.isFinite(heavilyMitigated) && heavilyMitigated > 0);
+  close(heavilyMitigated, 100 / (100 + 1e308) * 100);
+  close(mitigatedDamage(100, 'Physical', { armor: -1e308 }), 200);
+
+  const g = new Combat(); const tank = g.party[0]; tank.armor = 100; tank.resistance = 50;
   for (const type of DAMAGE_TYPES) g.damage(tank, 20, 'test', type);
-  assert.equal(tank.hp, tank.maxHp - 70);
+  close(tank.hp, tank.maxHp - (10 + 20 * 100 / 150 + 40));
   assert.deepEqual(g.events.filter(e => e.type === 'damage').map(e => e.damageType), DAMAGE_TYPES);
+});
+test('temporary defense buffs and debuffs stack, refresh by identity, and restore gear when they expire', () => {
+  const encounter = { name: 'Test', maxHp: 99999, strike: { first: Infinity, every: Infinity, damage: 0 }, mechanics: [] };
+  const g = new Combat(encounter); g.start();
+  const tank = g.party[0]; tank.armor = 20; tank.resistance = 10; tank.maxHp = tank.hp = 10000;
+  g.applyDefenseModifier('tank', { source: 'sunder', name: 'Sundered Armor', stat: 'armor', modifier: -50, duration: 8 });
+  g.applyDefenseModifier(tank, { source: 'fortify', name: 'Fortify', stat: 'armor', modifier: 10, duration: 4 });
+  g.applyDefenseModifier(tank, { source: 'sunder', name: 'Sundered Armor', stat: 'armor', modifier: -40, duration: 12 });
+  g.applyDefenseModifier(tank, { source: 'rust', name: 'Rust', stat: 'armor', modifier: -10, duration: 6 });
+  g.applyDefenseModifier(tank, { source: 'fracture', name: 'Arcane Fracture', stat: 'resistance', modifier: -25, duration: 10 });
+  g.applyDefenseModifier(tank, { source: 'ward', name: 'Ward', stat: 'resistance', modifier: 5, duration: 4 });
+  assert.equal(tank.defenseModifiers.length, 5);
+
+  const take = type => {
+    g.damage(tank, 100, `test-${g.time}`, type);
+    return g.events.at(-1).amount;
+  };
+  close(take('Physical'), 100 * (2 - 100 / 120));
+  close(take('Magic'), 100 * (2 - 100 / 110));
+
+  g.step(5);
+  close(take('Physical'), 100 * (2 - 100 / 130));
+  close(take('Magic'), 100 * (2 - 100 / 115));
+  g.step(2);
+  close(take('Physical'), 100 * (2 - 100 / 120));
+  g.step(5);
+  close(take('Physical'), 100 * 100 / 120);
+  close(take('Magic'), 100 * 100 / 110);
+  assert.deepEqual(tank.defenseModifiers, []);
+  assert.deepEqual(tank.debuffs, []);
+  assert.deepEqual(tank.helpfulEffects, []);
 });
 test('every production damage source has a supported explicit type', () => {
   for (const encounter of [ENCOUNTER, ...Object.values(CHAPTER_ENCOUNTERS)]) {

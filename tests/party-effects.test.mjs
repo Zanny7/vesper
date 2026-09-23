@@ -38,3 +38,13 @@ test('future helpful effects support indefinite durations and safe descriptions'
   assert.match(markup, /Shield &lt;strong&gt;/); assert.ok(!markup.includes('<b>'));
   member.hp = 0; assert.deepEqual(partyEffects(member, 10), { helpful: [], negative: [] });
 });
+test('temporary defense modifiers appear as helpful or negative status effects with numeric tooltips', () => {
+  const g = new Combat(); const tank = g.party[0];
+  g.applyDefenseModifier(tank, { source: 'sunder', name: 'Sundered Armor', stat: 'armor', modifier: -30, duration: 8 });
+  g.applyDefenseModifier(tank, { source: 'ward', name: 'Ward', stat: 'resistance', modifier: 20, duration: 12 });
+  const effects = partyEffects(tank, g.time);
+  assert.deepEqual(sources(effects.negative), ['sunder']);
+  assert.deepEqual(sources(effects.helpful), ['ward']);
+  assert.match(effectMarkup(effects.negative, g.time), /Sundered Armor \(-30 Armor\): 8s remaining/);
+  assert.match(effectMarkup(effects.helpful, g.time), /Ward \(\+20 Resistance\): 12s remaining/);
+});

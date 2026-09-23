@@ -1,5 +1,6 @@
 // Shared presentation surfaces; per-item artwork and loot progression belong to BAT-21.
-import { GEAR } from './data.js';
+import { GEAR, partyForHealer } from './data.js';
+import { formatNumber } from './stats.js';
 export const statLabels = { maxHp: 'Health', maxMana: 'Mana', manaRegen: 'Mana regeneration', spellPower: 'Spell Power', haste: 'Haste', crit: 'Crit', armor: 'Armor', resistance: 'Resistance', damage: 'Damage' };
 const escape = value => String(value).replace(/[&<>"']/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch]));
 const silhouettes = {
@@ -21,14 +22,14 @@ export function itemIcon(item, slot = item?.slot || 'Bag', owner = item?.owner) 
   return `<svg viewBox="0 0 40 40" fill="currentColor" fill-opacity=".12" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" aria-hidden="true">${silhouettes[type] || silhouettes.Bag}</svg>`;
 }
 export function equipmentSlot(member, slot, item, locked) {
-  return `<button type="button" class="gear-slot ${item ? 'is-equipped' : 'is-empty'}" data-equipment-slot="${slot}" ${item ? `data-item-id="${escape(item.id)}"` : `data-slot-tip="${slot}"`} aria-label="${slot}: ${escape(item?.name || 'Empty')}" aria-haspopup="dialog" aria-expanded="false" ${locked ? 'disabled' : ''}>${itemIcon(item, slot, member.id)}</button>`;
+  return `<button type="button" class="gear-slot ${item ? 'is-equipped' : 'is-empty'}" data-equipment-slot="${slot}" data-member-id="${escape(member.id)}" ${item ? `data-item-id="${escape(item.id)}" draggable="${!locked}"` : `data-slot-tip="${slot}"`} aria-label="${slot}: ${escape(item?.name || 'Empty')}" aria-haspopup="dialog" aria-expanded="false" ${locked ? 'disabled' : ''}>${itemIcon(item, slot, member.id)}</button>`;
 }
 export function setupEquipment({ equipment, onChange, isLocked }) {
   const popup = document.createElement('section'), tooltip = document.createElement('div');
   popup.id = 'gear-picker'; popup.className = 'gear-picker'; popup.hidden = true; popup.setAttribute('role', 'dialog'); popup.setAttribute('aria-label', 'Choose equipment');
   tooltip.id = 'gear-tooltip'; tooltip.className = 'gear-tooltip'; tooltip.hidden = true; tooltip.setAttribute('role', 'tooltip');
   document.body.append(popup, tooltip);
-  let anchor = null, tipAnchor = null, page = 0;
+  let anchor = null, tipAnchor = null, page = 0, dragging = null, suppressClickUntil = 0;
   const find = id => equipment.collection().find(item => item.id === id) || GEAR.find(item => item.id === id);
   function place(panel, target) {
     const rect = target.getBoundingClientRect(), width = panel.offsetWidth, height = panel.offsetHeight;
@@ -41,7 +42,7 @@ export function setupEquipment({ equipment, onChange, isLocked }) {
     const item = find(target.dataset.itemId);
     if (!item && !target.dataset.slotTip) return;
     hideTip(); tipAnchor = target;
-    tooltip.innerHTML = item ? `<strong>${escape(item.name)}</strong><small>Item level ${itemLevel(item)} · ${escape(item.slot)}</small><dl>${Object.entries(item.stats).map(([stat, value]) => `<div><dt>${escape(statLabels[stat] || stat)}</dt><dd>+${value}${['haste', 'crit'].includes(stat) ? '%' : ''}</dd></div>`).join('')}</dl>${item.flavor ? `<p>${escape(item.flavor)}</p>` : ''}` : `<strong>${escape(target.dataset.slotTip)}</strong>`;
+    tooltip.innerHTML = item ? `<strong>${escape(item.name)}</strong><small>Item level ${itemLevel(item)} · ${escape(item.slot)}</small><dl>${Object.entries(item.stats).map(([stat, value]) => `<div><dt>${escape(statLabels[stat] || stat)}</dt><dd>+${formatNumber(value)}${['haste', 'crit'].includes(stat) ? '%' : ''}</dd></div>`).join('')}</dl>${item.flavor ? `<p>${escape(item.flavor)}</p>` : ''}` : `<strong>${escape(target.dataset.slotTip)}</strong>`;
     tooltip.hidden = false; target.setAttribute('aria-describedby', tooltip.id); place(tooltip, target);
   }
   function close(focus = false) {
@@ -67,18 +68,94 @@ export function setupEquipment({ equipment, onChange, isLocked }) {
   }
   function renderInventory() {
     hideTip();
-    const host = document.querySelector('#inventory-content'), items = equipment.collection(), pages = Math.max(1, Math.ceil(items.length / 20));
+    const host = document.querySelector('#inventory-content'), pages = Math.max(1, Math.ceil(equipment.bagSlots.length / 20));
     page = Math.min(page, pages - 1);
+    const start = page * 20;
     host.innerHTML = `<div class="bag-grid" role="group" aria-label="Inventory, 20 slots">${Array.from({ length: 20 }, (_, i) => {
-      const item = items[page * 20 + i];
-      return item ? `<button type="button" class="gear-slot is-equipped" data-item-id="${escape(item.id)}" aria-label="${escape(item.name)}, item level ${itemLevel(item)}${equipment.isEquipped(item) ? ', equipped' : ''}">${itemIcon(item)}${equipment.isEquipped(item) ? '<span class="bag-equipped" aria-hidden="true">◆</span>' : ''}</button>` : `<span class="gear-slot is-empty" role="img" aria-label="Empty bag slot">${itemIcon(null)}</span>`;
-    }).join('')}</div><div class="bag-footer"><span>${items.length} owned · ${page + 1} / ${pages}</span><button class="quiet" type="button" data-bag-page="-1" aria-label="Previous inventory page" ${page === 0 ? 'disabled' : ''}>←</button><button class="quiet" type="button" data-bag-page="1" aria-label="Next inventory page" ${page === pages - 1 ? 'disabled' : ''}>→</button></div><p class="bag-help">Inspect items here. Equip them in Team.</p>`;
+      const index = start + i, item = equipment.bagItem(index);
+      return item ? `<button type="button" class="gear-slot is-equipped" data-item-id="${escape(item.id)}" data-bag-index="${index}" draggable="${!isLocked()}" aria-label="${escape(item.name)}, item level ${itemLevel(item)}" aria-haspopup="dialog">${itemIcon(item)}</button>` : `<button type="button" class="gear-slot is-empty bag-drop-slot" data-bag-index="${index}" aria-label="Empty bag slot" ${isLocked() ? 'disabled' : ''}>${itemIcon(null)}</button>`;
+    }).join('')}</div><div class="bag-footer"><span>${equipment.ownedIds.size} owned · ${page + 1} / ${pages}</span><button class="quiet" type="button" data-bag-page="-1" aria-label="Previous inventory page" ${page === 0 ? 'disabled' : ''}>←</button><button class="quiet" type="button" data-bag-page="1" aria-label="Next inventory page" ${page === pages - 1 ? 'disabled' : ''}>→</button></div><p class="bag-help">Inspect items here. Equip them in Team.</p>`;
+    host.querySelector('.bag-footer > span').textContent = `${equipment.ownedIds.size} owned · ${page + 1} / ${pages}`;
+    host.querySelector('.bag-help').textContent = 'Drag items to equipment slots. Right-click to discard.';
     host.querySelectorAll('[data-bag-page]').forEach(button => button.onclick = () => { page += Number(button.dataset.bagPage); renderInventory(); host.querySelector('[data-item-id]')?.focus(); });
     host.querySelectorAll('[data-item-id]').forEach(button => button.onclick = () => showTip(button));
   }
   document.addEventListener('pointerover', event => { const target = event.target.closest('[data-item-id], [data-slot-tip]'); if (target) showTip(target); });
   document.addEventListener('pointerout', event => { if (tipAnchor && !tipAnchor.contains(event.relatedTarget)) hideTip(); });
   document.addEventListener('focusin', event => { const target = event.target.closest('[data-item-id], [data-slot-tip]'); if (target) showTip(target); else hideTip(); });
+  document.addEventListener('contextmenu', event => {
+    const target = event.target.closest('[data-bag-index][data-item-id]');
+    if (!target) return;
+    event.preventDefault();
+    const item = equipment.bagItem(Number(target.dataset.bagIndex));
+    if (!item || isLocked()) return;
+    hideTip();
+    anchor = target;
+    popup.innerHTML = `<div class="gear-picker-heading"><strong>Discard item?</strong><button type="button" aria-label="Cancel discard">✕</button></div><p class="discard-summary"><span class="gear-slot is-equipped">${itemIcon(item)}</span><span><b>${escape(item.name)}</b><small>Item level ${itemLevel(item)} · ${escape(item.slot)}</small></span></p><div class="discard-actions"><button type="button" class="discard-confirm">Discard item</button><button type="button" class="quiet discard-cancel">Cancel</button></div>`;
+    popup.hidden = false; place(popup, target);
+    const cancel = () => close(true);
+    popup.querySelector('.gear-picker-heading button').onclick = cancel;
+    popup.querySelector('.discard-cancel').onclick = cancel;
+    popup.querySelector('.discard-confirm').onclick = () => {
+      if (equipment.discard(item.id)) { close(); onChange(); renderInventory(); }
+    };
+    popup.querySelector('.discard-cancel').focus();
+  });
+  document.addEventListener('dragstart', event => {
+    const target = event.target.closest('[data-item-id][draggable="true"]');
+    if (!target || isLocked()) { event.preventDefault(); return; }
+    const bagIndex = target.dataset.bagIndex;
+    const equipmentSlotName = target.dataset.equipmentSlot;
+    if (bagIndex === undefined && !equipmentSlotName) return;
+    dragging = bagIndex !== undefined ? { source: 'bag', index: Number(bagIndex), id: target.dataset.itemId } : { source: 'equipment', memberId: target.dataset.memberId, slot: equipmentSlotName, id: target.dataset.itemId };
+    target.classList.add('is-dragging');
+    event.dataTransfer?.setData('text/plain', dragging.id);
+    if (event.dataTransfer) event.dataTransfer.effectAllowed = 'move';
+    hideTip(); close();
+  });
+  document.addEventListener('dragover', event => {
+    if (!dragging) return;
+    const target = event.target.closest('[data-bag-index], [data-equipment-slot]');
+    if (!target) return;
+    const member = target.hasAttribute('data-equipment-slot') ? resolveMember(target.dataset.memberId) : null;
+    const valid = dragging.source === 'bag'
+      ? Boolean(member && equipment.owned(member, target.dataset.equipmentSlot).some(item => item.id === dragging.id) && (!equipment.equippedAt(dragging.id) || equipment.item(member, target.dataset.equipmentSlot)?.id === dragging.id))
+      : target.hasAttribute('data-bag-index') && !equipment.bagSlots[Number(target.dataset.bagIndex)];
+    target.classList.toggle('drop-allowed', Boolean(valid)); target.classList.toggle('drop-rejected', !valid);
+    if (valid) { event.preventDefault(); if (event.dataTransfer) event.dataTransfer.dropEffect = 'move'; }
+  });
+  document.addEventListener('dragleave', event => {
+    const target = event.target.closest('.drop-allowed, .drop-rejected');
+    if (target && !target.contains(event.relatedTarget)) target.classList.remove('drop-allowed', 'drop-rejected');
+  });
+  document.addEventListener('drop', event => {
+    if (!dragging) return;
+    event.preventDefault();
+    const source = dragging, target = event.target.closest('[data-bag-index], [data-equipment-slot]');
+    document.querySelectorAll('.drop-allowed, .drop-rejected').forEach(node => node.classList.remove('drop-allowed', 'drop-rejected'));
+    const sourceNode = document.querySelector(`[data-item-id="${CSS.escape(source.id)}"][draggable="true"]`);
+    sourceNode?.classList.remove('is-dragging');
+    dragging = null; suppressClickUntil = Date.now() + 250;
+    if (!target || isLocked()) return;
+    let changed = false;
+    if (source.source === 'bag' && target.hasAttribute('data-equipment-slot')) {
+      const member = resolveMember(target.dataset.memberId);
+      changed = Boolean(member && equipment.equip(member, target.dataset.equipmentSlot, source.id));
+    } else if (source.source === 'equipment' && target.hasAttribute('data-bag-index')) {
+      changed = equipment.unequipToBag(resolveMember(source.memberId), source.slot, Number(target.dataset.bagIndex));
+    }
+    if (changed) { close(); onChange(); renderInventory(); }
+    else target.classList.add('drop-rejected');
+  });
+  document.addEventListener('dragend', event => {
+    event.target.closest('.is-dragging')?.classList.remove('is-dragging');
+    document.querySelectorAll('.drop-allowed, .drop-rejected').forEach(node => node.classList.remove('drop-allowed', 'drop-rejected'));
+    dragging = null; suppressClickUntil = Date.now() + 250;
+  });
+  document.addEventListener('click', event => {
+    if (Date.now() < suppressClickUntil && event.target.closest('.gear-slot, .gear-choice')) { event.preventDefault(); event.stopImmediatePropagation(); }
+  }, true);
+  function resolveMember(id) { return [...partyForHealer('priest'), ...partyForHealer('druid')].find(member => member.id === id) || null; }
   document.addEventListener('pointerdown', event => { if (!popup.contains(event.target) && !anchor?.contains(event.target)) close(); });
   document.addEventListener('keydown', event => {
     if (event.key === 'Escape' && (!popup.hidden || !tooltip.hidden)) { event.preventDefault(); event.stopImmediatePropagation(); close(true); }

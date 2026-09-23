@@ -1,8 +1,10 @@
 import { activeHealer } from './healers.js';
 import { abilityIcon } from './ability-icons.js';
 import { bindingFromEvent } from './ability-settings.js';
+import { abilityTooltip } from './ability-presentation.js';
+import { Combat } from './combat.js';
 
-export function setupTeamAbilities({ settings, onChange }) {
+export function setupTeamAbilities({ settings, onChange, getLoadout }) {
   const root = document.querySelector('#team-ability-bars');
   const status = document.querySelector('#ability-settings-status');
   const dialog = document.querySelector('#ability-config');
@@ -14,7 +16,11 @@ export function setupTeamAbilities({ settings, onChange }) {
   const buttonFor = id => [...root.querySelectorAll('[data-ability]')].find(el => el.dataset.ability === id);
   function render() {
     const abilities = spells(), sections = [...new Set(abilities.map(s => s.section || 'healing'))];
-    root.innerHTML = sections.map(section => `<div class="ability-bar team-ability-bar" role="group" aria-label="${activeHealer(healerId).role} ${section} abilities" aria-describedby="ability-instructions">${abilities.filter(s => (s.section || 'healing') === section).map(s => `<button type="button" class="spell" data-ability="${s.id}" data-icon="${s.icon}" aria-haspopup="dialog" aria-label="Configure ${s.name}, key ${s.key}" data-tooltip="${s.name} · ${s.key}\n${s.description}\nDrag to reorder · Right-click to rebind">${abilityIcon(s)}</button>`).join('')}</div>`).join('');
+    const loadout = getLoadout(healerId), preview = new Combat(undefined, Math.random, loadout.party, loadout.spells);
+    root.innerHTML = sections.map(section => `<div class="ability-bar team-ability-bar" role="group" aria-label="${activeHealer(healerId).role} ${section} abilities" aria-describedby="ability-instructions">${abilities.filter(s => (s.section || 'healing') === section).map(s => {
+      const resolved = loadout.spells.find(spell => spell.id === s.id) || s;
+      return `<button type="button" class="spell" data-ability="${s.id}" data-icon="${s.icon}" aria-haspopup="dialog" aria-label="Configure ${s.name}, key ${s.key}" data-tooltip="${abilityTooltip(preview, resolved)}\nDrag to reorder · Right-click to rebind">${abilityIcon(s)}</button>`;
+    }).join('')}</div>`).join('');
   }
   function changed(message, focusId) {
     render(); status.textContent = message; onChange();

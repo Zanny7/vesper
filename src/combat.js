@@ -1,5 +1,5 @@
 import { CONFIG, PARTY, SPELLS, ENCOUNTER } from './data.js';
-import { adjustedResource, resourceKey, healingParts, mitigatedDamage } from './stats.js';
+import { adjustedResource, resourceKey, healingParts, mitigatedDamage, hasteMultiplier as hasteFactor, hastedTime, ticksForDuration, CRIT_MULTIPLIER } from './stats.js';
 
 // Pure fixed-step simulation. Rendering and browser input only consume its state/events.
 export class Combat {
@@ -7,7 +7,7 @@ export class Combat {
   setLoadout(party, spells = this.spells) { this.partyTemplate = party; this.spells = spells; this.reset(); }
   reset(encounter = this.encounter, resources = null) {
     this.encounter = encounter;
-    this.party = this.partyTemplate.map((p, i) => ({ ...p, hp: p.maxHp, dots: [], hots: [], nextAttack: 1 + i * 0.2 }));
+    this.party = this.partyTemplate.map((p, i) => ({ ...p, hp: p.maxHp, dots: [], hots: [], debuffs: [], helpfulEffects: [], defenseModifiers: [], nextAttack: 1 + i * 0.2 }));
     this.boss = { hp: encounter.maxHp, maxHp: encounter.maxHp, dots: [] };
     this.adds = (encounter.adds || []).map((add, i) => ({ ...add, id: `add-${i}`, name: add.name || `Pale Archer ${i + 1}`, next: add.first }));
     this.time = 0; this.status = 'ready'; this.mana = this.maxMana; this.buffs = {};
@@ -43,13 +43,75 @@ export class Combat {
     this.emit('cancel'); this.cast = null;
   }
   availableCharges(id) { return this.charges[id]?.current; }
-  haste() {
-    const fervor = this.buffs.divineFervor;
-    return (this.healer?.haste || 0) + (fervor?.target === this.healer?.id && fervor.expires > this.time ? fervor.speed * 100 : 0);
+  haste(target = this.healer) {
+    const fervor = target?.label === 'HEALER' ? this.buffs.divineFervor : target?.attackSpeedBuff;
+    return (Number(target?.haste) || 0) + (fervor && fervor.target === target?.id && fervor.expires > this.time ? fervor.speed * 100 : 0);
+  }
+  hasteMultiplier(target = this.healer) { return hasteFactor(this.haste(target)); }
+  critical(actor) {
+    const chance = Math.max(0, Math.min(100, Number(actor?.crit) || 0));
+    return chance >= 100 || (chance > 0 && this.random() * 100 < chance);
+  }
+  hotInterval(hot, target) {
+    const livingHaste = hot.living && target.hp / target.maxHp < .5 ? hot.living.speed * 100 : 0;
+    return hastedTime(hot.baseInterval, this.haste() + livingHaste);
   }
   manaCost(spell) {
     const postHaste = Boolean(spell.postHaste && this.buffs.postHaste > 0 && ['greater', 'prayer'].includes(spell.id));
     return spell.cost * CONFIG.baseMana * (postHaste ? .8 : 1);
+  }
+  resolveCast(spell) {
+    const overgrowth = Boolean(spell.overgrowth && (this.cooldowns[spell.id] || 0) > this.time + 0.00001);
+    const postHaste = Boolean(spell.postHaste && this.buffs.postHaste > 0 && ['greater', 'prayer'].includes(spell.id));
+    return {
+      cost: this.manaCost(spell), overgrowth, postHaste,
+      hasteMultiplier: this.hasteMultiplier(),
+      duration: hastedTime(overgrowth ? 1 : spell.cast, this.haste()) * (postHaste ? .8 : 1),
+    };
+  }
+  enemyDotProfile(spell) {
+    if (!spell.enemyDot) return null;
+    const interval = hastedTime(spell.enemyDot.interval, this.haste());
+    const ticks = Math.max(1, ticksForDuration(spell.enemyDot.duration, interval));
+    const pending = this.boss.dots.find(dot => dot.source === spell.id)?.remaining || 0;
+    const baseTick = spell.enemyDot.damage / Math.round(spell.enemyDot.duration / spell.enemyDot.interval);
+    return {
+      tick: baseTick + pending / ticks, baseTick, pending, ticks, interval, duration: spell.enemyDot.duration,
+    };
+  }
+  hotProfile(spell, target, carryPending = false) {
+    if (!spell.hot) return null;
+    const interval = this.hotInterval({ ...spell.hot, baseInterval: spell.hot.interval }, target || this.healer);
+    const ticks = Math.max(1, ticksForDuration(spell.hot.duration, interval));
+    const pending = carryPending && target
+      ? (target.hots || []).filter(hot => hot.source === spell.id).reduce((total, hot) => total + hot.heal * hot.ticks, 0)
+      : 0;
+    return {
+      tick: healingParts(spell, this.spellPower).hotTick + pending / ticks,
+      pending, ticks, interval, duration: spell.hot.duration,
+    };
+  }
+  lingeringPrayerProfile(spell, direct) {
+    if (!spell.lingeringPrayer) return null;
+    const effect = spell.lingeringPrayer;
+    const interval = hastedTime(effect.interval, this.haste());
+    const ticks = Math.max(1, ticksForDuration(effect.duration, interval));
+    return { tick: direct * effect.ratio / Math.round(effect.duration / effect.interval), ticks, interval, duration: effect.duration };
+  }
+  resolveSpell(spell, target = null) {
+    const cast = this.resolveCast(spell);
+    const healing = healingParts(spell, this.spellPower);
+    const direct = spell.channel ? 0 : this.directHealing(spell, target);
+    const bolts = spell.channel ? spell.ticks.map(tick => ({ heal: tick.heal * healing.factor, damage: tick.damage || 0 })) : [];
+    const smartBolt = spell.smartHealingBolt ? spell.smartHealingBolt.heal * healing.factor : 0;
+    return {
+      ...cast, direct, bolts, smartBolt,
+      hot: this.hotProfile(spell, target, cast.overgrowth),
+      dot: this.enemyDotProfile(spell),
+      lingering: this.lingeringPrayerProfile(spell, direct),
+      damage: spell.damage || 0,
+      hotBonus: spell.hotBonus ? { perHot: spell.hotBonus.amount, max: spell.hotBonus.max, current: target ? new Set(this.activeHots(target, spell.hotBonus.sources).map(hot => hot.source)).size : null } : null,
+    };
   }
   begin(id, targetId) {
     const spell = this.spells.find(s => s.id === id);
@@ -66,11 +128,9 @@ export class Combat {
     const overgrowth = Boolean(spell.overgrowth && cooldownActive);
     if (charge ? charge.current <= 0 : cooldownActive && !overgrowth) return { ok: false, reason: `${spell.name} is on cooldown.` };
     if (spell.consumesHot && !this.activeHots(target, spell.consumesHot).length) return { ok: false, reason: `${spell.name} requires Rejuvenation, Regrowth, or Wild Growth on this ally.` };
-    const postHaste = Boolean(spell.postHaste && this.buffs.postHaste > 0 && ['greater', 'prayer'].includes(spell.id));
-    const cost = this.manaCost(spell);
+    const resolved = this.resolveCast(spell);
+    const { postHaste, cost, duration, hasteMultiplier: castHaste } = resolved;
     if (this.mana < cost) return { ok: false, reason: 'Not enough mana.' };
-    const hasteMultiplier = 1 + this.haste() / 100;
-    const duration = (overgrowth ? 1 : spell.cast) / hasteMultiplier * (postHaste ? .8 : 1);
     const spendAtStart = duration === 0 || spell.channel;
     if (spendAtStart) this.mana -= cost;
     if (postHaste) {
@@ -84,7 +144,7 @@ export class Combat {
     } else if (spell.cooldown && !overgrowth) this.cooldowns[id] = this.time + spell.cooldown;
     this.cast = {
       spell, target: targetId, duration, elapsed: 0, launched: 0, landed: 0,
-      postHaste, hasteMultiplier, overgrowth, manaCost: cost, manaSpent: spendAtStart,
+      postHaste, hasteMultiplier: castHaste, overgrowth, manaCost: cost, manaSpent: spendAtStart,
     };
     this.emit('cast', { spell: id, target: targetId });
     this.stats.casts++;
@@ -108,34 +168,30 @@ export class Combat {
         .sort((a, b) => a.hp / a.maxHp - b.hp / b.maxHp)[0];
       if (destination) destination.hots.push(moving);
     }
+    const profile = this.hotProfile(spell, target, carryPending);
     const maxInstances = spell.hot.maxInstances || 1;
     if (existing.length >= maxInstances) {
       const replacing = existing.sort((a, b) => a.expires - b.expires)[0];
       target.hots = target.hots.filter(hot => hot !== replacing);
     }
     if (maxInstances === 1) target.hots = target.hots.filter(hot => hot.source !== spell.id);
-    const ticks = Math.round(spell.hot.duration / spell.hot.interval);
-    const freshHealing = healingParts(spell, this.spellPower).hotTick * ticks;
-    const pending = carryPending ? existing.reduce((total, hot) => total + hot.heal * hot.ticks, 0) : 0;
     if (carryPending) target.hots = target.hots.filter(hot => hot.source !== spell.id);
-    const initialInterval = spell.hot.living && target.hp / target.maxHp < .5
-      ? spell.hot.interval / (1 + spell.hot.living.speed)
-      : spell.hot.interval;
     target.hots.push({
-      ...spell.hot, heal: (freshHealing + pending) / ticks, source: spell.id, name: spell.name,
+      ...spell.hot, heal: profile.tick, source: spell.id, name: spell.name,
       icon: spell.icon, color: spell.color, applied: this.time, expires: this.time + spell.hot.duration,
-      next: this.time + initialInterval, interval: initialInterval, ticks, baseInterval: spell.hot.interval,
+      next: this.time + profile.interval, interval: profile.interval, ticks: profile.ticks, baseInterval: spell.hot.interval,
     });
   }
   applyLingeringPrayer(target, spell, direct) {
     const hot = spell.lingeringPrayer;
     if (!hot) return;
+    const profile = this.lingeringPrayerProfile(spell, direct);
     target.hots = target.hots.filter(effect => effect.source !== 'lingering-prayer');
     target.hots.push({
-      ...hot, heal: direct * hot.ratio / Math.round(hot.duration / hot.interval),
+      ...hot, heal: profile.tick,
       source: 'lingering-prayer', name: 'Lingering Prayer', icon: spell.icon, color: spell.color,
-      applied: this.time, expires: this.time + hot.duration, next: this.time + hot.interval,
-      ticks: Math.round(hot.duration / hot.interval),
+      applied: this.time, expires: this.time + hot.duration, next: this.time + profile.interval,
+      interval: profile.interval, baseInterval: hot.interval, ticks: profile.ticks,
     });
   }
   lowestHealthAlly(excludeId = null, injuredOnly = true) {
@@ -145,36 +201,70 @@ export class Combat {
   }
   atonement(amount, spell) {
     const injured = this.lowestHealthAlly();
-    if (injured) this.heal(injured, amount * 0.4, 'atonement');
+    if (injured) this.heal(injured, amount * 0.4, 'atonement', { canCrit: false });
     this.emit('atonement', { target: injured?.id, amount: injured ? amount * 0.4 : 0, spell });
   }
-  damageEnemy(amount, spell, triggersAtonement = true) {
-    if (this.boss.hp <= 0) return;
-    this.boss.hp = Math.max(0, this.boss.hp - amount);
-    this.emit('damage', { target: 'boss', amount, raw: amount, source: spell, damageType: 'Holy' });
-    if (triggersAtonement) this.atonement(amount, spell);
+  damageEnemy(amount, spell, triggersAtonement = true, actor = this.healer) {
+    if (this.boss.hp <= 0) return 0;
+    const critical = this.critical(actor);
+    const criticalAmount = amount * (critical ? CRIT_MULTIPLIER : 1);
+    const dealt = Math.min(this.boss.hp, criticalAmount);
+    this.boss.hp = Math.max(0, this.boss.hp - dealt);
+    this.emit('damage', { target: 'boss', amount: dealt, raw: amount, source: spell, damageType: 'Holy', critical });
+    if (triggersAtonement) this.atonement(dealt, spell);
+    return dealt;
   }
   applyEnemyDot(spell) {
-    const old = this.boss.dots.find(dot => dot.source === spell.id);
-    const pool = (old?.remaining || 0) + spell.enemyDot.damage;
+    const profile = this.enemyDotProfile(spell);
+    const interval = profile.interval;
+    const ticks = profile.ticks;
     this.boss.dots = this.boss.dots.filter(dot => dot.source !== spell.id);
-    this.boss.dots.push({ source: spell.id, remaining: pool, ticks: Math.round(spell.enemyDot.duration / spell.enemyDot.interval), interval: spell.enemyDot.interval, next: this.time + spell.enemyDot.interval });
+    this.boss.dots.push({
+      source: spell.id, remaining: profile.tick * ticks,
+      damage: profile.tick, ticks, interval, baseInterval: spell.enemyDot.interval,
+      next: this.time + interval, expires: this.time + spell.enemyDot.duration,
+    });
   }
   applyDivineFervor(target, effect) {
     const buff = { target: target.id, expires: this.time + effect.duration, speed: effect.speed };
     if (target.label === 'HEALER') this.buffs.divineFervor = buff;
     else {
-      const multiplier = 1 + effect.speed;
-      target.nextAttack = this.time + Math.max(0, target.nextAttack - this.time) / multiplier;
+      const oldMultiplier = this.hasteMultiplier(target);
       target.attackSpeedBuff = buff;
+      const newMultiplier = this.hasteMultiplier(target);
+      target.nextAttack = this.time + Math.max(0, target.nextAttack - this.time) * oldMultiplier / newMultiplier;
     }
     this.emit('buff', { source: 'divineFervor', target: target.id, duration: effect.duration });
+  }
+  applyDefenseModifier(targetOrId, effect) {
+    const target = typeof targetOrId === 'string'
+      ? this.party.find(member => member.id === targetOrId)
+      : this.party.includes(targetOrId) ? targetOrId : null;
+    const source = effect?.source || effect?.id;
+    const stat = String(effect?.stat || '').toLowerCase();
+    const modifier = Number(effect?.modifier);
+    const duration = Number(effect?.duration);
+    if (!target || !source || !['armor', 'resistance'].includes(stat) || !Number.isFinite(modifier) || modifier === 0 || !Number.isFinite(duration) || duration <= 0) return null;
+
+    target.defenseModifiers = (target.defenseModifiers || []).filter(current => current.source !== source);
+    for (const list of ['debuffs', 'helpfulEffects']) {
+      target[list] = (target[list] || []).filter(current => !(current.defenseModifier && current.source === source));
+    }
+    const defenseEffect = {
+      source, id: source, name: effect.name || source, stat, modifier,
+      defenseModifier: true, expires: this.time + duration,
+      icon: effect.icon || 'shield', color: effect.color || (modifier < 0 ? '#f2a1af' : '#c8e4bb'),
+    };
+    target.defenseModifiers.push(defenseEffect);
+    const collection = modifier < 0 ? 'debuffs' : 'helpfulEffects';
+    target[collection].push(defenseEffect);
+    return defenseEffect;
   }
   applyGenesis(effect) {
     for (const target of this.party) for (const hot of target.hots) {
       if (!['rejuvenation', 'regrowth', 'wildGrowth'].includes(hot.source)) continue;
       hot.expires += effect.extension;
-      hot.ticks += Math.floor(effect.extension / (hot.baseInterval || hot.interval));
+      hot.ticks += ticksForDuration(effect.extension, hot.interval || hot.baseInterval);
     }
     this.emit('buff', { source: 'genesis', targets: this.party.filter(member => member.hp > 0).map(member => member.id), duration: effect.extension });
   }
@@ -238,19 +328,21 @@ export class Combat {
     this.log(`${spell.name} → ${cast.target === 'boss' ? this.encounter.name : spell.party ? 'Party' : this.party.find(p => p.id === cast.target)?.name}`, 'heal');
     this.emit('complete', { spell: spell.id }); this.cast = null;
   }
-  heal(target, amount, spell) {
+  heal(target, amount, spell, { canCrit = true, actor = this.healer } = {}) {
     if (!target || target.hp <= 0) return { effective: 0, overheal: amount };
+    const critical = canCrit && this.critical(actor);
+    if (critical) amount *= CRIT_MULTIPLIER;
     if (target.healingReceived?.expires > this.time) amount *= 1 + target.healingReceived.amount;
     const effective = Math.min(target.maxHp - target.hp, amount);
     const overheal = amount - effective;
     target.hp += effective; this.stats.effective += effective; this.stats.overheal += overheal;
-    this.emit('heal', { target: target.id, amount: effective, raw: amount, spell });
+    this.emit('heal', { target: target.id, amount: effective, raw: amount, spell, critical });
     return { effective, overheal };
   }
   damage(target, amount, source, damageType = 'Physical') {
     if (!target || target.hp <= 0) return;
     const raw = amount;
-    amount = mitigatedDamage(amount, damageType, target);
+    amount = mitigatedDamage(amount, damageType, target, this.time);
     if (this.buffs.sanctuary?.expires > this.time) amount *= 1 - this.buffs.sanctuary.reduction;
     target.hp = Math.max(0, target.hp - amount);
     this.emit('damage', { target: target.id, amount, raw, source, damageType });
@@ -301,10 +393,19 @@ export class Combat {
     if (this.buffs.sanctuary?.expires <= this.time) delete this.buffs.sanctuary;
     if (this.buffs.divineFervor?.expires <= this.time) delete this.buffs.divineFervor;
     for (const member of this.party) if (member.attackSpeedBuff?.expires <= this.time) {
-      member.nextAttack = this.time + Math.max(0, member.nextAttack - this.time) * (1 + member.attackSpeedBuff.speed);
+      const oldMultiplier = hasteFactor((Number(member.haste) || 0) + member.attackSpeedBuff.speed * 100);
+      const remaining = Math.max(0, member.nextAttack - this.time);
       delete member.attackSpeedBuff;
+      member.nextAttack = this.time + remaining * oldMultiplier / this.hasteMultiplier(member);
     }
     for (const member of this.party) {
+      const expiredDefenseEffects = (member.defenseModifiers || []).filter(effect => effect.expires <= this.time + 1e-8);
+      if (expiredDefenseEffects.length) {
+        const expired = new Set(expiredDefenseEffects);
+        member.defenseModifiers = member.defenseModifiers.filter(effect => !expired.has(effect));
+        member.debuffs = (member.debuffs || []).filter(effect => !expired.has(effect));
+        member.helpfulEffects = (member.helpfulEffects || []).filter(effect => !expired.has(effect));
+      }
       if (member.ward?.expires <= this.time) delete member.ward;
       if (member.healingReceived?.expires <= this.time) delete member.healingReceived;
     }
@@ -312,7 +413,7 @@ export class Combat {
     for (const p of this.party) {
       if (p.hp <= 0) continue;
       for (const hot of [...p.hots]) {
-        while (hot.ticks > 0 && this.time + 1e-8 >= hot.next) {
+        while (hot.ticks > 0 && this.time + 1e-8 >= hot.next && hot.next <= hot.expires + 1e-8) {
           let target = p;
           if (hot.living && p.hp >= p.maxHp) {
             const cap = hot.maxInstances || 1;
@@ -326,8 +427,11 @@ export class Combat {
             }
           }
           this.heal(target, hot.heal, hot.source); hot.ticks--;
-          const interval = hot.living && target.hp / target.maxHp < .5 ? hot.baseInterval / (1 + hot.living.speed) : hot.baseInterval;
-          hot.interval = interval; hot.next += interval;
+          hot.interval = this.hotInterval(hot, target);
+          hot.next += hot.interval;
+          hot.ticks = hot.next <= hot.expires + 1e-8
+            ? ticksForDuration(hot.expires - hot.next, hot.interval) + 1
+            : 0;
         }
       }
       p.hots = p.hots.filter(hot => hot.ticks > 0);
@@ -339,7 +443,7 @@ export class Combat {
         const ticks = cast.spell.ticks;
         const channelElapsed = cast.elapsed * cast.hasteMultiplier;
         while (cast.launched < ticks.length && channelElapsed + 1e-8 >= ticks[cast.launched].at - 0.3) {
-          this.emit('bolt', { target: cast.target, spell: cast.spell.id, travel: 0.3, bolt: cast.launched }); cast.launched++;
+          this.emit('bolt', { target: cast.target, spell: cast.spell.id, travel: 0.3 / cast.hasteMultiplier, bolt: cast.launched }); cast.launched++;
         }
         while (cast.landed < ticks.length && channelElapsed + 1e-8 >= ticks[cast.landed].at) {
           const tick = ticks[cast.landed];
@@ -354,7 +458,7 @@ export class Combat {
         if (smartBolt && !cast.smartLanded && channelElapsed + 1e-8 >= smartBolt.at) {
           const target = this.lowestHealthAlly(cast.target === 'boss' ? null : cast.target, false);
           if (target) {
-            this.emit('bolt', { target: target.id, spell: cast.spell.id, travel: 0.3, bolt: ticks.length, smart: true });
+            this.emit('bolt', { target: target.id, spell: cast.spell.id, travel: 0.3 / cast.hasteMultiplier, bolt: ticks.length, smart: true });
             this.heal(target, smartBolt.heal * healingParts(cast.spell, this.spellPower).factor, 'threefold-penance');
           }
           cast.smartLanded = true;
@@ -367,8 +471,8 @@ export class Combat {
     for (const p of this.party) {
       if (p.hp <= 0) continue;
       if (p.damage && this.time >= p.nextAttack) {
-        this.boss.hp = Math.max(0, this.boss.hp - p.damage * p.interval);
-        const interval = p.interval / (1 + (p.attackSpeedBuff?.speed || 0));
+        this.damageEnemy(p.damage, p.id, false, p);
+        const interval = hastedTime(p.interval, this.haste(p));
         p.nextAttack += interval; this.emit('attack', { source: p.id });
       }
       for (const dot of p.dots) {
@@ -377,9 +481,15 @@ export class Combat {
       p.dots = p.dots.filter(d => d.ticks > 0);
     }
     for (const dot of this.boss.dots) {
-      while (dot.ticks > 0 && this.time + 1e-8 >= dot.next) {
-        const amount = dot.remaining / dot.ticks;
-        dot.remaining -= amount; dot.ticks--; dot.next += dot.interval;
+      while (dot.ticks > 0 && this.time + 1e-8 >= dot.next && dot.next <= dot.expires + 1e-8) {
+        const amount = dot.damage;
+        dot.ticks--;
+        dot.interval = hastedTime(dot.baseInterval, this.haste());
+        dot.next += dot.interval;
+        dot.ticks = dot.next <= dot.expires + 1e-8
+          ? ticksForDuration(dot.expires - dot.next, dot.interval) + 1
+          : 0;
+        dot.remaining = dot.damage * dot.ticks;
         this.damageEnemy(amount, dot.source);
       }
     }

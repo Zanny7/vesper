@@ -30,13 +30,19 @@ export function validateCatalogue(items) {
 }
 export const ITEM_BY_ID = new Map(GEAR.map(item => [item.id, item]));
 export const itemById = id => ITEM_BY_ID.get(id) || null;
-export const eligibleItems = (owner, slot, items = GEAR) => items.filter(item => item.owner === owner && (!slot || item.slot === slot));
+export const UNIVERSAL_SLOTS = new Set(['Trinket', 'Head', 'Chest', 'Legs']);
+export function canEquipItem(owner, slot, item) {
+  if (!item || !slotsForOwner(owner).includes(slot) || item.slot !== slot) return false;
+  if (slot === 'Trinket' && ['maxMana', 'manaRegen', 'spellPower', 'haste', 'crit'].some(stat => stat in item.stats)) return isHealerOwner(owner);
+  return UNIVERSAL_SLOTS.has(slot) || item.owner === owner;
+}
+export const eligibleItems = (owner, slot, items = GEAR) => items.filter(item => canEquipItem(owner, slot || item.slot, item));
 export const unownedItems = (items, ownedIds) => items.filter(item => !ownedIds.has(item.id));
 export function averageItemLevel(member, equipped, catalogue = GEAR) {
   const slots = slotsForOwner(member.id);
   if (!slots.length) return 0;
   return slots.reduce((sum, slot) => {
     const item = catalogue.find(item => item.id === equipped?.[member.id]?.[slot]);
-    return sum + (item?.owner === member.id && item.slot === slot ? item.itemLevel : 0);
+    return sum + (canEquipItem(member.id, slot, item) ? item.itemLevel : 0);
   }, 0) / slots.length;
 }
