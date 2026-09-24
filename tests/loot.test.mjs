@@ -32,12 +32,24 @@ test('normal drop count follows the 50 / 35 / 15 boundaries', () => {
 
 test('drop weighting targets only the active healer and preserves companion bands', () => {
   const table = NORMAL_LOOT_TABLES.sentinel;
-  assert.equal(rollNormalLoot(table, [], 'priest', sequence([0.5, 0.299999, 0]))[0].owner, 'priest');
+  const boundaryTable = ['priest', 'tank', 'rogue', 'mage', 'ranger'].map(owner => GEAR.find(item => item.owner === owner &&
+    (owner === 'priest' || !['Trinket', 'Head', 'Chest', 'Legs'].includes(item.slot))).id);
+  const ownerAt = roll => rollNormalLoot(boundaryTable, [], 'priest', sequence([0.5, roll, 0]))[0].owner;
+  assert.equal(ownerAt(0.299999), 'priest');
   assert.equal(rollNormalLoot(table, [], 'druid', sequence([0.5, 0.299999, 0]))[0].owner, 'druid');
-  assert.equal(rollNormalLoot(table, [], 'priest', sequence([0.5, 0.3, 0]))[0].owner, 'tank');
-  assert.equal(rollNormalLoot(table, [], 'priest', sequence([0.5, 0.475, 0]))[0].owner, 'rogue');
-  assert.equal(rollNormalLoot(table, [], 'priest', sequence([0.5, 0.65, 0]))[0].owner, 'mage');
-  assert.equal(rollNormalLoot(table, [], 'priest', sequence([0.5, 0.9, 0]))[0].owner, 'ranger');
+
+  for (const [boundary, below, at, above] of [
+    [0.3, 'priest', 'tank', 'tank'],
+    [0.475, 'tank', 'rogue', 'rogue'],
+    [0.65, 'rogue', 'mage', 'mage'],
+    [0.825, 'mage', 'ranger', 'ranger'],
+  ]) {
+    assert.equal(ownerAt(boundary - 0.000001), below, `just below ${boundary}`);
+    assert.equal(ownerAt(boundary), at, `at ${boundary}`);
+    assert.equal(ownerAt(boundary + 0.000001), above, `just above ${boundary}`);
+  }
+  assert.equal(ownerAt(0.999999), 'ranger');
+  assert.equal(ownerAt(1), 'ranger');
 });
 
 test('owned items are excluded and exhausted pools return fewer rewards without duplicates', () => {

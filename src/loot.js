@@ -2,6 +2,9 @@ import { CHAPTERS, GEAR } from './data.js';
 import { canEquipItem } from './item-model.js';
 
 export const NORMAL_DROP_WEIGHTS = Object.freeze({ healer: 0.3, tank: 0.175, rogue: 0.175, mage: 0.175, ranger: 0.175 });
+// Hundredth-percent units represent the documented percentages exactly and
+// keep exact cumulative boundaries out of floating-point weight summation.
+const NORMAL_DROP_WEIGHT_UNITS = Object.freeze({ healer: 3000, tank: 1750, rogue: 1750, mage: 1750, ranger: 1750 });
 const OWNERS = ['priest', 'druid', 'tank', 'rogue', 'mage', 'ranger'];
 
 // Each encounter lists one chapter-appropriate item for every possible recipient.
@@ -63,12 +66,13 @@ function chooseWeightedLoot(table, ownedIds, healerId, rng = Math.random, catalo
   const pool = eligibleLootPool(table, ownedIds, healerId, catalogue);
   if (!pool.length) return null;
   const categories = [...new Set(pool.map(item => categoryFor(item, healerId)))];
-  const totalWeight = categories.reduce((sum, category) => sum + NORMAL_DROP_WEIGHTS[category], 0);
-  let categoryRoll = rng() * totalWeight;
+  const totalWeightUnits = categories.reduce((sum, category) => sum + NORMAL_DROP_WEIGHT_UNITS[category], 0);
+  const categoryRoll = rng() * totalWeightUnits;
+  let cumulativeWeightUnits = 0;
   let chosenCategory = categories.at(-1);
   for (const category of categories) {
-    categoryRoll -= NORMAL_DROP_WEIGHTS[category];
-    if (categoryRoll < 0) { chosenCategory = category; break; }
+    cumulativeWeightUnits += NORMAL_DROP_WEIGHT_UNITS[category];
+    if (categoryRoll < cumulativeWeightUnits) { chosenCategory = category; break; }
   }
   const candidates = pool.filter(item => categoryFor(item, healerId) === chosenCategory);
   return candidates[Math.min(candidates.length - 1, Math.floor(rng() * candidates.length))];
