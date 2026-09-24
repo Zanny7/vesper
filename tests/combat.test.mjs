@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { Combat } from '../src/combat.js';
-import { CONFIG } from '../src/data.js';
+import { CHAPTER_ENCOUNTERS, CONFIG } from '../src/data.js';
 
 const advance=(g,seconds)=>{for(let i=0;i<Math.round(seconds/CONFIG.step);i++)g.step();};
 function isolated(){const g=new Combat();g.start();g.nextStrike=Infinity;g.nextShard=Infinity;g.mechanics.forEach(m=>m.next=Infinity);g.party.forEach(p=>{p.nextAttack=Infinity;});return g;}
@@ -72,21 +72,31 @@ test('victory stops combat; restart clears casts, cooldowns, dots and outcome',(
   const g=isolated();g.boss.hp=0;g.step();assert.equal(g.status,'victory');const t=g.time;advance(g,1);assert.equal(g.time,t);
   g.reset();assert.equal(g.status,'ready');assert.equal(g.time,0);assert.equal(g.mana,CONFIG.mana);assert.equal(g.cast,null);assert.deepEqual(g.cooldowns,{});assert.equal(g.stats.deaths,0);
 });
-test('unattended party loses; a triage strategy can win a complete encounter',()=>{
-  const idle=new Combat();idle.start();advance(idle,150);assert.equal(idle.status,'defeat');
-  const g=new Combat();g.start();let attempts=0;
-  while(g.status==='running'&&attempts++<10000){
-    if(!g.cast){
-      const living=g.party.filter(p=>p.hp>0),lowest=[...living].sort((a,b)=>a.hp/a.maxHp-b.hp/b.maxHp)[0];
-      const injured=living.filter(p=>p.maxHp-p.hp>=70),tank=g.party[0];
-      if(injured.length>=3)g.begin('prayer',lowest.id);
-      else if(tank.hp<360&&(g.cooldowns.penance||0)<=g.time)g.begin('penance','tank');
-      else if(lowest.hp/lowest.maxHp<.48)g.begin('flash',lowest.id);
-      else if(tank.maxHp-tank.hp>=160)g.begin('greater','tank');
-      else if(lowest.maxHp-lowest.hp>=100)g.begin('flash',lowest.id);
+function currentTriage(g){
+  if(g.cast)return;
+  const living=g.party.filter(p=>p.hp>0),lowest=[...living].sort((a,b)=>a.hp/a.maxHp-b.hp/b.maxHp)[0];
+  const missing=p=>p.maxHp-p.hp;
+  const injured=living.filter(p=>missing(p)>55);
+  const ready=id=>(g.cooldowns[id]||0)<=g.time+1e-6;
+  if(missing(lowest)>=100&&ready('penance')&&g.begin('penance',lowest.id).ok)return;
+  if(injured.length>=3&&injured.reduce((sum,p)=>sum+Math.min(100,missing(p)),0)>=240&&g.begin('prayer',lowest.id).ok)return;
+  if(missing(g.party[0])>=140&&g.begin('greater','tank').ok)return;
+  if(missing(lowest)>=105&&g.begin('flash',lowest.id).ok)return;
+  if(g.mana>g.maxMana*.8&&ready('holyFire'))g.begin('holyFire','boss');
+}
+test('unattended party loses; current triage wins the Chapter I boss',()=>{
+  const seeded=seed=>()=>{seed=(1664525*seed+1013904223)>>>0;return seed/4294967296;};
+  const idle=new Combat(CHAPTER_ENCOUNTERS.warden,seeded(1));idle.start();advance(idle,150);assert.equal(idle.status,'defeat');
+  for(let seed=1;seed<=20;seed++){
+    const g=new Combat(CHAPTER_ENCOUNTERS.warden,seeded(seed));g.start();let attempts=0;
+    while(g.status==='running'&&attempts++<10000){
+      currentTriage(g);
+      g.step();g.drainEvents();
     }
-    g.step();g.drainEvents();
+    assert.equal(g.status,'victory',`Seed ${seed} ended ${g.status} at ${g.time.toFixed(1)}s, mana ${g.mana}, health ${g.party.map(p=>p.hp)}`);
+    assert.equal(g.stats.deaths,0,`seed ${seed}`);
+    assert.ok(g.time<90,`seed ${seed}`);
+    assert.ok(g.stats.effective>2000,`seed ${seed}`);
+    assert.ok(g.mana<CONFIG.mana*.8,`seed ${seed}`);
   }
-  assert.equal(g.status,'victory',`Ended ${g.status} at ${g.time.toFixed(1)}s, mana ${g.mana}, health ${g.party.map(p=>p.hp)}`);
-  assert.ok(g.stats.effective>2000);assert.ok(g.mana<CONFIG.mana*.8);
 });
