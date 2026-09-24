@@ -1,4 +1,5 @@
 import { CHAPTERS, GEAR } from './data.js';
+import { canEquipItem } from './item-model.js';
 
 export const NORMAL_DROP_WEIGHTS = Object.freeze({ healer: 0.3, tank: 0.175, rogue: 0.175, mage: 0.175, ranger: 0.175 });
 const OWNERS = ['priest', 'druid', 'tank', 'rogue', 'mage', 'ranger'];
@@ -23,6 +24,23 @@ export function buildNormalLootTables(chapters = CHAPTERS, catalogue = GEAR) {
 export const NORMAL_LOOT_TABLES = Object.freeze(buildNormalLootTables());
 export const normalLootForEncounter = (encounterId, catalogue = GEAR) => (NORMAL_LOOT_TABLES[encounterId] || []).map(id => catalogue.find(item => item.id === id)).filter(Boolean);
 
+const categoryFor = (item, healerId) => {
+  if (canEquipItem(healerId, item.slot, item)) return 'healer';
+  return ['tank', 'rogue', 'mage', 'ranger'].includes(item.owner) && canEquipItem(item.owner, item.slot, item) ? item.owner : null;
+};
+
+// Keep the preview and both normal and bonus reward rolls on the same rules.
+// A preview shows all items that can be selected, regardless of drop count.
+export function eligibleLootPool(table, ownedIds, healerId, catalogue = GEAR) {
+  const byId = new Map(catalogue.map(item => [item.id, item]));
+  const owned = new Set(ownedIds || []);
+  return (table || []).map(id => byId.get(id)).filter(item => item && !owned.has(item.id) && categoryFor(item, healerId));
+}
+
+export function eligibleNormalLootForEncounter(encounterId, ownedIds, healerId, catalogue = GEAR) {
+  return eligibleLootPool(NORMAL_LOOT_TABLES[encounterId], ownedIds, healerId, catalogue);
+}
+
 // Boss rewards are intentionally absent from the encounter preview.  They draw
 // from the chapter's remaining catalogue, so beating a boss can uncover gear
 // that was not advertised by the ordinary route reward list.
@@ -41,12 +59,8 @@ export function normalDropCount(rng = Math.random) {
   return roll < 0.5 ? 0 : roll < 0.85 ? 1 : 2;
 }
 
-const categoryFor = (item, healerId) => item.owner === healerId ? 'healer' : ['tank', 'rogue', 'mage', 'ranger'].includes(item.owner) ? item.owner : null;
-
 function chooseWeightedLoot(table, ownedIds, healerId, rng = Math.random, catalogue = GEAR) {
-  const byId = new Map(catalogue.map(item => [item.id, item]));
-  const owned = new Set(ownedIds || []);
-  const pool = (table || []).map(id => byId.get(id)).filter(item => item && !owned.has(item.id) && categoryFor(item, healerId));
+  const pool = eligibleLootPool(table, ownedIds, healerId, catalogue);
   if (!pool.length) return null;
   const categories = [...new Set(pool.map(item => categoryFor(item, healerId)))];
   const totalWeight = categories.reduce((sum, category) => sum + NORMAL_DROP_WEIGHTS[category], 0);

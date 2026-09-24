@@ -1,5 +1,6 @@
 // Presentation helpers; these do not alter bindings or combat timing.
 import { formatNumber } from './stats.js';
+import { ATONEMENT_RATIO } from './data.js';
 export function compactKeybind(binding) {
   const aliases = { shift: 'S', ctrl: 'C', control: 'C', alt: 'A', option: 'A', meta: 'M', cmd: 'M', command: 'M', win: 'M', super: 'M' };
   const parts = binding.split('+').map(part => part.trim());
@@ -51,6 +52,7 @@ export function abilityTooltip(game, spell, target = null) {
   if (value.hot?.pending && value.duration > 0) lines.push('Carried healing shown is available now and may change during the cast.');
   if (spell.echoOfGrace) lines.push(`Also heals the lowest-health other wounded ally for ${n(value.direct * spell.echoOfGrace.ratio)}.`);
   if (value.lingering) lines.push(`Adds Lingering Prayer: ${n(value.lingering.tick)} healing every ${n(value.lingering.interval)}s for ${n(value.lingering.duration)}s (${value.lingering.ticks} ticks, ${n(value.lingering.tick * value.lingering.ticks)} total per ally).`);
+  if (spell.atonement || value.bolts.some(bolt => bolt.damage > 0)) lines.push(`Atonement heals the lowest-health living ally for ${n(ATONEMENT_RATIO * 100)}% of actual damage dealt; it does not Crit separately.`);
   if (spell.lightUnspent) lines.push(`${n(spell.lightUnspent.ratio * 100)}% of direct overhealing is shared among injured allies.`);
   if (spell.postHaste && spell.id === 'flash') lines.push(`Grants a Post-Haste stack (up to ${spell.postHaste.maxStacks}) for Greater Heal or Prayer.`);
   if (value.postHaste) lines.push('Post-Haste: this cast uses one stack, reducing Mana cost and cast time by 20%.');

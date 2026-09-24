@@ -6,10 +6,10 @@ import { CONFIG } from '../src/data.js';
 const advance=(g,seconds)=>{for(let i=0;i<Math.round(seconds/CONFIG.step);i++)g.step();};
 function isolated(){const g=new Combat();g.start();g.nextStrike=Infinity;g.nextShard=Infinity;g.mechanics.forEach(m=>m.next=Infinity);g.party.forEach(p=>{p.nextAttack=Infinity;});return g;}
 
-test('Flash completes at 1.5s and heals 100 without baseline Post-Haste',()=>{
+test('Flash completes at 1.5s and heals 90 without baseline Post-Haste',()=>{
   const g=isolated();g.party[0].hp=100;
   assert.equal(g.begin('flash','tank').ok,true);advance(g,1.4);assert.equal(g.party[0].hp,100);
-  advance(g,.1);assert.equal(g.party[0].hp,200);assert.deepEqual(g.buffs,{});
+  advance(g,.1);assert.equal(g.party[0].hp,190);assert.deepEqual(g.buffs,{});
   g.begin('greater','tank');assert.equal(g.cast.duration,3);
 });
 test('Prayer heals every living ally including Priest without reviving the dead',()=>{

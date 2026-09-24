@@ -14,12 +14,16 @@ import { setupChapters } from './chapters.js';
 import { setupTeam } from './team.js';
 import { Equipment } from './gear.js';
 import { setupEquipment, itemIcon } from './equipment.js';
-import { BOSS_BONUS_LOOT_TABLES, NORMAL_LOOT_TABLES, rollBossBonusLoot, rollNormalLoot } from './loot.js';
+import { BOSS_BONUS_LOOT_TABLES, NORMAL_LOOT_TABLES, eligibleNormalLootForEncounter, rollBossBonusLoot, rollNormalLoot } from './loot.js';
 import { activeHealer, loadActiveHealer, healerHint } from './healers.js';
 import { abilityTooltip, formatCooldown } from './ability-presentation.js';
 import { abilityIcon } from './ability-icons.js';
 import { renderHealerBuffs } from './healer-buffs.js';
 import { createAbilitySettings, bindingFromEvent } from './ability-settings.js';
+import { createMusicController } from './music.js';
+import { setupMusicSettings } from './music-settings.js';
+import { createEncounterTrackSelector } from './soundtrack.js';
+import { createEncounterSpeed, setupEncounterSpeedControl } from './encounter-speed.js';
 import { CONFIG, CHAPTER_ENCOUNTERS, ALL_ADVENTURES, CHAPTERS } from './data.js';
 
 const $ = selector => document.querySelector(selector);
@@ -27,6 +31,11 @@ let activeHealerId = loadActiveHealer();
 let abilityStorage;
 try { abilityStorage = localStorage; } catch { /* Settings remain available in memory. */ }
 const abilitySettings = createAbilitySettings(abilityStorage);
+const music = createMusicController({ storage: abilityStorage });
+const soundtrack = createEncounterTrackSelector();
+const encounterSpeed = createEncounterSpeed(abilityStorage);
+setupEncounterSpeedControl(encounterSpeed);
+setupMusicSettings(music);
 const runs = new ChapterRuns(abilityStorage);
 const equipment = new Equipment(abilityStorage);
 const loadout = healerId => {
@@ -98,7 +107,7 @@ $('#begin').addEventListener('click',begin);
 $('#restart').textContent = '↻ Restart chapter';
 $('#restart').addEventListener('click',()=>{adventures.restartChapter();restart();shell.openChapter();});
 $('#pause').addEventListener('click',()=>{game.pause();renderUI();});
-function openHelp(){if(game.status==='running')game.pause();$('#help').showModal();renderUI();}
+function openHelp(){$('#help').showModal();renderUI();}
 function closeHelp(){$('#help').close();}
 $('#help-button').addEventListener('click',openHelp);$('#close-help').addEventListener('click',closeHelp);$('#help-done').addEventListener('click',closeHelp);
 document.addEventListener('keydown',e=>{
@@ -114,8 +123,8 @@ document.addEventListener('keydown',e=>{
   const spell=currentSpells.find(s=>s.key===binding);
   if(spell){e.preventDefault();if(!e.repeat)cast(spell.id);}
 });
-document.addEventListener('visibilitychange',()=>{if(document.hidden&&game.status==='running'){game.pause();renderUI();}last=performance.now();accumulator=0;});
-window.addEventListener('blur',()=>{hovered=null;if(game.status==='running'){game.pause();renderUI();}});
+document.addEventListener('visibilitychange',()=>{last=performance.now();accumulator=0;});
+window.addEventListener('blur',()=>{hovered=null;});
 function renderUI(){
   if (['victory', 'defeat'].includes(game.status)) adventures.recordVictory(game);
   shell.refresh();
@@ -178,6 +187,7 @@ function renderUI(){
   const logKey=game.history.map(l=>l.time+l.text).join('|');
   if(logKey!==lastLog){$('#combat-log').innerHTML=game.history.slice(0,6).map(l=>`<div class="log-entry ${l.kind}"><time>${clock(l.time)}</time><span>${l.text}</span></div>`).join('')||'<p class="empty-log">The sanctum is still.<br>For now.</p>';lastLog=logKey;}
   if(game.status!==lastStatus){
+    if (['victory','defeat'].includes(game.status)) music.stop({ fade: true });
     document.body.classList.toggle('encounter-overlay', game.status !== 'running');
     lastStatus=game.status;$('#scene-overlay').hidden=game.status==='running';
     $('#status-label').textContent=({ready:'AWAITING PULL',running:'ENCOUNTER ACTIVE',paused:'ENCOUNTER PAUSED',victory:'ENCOUNTER COMPLETE',defeat:'PARTY DEFEATED'})[game.status];
@@ -203,23 +213,24 @@ function renderUI(){
 }
 let uiElapsed=0;
 function frame(now){
-  const dt=Math.min((now-last)/1000,.1);last=now;
+  const dt=Math.max(0,(now-last)/1000);last=now;
+  const gameplayDt=game.status==='running'?dt*encounterSpeed.value:dt;
   if(game.status==='running'){
-    accumulator+=dt;
+    accumulator+=gameplayDt;
     while(accumulator>=CONFIG.step){game.step();accumulator-=CONFIG.step;}
   }else accumulator=0;
-  scene.receive(game.drainEvents());if(shell.isEncounter())scene.render(game,dt,selected,hovered);
+  scene.receive(game.drainEvents());if(shell.isEncounter())scene.render(game,dt,selected,hovered,gameplayDt);
   uiElapsed+=dt;if(uiElapsed>=1/30){renderUI();uiElapsed=0;}
   requestAnimationFrame(frame);
 }
 const gearUI = setupEquipment({ equipment, isLocked: equipmentLocked, onChange: () => {
   runs.reconcileParty(party(activeHealerId)); resetLoadout(activeHealerId);
-  buildHealerUI(); prepareEncounterUI(); scene.reset(); renderUI(); team.refresh();
+  buildHealerUI(); prepareEncounterUI(); scene.reset(); renderUI(); team.refresh(); adventures.refresh();
 } });
-const shell = setupShell({ game, view, resetEncounter: restart, onAbandon: () => adventures.abandon(), onNavigate: destination => { gearUI.close(); if (destination === 'chapter') adventures.refresh(); }, onEquipmentShortcut: () => team.selectHealer(activeHealerId), onInventoryOpen: () => gearUI.renderInventory(), onUtilityClose: () => gearUI.close() });
+const shell = setupShell({ game, view, resetEncounter: restart, onAbandon: () => adventures.abandon(), onNavigate: destination => { if (destination !== 'encounter') music.stop({ fade: true }); gearUI.close(); if (destination === 'chapter') adventures.refresh(); }, onEncounterStart: track => music.play(track), onEquipmentShortcut: () => team.selectHealer(activeHealerId), onInventoryOpen: () => gearUI.renderInventory(), onUtilityClose: () => gearUI.close() });
 const team = setupTeam({ settings: abilitySettings, onAbilitiesChange: () => { buildHealerUI(); renderUI(); }, paintPortrait: (canvas, member, width) => scene.paintPortrait(canvas, member, width), onHealerChange: healerId => {
   activeHealerId = healerId; runs.reconcileParty(party(healerId)); resetLoadout(healerId);
-  selected = 'tank'; hovered = null; buildHealerUI(); prepareEncounterUI(); scene.reset(); renderUI();
+  selected = 'tank'; hovered = null; buildHealerUI(); prepareEncounterUI(); scene.reset(); renderUI(); adventures.refresh();
 }, equipment, gearUI, equipmentLocked, talents, getLoadout: loadout, onTalentsChange: () => {
   resetLoadout(activeHealerId);
   buildHealerUI(); prepareEncounterUI(); scene.reset(); renderUI(); team.refresh();
@@ -228,7 +239,8 @@ const chapters = setupChapters({ openChapter: chapter => { if (adventures.openCh
 const adventures = setupAdventures({
   runs,
   getParty: () => party(activeHealerId),
-  startEncounter: (node, resources) => { shell.enterEncounter(CHAPTER_ENCOUNTERS[node.encounter], resources); renderUI(); },
+  getNormalLoot: node => eligibleNormalLootForEncounter(node.encounter, equipment.ownedIds, activeHealerId),
+  startEncounter: (node, resources) => { shell.enterEncounter(CHAPTER_ENCOUNTERS[node.encounter], resources, soundtrack.select(node)); renderUI(); },
   onProgress: completed => { talents.migrateLegacyCampaign(activeHealerId, completed); chapters.refresh(completed); },
   onVictory: (node, chapter) => talents.awardEncounter(activeHealerId, chapter, node),
   awardLoot: node => {

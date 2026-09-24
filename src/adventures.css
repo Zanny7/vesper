@@ -71,6 +71,7 @@
 #detail-lesson { color: #c2c8ab; }
 .encounter-loot { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 7px; }
 .encounter-loot .loot-item { justify-self: center; width: min(100%, 52px); aspect-ratio: 1; padding: 6px; cursor: help; }
+.empty-loot { grid-column: 1 / -1; margin: 0; color: #aebdb3; font-size: 11px; text-align: center; }
 .loot-awarded { display: grid; gap: 8px; width: min(320px, 100%); margin: 16px auto 0; padding-top: 14px; border-top: 1px solid #8ba89d55; text-align: left; }
 .loot-awarded > small { color: #d6bd83; letter-spacing: 1.4px; text-align: center; }
 .detail-action { margin-top: auto; padding-top: 16px; }

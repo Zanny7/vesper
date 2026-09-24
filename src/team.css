@@ -14,6 +14,9 @@
 .team-baseline { color: #a4b5b0; font-size: 11px; }
 .team-stat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin: 0; }
 .team-stat-grid > div { border-left: 1px solid #667b6955; padding-left: 16px; }
+.team-stat-row[data-tooltip] { border-radius: 2px; cursor: help; }
+.team-stat-row[data-tooltip]:hover dt, .team-stat-row[data-tooltip]:focus-visible dt { color: #e2d3af; }
+.team-stat-row[data-tooltip]:focus-visible { outline: 1px solid #a08b60; outline-offset: 5px; }
 .team-stat-grid dt { font-size: 11px; color: #b2c1bc; }
 .team-stat-grid dd { margin: 8px 0 0; color: #e2d3af; font-size: 22px; }
 .team-behavior { margin: 25px 0 0; color: #adbfba; line-height: 1.8; font-size: 12px; }

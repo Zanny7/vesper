@@ -35,6 +35,16 @@
 .utility-heading { display: flex; align-items: center; justify-content: space-between; margin-bottom: 22px; }
 .utility-heading h2 { font-size: 28px; color: #e0cc9d; }
 .utility-surface p { color: #adbbb2; line-height: 1.8; }
+.encounter-speed { display: inline-flex; align-items: center; gap: 5px; padding: 0 8px; border: 1px solid #4d5b58; border-radius: 3px; color: #adbbb2; font-size: 11px; white-space: nowrap; }
+.encounter-speed select { border: 0; padding: 8px 0; color: #e0cc9d; background: transparent; font: inherit; cursor: pointer; }
+.encounter-speed select:focus-visible { outline: 1px solid #dac18b; outline-offset: 2px; }
+.encounter-speed option { color: #e0cc9d; background: #101b20; }
+#music-settings h3 { margin: 0 0 16px; color: #e0cc9d; font: 18px Georgia, serif; }
+.music-setting { display: flex; align-items: center; justify-content: space-between; color: #adbbb2; font-size: 12px; }
+.music-setting output { color: #e0cc9d; font-variant-numeric: tabular-nums; }
+#music-volume { display: block; width: 100%; margin: 12px 0 20px; accent-color: #d2b578; }
+.music-mute { display: flex; align-items: center; gap: 9px; color: #adbbb2; font-size: 12px; }
+.music-mute input { accent-color: #d2b578; }
 .dialog-actions { display: flex; gap: 12px; justify-content: flex-end; margin-top: 24px; }
 #leave-encounter { width: min(490px, calc(100vw - 30px)); }
 #encounter-view { padding-bottom: 95px; }

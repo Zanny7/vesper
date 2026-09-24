@@ -11,16 +11,29 @@ function victory(runs, node, health = 300, mana = 360) {
   game.party[0].hp = health; game.mana = mana; game.status = 'victory';
   assert.equal(runs.finish(chapter, node, game), true); return game;
 }
-test('actual health/mana survive encounters, map visits, healer changes and reloads', () => {
+test('exact surviving resources persist across map visits, healer changes and reloads', () => {
   const storage = disk(), runs = new ChapterRuns(storage);
-  victory(runs, chapter.nodes[0], 300, 360);
-  for (let i = 0; i < 10; i++) assert.equal(runs.get(chapter, party).resources.mana.current, 360);
+  victory(runs, chapter.nodes[0], 300, 80);
+  for (let i = 0; i < 10; i++) assert.equal(runs.get(chapter, party).resources.mana.current, 80);
   const restored = new ChapterRuns(storage), druid = partyForHealer('druid');
   const resources = restored.begin(chapter, chapter.nodes[1], druid);
   const game = new Combat(CHAPTER_ENCOUNTERS.keeper, () => 0, druid, HEALERS.druid.combatSpells);
-  game.reset(undefined, resources); assert.equal(game.party[0].hp, 300); assert.equal(game.mana, 360);
-  game.step(30); assert.equal(game.mana, 360); assert.equal(game.party[0].hp, 300);
-  game.start(); game.pause(); game.step(30); assert.equal(game.mana, 360);
+  game.reset(undefined, resources); assert.equal(game.party[0].hp, 300); assert.equal(game.mana, 80);
+  game.step(30); assert.equal(game.mana, 80); assert.equal(game.party[0].hp, 300);
+  game.start(); game.pause(); game.step(30); assert.equal(game.mana, 80);
+});
+test('victory leaves a fallen companion down and does not top up survivors', () => {
+  const runs = new ChapterRuns(disk());
+  victory(runs, chapter.nodes[0], 300, 590);
+  // Save a second normal victory with a dead companion after the first node.
+  const resources = runs.begin(chapter, chapter.nodes[1], party);
+  const next = new Combat(CHAPTER_ENCOUNTERS[chapter.nodes[1].encounter]);
+  next.reset(undefined, resources); next.party[1].hp = 0; next.status = 'victory';
+  assert.equal(runs.finish(chapter, chapter.nodes[1], next), true);
+  const saved = runs.get(chapter, party).resources;
+  assert.equal(saved.health.rogue.current, 0);
+  assert.equal(saved.health.tank.current, 300);
+  assert.equal(saved.mana.current, 590);
 });
 test('failure/restart discard only temporary progress and block later encounters', () => {
   const storage = disk(); storage.setItem('vesper-campaign-v3', '["threshold","gallery"]'); storage.setItem('future-gear', 'owned');

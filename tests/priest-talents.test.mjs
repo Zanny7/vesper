@@ -79,10 +79,10 @@ test('Echo of Grace heals the lowest-percent wounded ally other than the primary
   game.party.forEach(member => member.hp = member.maxHp);
   game.party[0].hp = 100; game.party[1].hp = 200; game.party[4].hp = 90;
   assert.ok(game.begin('flash', 'tank').ok); advance(game, 1.5);
-  assert.equal(game.party[0].hp, 200);
-  assert.equal(game.party[4].hp, 110);
+  assert.equal(game.party[0].hp, 190);
+  assert.equal(game.party[4].hp, 108);
   assert.ok(game.begin('greater', 'tank').ok); advance(game, 3);
-  assert.equal(game.party[4].hp, 150);
+  assert.equal(game.party[4].hp, 148);
 });
 
 test('Light Unspent redistributes half of direct Prayer overhealing once and excludes Lingering Prayer', () => {

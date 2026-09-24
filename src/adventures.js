@@ -1,7 +1,6 @@
 import { healerHint, loadActiveHealer } from './healers.js';
 import { CHAPTERS, CHAPTER_ENCOUNTERS } from './data.js';
 import { nodeState, chapterComplete, chapterUnlocked, restoreCampaign } from './progression.js';
-import { normalLootForEncounter } from './loot.js';
 import { itemIcon } from './equipment.js';
 import { mechanicCategory, mechanicIcon } from './mechanic-icons.js';
 export { nodeState, chapterComplete, restoreProgress, awardVictory } from './progression.js';
@@ -28,7 +27,7 @@ function minimumMapExtent(nodes, axis, nodeSize, spacing) {
   return Math.ceil(extent);
 }
 
-export function setupAdventures({ startEncounter, onProgress, runs, getParty, awardLoot, onLoot, onVictory }) {
+export function setupAdventures({ startEncounter, onProgress, runs, getParty, getNormalLoot, awardLoot, onLoot, onVictory }) {
   const $ = selector => document.querySelector(selector);
   const map = $('#adventure-map'), dialog = $('#encounter-preview');
   // Preserve Chapter I progress when upgrading to the multi-chapter campaign.
@@ -143,11 +142,17 @@ export function setupAdventures({ startEncounter, onProgress, runs, getParty, aw
     ];
     mechanicsList.innerHTML = mechanicRows.map(mechanicRow).join('');
     $('#detail-lesson').textContent = healerHint(encounter.lesson, loadActiveHealer());
-    const loot = normalLootForEncounter(encounter.id);
-    $('#detail-loot').innerHTML = loot.map(item => `<button type="button" class="loot-item gear-slot is-equipped" data-item-id="${item.id}" aria-label="${item.name}, item level ${item.itemLevel}">${itemIcon(item)}</button>`).join('');
+    const loot = getNormalLoot?.(node) || [];
+    $('#detail-loot').innerHTML = loot.length
+      ? loot.map(item => `<button type="button" class="loot-item gear-slot is-equipped" data-item-id="${item.id}" aria-label="${item.name}, item level ${item.itemLevel}">${itemIcon(item)}</button>`).join('')
+      : '<p class="empty-loot">No eligible normal loot remains.</p>';
     $('#preview-encounter').disabled = run.status !== 'active' || state !== 'available';
     $('#preview-encounter').textContent = run.status !== 'active' ? 'Restart chapter to continue' : state === 'locked' ? 'Encounter locked' : state === 'completed' ? 'Cleared this run' : 'Prepare encounter →';
-    $('#detail-state').textContent = state === 'locked' ? `Complete ${node.from.map(id => nodes.find(item => item.id === id).name).join(' or ')} in this run first.` : state === 'completed' ? 'Health and mana saved. Choose your next encounter.' : 'Enter with the resources shown on the map.';
+    $('#detail-state').textContent = state === 'locked'
+      ? `Complete ${node.from.map(id => nodes.find(item => item.id === id).name).join(' or ')} in this run first.`
+      : state === 'completed'
+        ? node.kind === 'boss' ? 'Chapter complete. Your party can start the next chapter.' : 'Health and Mana carry into the next encounter. Choose your path.'
+        : 'Enter with the resources shown on the map.';
   }
   $('#preview-encounter').addEventListener('click', () => {
     const node = nodes.find(item => item.id === selected);

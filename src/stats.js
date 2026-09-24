@@ -25,6 +25,25 @@ export function hasteMultiplier(hastePercent = 0) {
 export function hastedTime(baseTime, hastePercent = 0) {
   return baseTime / hasteMultiplier(hastePercent);
 }
+export function effectiveAttackInterval(baseInterval, hastePercent = 0) {
+  return hastedTime(baseInterval, hastePercent);
+}
+export function displayedDps(damage, interval) {
+  return interval > 0 ? damage / interval : 0;
+}
+export function criticalChance(crit = 0) {
+  return Math.max(0, Math.min(100, Number(crit) || 0));
+}
+export function damageMultiplierForDefense(defense = 0) {
+  const value = Number(defense);
+  const effectiveDefense = Number.isNaN(value) ? 0 : value;
+  return effectiveDefense >= 0
+    ? 100 / (100 + effectiveDefense)
+    : 2 - (100 / (100 - effectiveDefense));
+}
+export function damageReductionPercent(defense = 0) {
+  return (1 - damageMultiplierForDefense(defense)) * 100;
+}
 export function ticksForDuration(duration, interval) {
   if (!Number.isFinite(duration) || !Number.isFinite(interval) || duration < 0 || interval <= 0) return 0;
   return Math.floor(duration / interval + 1e-8);
@@ -38,7 +57,5 @@ export function mitigatedDamage(amount, type, target, time = 0) {
   const temporaryDefense = (target?.defenseModifiers || [])
     .filter(effect => effect.stat === stat && (effect.expires == null || effect.expires > time + 1e-8))
     .reduce((total, effect) => total + effect.modifier, 0);
-  const effectiveDefense = baseDefense + temporaryDefense;
-  const multiplier = effectiveDefense >= 0 ? 100 / (100 + effectiveDefense) : 2 - (100 / (100 - effectiveDefense));
-  return amount * multiplier;
+  return amount * damageMultiplierForDefense(baseDefense + temporaryDefense);
 }

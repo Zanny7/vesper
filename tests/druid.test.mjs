@@ -9,7 +9,7 @@ function cast(g, id, target = 'tank') { assert.equal(g.begin(id, target).ok, tru
 
 test('Druid costs, durations, exact HoT totals and final ticks', () => {
   for (const [id, cost, castTime, duration, interval, direct, tick, count] of [
-    ['rejuvenation', 30, 0, 15, 3, 0, 25, 5], ['regrowth', 40, 1.5, 18, 3, 50, 20, 6], ['wildGrowth', 70, 0, 8, 1, 0, 10, 8],
+    ['rejuvenation', 30, 0, 15, 3, 0, 30, 5], ['regrowth', 40, 1.5, 18, 3, 60, 20, 6], ['wildGrowth', 70, 0, 8, 1, 0, 10, 8],
   ]) {
     const g = setup(), t = g.party[0];
     assert.equal(g.begin(id, 'tank').ok, true);
@@ -38,7 +38,7 @@ test('Swiftmend rejects unprepared targets without spending mana or cooldown', (
   const g = setup(); assert.equal(g.begin('swiftmend', 'tank').ok, false);
   assert.equal(g.mana, CONFIG.mana); assert.equal(g.cooldowns.swiftmend, undefined); assert.equal(g.stats.casts, 0);
   cast(g, 'rejuvenation'); const mana = g.mana; cast(g, 'swiftmend');
-  assert.equal(g.party[0].hp, 161); assert.equal(g.party[0].hots.length, 0);
+  assert.equal(g.party[0].hp, 131); assert.equal(g.party[0].hots.length, 0);
   assert.equal(g.mana, mana - 35); assert.equal(g.cooldowns.swiftmend, g.time + 15);
   cast(g, 'rejuvenation'); assert.match(g.begin('swiftmend', 'tank').reason, /Swiftmend is on cooldown/);
 });
@@ -51,13 +51,13 @@ test('Swiftmend consumes shortest remaining duration, preserving other targets',
   assert.deepEqual(other.party[0].hots.map(h => h.source), ['rejuvenation', 'regrowth']);
   assert.ok(other.party.slice(1).every(p => p.hots.some(h => h.source === 'wildGrowth')));
 });
-test('Nourish heals 80/100/120/140 based on HoTs at completion', () => {
+test('Nourish heals 80/110/140/170 based on HoTs at completion', () => {
   for (let count = 0; count <= 3; count++) {
     const g = setup(); for (const id of ['rejuvenation', 'regrowth', 'wildGrowth'].slice(0, count)) cast(g, id);
     const mana = g.mana; assert.equal(g.begin('nourish', 'tank').ok, true); assert.equal(g.mana, mana);
     assert.equal(g.cast.duration, 2); advance(g, 2);
     assert.ok(Math.abs(g.mana - (Math.min(g.maxMana, mana + 2 * g.healer.manaRegen) - 30)) < 1e-8);
-    assert.equal(g.events.filter(e => e.type === 'heal' && e.spell === 'nourish').at(-1).raw, 80 + count * 20);
+    assert.equal(g.events.filter(e => e.type === 'heal' && e.spell === 'nourish').at(-1).raw, 80 + count * 30);
   }
   const g = setup(); cast(g, 'rejuvenation'); advance(g, 14); cast(g, 'nourish');
   assert.equal(g.events.filter(e => e.type === 'heal' && e.spell === 'nourish').at(-1).raw, 80);

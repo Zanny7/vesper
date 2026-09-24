@@ -1,4 +1,5 @@
 export const CONFIG = { mana: 600, baseMana: 30, manaRegen: 2, step: 1 / 60, enrage: 150 };
+export const ATONEMENT_RATIO = 1;
 export const DAMAGE_TYPES = ['Physical', 'Magic', 'Bleed', 'Chaos'];
 export const SLOTS = {
   healer: ['Weapon', 'Tome', 'Trinket', 'Head', 'Chest', 'Legs'],
@@ -155,13 +156,13 @@ export const ADVENTURES = [
   { id: 'ossuary', name: 'The Sunken Ossuary', kind: 'normal', encounter: 'watcher', from: ['gallery'], x: 63, y: 59, description: 'Two pale archers flank an ancient watcher. Keep the tank steady while tending the others.' },
   { id: 'sanctum', name: 'The Hollow Sanctum', kind: 'boss', encounter: 'warden', from: ['ossuary'], x: 87, y: 34, description: 'The Hollow Warden stands between your party and the dawn. Bring every lesson of the descent to bear.' },
 ];
-// Initial Chapter 1 tuning: roughly 30–55 seconds per fight with the full party alive.
+// Chapter 1 normals last long enough to require triage while preserving route resources.
 // Adds supply light, random damage. The party focuses the primary; adds flee on its defeat.
 export const CHAPTER_ENCOUNTERS = {
-  sentinel: { id: 'sentinel', name: 'The Sepulchral Sentinel', maxHp: 1500, strike: { first: 2.4, every: 2.4, damage: 60 }, adds: [], mechanics: [], lesson: 'Keep Aldric healthy. When he is stable, damage the enemy to convert Atonement into extra healing.' },
-  keeper: { id: 'keeper', name: 'The Cinder Keeper', maxHp: 1700, strike: { first: 2.4, every: 2.4, damage: 62 }, adds: [{ first: 4, every: 4.8, damage: 24 }], mechanics: [], lesson: 'The archer may hit anyone, including you. Switch targets when an ally needs healing, then return to Aldric.' },
-  watcher: { id: 'watcher', name: 'The Bone Watcher', maxHp: 2000, strike: { first: 2.4, every: 2.4, damage: 64 }, adds: [{ first: 4, every: 4.8, damage: 24 }, { first: 6, every: 4.8, damage: 24 }], mechanics: [], lesson: 'Two archers spread wounds across the party. Use Prayer of Healing when several allies are hurt.' },
-  warden: { id: 'warden', name: 'The Hollow Warden', maxHp: 2500, strike: { first: 2.3, every: 2.3, damage: 78 }, adds: [{ first: 4, every: 4.5, damage: 26 }, { first: 6, every: 4.5, damage: 26 }], mechanics: [], lesson: 'The Warden strikes harder and faster. Keep Penance ready for Aldric while watching the whole party.' },
+  sentinel: { id: 'sentinel', name: 'The Sepulchral Sentinel', maxHp: 1100, strike: { first: 2.4, every: 2.4, damage: 35 }, adds: [], mechanics: [], lesson: 'Keep Aldric healthy. When he is stable, damage the enemy to convert Atonement into extra healing.' },
+  keeper: { id: 'keeper', name: 'The Cinder Keeper', maxHp: 450, strike: { first: 2.4, every: 2.4, damage: 62 }, adds: [{ first: 4, every: 4.8, damage: 24 }], mechanics: [], lesson: 'The archer may hit anyone, including you. Switch targets when an ally needs healing, then return to Aldric.' },
+  watcher: { id: 'watcher', name: 'The Bone Watcher', maxHp: 500, strike: { first: 2.4, every: 2.4, damage: 64 }, adds: [{ first: 4, every: 4.8, damage: 24 }, { first: 6, every: 4.8, damage: 24 }], mechanics: [], lesson: 'Two archers spread wounds across the party. Use Prayer of Healing when several allies are hurt.' },
+  warden: { id: 'warden', name: 'The Hollow Warden', maxHp: 1700, strike: { first: 2.3, every: 2.3, damage: 70 }, adds: [{ first: 4, every: 4.5, damage: 23 }, { first: 6, every: 4.5, damage: 23 }], mechanics: [], lesson: 'The Warden strikes harder and faster. Keep Penance ready for Aldric while watching the whole party.' },
 };
 export const PARTY = [
   { id: 'tank', name: 'Aldric', role: 'Guardian', label: 'TANK', maxHp: 600, color: '#78aabc', damage: 8, interval: 2, x: 485, y: 348 },
@@ -171,20 +172,20 @@ export const PARTY = [
   { id: 'priest', name: 'You', role: 'Priest', label: 'HEALER', maxHp: 400, color: '#e2cc94', damage: 0, interval: 2, x: 485, y: 484 },
 ];
 export const SPELLS = [
-  { id: 'flash', name: 'Flash Heal', key: '1', icon: 'spark', cast: 1.5, cost: 1, heal: 100, color: '#e5ce8c', description: 'A quick, focused heal for 100.' },
+  { id: 'flash', name: 'Flash Heal', key: '1', icon: 'spark', cast: 1.5, cost: 1, heal: 90, color: '#e5ce8c', description: 'A quick, focused heal for 90.' },
   { id: 'greater', name: 'Greater Heal', key: '2', icon: 'sun', cast: 3, cost: 1.5, heal: 200, color: '#f2dfad', description: 'An efficient, powerful heal for 200.' },
   { id: 'prayer', name: 'Prayer of Healing', key: '3', icon: 'wings', cast: 3, cost: 2.5, heal: 100, party: true, color: '#9fdfc6', description: 'Restores 100 health to every living ally, including you.' },
   { id: 'penance', name: 'Penance', key: '4', icon: 'bolts', cast: 2, cost: 1, heal: 120, damage: 30, dualTarget: true, channel: true, cooldown: 12, ticks: [{ at: 1, heal: 60, damage: 15 }, { at: 2, heal: 60, damage: 15 }], description: 'Channel two holy bolts. Each heals an ally for 60, or damages the enemy for 15 and triggers Atonement.', color: '#f4c16c' },
-  { id: 'smite', name: 'Smite', key: '5', icon: 'smite', cast: 1.5, cost: 4 / CONFIG.baseMana, heal: 0, damage: 12, enemy: true, atonement: true, description: 'Deal 12 damage to the enemy and heal the most injured ally through Atonement.', color: '#f3df9b' },
-  { id: 'holyFire', name: 'Holy Fire', key: '6', icon: 'holyFire', cast: 0, cost: 8 / CONFIG.baseMana, heal: 0, damage: 11, enemy: true, atonement: true, cooldown: 6, enemyDot: { damage: 25, duration: 10, interval: 2 }, description: 'Deal 11 damage, then 25 over 10s. Recasting carries pending damage into the refreshed effect. All damage triggers Atonement.', color: '#efad69' },
+  { id: 'smite', name: 'Smite', key: '5', icon: 'smite', cast: 1.5, cost: 4 / CONFIG.baseMana, heal: 0, damage: 2.5, enemy: true, atonement: true, description: 'Deal 2.5 damage to the enemy and heal the most injured ally through Atonement.', color: '#f3df9b' },
+  { id: 'holyFire', name: 'Holy Fire', key: '6', icon: 'holyFire', cast: 0, cost: 8 / CONFIG.baseMana, heal: 0, damage: 3, enemy: true, atonement: true, cooldown: 6, enemyDot: { damage: 7, duration: 10, interval: 2 }, description: 'Deal 3 damage, then 7 over 10s. Recasting carries pending damage into the refreshed effect. All damage triggers Atonement.', color: '#efad69' },
 ];
 export const DRUID_HOTS = ['rejuvenation', 'regrowth', 'wildGrowth'];
 export const DRUID_SPELLS = [
-  { id: 'rejuvenation', name: 'Rejuvenation', key: '1', icon: 'leaf', cast: 0, cost: 1, heal: 0, hot: { duration: 15, interval: 3, heal: 25 }, color: '#9cdb95', description: 'Heal for 25 every 3s for 15s (125 total). Refreshing restarts the duration and tick timer.' },
-  { id: 'regrowth', name: 'Regrowth', key: '2', icon: 'sprout', cast: 1.5, cost: 40 / CONFIG.baseMana, heal: 50, hot: { duration: 18, interval: 3, heal: 20 }, color: '#a8e5b9', description: 'Heal for 50 immediately, then 20 every 3s for 18s (170 total). Refreshing restarts the HoT.' },
-  { id: 'swiftmend', name: 'Swiftmend', key: '3', icon: 'bloom', cast: 0, cost: 35 / CONFIG.baseMana, heal: 160, cooldown: 15, consumesHot: DRUID_HOTS, color: '#e0d497', description: 'Heal for 160. Requires and consumes the shortest remaining Rejuvenation, Regrowth, or Wild Growth on this ally.' },
+  { id: 'rejuvenation', name: 'Rejuvenation', key: '1', icon: 'leaf', cast: 0, cost: 1, heal: 0, hot: { duration: 15, interval: 3, heal: 30 }, color: '#9cdb95', description: 'Heal for 30 every 3s for 15s (150 total). Refreshing restarts the duration and tick timer.' },
+  { id: 'regrowth', name: 'Regrowth', key: '2', icon: 'sprout', cast: 1.5, cost: 40 / CONFIG.baseMana, heal: 60, hot: { duration: 18, interval: 3, heal: 20 }, color: '#a8e5b9', description: 'Heal for 60 immediately, then 20 every 3s for 18s (180 total). Refreshing restarts the HoT.' },
+  { id: 'swiftmend', name: 'Swiftmend', key: '3', icon: 'bloom', cast: 0, cost: 35 / CONFIG.baseMana, heal: 130, cooldown: 15, consumesHot: DRUID_HOTS, color: '#e0d497', description: 'Heal for 130. Requires and consumes the shortest remaining Rejuvenation, Regrowth, or Wild Growth on this ally.' },
   { id: 'wildGrowth', name: 'Wild Growth', key: '4', icon: 'grove', cast: 0, cost: 70 / CONFIG.baseMana, heal: 0, party: true, cooldown: 10, hot: { duration: 8, interval: 1, heal: 10 }, color: '#80c9a8', description: 'Heal every living ally for 10 every second for 8s (80 per ally). Each ally has their own HoT.' },
-  { id: 'nourish', name: 'Nourish', key: '5', icon: 'seed', cast: 2, cost: 1, heal: 80, hotBonus: { sources: DRUID_HOTS, amount: 20, max: 3 }, color: '#c8df9b', description: 'Heal for 80, plus 20 per active Druid HoT at completion: 80 / 100 / 120 / 140 healing.' },
+  { id: 'nourish', name: 'Nourish', key: '5', icon: 'seed', cast: 2, cost: 1, heal: 80, hotBonus: { sources: DRUID_HOTS, amount: 30, max: 3 }, color: '#c8df9b', description: 'Heal for 80, plus 30 per active Druid HoT type at completion: 80 / 110 / 140 / 170 healing.' },
 ];
 // Healer identity and spell kits are separate from the companion roster.
 export const HEALERS = {
@@ -215,57 +216,57 @@ const bleed = (id, name, first, every, count, damage, ticks, interval, target = 
 const add = (name, first, every, damage, target = 'random', appearance = 'archer') => ({ name, first, every, damage, target, appearance });
 const fight = (id, name, maxHp, damage, every, appearance, color, mechanics, adds, lesson) => ({ id, name, maxHp, strike: { first: every, every, damage }, appearance, color, mechanics, adds, lesson });
 Object.assign(CHAPTER_ENCOUNTERS, {
-  briar: fight('briar', 'Briarbound Ancient', 1950, 49, 2.7, 'treant', '#89b39a',
+  briar: fight('briar', 'Briarbound Ancient', 500, 49, 2.7, 'treant', '#89b39a',
     [pulse('spores', 'Sporefall', 9, 14, 48)], [], 'Let the first Sporefall land, then restore the party together. Keep Aldric steady between pulses.'),
-  moth: fight('moth', 'The Mourning Moth', 2050, 35, 1.8, 'moth', '#b1a2c5',
+  moth: fight('moth', 'The Mourning Moth', 550, 35, 1.8, 'moth', '#b1a2c5',
     [pulse('dust', 'Grave Dust', 8, 11, 40)], [], 'Frequent light pulses reward efficient group healing. Avoid using Prayer for only one wounded ally.'),
-  boar: fight('boar', 'Gravetusk', 2100, 88, 3.5, 'beast', '#b8a887',
+  boar: fight('boar', 'Gravetusk', 550, 88, 3.5, 'beast', '#b8a887',
     [], [add('Thorn Slinger', 5, 4.5, 30)], 'Heavy, slow tusk blows give you time to prepare. Tend stray thorn wounds between tank heals.'),
-  choir: fight('choir', 'The Root Choir', 2250, 48, 2.5, 'treant', '#7dafa1',
+  choir: fight('choir', 'The Root Choir', 600, 48, 2.5, 'treant', '#7dafa1',
     [pulse('lament', 'Root Lament', 12, 17, 70)], [add('Sapling Guard', 4, 4, 16, 'tank', 'melee')], 'The sapling also attacks Aldric. Save a group heal for the slower, stronger lament.'),
-  mire: fight('mire', 'Mirelight Widow', 2200, 42, 2, 'spider', '#9aa875',
+  mire: fight('mire', 'Mirelight Widow', 600, 42, 2, 'spider', '#9aa875',
     [pulse('mist', 'Mire Mist', 7, 12, 46)], [add('Bog Wisp', 6, 6, 24, 'random', 'wisp')], 'Mist and wisp shots create different wounds. Balance group recovery with focused healing.'),
-  matriarch: fight('matriarch', 'Elder of the Hollow Grove', 2900, 60, 2.4, 'treant', '#a8ce8d',
-    [pulse('bloom', 'Hollow Bloom', 10, 13, 66)], [add('Thorn Slinger', 5, 5, 26)], 'The Elder combines steady tank damage, thorns, and repeated blooms. Prepare Prayer before each pulse and weave damage when the party is stable.'),
-  gatekeeper: fight('gatekeeper', 'The Cinder Gatekeeper', 2200, 55, 2.5, 'knight', '#c69e7e',
+  matriarch: fight('matriarch', 'Elder of the Hollow Grove', 2050, 54, 2.4, 'treant', '#a8ce8d',
+    [pulse('bloom', 'Hollow Bloom', 10, 13, 40)], [add('Thorn Slinger', 5, 5, 23)], 'The Elder combines steady tank damage, thorns, and repeated blooms. Prepare Prayer before each pulse and weave damage when the party is stable.'),
+  gatekeeper: fight('gatekeeper', 'The Cinder Gatekeeper', 600, 55, 2.5, 'knight', '#c69e7e',
     [split('cleave', 'Forked Cleave', 9, 13, 85, 2)], [], 'Two allies are marked before the cleave. Restore the more vulnerable target first.'),
-  twins: fight('twins', 'Ashblade Captain', 2350, 49, 2.2, 'knight', '#c48e80',
+  twins: fight('twins', 'Ashblade Captain', 650, 49, 2.2, 'knight', '#c48e80',
     [split('crosscut', 'Crosscut', 8, 11, 72, 2)], [add('Ashblade Duelist', 5, 5, 22, 'random', 'melee')], 'A duelist adds stray cuts between paired strikes. Keep your next heal flexible.'),
-  ravens: fight('ravens', 'The Cinderwing', 2300, 44, 2.3, 'moth', '#b99783',
+  ravens: fight('ravens', 'The Cinderwing', 650, 44, 2.3, 'moth', '#b99783',
     [split('feathers', 'Searing Feathers', 10, 16, 88, 3)], [], 'Three different allies take the volley. Prayer becomes efficient when all three need healing.'),
-  furnace: fight('furnace', 'Furnace Colossus', 2400, 77, 3.1, 'knight', '#dcaa77',
+  furnace: fight('furnace', 'Furnace Colossus', 700, 77, 3.1, 'knight', '#dcaa77',
     [split('brands', 'Twin Brands', 9, 15, 80, 2), pulse('furnace', 'Furnace Breath', 18, 24, 42)], [], 'Paired brands and occasional party damage overlap. Watch the warnings before committing to a long cast.'),
-  harrier: fight('harrier', 'The Ember Harrier', 2450, 39, 1.7, 'beast', '#b99174',
+  harrier: fight('harrier', 'The Ember Harrier', 750, 39, 1.7, 'beast', '#b99174',
     [split('pounce', 'Divided Pounce', 7, 10, 67, 2)], [], 'Quick strikes leave short recovery windows. Flash Heal can stabilize a low ally before a larger heal.'),
-  tribunal: fight('tribunal', 'The Ashen Tribunal', 2500, 52, 2.5, 'wraith', '#c6ac91',
+  tribunal: fight('tribunal', 'The Ashen Tribunal', 750, 52, 2.5, 'wraith', '#c6ac91',
     [split('judgment', 'Threefold Judgment', 12, 18, 104, 3)], [add('Cinder Witness', 6, 7, 23, 'random', 'wisp')], 'Three heavy wounds arrive together, followed by a long recovery window. Keep some mana in reserve.'),
-  bridge: fight('bridge', 'Ironwake Bulwark', 2550, 83, 3.2, 'knight', '#aa9f8d',
+  bridge: fight('bridge', 'Ironwake Bulwark', 800, 83, 3.2, 'knight', '#aa9f8d',
     [split('shrapnel', 'Shattered Iron', 10, 13, 78, 2)], [add('Shield Retainer', 4, 5, 18, 'tank', 'melee')], 'Tank and split pressure compete for your next cast. Penance can buy time for group recovery.'),
-  bells: fight('bells', 'The Bellbound Shade', 2450, 45, 2.2, 'wraith', '#ab9bbf',
+  bells: fight('bells', 'The Bellbound Shade', 750, 45, 2.2, 'wraith', '#ab9bbf',
     [split('echoes', 'Broken Echoes', 8, 12, 70, 3), pulse('toll', 'Distant Toll', 19, 27, 38)], [], 'Frequent split wounds occasionally meet a full-party toll. Keep Prayer ready for that overlap.'),
-  regent: fight('regent', 'The Cinder Regent', 3200, 62, 2.4, 'knight', '#e2b27e',
-    [split('decree', 'Sundering Decree', 10, 14, 92, 3), pulse('crown', 'Crown of Embers', 20, 25, 48)],
-    [add('Regent Guard', 5, 6, 18, 'tank', 'melee')], 'The Regent combines three-target decrees, tank pressure, and occasional AoE. Recover before the next overlap.'),
-  huntsman: fight('huntsman', 'The Thorn Huntsman', 2350, 53, 2.5, 'vampire', '#b98799',
+  regent: fight('regent', 'The Cinder Regent', 2200, 50, 2.4, 'knight', '#e2b27e',
+    [split('decree', 'Sundering Decree', 10, 14, 65, 3), pulse('crown', 'Crown of Embers', 20, 25, 35)],
+    [add('Regent Guard', 5, 6, 16, 'tank', 'melee')], 'The Regent combines three-target decrees, tank pressure, and occasional AoE. Recover before the next overlap.'),
+  huntsman: fight('huntsman', 'The Thorn Huntsman', 750, 53, 2.5, 'vampire', '#b98799',
     [bleed('barb', 'Barbed Arrow', 8, 15, 1, 19, 5, 2)], [], 'A single ally bleeds for ten seconds. Watch the remaining duration and heal before the next tick.'),
-  hounds: fight('hounds', 'The Sanguine Hound', 2500, 46, 2.2, 'beast', '#b78089',
+  hounds: fight('hounds', 'The Sanguine Hound', 800, 46, 2.2, 'beast', '#b78089',
     [bleed('maul', 'Rending Maul', 9, 15, 1, 22, 4, 2, 'tank')], [add('Hunting Whelp', 5, 5, 22, 'random', 'melee')], 'Aldric takes a heavy bleed while the whelp hunts other allies. Keep strong single-target healing available.'),
-  roses: fight('roses', 'The Weeping Rose', 2450, 44, 2.4, 'treant', '#c28ca7',
+  roses: fight('roses', 'The Weeping Rose', 800, 44, 2.4, 'treant', '#c28ca7',
     [bleed('thorns', 'Rain of Thorns', 9, 17, 3, 10, 6, 2)], [], 'Three lighter bleeds make sustained group recovery efficient. They must be healed through, not dispelled.'),
-  chapel: fight('chapel', 'The Crimson Cantor', 2600, 55, 2.6, 'wraith', '#bf8b9e',
+  chapel: fight('chapel', 'The Crimson Cantor', 850, 55, 2.6, 'wraith', '#bf8b9e',
     [bleed('refrain', 'Crimson Refrain', 8, 16, 2, 15, 5, 2), pulse('hymn', 'Grieving Hymn', 17, 23, 44)], [], 'Two long wounds may still be ticking when the hymn lands. Top up vulnerable allies ahead of it.'),
-  leech: fight('leech', 'The Vein Weaver', 2650, 43, 2, 'spider', '#af879f',
+  leech: fight('leech', 'The Vein Weaver', 850, 43, 2, 'spider', '#af879f',
     [bleed('threads', 'Crimson Threads', 7, 11, 1, 13, 6, 1), split('fangs', 'Forked Fangs', 13, 17, 75, 2)], [], 'Short, rapid ticks demand prompt attention. Fangs may wound two other allies during the bleed.'),
-  procession: fight('procession', 'The Sorrow Bearer', 2650, 50, 2.5, 'vampire', '#aa8399',
+  procession: fight('procession', 'The Sorrow Bearer', 850, 50, 2.5, 'vampire', '#aa8399',
     [bleed('vigil', 'Endless Vigil', 8, 20, 2, 17, 5, 3)], [add('Mourning Acolyte', 6, 5.5, 26, 'random', 'wisp')], 'Long, slow bleeds continue between other attacks. Use the three-second tick rhythm to plan recovery.'),
-  garden: fight('garden', 'The Briar Executioner', 2750, 72, 3, 'knight', '#b9998b',
+  garden: fight('garden', 'The Briar Executioner', 900, 72, 3, 'knight', '#b9998b',
     [bleed('sever', 'Severing Thorns', 9, 16, 2, 16, 5, 2), split('shears', 'Twin Shears', 16, 19, 78, 2)], [], 'Direct cuts can hit while bleeds persist. Prefer the ally with the lowest health and the most incoming damage.'),
-  cryptkeeper: fight('cryptkeeper', 'The Bloodroot Keeper', 2700, 47, 2.3, 'treant', '#b39198',
+  cryptkeeper: fight('cryptkeeper', 'The Bloodroot Keeper', 900, 47, 2.3, 'treant', '#b39198',
     [bleed('roots', 'Bloodroot Bind', 8, 17, 3, 11, 6, 2), pulse('petals', 'Falling Petals', 18, 24, 43)],
     [add('Briar Guard', 5, 6, 15, 'tank', 'melee')], 'Spread bleeds meet occasional AoE while a guard pressures Aldric. Prepare group healing for the overlap.'),
-  duchess: fight('duchess', 'The Thornveiled Duchess', 3450, 58, 2.4, 'vampire', '#dfa0b3',
-    [bleed('veil', 'The Bleeding Veil', 9, 17, 2, 18, 6, 2), split('court', 'Cruel Court', 16, 19, 83, 3), pulse('requiem', 'Scarlet Requiem', 25, 29, 44)],
-    [add('Thornbound Attendant', 6, 6, 22, 'random', 'wisp')], 'Watch bleed durations, answer the court’s split wounds, and prepare for the requiem. Keep yourself and Aldric alive.'),
+  duchess: fight('duchess', 'The Thornveiled Duchess', 3600, 60, 2.4, 'vampire', '#dfa0b3',
+    [bleed('veil', 'The Bleeding Veil', 9, 17, 2, 16, 6, 2), split('court', 'Cruel Court', 16, 19, 70, 3), pulse('requiem', 'Scarlet Requiem', 25, 29, 40)],
+    [add('Thornbound Attendant', 6, 6, 25, 'random', 'wisp')], 'Watch bleed durations, answer the court’s split wounds, and prepare for the requiem. Keep yourself and Aldric alive.'),
 });
 const node = (id, name, encounter, from, x, y, description, kind = 'normal') => ({ id, name, encounter, from, x, y, description, kind });
 const WILDS = [

@@ -58,6 +58,8 @@ body.immersive { overflow: hidden; background: #09151b; }
 .immersive .heading { position: fixed; top: 17px; right: 26px; margin: 0; z-index: 5; }
 .immersive .encounter-controls { gap: 8px; max-width: none; flex-wrap: nowrap; }
 .immersive .encounter-controls .quiet { background: #101d23a8; backdrop-filter: blur(10px); font-size: 10px; }
+.immersive .encounter-speed { background: #101d23a8; backdrop-filter: blur(10px); font-size: 10px; }
+.immersive .encounter-speed select { padding: 7px 0; }
 .immersive .timer { margin: 0 7px 0 0; width: auto; }
 .immersive #timer { font-size: 14px; color: #bdc9be; }
 .immersive .party-panel {

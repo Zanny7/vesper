@@ -1,5 +1,5 @@
-import { CONFIG, PARTY, SPELLS, ENCOUNTER } from './data.js';
-import { adjustedResource, resourceKey, healingParts, mitigatedDamage, hasteMultiplier as hasteFactor, hastedTime, ticksForDuration, CRIT_MULTIPLIER } from './stats.js';
+import { ATONEMENT_RATIO, CONFIG, PARTY, SPELLS, ENCOUNTER } from './data.js';
+import { adjustedResource, resourceKey, healingParts, mitigatedDamage, hasteMultiplier as hasteFactor, hastedTime, effectiveAttackInterval, criticalChance, ticksForDuration, CRIT_MULTIPLIER } from './stats.js';
 
 // Pure fixed-step simulation. Rendering and browser input only consume its state/events.
 export class Combat {
@@ -49,7 +49,7 @@ export class Combat {
   }
   hasteMultiplier(target = this.healer) { return hasteFactor(this.haste(target)); }
   critical(actor) {
-    const chance = Math.max(0, Math.min(100, Number(actor?.crit) || 0));
+    const chance = criticalChance(actor?.crit);
     return chance >= 100 || (chance > 0 && this.random() * 100 < chance);
   }
   hotInterval(hot, target) {
@@ -201,8 +201,8 @@ export class Combat {
   }
   atonement(amount, spell) {
     const injured = this.lowestHealthAlly();
-    if (injured) this.heal(injured, amount * 0.4, 'atonement', { canCrit: false });
-    this.emit('atonement', { target: injured?.id, amount: injured ? amount * 0.4 : 0, spell });
+    if (injured) this.heal(injured, amount * ATONEMENT_RATIO, 'atonement', { canCrit: false });
+    this.emit('atonement', { target: injured?.id, amount: injured ? amount * ATONEMENT_RATIO : 0, spell });
   }
   damageEnemy(amount, spell, triggersAtonement = true, actor = this.healer) {
     if (this.boss.hp <= 0) return 0;
@@ -472,7 +472,7 @@ export class Combat {
       if (p.hp <= 0) continue;
       if (p.damage && this.time >= p.nextAttack) {
         this.damageEnemy(p.damage, p.id, false, p);
-        const interval = hastedTime(p.interval, this.haste(p));
+        const interval = effectiveAttackInterval(p.interval, this.haste(p));
         p.nextAttack += interval; this.emit('attack', { source: p.id });
       }
       for (const dot of p.dots) {

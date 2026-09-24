@@ -1,5 +1,5 @@
 // Global navigation owns screens and utility panels, never combat mechanics.
-export function setupShell({ game, view, resetEncounter, onAbandon = () => {}, onNavigate = () => {}, onEquipmentShortcut = () => {}, onInventoryOpen = () => {}, onUtilityClose = () => {} }) {
+export function setupShell({ game, view, resetEncounter, onAbandon = () => {}, onNavigate = () => {}, onEncounterStart = () => {}, onEquipmentShortcut = () => {}, onInventoryOpen = () => {}, onUtilityClose = () => {} }) {
   const screens = {
     home: document.querySelector('#home-view'),
     adventures: document.querySelector('#adventures-view'),
@@ -9,12 +9,14 @@ export function setupShell({ game, view, resetEncounter, onAbandon = () => {}, o
   };
   const utilitySurface = document.querySelector('#utility-surface');
   const utilityButtons = [...document.querySelectorAll('[data-utility]')];
+  const restrictedUtilities = new Set(['inventory', 'equipment']);
+  const inventoryContent = document.querySelector('#inventory-content');
+  const musicSettings = document.querySelector('#music-settings');
   const navigation = [...document.querySelectorAll('.primary-nav [data-navigate]')];
   const leaveDialog = document.querySelector('#leave-encounter');
   let current = 'home';
   let utility = null;
   let pendingNavigation = null;
-  let resumeOnCancel = false;
 
   const activeEncounter = () => current === 'encounter' && ['running', 'paused'].includes(game.status);
 
@@ -22,15 +24,17 @@ export function setupShell({ game, view, resetEncounter, onAbandon = () => {}, o
     if (utility) onUtilityClose();
     utility = null;
     utilitySurface.hidden = true;
-    for (const button of utilityButtons) if (button.dataset.utility === 'inventory') button.setAttribute('aria-expanded', 'false');
+    for (const button of utilityButtons) button.setAttribute('aria-expanded', 'false');
   }
 
   function refresh() {
     const locked = activeEncounter();
-    if (locked) closeUtility();
+    if (locked && restrictedUtilities.has(utility)) closeUtility();
     for (const button of utilityButtons) {
-      button.disabled = locked;
-      button.title = `${button.dataset.utility === 'inventory' ? 'Inventory' : 'Equipment'}${locked ? ' — unavailable during an encounter' : ''}`;
+      const restricted = restrictedUtilities.has(button.dataset.utility);
+      button.disabled = locked && restricted;
+      const name = button.dataset.utility[0].toUpperCase() + button.dataset.utility.slice(1);
+      button.title = `${name}${locked && restricted ? ' — unavailable during an encounter' : ''}`;
     }
   }
 
@@ -56,8 +60,6 @@ export function setupShell({ game, view, resetEncounter, onAbandon = () => {}, o
   function requestNavigation(destination) {
     if (activeEncounter()) {
       pendingNavigation = destination;
-      resumeOnCancel = game.status === 'running';
-      if (resumeOnCancel) game.pause();
       leaveDialog.showModal();
       return;
     }
@@ -75,14 +77,11 @@ export function setupShell({ game, view, resetEncounter, onAbandon = () => {}, o
   });
   document.querySelector('#stay-encounter').addEventListener('click', () => leaveDialog.close());
   leaveDialog.addEventListener('close', () => {
-    if (pendingNavigation && resumeOnCancel && game.status === 'paused') game.pause();
     pendingNavigation = null;
-    resumeOnCancel = false;
   });
   document.querySelector('#confirm-leave').addEventListener('click', () => {
     const destination = pendingNavigation;
     pendingNavigation = null;
-    resumeOnCancel = false;
     leaveDialog.close();
     onAbandon();
     resetEncounter();
@@ -90,16 +89,18 @@ export function setupShell({ game, view, resetEncounter, onAbandon = () => {}, o
   });
   for (const button of utilityButtons) {
     button.addEventListener('click', () => {
-      if (activeEncounter()) return;
       const next = button.dataset.utility;
+      if (activeEncounter() && restrictedUtilities.has(next)) return;
       if (next === 'equipment') { onEquipmentShortcut(); requestNavigation('team'); return; }
       if (utility === next) return closeUtility();
       closeUtility();
       utility = next;
-      const name = next === 'inventory' ? 'Inventory' : 'Equipment';
+      const name = next === 'settings' ? 'Settings' : next === 'inventory' ? 'Inventory' : 'Equipment';
       document.querySelector('#utility-title').textContent = name;
       document.querySelector('#utility-description').hidden = true;
-      onInventoryOpen();
+      inventoryContent.hidden = next !== 'inventory';
+      musicSettings.hidden = next !== 'settings';
+      if (next === 'inventory') onInventoryOpen();
       utilitySurface.hidden = false;
       button.setAttribute('aria-expanded', 'true');
       document.querySelector('#utility-title').focus({ preventScroll: true });
@@ -118,9 +119,10 @@ export function setupShell({ game, view, resetEncounter, onAbandon = () => {}, o
     }
   }, true);
   navigate('home', false);
-  return { refresh, isEncounter: () => current === 'encounter', enterEncounter(encounter, resources) {
+  return { refresh, isEncounter: () => current === 'encounter', enterEncounter(encounter, resources, track) {
     resetEncounter(encounter, resources);
     navigate('encounter', false);
+    onEncounterStart(track, encounter, resources);
     game.start();
     refresh();
     document.querySelector('#view-toggle').focus({ preventScroll: true });

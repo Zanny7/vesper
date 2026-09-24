@@ -39,7 +39,7 @@ test('Penance tooltip and combat share the 30 Mana, 60-per-bolt baseline', () =>
 test('Spell Power, Haste, ranks and Post-Haste update tooltip values from the active loadout', () => {
   const game = makeGame('priest', { 'quick-remedy': 2, 'measured-casting': 2, 'post-haste': 1, 'threefold-penance': 1 }, { spellPower: 30, haste: 20 });
   assert.match(abilityTooltip(game, spell(game, 'flash')), /1.3s cast · 24 Mana/);
-  assert.match(abilityTooltip(game, spell(game, 'flash')), /Heal one ally for 130/);
+  assert.match(abilityTooltip(game, spell(game, 'flash')), /Heal one ally for 120/);
   assert.match(abilityTooltip(game, spell(game, 'greater')), /2.1s cast · 45 Mana/);
   const penance = abilityTooltip(game, spell(game, 'penance'));
   assert.match(penance, /1.7s channel · 30 Mana/);
@@ -55,14 +55,14 @@ test('equipping and removing a Spell Power weapon refreshes the same combat tool
   const equipment = new Equipment(undefined, () => false, TEST_GEAR);
   const game = new Combat(encounter, () => 0.99, equipment.party('priest'), SPELLS);
   const flash = spell(game, 'flash');
-  assert.match(abilityTooltip(game, flash), /Heal one ally for 100/);
+  assert.match(abilityTooltip(game, flash), /Heal one ally for 90/);
   equipment.acquire('test-priest-censer');
   assert.equal(equipment.equip(partyForHealer('priest').at(-1), 'Weapon', 'test-priest-censer'), true);
   game.setLoadout(equipment.party('priest'), SPELLS);
-  assert.match(abilityTooltip(game, flash), /Heal one ally for 112/);
+  assert.match(abilityTooltip(game, flash), /Heal one ally for 102/);
   assert.equal(equipment.equip(partyForHealer('priest').at(-1), 'Weapon', null), true);
   game.setLoadout(equipment.party('priest'), SPELLS);
-  assert.match(abilityTooltip(game, flash), /Heal one ally for 100/);
+  assert.match(abilityTooltip(game, flash), /Heal one ally for 90/);
 });
 
 test('Druid tooltip tracks HoT ticks, target bonuses, and talent-added behavior', () => {
@@ -88,9 +88,9 @@ test('active DoT rollover appears in the tooltip and matches the next applicatio
   advance(game, 2);
   game.cooldowns.holyFire = 0;
   const profile = game.resolveSpell(holyFire).dot;
-  assert.equal(profile.pending, 20);
-  assert.equal(profile.tick, 9);
-  assert.match(abilityTooltip(game, holyFire), /9 damage every 2s for 10s \(5 ticks, 45 total including 20 carried damage\)/);
+  assert.equal(profile.pending, 5.6);
+  assert.ok(Math.abs(profile.tick - 2.52) < 1e-8);
+  assert.match(abilityTooltip(game, holyFire), /2.5 damage every 2s for 10s \(5 ticks, 12.6 total including 5.6 carried damage\)/);
   assert.equal(game.begin('holyFire', 'boss').ok, true);
   assert.equal(game.boss.dots[0].damage, profile.tick);
 });

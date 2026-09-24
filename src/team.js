@@ -6,7 +6,9 @@ import { setupTeamAbilities } from './team-abilities.js';
 import { equipmentSlot } from './equipment.js';
 import { TALENT_TREES } from './talent-trees.js';
 import { TALENT_ROW_REQUIREMENTS } from './talents.js';
-import { formatNumber } from './stats.js';
+import { criticalChance, damageReductionPercent, displayedDps, effectiveAttackInterval, formatNumber, hastedTime } from './stats.js';
+
+const escapeHtml = value => String(value).replace(/[&<>"']/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch]));
 
 // This screen reads starting character data; inspecting never changes combat.
 export function setupTeam({ paintPortrait, onHealerChange, settings, onAbilitiesChange, equipment, gearUI, equipmentLocked = () => false, talents, onTalentsChange = () => {}, getLoadout = healerId => ({ party: equipment.party(healerId), spells: equipment.healer(healerId).spellBook }) }) {
@@ -61,21 +63,52 @@ export function setupTeam({ paintPortrait, onHealerChange, settings, onAbilities
       card.querySelector('.team-selection').textContent = active ? '◇ Selected' : 'Inspect character →';
     });
     details.style.setProperty('--hero-color', member.color);
-    const stats = member.label !== 'HEALER'
-      ? [['Health', format(member.maxHp)], ['Attack damage', format(member.damage)], ['Attack interval', `${format(member.interval)}s`], ['DPS', format(member.damage / member.interval)], ['Haste', `${format(member.haste || 0)}%`], ['Crit', `${format(member.crit || 0)}%`], ['Armor', format(member.armor)], ['Resistance', format(member.resistance)]]
-      : [['Health', format(member.maxHp)], ['Mana', format(member.maxMana)], ['Mana regeneration', `${format(member.manaRegen)} / second`], ['Spell Power', format(member.spellPower)], ['Haste', `${format(member.haste || 0)}%`], ['Crit', `${format(member.crit || 0)}%`], ['Armor', format(member.armor)], ['Resistance', format(member.resistance)]];
+    const healerMember = member.label === 'HEALER';
+    const haste = Number(member.haste) || 0;
+    const crit = criticalChance(member.crit);
+    const attackInterval = effectiveAttackInterval(member.interval, haste);
+    const dps = displayedDps(member.damage || 0, attackInterval);
+    const defenseText = (value, type) => {
+      const reduction = damageReductionPercent(value);
+      const damageType = type === 'armor' ? 'Physical' : 'Magic';
+      const wording = reduction < 0
+        ? `Takes ${format(-reduction)}% more ${damageType} damage.`
+        : `${format(reduction)}% ${damageType} damage reduction.`;
+      return `${format(value)} ${type === 'armor' ? 'Armor' : 'Resistance'}. ${wording} Bleed and Chaos bypass ${type === 'armor' ? 'Armor' : 'Resistance'}.`;
+    };
+    const statDetails = {
+      Health: `${format(member.maxHp)} maximum Health. Health is how much damage this character can take before dying; reaching 0 Health defeats them.`,
+      Haste: healerMember
+        ? `${format(haste)}% Haste. Haste shortens spell casts and channels while preserving their intended bolt or tick count, and shortens applicable HoT and DoT tick intervals. A representative 2.0s cast takes ${format(hastedTime(2, haste))}s. Haste does not reduce cooldowns.`
+        : `${format(haste)}% Haste. ${haste ? `Haste shortens this character's attack interval from ${format(member.interval)}s to ${format(attackInterval)}s.` : `This character attacks once every ${format(attackInterval)}s; Haste can shorten the interval.`}`,
+      Crit: `${format(crit)}% Crit. Each eligible attack, heal, tick, or bolt rolls independently; a critical event deals or heals for 150% of its normal value.${healerMember ? ' Atonement healing follows its damage event and does not roll a separate Crit.' : ''}`,
+      Armor: defenseText(member.armor, 'armor'),
+      Resistance: defenseText(member.resistance, 'resistance'),
+      ...(healerMember ? {
+        Mana: `${format(member.maxMana)} maximum Mana. The character sheet shows maximum Mana; healing and offensive spells spend Mana.`,
+        'Mana regeneration': `Restores ${format(member.manaRegen)} Mana per second during active encounters. Chapter-map and other out-of-combat screens do not regenerate Mana.`,
+        'Spell Power': `${format(member.spellPower)} Spell Power. It increases spell healing; periodic and mixed spells distribute Spell Power according to their existing spell scaling.`,
+      } : {
+        'Attack damage': `${format(member.damage)} damage per normal attack before the target's mitigation.`,
+        'Attack interval': `Attacks once every ${format(attackInterval)}s at current Haste.${haste ? ` Base interval: ${format(member.interval)}s.` : ''}`,
+        DPS: `${format(dps)} expected baseline sustained normal-attack damage per second, based on attack damage and current attack interval, before target mitigation.`,
+      }),
+    };
+    const stats = healerMember
+      ? [['Health', format(member.maxHp)], ['Mana', format(member.maxMana)], ['Mana regeneration', `${format(member.manaRegen)} / second`], ['Spell Power', format(member.spellPower)], ['Haste', `${format(haste)}%`], ['Crit', `${format(crit)}%`], ['Armor', format(member.armor)], ['Resistance', format(member.resistance)]]
+      : [['Health', format(member.maxHp)], ['Attack damage', format(member.damage)], ['Attack interval', `${format(attackInterval)}s`], ['DPS', format(dps)], ['Haste', `${format(haste)}%`], ['Crit', `${format(crit)}%`], ['Armor', format(member.armor)], ['Resistance', format(member.resistance)]];
     const spellModel = new Combat(undefined, Math.random, party, spells);
     const spellBook = spells.length
       ? `<div class="team-spells">${spells.map(spell => { const [, timing, ...effects] = abilityTooltip(spellModel, spell).split('\n'); return `<article><h4>${spell.name}</h4><p>${effects.join(' ')}</p><dl><div><dt>Current cast and cost</dt><dd>${timing}</dd></div></dl></article>`; }).join('')}</div>`
       : `<p class="team-behavior">${healer.description}</p>`;
     const body = member.damage
-      ? `<p class="team-behavior">${member.label === 'TANK' ? 'Holds the front line and takes the enemy’s heavy strikes.' : 'Attacks the enemy automatically while alive.'} Attacks deal ${format(member.damage)} damage every ${format(member.interval)} seconds (${format(member.damage / member.interval)} DPS) before Haste.</p>`
+      ? `<p class="team-behavior">${member.label === 'TANK' ? 'Holds the front line and takes the enemy’s heavy strikes.' : 'Attacks the enemy automatically while alive.'} Normal attacks deal ${format(member.damage)} damage every ${format(attackInterval)} seconds (${format(dps)} expected DPS) before target mitigation.</p>`
       : `<p class="team-behavior">${healer.description}</p>`;
     const slots = equipment.slots(member);
     const locked = equipmentLocked();
     const column = side => `<div class="paper-slots">${side.map(slot => `<div class="paper-slot">${equipmentSlot(member, slot, equipment.item(member, slot), locked)}<span>${slot}</span></div>`).join('')}</div>`;
     const left = ['Head', 'Chest', 'Legs'], right = slots.filter(slot => !left.includes(slot));
-    details.innerHTML = `<div class="team-detail-heading"><div><span class="eyebrow">${roles[member.label]} · ${member.role}</span><h2 id="team-detail-name" tabindex="-1">${member.name}${member.label === 'HEALER' ? ` · Your ${member.role.toLowerCase()}` : ''}</h2></div><span class="team-baseline">Character sheet</span></div><div class="character-sheet"><section class="paper-doll" aria-label="${member.role} equipment">${column(left)}<div class="paper-portrait"><canvas id="team-portrait" role="img" aria-label="${member.name}, ${member.role}"></canvas><span class="paper-caption">◇ ${member.role} ◇</span></div>${column(right)}</section><section class="character-stats" aria-label="Detailed stats"><h3>Attributes</h3><dl class="team-stat-grid">${stats.map(([label, value]) => `<div><dt>${label}</dt><dd>${value}</dd></div>`).join('')}</dl><p class="stat-note">Includes equipment bonuses.</p></section></div>${locked ? '<p>Equipment is locked during combat.</p>' : ''}${body}`;
+    details.innerHTML = `<div class="team-detail-heading"><div><span class="eyebrow">${roles[member.label]} · ${member.role}</span><h2 id="team-detail-name" tabindex="-1">${member.name}${member.label === 'HEALER' ? ` · Your ${member.role.toLowerCase()}` : ''}</h2></div><span class="team-baseline">Character sheet</span></div><div class="character-sheet"><section class="paper-doll" aria-label="${member.role} equipment">${column(left)}<div class="paper-portrait"><canvas id="team-portrait" role="img" aria-label="${member.name}, ${member.role}"></canvas><span class="paper-caption">◇ ${member.role} ◇</span></div>${column(right)}</section><section class="character-stats" aria-label="Detailed stats"><h3>Attributes</h3><dl class="team-stat-grid">${stats.map(([label, value]) => `<div class="team-stat-row" tabindex="0" data-tooltip="${escapeHtml(statDetails[label])}" aria-label="${escapeHtml(`${label}: ${value}`)}"><dt>${label}</dt><dd>${value}</dd></div>`).join('')}</dl><p class="stat-note">Includes equipment bonuses.</p></section></div>${locked ? '<p>Equipment is locked during combat.</p>' : ''}${body}`;
     paintPortrait(details.querySelector('#team-portrait'), member, 280);
     details.querySelectorAll('[data-equipment-slot]').forEach(control => control.addEventListener('click', () => gearUI.open(control, member, control.dataset.equipmentSlot)));
     document.querySelector('#team-spell-book').innerHTML = spellBook;

@@ -343,11 +343,12 @@ export class Battlefield {
     }
     c.restore();
   }
-  render(state,dt,selected,hovered) {
+  render(state,dt,selected,hovered,gameplayDt=dt) {
     for (const p of state.party) positions[p.id] = { x: p.x, y: p.y - 40 };
     this.healerId = state.party.find(p => p.label === 'HEALER')?.id;
     // Visual time freezes with combat, so impacts and channels stay synchronized on pause.
-    if(state.status==='running'||state.status==='ready')this.clock+=dt;
+    if(state.status==='running')this.clock+=gameplayDt;
+    else if(state.status==='ready')this.clock+=dt;
     const c=this.ctx,t=this.reducedMotion?0:this.clock;
     c.setTransform(this.dpr,0,0,this.dpr,0,0);c.clearRect(0,0,this.width,this.height);
     // The immersive background covers the viewport; actors have their own HUD-safe framing.
