@@ -89,6 +89,11 @@ Flash Heal grants a charge, up to two. Each Greater Heal or Prayer consumes one 
     <p id="preview-question">Start this encounter?</p>
     <div class="dialog-actions"><button class="quiet" id="cancel-preview" autofocus>Cancel</button><button class="primary" id="start-preview">Start encounter →</button></div>
   </dialog>
+  <dialog id="switch-chapter-run" aria-labelledby="switch-run-title" aria-describedby="switch-run-loss switch-run-retained">
+    <span class="eyebrow">CHAPTER RUN</span><h2 id="switch-run-title">Start a new chapter run?</h2>
+    <p id="switch-run-loss"></p><p id="switch-run-retained"></p>
+    <div class="dialog-actions"><button class="quiet" id="cancel-switch-run" autofocus>Cancel</button><button class="primary" id="confirm-switch-run">Start New Run</button></div>
+  </dialog>
   <dialog id="leave-encounter" aria-labelledby="leave-title" aria-describedby="leave-description">
     <span class="eyebrow">LEAVE THE SANCTUM</span><h2 id="leave-title">Abandon this encounter?</h2><p id="leave-description">Leaving ends this encounter. Your chapter route and resources before this fight remain available when you return.</p>
     <div class="dialog-actions"><button class="quiet" id="stay-encounter" autofocus>Stay in encounter</button><button class="primary" id="confirm-leave">Abandon encounter</button></div>

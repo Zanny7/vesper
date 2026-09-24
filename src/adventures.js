@@ -2,6 +2,7 @@ import { healerHint, loadActiveHealer } from './healers.js';
 import { CHAPTERS, CHAPTER_ENCOUNTERS } from './data.js';
 import { chapterComplete, chapterUnlocked, restoreCampaign } from './progression.js';
 import { encounterState } from './chapter-runs.js';
+import { chapterSwitchCopy, createChapterSwitch } from './chapter-switch.js';
 import { itemIcon } from './equipment.js';
 import { mechanicCategory, mechanicIcon } from './mechanic-icons.js';
 export { nodeState, chapterComplete, restoreProgress, awardVictory } from './progression.js';
@@ -28,9 +29,9 @@ function minimumMapExtent(nodes, axis, nodeSize, spacing) {
   return Math.ceil(extent);
 }
 
-export function setupAdventures({ startEncounter, onProgress, runs, getParty, getNormalLoot, awardLoot, onLoot, onVictory }) {
+export function setupAdventures({ startEncounter, onProgress, onRunChange, runs, getParty, getNormalLoot, awardLoot, onLoot, onVictory }) {
   const $ = selector => document.querySelector(selector);
-  const map = $('#adventure-map'), dialog = $('#encounter-preview');
+  const map = $('#adventure-map'), dialog = $('#encounter-preview'), switchDialog = $('#switch-chapter-run');
   // Preserve Chapter I progress when upgrading to the multi-chapter campaign.
   const storageKey = 'vesper-campaign-v3';
   let completed = new Set();
@@ -40,11 +41,26 @@ export function setupAdventures({ startEncounter, onProgress, runs, getParty, ge
   let routes = [], buttons = new Map();
   let active = null;
   let runCompleted = new Set();
-  const currentRun = () => runs.get(chapter, getParty());
+  const currentRun = () => runs.get(chapter, getParty(), chapterComplete(completed, nodes));
+  const chapterSwitch = createChapterSwitch({ runs, getParty, onStart: () => {
+    active = null; selected = nodes[0].id; render(); onRunChange?.(completed);
+  }, confirm: ({ current, next }) => {
+    const copy = chapterSwitchCopy(current, next);
+    $('#switch-run-title').textContent = copy.title;
+    $('#switch-run-loss').textContent = copy.loss;
+    $('#switch-run-retained').textContent = copy.retained;
+    switchDialog.showModal();
+  } });
   function restartChapter() {
-    runs.restart(chapter, getParty()); active = null; selected = chapter.nodes[0].id; render();
+    chapterSwitch.request(chapter);
   }
   $('#restart-chapter').addEventListener('click', restartChapter);
+  $('#cancel-switch-run').addEventListener('click', () => switchDialog.close());
+  switchDialog.addEventListener('close', () => chapterSwitch.cancel());
+  $('#confirm-switch-run').addEventListener('click', () => {
+    chapterSwitch.accept();
+    switchDialog.close();
+  });
   const mechanicsList = $('#detail-mechanics');
   mechanicsList.addEventListener('click', event => {
     const button = event.target.closest('.mechanic-row');
@@ -63,7 +79,7 @@ export function setupAdventures({ startEncounter, onProgress, runs, getParty, ge
     routeObserver.disconnect();
     const run = currentRun();
     runCompleted = new Set(run.completed);
-    selected = nodes.find(node => encounterState(chapter, run, node) === 'available')?.id || nodes.at(-1).id;
+    selected = nodes.find(node => encounterState(chapter, run, node) === 'available')?.id || (run.status === 'pending' ? nodes[0].id : nodes.at(-1).id);
     $('#chapter-title').textContent = chapter.name;
     $('#chapter-view .journey-heading .eyebrow').textContent = `${chapter.number.toUpperCase()} · YOUR NEXT VIGIL`;
     $('#chapter-view .journey-intro').textContent = chapter.id === 'catacombs' ? 'Four encounters. One descent. Keep their light alive.' : `${nodes.length} encounters · ${chapter.routeLength} fights along a route · Choose either path at each fork.`;
@@ -132,8 +148,8 @@ export function setupAdventures({ startEncounter, onProgress, runs, getParty, ge
     for (const path of map.querySelectorAll('[data-route]')) path.classList.toggle('cleared', runCompleted.has(path.dataset.route));
     const node = nodes.find(node => node.id === selected), encounter = CHAPTER_ENCOUNTERS[node.encounter];
     const state = encounterState(chapter, run, node), count = encounter.adds.length;
-    $('#restart-chapter').textContent = run.status === 'complete' ? 'Replay Chapter' : 'Restart chapter';
-    $('#journey-progress').textContent = `${runCompleted.size} / ${nodes.length} cleared this run${chapterComplete(completed, nodes) ? ' · Previously completed' : ''}`;
+    $('#restart-chapter').textContent = run.status === 'complete' ? 'Replay Chapter' : run.status === 'pending' ? 'Start Chapter' : 'Restart chapter';
+    $('#journey-progress').textContent = run.status === 'pending' ? 'No run started' : run.status === 'complete' && !runCompleted.size ? 'Chapter completed · No active run' : `${runCompleted.size} / ${nodes.length} cleared this run${chapterComplete(completed, nodes) ? ' · Previously completed' : ''}`;
     $('#detail-type').textContent = `${node.kind === 'boss' ? 'Chapter Boss' : 'Encounter'} · ${nodes.indexOf(node) + 1} / ${nodes.length}`;
     $('#detail-title').textContent = node.name;
     $('#detail-description').textContent = node.description;
@@ -150,8 +166,8 @@ export function setupAdventures({ startEncounter, onProgress, runs, getParty, ge
       ? loot.map(item => `<button type="button" class="loot-item gear-slot is-equipped" data-item-id="${item.id}" aria-label="${item.name}, item level ${item.itemLevel}">${itemIcon(item)}</button>`).join('')
       : '<p class="empty-loot">No eligible normal loot remains.</p>';
     $('#preview-encounter').disabled = state !== 'available';
-    $('#preview-encounter').textContent = run.status === 'complete' ? 'Replay Chapter to begin' : state === 'locked' ? 'Encounter locked' : state === 'completed' ? 'Cleared this run' : 'Prepare encounter →';
-    $('#detail-state').textContent = run.status === 'complete' ? 'Chapter complete. Choose Replay Chapter to begin a new run from the start.' : state === 'locked'
+    $('#preview-encounter').textContent = run.status === 'complete' ? 'Replay Chapter to begin' : run.status === 'pending' ? 'Start Chapter to begin' : state === 'locked' ? 'Encounter locked' : state === 'completed' ? 'Cleared this run' : 'Prepare encounter →';
+    $('#detail-state').textContent = run.status === 'complete' ? 'Chapter complete. Choose Replay Chapter to begin a new run from the start.' : run.status === 'pending' ? 'Choose Start Chapter to begin a fresh run from this chapter’s first encounter.' : state === 'locked'
       ? `Complete ${node.from.map(id => nodes.find(item => item.id === id).name).join(' or ')} in this run first.`
       : state === 'completed'
         ? node.kind === 'boss' ? 'Chapter complete. Your party can start the next chapter.' : 'Health and Mana carry into the next encounter. Choose your path.'
@@ -167,7 +183,7 @@ export function setupAdventures({ startEncounter, onProgress, runs, getParty, ge
   $('#cancel-preview').addEventListener('click', () => dialog.close());
   $('#start-preview').addEventListener('click', () => {
     const node = nodes.find(item => item.id === selected);
-    const resources = runs.begin(chapter, node, getParty());
+    const resources = runs.begin(chapter, node, getParty(), chapterComplete(completed, nodes));
     if (!resources) return;
     active = node.id; dialog.close(); startEncounter(node, resources);
   });

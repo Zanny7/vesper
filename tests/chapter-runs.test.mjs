@@ -144,12 +144,13 @@ test('stale failed and impossible active saves normalize to playable starts', ()
     [CHAPTERS[2].id]: { status: 'active', completed: ['missing'], resources: null },
   }));
   const runs = new ChapterRuns(storage);
-  for (const current of CHAPTERS.slice(1, 3)) {
-    const run = runs.get(current, party);
-    assert.equal(run.status, 'active');
-    assert.deepEqual(run.completed, []);
-    assert.equal(encounterState(current, run, current.nodes[0]), 'available');
-  }
+  const first = runs.get(CHAPTERS[1], party);
+  assert.equal(first.status, 'active');
+  assert.deepEqual(first.completed, []);
+  assert.equal(encounterState(CHAPTERS[1], first, CHAPTERS[1].nodes[0]), 'available');
+  assert.equal(runs.get(CHAPTERS[2], party).status, 'pending');
+  runs.restart(CHAPTERS[2], party);
+  assert.equal(encounterState(CHAPTERS[2], runs.get(CHAPTERS[2], party), CHAPTERS[2].nodes[0]), 'available');
 });
 
 test('replay loot preview and reward rolls still exclude owned unique items', () => {

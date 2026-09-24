@@ -238,13 +238,14 @@ const team = setupTeam({ settings: abilitySettings, onAbilitiesChange: () => { b
   resetLoadout(activeHealerId);
   buildHealerUI(); prepareEncounterUI(); scene.reset(); renderUI(); team.refresh();
 } });
-const chapters = setupChapters({ openChapter: chapter => { if (adventures.openChapter(chapter)) shell.openChapter(); } });
+const chapters = setupChapters({ openChapter: chapter => { if (adventures.openChapter(chapter)) shell.openChapter(); }, activeChapter: () => runs.activeChapter() });
 const adventures = setupAdventures({
   runs,
   getParty: () => party(activeHealerId),
   getNormalLoot: node => eligibleNormalLootForEncounter(node.encounter, equipment.ownedIds, activeHealerId),
   startEncounter: (node, resources) => { shell.enterEncounter(CHAPTER_ENCOUNTERS[node.encounter], resources, soundtrack.select(node)); renderUI(); },
   onProgress: completed => { talents.migrateLegacyCampaign(activeHealerId, completed); chapters.refresh(completed); },
+  onRunChange: completed => chapters.refresh(completed),
   onVictory: (node, chapter) => talents.awardEncounter(activeHealerId, chapter, node),
   awardLoot: node => {
     const rewards = rollNormalLoot(NORMAL_LOOT_TABLES[node.encounter], equipment.ownedIds, activeHealerId);

@@ -1,4 +1,4 @@
-import { CONFIG } from './data.js';
+import { CHAPTERS, CONFIG } from './data.js';
 import { nodeState, restoreProgress, chapterComplete } from './progression.js';
 import { adjustedResource, resourceKey } from './stats.js';
 
@@ -28,25 +28,38 @@ export class ChapterRuns {
     try { const saved = JSON.parse(storage?.getItem(storageKey)); if (saved && typeof saved === 'object' && !Array.isArray(saved)) this.runs = saved; } catch { /* Start clean if the save is unreadable. */ }
     // An interrupted fight ends the attempt. The next chapter entry starts fresh.
     for (const [id, run] of Object.entries(this.runs)) {
-      if (!run || typeof run !== 'object') { delete this.runs[id]; continue; }
-      if (run.inEncounter) this.runs[id] = { status: 'failed', completed: [], resources: null, inEncounter: null };
+      const chapter = CHAPTERS.find(candidate => candidate.id === id);
+      if (!chapter || !run || typeof run !== 'object' || run.inEncounter || run.status === 'failed') { delete this.runs[id]; continue; }
+      run.completed = [...restoreProgress(run.completed, chapter.nodes)];
+      run.status = chapterComplete(new Set(run.completed), chapter.nodes) ? 'complete' : 'active';
+      if (run.status === 'active' && !run.resources) delete this.runs[id];
     }
+    // Legacy saves could hold several active runs. Keep the most advanced one;
+    // ties go to the earlier chapter. Other attempts are discarded, never rewards.
+    const active = CHAPTERS.filter(chapter => this.runs[chapter.id]?.status === 'active');
+    active.sort((a, b) => this.runs[b.id].completed.length - this.runs[a.id].completed.length || CHAPTERS.indexOf(a) - CHAPTERS.indexOf(b));
+    for (const chapter of active.slice(1)) delete this.runs[chapter.id];
     this.save();
   }
   save() { try { this.storage?.setItem(storageKey, JSON.stringify(this.runs)); } catch { /* Session state remains usable. */ } }
-  get(chapter, party) {
+  activeChapter() { return CHAPTERS.find(chapter => this.runs[chapter.id]?.status === 'active') || null; }
+  get(chapter, party, historicallyComplete = false) {
     let run = this.runs[chapter.id];
-    if (!run) return this.restart(chapter, party);
+    if (!run) {
+      if (historicallyComplete) return { status: 'complete', completed: [], resources: fullResources(party), inEncounter: null };
+      return this.activeChapter() ? { status: 'pending', completed: [], resources: fullResources(party), inEncounter: null } : this.restart(chapter, party);
+    }
     run.completed = [...restoreProgress(run.completed, chapter.nodes)];
     const complete = chapterComplete(new Set(run.completed), chapter.nodes);
-    if (run.status === 'failed' || (!complete && !run.resources)) return this.restart(chapter, party);
+    if (run.status === 'failed' || (!complete && !run.resources)) { delete this.runs[chapter.id]; this.save(); return this.get(chapter, party, historicallyComplete); }
     // Historical complete saves must stay closed; stale active saves with a boss clear are closed too.
     run.status = complete ? 'complete' : 'active';
     run.resources = reconcileResources(run.resources, party);
-    if (run.status === 'active' && !run.inEncounter && !chapter.nodes.some(node => encounterState(chapter, run, node) === 'available')) return this.restart(chapter, party);
+    if (run.status === 'active' && !run.inEncounter && !chapter.nodes.some(node => encounterState(chapter, run, node) === 'available')) { delete this.runs[chapter.id]; this.save(); return this.get(chapter, party, historicallyComplete); }
     this.save(); return run;
   }
   restart(chapter, party) {
+    for (const other of CHAPTERS) if (other.id !== chapter.id && this.runs[other.id]?.status === 'active') delete this.runs[other.id];
     const run = { status: 'active', completed: [], resources: fullResources(party), inEncounter: null };
     this.runs[chapter.id] = run; this.save(); return run;
   }
@@ -54,8 +67,8 @@ export class ChapterRuns {
     for (const run of Object.values(this.runs)) if (run?.resources && run.status !== 'failed') run.resources = reconcileResources(run.resources, party);
     this.save();
   }
-  begin(chapter, node, party) {
-    const run = this.get(chapter, party);
+  begin(chapter, node, party, historicallyComplete = false) {
+    const run = this.get(chapter, party, historicallyComplete);
     if (encounterState(chapter, run, node) !== 'available') return null;
     run.inEncounter = node.id; this.save();
     return structuredClone(run.resources);

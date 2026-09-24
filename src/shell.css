@@ -46,7 +46,7 @@
 .music-mute { display: flex; align-items: center; gap: 9px; color: #adbbb2; font-size: 12px; }
 .music-mute input { accent-color: #d2b578; }
 .dialog-actions { display: flex; gap: 12px; justify-content: flex-end; margin-top: 24px; }
-#leave-encounter { width: min(490px, calc(100vw - 30px)); }
+#leave-encounter, #switch-chapter-run { width: min(490px, calc(100vw - 30px)); }
 #encounter-view { padding-bottom: 95px; }
 body.immersive .masthead {
   display: flex; position: fixed; top: 0; left: 0; right: 0; height: 56px;
