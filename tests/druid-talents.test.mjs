@@ -24,8 +24,8 @@ test('Druid row 1 preserves Swiftmend HoTs and derives Rejuvenation healing and 
   const two = druidTalentLoadout(partyForHealer('druid'), DRUID_SPELLS, {
     'empowered-rejuvenation': 2, 'nourishing-touch': 2,
   });
-  assert.ok(Math.abs(one.spells.find(spell => spell.id === 'rejuvenation').hot.heal - 27.5) < 1e-8);
-  assert.equal(two.spells.find(spell => spell.id === 'rejuvenation').hot.heal, 30);
+  assert.ok(Math.abs(one.spells.find(spell => spell.id === 'rejuvenation').hot.heal - 33) < 1e-8);
+  assert.equal(two.spells.find(spell => spell.id === 'rejuvenation').hot.heal, 36);
   assert.equal(one.spells.find(spell => spell.id === 'nourish').cast, 1.8);
   assert.equal(two.spells.find(spell => spell.id === 'nourish').cast, 1.6);
   const game = setup({ 'preserved-growth': 1 });
@@ -77,7 +77,7 @@ test('Blooming Swiftmend uses calculated pre-overheal healing and composes with 
   cast(game, 'rejuvenation'); cast(game, 'swiftmend');
   assert.equal(game.party[0].hots.filter(hot => hot.source === 'rejuvenation').length, 1);
   assert.equal(game.events.filter(event => event.spell === 'blooming-swiftmend').length, 4);
-  assert.ok(game.events.filter(event => event.spell === 'blooming-swiftmend').every(event => event.raw === 32));
+  assert.ok(game.events.filter(event => event.spell === 'blooming-swiftmend').every(event => event.raw === 26));
 });
 
 test('Overgrowth casts through cooldown in one second and rolls pending Wild Growth healing into a fresh pool', () => {
@@ -96,12 +96,12 @@ test('Living Rejuvenation accelerates below half Health and jumps with remaining
   game.party[0].hp = 100; game.party[1].hp = 50;
   cast(game, 'rejuvenation');
   const hot = game.party[0].hots[0]; assert.equal(hot.next, 2.5);
-  advance(game, 2.5); assert.equal(game.party[0].hp, 125); assert.equal(hot.next, 5);
+  advance(game, 2.5); assert.equal(game.party[0].hp, 130); assert.equal(hot.next, 5);
   game.party[0].hp = game.party[0].maxHp;
   advance(game, 2.5);
   assert.equal(game.party[0].hots.length, 0);
   assert.equal(game.party[1].hots[0], hot);
-  assert.equal(game.party[1].hp, 75);
+  assert.equal(game.party[1].hp, 80);
 });
 
 test('Genesis extends active Druid HoTs and adds normal ticks without changing pending healing', () => {

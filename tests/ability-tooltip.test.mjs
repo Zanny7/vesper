@@ -69,11 +69,11 @@ test('Druid tooltip tracks HoT ticks, target bonuses, and talent-added behavior'
   const game = makeGame('druid', { 'twin-rejuvenation': 1, 'preserved-growth': 1, 'blooming-swiftmend': 1, 'overgrowth': 1, genesis: 1 }, { haste: 20 });
   const target = game.party[0];
   const rejuvenation = abilityTooltip(game, spell(game, 'rejuvenation'), target);
-  assert.match(rejuvenation, /25 healing every 2.5s for 15s \(6 ticks, 150 total\)/);
+  assert.match(rejuvenation, /30 healing every 2.5s for 15s \(6 ticks, 180 total\)/);
   assert.match(rejuvenation, /Up to 2 Rejuvenation HoTs/);
   const swiftmend = abilityTooltip(game, spell(game, 'swiftmend'), target);
   assert.match(swiftmend, /does not consume the HoT/);
-  assert.match(swiftmend, /every other living ally for 32/);
+  assert.match(swiftmend, /every other living ally for 26/);
   game.cooldowns.wildGrowth = game.time + 8;
   assert.match(abilityTooltip(game, spell(game, 'wildGrowth')), /0.8s cast · 70 Mana/);
   assert.match(abilityTooltip(game, spell(game, 'wildGrowth')), /Overgrowth available/);

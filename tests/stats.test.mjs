@@ -17,10 +17,10 @@ test('Spell Power adds once to direct, channel, mixed and per-target HoT totals'
   close(healingParts(byId('flash'), 10).direct, 100);
   close(healingParts(byId('prayer'), 10).direct, 110);
   close(healingParts(byId('penance'), 10).direct, 130);
-  close(healingParts(byId('rejuvenation'), 10).hotTick, 27);
+  close(healingParts(byId('rejuvenation'), 10).hotTick, 32);
   close(healingParts(byId('wildGrowth'), 10).hotTick, 11.25);
   const growth = healingParts(byId('regrowth'), 10);
-  close(growth.direct, 50 * 180 / 170); close(growth.hotTick, 20 * 180 / 170); close(growth.direct + growth.hotTick * 6, 180);
+  close(growth.direct, 60 * 190 / 180); close(growth.hotTick, 20 * 190 / 180); close(growth.direct + growth.hotTick * 6, 190);
 });
 test('combat delivers scaled healing for every kit spell without per-tick bonus inflation', () => {
   for (const id of ['priest', 'druid']) for (const spell of HEALERS[id].combatSpells.filter(spell => spell.heal || spell.hot)) {

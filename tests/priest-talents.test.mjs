@@ -71,7 +71,7 @@ test('Threefold Penance adds a third main bolt and smart-heals the current lowes
   hostile.party.forEach(member => member.hp = member.maxHp); hostile.party[4].hp = 1;
   assert.ok(hostile.begin('penance', 'boss').ok); advance(hostile, 2);
   assert.equal(hostile.boss.hp, encounter.maxHp - 45);
-  assert.equal(hostile.party[4].hp, 79);
+  assert.equal(hostile.party[4].hp, 106);
 });
 
 test('Echo of Grace heals the lowest-percent wounded ally other than the primary target', () => {

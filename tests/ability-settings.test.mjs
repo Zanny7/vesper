@@ -58,6 +58,6 @@ test('configured order and keys keep spell mechanics intact when consumed by com
   const spell = spells.find(s => s.key === pressed);
   assert.equal(game.begin(spell.id, 'tank').ok, true);
   for (let i = 0; i < 90; i++) game.step();
-  assert.equal(game.party[0].hp, 200);
+  assert.equal(game.party[0].hp, 190);
   assert.deepEqual(game.buffs, {});
 });

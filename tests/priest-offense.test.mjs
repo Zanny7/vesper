@@ -6,6 +6,7 @@ import { CONFIG } from '../src/data.js';
 const encounter = { name: 'Training', maxHp: 10000, strike: { first: Infinity, every: 3, damage: 0 }, mechanics: [] };
 const advance = (game, seconds) => { for (let i = 0; i < Math.round(seconds / CONFIG.step); i++) game.step(); };
 function setup() { const game = new Combat(encounter); game.start(); game.party.forEach(member => member.nextAttack = Infinity); return game; }
+const close = (actual, expected) => assert.ok(Math.abs(actual - expected) < 1e-8, `${actual} != ${expected}`);
 
 test('Smite costs 4 mana on completion, lands after 1.5s, and Atonement heals lowest health percentage', () => {
   const game = setup(); game.party[0].hp = 400; game.party[1].hp = 200; game.party[4].hp = 180;
@@ -39,16 +40,19 @@ test('Holy Fire deals 3 plus five ticks totaling 7 and every hit triggers Atonem
   assert.equal(game.begin('holyFire', 'tank').ok, true); assert.equal(game.mana, CONFIG.mana - 8);
   assert.equal(game.boss.hp, encounter.maxHp - 3); assert.equal(game.party[4].hp, 103);
   advance(game, 10);
-  assert.equal(game.boss.hp, encounter.maxHp - 10); assert.ok(Math.abs(game.party[4].hp - 110) < 1e-8);
+  close(game.boss.hp, encounter.maxHp - 10);
+  assert.equal(game.events.filter(event => event.type === 'damage' && event.target === 'boss' && event.source === 'holyFire').length, 6);
+  close(game.events.filter(event => event.type === 'damage' && event.target === 'boss' && event.source === 'holyFire').reduce((sum, event) => sum + event.amount, 0), 10);
+  assert.ok(Math.abs(game.party[4].hp - 110) < 1e-8);
   assert.equal(game.boss.dots.length, 0);
 });
 
 test('Holy Fire rollover preserves all pending damage and redistributes the combined pool', () => {
   const game = setup(); game.party[4].hp = 1; game.begin('holyFire', 'boss'); advance(game, 6);
-  assert.equal(game.boss.hp, encounter.maxHp - 7.2); // 3 direct + three 1.4-damage ticks.
+  close(game.boss.hp, encounter.maxHp - 7.2); // 3 direct + three 1.4-damage ticks.
   game.cooldowns.holyFire = 0; game.begin('holyFire', 'boss');
   assert.equal(game.boss.dots[0].remaining, 9.8); // 2.8 pending + a fresh 7.
   advance(game, 10);
-  assert.equal(game.boss.hp, encounter.maxHp - 20); // First direct/ticks + second direct + full rollover pool.
+  close(game.boss.hp, encounter.maxHp - 20); // First direct/ticks + second direct + full rollover pool.
   assert.equal(game.events.filter(event => event.type === 'damage' && event.source === 'holyFire').length, 10);
 });
