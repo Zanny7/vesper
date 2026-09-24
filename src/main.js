@@ -126,7 +126,10 @@ document.addEventListener('keydown',e=>{
 document.addEventListener('visibilitychange',()=>{last=performance.now();accumulator=0;});
 window.addEventListener('blur',()=>{hovered=null;});
 function renderUI(){
-  if (['victory', 'defeat'].includes(game.status)) adventures.recordVictory(game);
+  if (['victory', 'defeat'].includes(game.status)) {
+    const finished = adventures.recordVictory(game);
+    if (game.status === 'defeat' && finished) { shell.openChapter(); return; }
+  }
   shell.refresh();
   for(const frame of frames){
     const p=game.party.find(p=>p.id===frame.dataset.target),percentage=p.hp/p.maxHp*100;
@@ -202,7 +205,7 @@ function renderUI(){
       data[3] = 'Continue to chapter map';
       data[2] += lastLoot.length ? `<div class="loot-awarded"><small>LOOT ACQUIRED</small>${lastLoot.map(item => `<div class="loot-item"><span class="gear-slot is-equipped">${itemIcon(item)}</span><span><strong>${item.name}</strong><small>Item level ${item.itemLevel}</small></span></div>`).join('')}</div>` : '<div class="loot-awarded"><small>NO GEAR FOUND</small></div>';
     }
-    if (game.status === 'defeat') { data[2] += '<br>This chapter run has ended. Restart from its first encounter; permanent unlocks are safe.'; data[3] = 'Return to chapter map'; }
+    if (game.status === 'defeat') { data[2] += '<br>A fresh chapter run is ready at the first encounter. Permanent unlocks are safe.'; data[3] = 'Return to chapter map'; }
     if(data){$('#overlay-eyebrow').textContent=data[0];$('#overlay-title').textContent=data[1];$('#overlay-text').innerHTML=data[2];$('#begin').innerHTML=`${data[3]} <span>→</span>`;}
     const ended=['victory','defeat'].includes(game.status);
     $('#return-to-map').hidden=true; // The primary outcome action now returns to the map.

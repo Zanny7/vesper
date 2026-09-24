@@ -1,6 +1,7 @@
 import { healerHint, loadActiveHealer } from './healers.js';
 import { CHAPTERS, CHAPTER_ENCOUNTERS } from './data.js';
-import { nodeState, chapterComplete, chapterUnlocked, restoreCampaign } from './progression.js';
+import { chapterComplete, chapterUnlocked, restoreCampaign } from './progression.js';
+import { encounterState } from './chapter-runs.js';
 import { itemIcon } from './equipment.js';
 import { mechanicCategory, mechanicIcon } from './mechanic-icons.js';
 export { nodeState, chapterComplete, restoreProgress, awardVictory } from './progression.js';
@@ -60,8 +61,9 @@ export function setupAdventures({ startEncounter, onProgress, runs, getParty, ge
   });
   function buildMap() {
     routeObserver.disconnect();
-    runCompleted = new Set(currentRun().completed);
-    selected = nodes.find(node => nodeState(node, runCompleted) === 'available')?.id || nodes.at(-1).id;
+    const run = currentRun();
+    runCompleted = new Set(run.completed);
+    selected = nodes.find(node => encounterState(chapter, run, node) === 'available')?.id || nodes.at(-1).id;
     $('#chapter-title').textContent = chapter.name;
     $('#chapter-view .journey-heading .eyebrow').textContent = `${chapter.number.toUpperCase()} · YOUR NEXT VIGIL`;
     $('#chapter-view .journey-intro').textContent = chapter.id === 'catacombs' ? 'Four encounters. One descent. Keep their light alive.' : `${nodes.length} encounters · ${chapter.routeLength} fights along a route · Choose either path at each fork.`;
@@ -120,7 +122,7 @@ export function setupAdventures({ startEncounter, onProgress, runs, getParty, ge
   function render() {
     const run = currentRun(); runCompleted = new Set(run.completed);
     for (const node of nodes) {
-      const button = buttons.get(node.id), state = nodeState(node, runCompleted);
+      const button = buttons.get(node.id), state = encounterState(chapter, run, node);
       button.dataset.state = state;
       button.setAttribute('aria-pressed', String(selected === node.id));
       button.querySelector('.node-symbol').textContent = state === 'locked' ? '⊘' : node.kind === 'boss' ? '♜' : '◇';
@@ -129,7 +131,8 @@ export function setupAdventures({ startEncounter, onProgress, runs, getParty, ge
     }
     for (const path of map.querySelectorAll('[data-route]')) path.classList.toggle('cleared', runCompleted.has(path.dataset.route));
     const node = nodes.find(node => node.id === selected), encounter = CHAPTER_ENCOUNTERS[node.encounter];
-    const state = nodeState(node, runCompleted), count = encounter.adds.length;
+    const state = encounterState(chapter, run, node), count = encounter.adds.length;
+    $('#restart-chapter').textContent = run.status === 'complete' ? 'Replay Chapter' : 'Restart chapter';
     $('#journey-progress').textContent = `${runCompleted.size} / ${nodes.length} cleared this run${chapterComplete(completed, nodes) ? ' · Previously completed' : ''}`;
     $('#detail-type').textContent = `${node.kind === 'boss' ? 'Chapter Boss' : 'Encounter'} · ${nodes.indexOf(node) + 1} / ${nodes.length}`;
     $('#detail-title').textContent = node.name;
@@ -146,9 +149,9 @@ export function setupAdventures({ startEncounter, onProgress, runs, getParty, ge
     $('#detail-loot').innerHTML = loot.length
       ? loot.map(item => `<button type="button" class="loot-item gear-slot is-equipped" data-item-id="${item.id}" aria-label="${item.name}, item level ${item.itemLevel}">${itemIcon(item)}</button>`).join('')
       : '<p class="empty-loot">No eligible normal loot remains.</p>';
-    $('#preview-encounter').disabled = run.status !== 'active' || state !== 'available';
-    $('#preview-encounter').textContent = run.status !== 'active' ? 'Restart chapter to continue' : state === 'locked' ? 'Encounter locked' : state === 'completed' ? 'Cleared this run' : 'Prepare encounter →';
-    $('#detail-state').textContent = state === 'locked'
+    $('#preview-encounter').disabled = state !== 'available';
+    $('#preview-encounter').textContent = run.status === 'complete' ? 'Replay Chapter to begin' : state === 'locked' ? 'Encounter locked' : state === 'completed' ? 'Cleared this run' : 'Prepare encounter →';
+    $('#detail-state').textContent = run.status === 'complete' ? 'Chapter complete. Choose Replay Chapter to begin a new run from the start.' : state === 'locked'
       ? `Complete ${node.from.map(id => nodes.find(item => item.id === id).name).join(' or ')} in this run first.`
       : state === 'completed'
         ? node.kind === 'boss' ? 'Chapter complete. Your party can start the next chapter.' : 'Health and Mana carry into the next encounter. Choose your path.'
@@ -156,7 +159,7 @@ export function setupAdventures({ startEncounter, onProgress, runs, getParty, ge
   }
   $('#preview-encounter').addEventListener('click', () => {
     const node = nodes.find(item => item.id === selected);
-    if (currentRun().status !== 'active' || nodeState(node, runCompleted) !== 'available') return;
+    if (encounterState(chapter, currentRun(), node) !== 'available') return;
     $('#preview-title').textContent = node.name; $('#preview-description').textContent = node.description;
     $('#preview-type').textContent = `${node.kind === 'boss' ? 'Chapter Boss' : 'Encounter'} · 5 heroes · Normal`;
     dialog.showModal();
@@ -172,22 +175,22 @@ export function setupAdventures({ startEncounter, onProgress, runs, getParty, ge
   return {
     restartChapter,
     refresh: render,
-    abandon() { if (active && runs.runs[chapter.id]?.inEncounter) { runs.fail(chapter, getParty()); active = null; selected = nodes[0].id; render(); } },
+    abandon() { if (active && runs.runs[chapter.id]?.inEncounter) { runs.abandon(chapter); active = null; render(); } },
     openChapter(next) {
       if (!chapterUnlocked(next, completed)) return false;
       chapter = next; nodes = chapter.nodes; buildMap(); return true;
     },
     recordVictory(game) {
       const node = nodes.find(n => n.id === active);
-      if (!runs.finish(chapter, node, game)) return;
-      if (game.status === 'defeat') { active = null; selected = nodes[0].id; render(); return; }
+      if (!runs.finish(chapter, node, game)) return false;
+      if (game.status === 'defeat') { active = null; selected = nodes[0].id; render(); return true; }
       onVictory?.(node, chapter);
       onLoot?.(awardLoot?.(node) || []);
       completed.add(node.id);
       try { localStorage.setItem(storageKey, JSON.stringify([...completed])); } catch { /* Keep session progress. */ }
       runCompleted = new Set(currentRun().completed);
-      selected = nodes.find(node => node.from.includes(active) && nodeState(node, runCompleted) === 'available')?.id || active;
-      render(); onProgress(completed);
+      selected = nodes.find(node => node.from.includes(active) && encounterState(chapter, currentRun(), node) === 'available')?.id || active;
+      render(); onProgress(completed); return true;
     },
   };
 }
