@@ -16,6 +16,8 @@ const selectedHealers = (process.env.HEALERS || 'druid,priest').split(',');
 const priorFarmingClears = Number(process.env.PRIOR_FARMING_CLEARS ?? 0);
 const skillProfile = process.env.SKILL_PROFILE || 'veryGood';
 const inheritanceModel = process.env.INHERITANCE_MODEL || 'legacy';
+const bossHpScale = Number(process.env.BOSS_HP_SCALE || 1);
+const bossDamageScale = Number(process.env.BOSS_DAMAGE_SCALE || 1);
 if (!['legacy', 'recursive'].includes(inheritanceModel)) throw new Error(`Unknown inheritance model: ${inheritanceModel}`);
 const priestBuilds = [
   {},
@@ -211,7 +213,14 @@ function trial(chapterIndex, healerId, clearCount, seed, variant) {
   if (routeOutcome !== 'victory') return { win: false, routeOutcome, gearCount, equippedCount, routeSeconds };
   const initialMana = resources.mana.current;
   const initialHealth = Object.fromEntries(Object.entries(resources.health).map(([id, value]) => [id, value.current]));
-  const bossEncounter = CHAPTER_ENCOUNTERS[chapter.nodes.find(node => node.kind === 'boss').encounter];
+  const bossEncounter = structuredClone(CHAPTER_ENCOUNTERS[chapter.nodes.find(node => node.kind === 'boss').encounter]);
+  bossEncounter.maxHp *= bossHpScale;
+  bossEncounter.strike.damage *= bossDamageScale;
+  for (const add of bossEncounter.adds || []) add.damage *= bossDamageScale;
+  for (const mechanic of bossEncounter.mechanics || []) {
+    if (mechanic.damage) mechanic.damage *= bossDamageScale;
+    if (mechanic.dot?.damage) mechanic.dot.damage *= bossDamageScale;
+  }
   const boss = fight(bossEncounter, equipment, healerId, random, resources,
     allocations(healerId, chapterIndex, true, variant), skillProfile);
   if (process.env.TRACE_BOSS && seed === 71000 + chapterIndex * 10000 + clearCount * 1000)

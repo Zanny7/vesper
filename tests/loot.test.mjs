@@ -1,7 +1,9 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { CHAPTERS, GEAR } from '../src/data.js';
-import { BOSS_BONUS_LOOT_TABLES, NORMAL_LOOT_TABLES, normalDropCount, rollBossBonusLoot, rollNormalLoot } from '../src/loot.js';
+import { BOSS_BONUS_LOOT_TABLES, NORMAL_LOOT_TABLES, eligibleLootPool, normalDropCount, rollBossBonusLoot, rollNormalLoot } from '../src/loot.js';
+import { routes } from '../scripts/boss-balance.mjs';
+import { auditGearParity } from '../scripts/gear-parity.mjs';
 
 const sequence = values => {
   let index = 0;
@@ -59,6 +61,31 @@ test('owned items are excluded and exhausted pools return fewer rewards without 
   const rewards = rollNormalLoot(table, owned, 'priest', sequence([0.85, 0, 0, 0, 0]));
   assert.deepEqual(rewards.map(item => item.id), [priest.id]);
   assert.deepEqual(rollNormalLoot(table, table, 'priest', sequence([0.85])), []);
+});
+
+test('every pre-boss route gives both healers matching slot opportunities', () => {
+  for (const [chapterIndex, chapter] of CHAPTERS.entries()) for (const route of routes(chapter)) {
+    const slots = ['priest', 'druid'].map(healer => route.flatMap(node =>
+      eligibleLootPool(NORMAL_LOOT_TABLES[node.encounter], [], healer))
+      .filter(item => item.chapter === chapterIndex + 1 && item.owner === healer)
+      .map(item => item.slot));
+    assert.deepEqual(slots[0], slots[1], `Chapter ${chapterIndex + 1}`);
+    assert.ok(slots[0].includes('Weapon'), `Chapter ${chapterIndex + 1} weapon`);
+  }
+});
+
+test('chapter boss normal rewards offer the same healer slot to Priest and Druid', () => {
+  for (const chapter of CHAPTERS) {
+    const boss = chapter.nodes.find(node => node.kind === 'boss');
+    const slots = ['priest', 'druid'].map(healer =>
+      eligibleLootPool(NORMAL_LOOT_TABLES[boss.encounter], [], healer)
+        .filter(item => item.owner === healer).map(item => item.slot));
+    assert.deepEqual(slots[0], slots[1], boss.encounter);
+  }
+});
+
+test('companion reward opportunities are invariant to healer choice', () => {
+  for (const chapter of auditGearParity()) assert.deepEqual(chapter.companionDifferences, [], `Chapter ${chapter.chapter}`);
 });
 
 test('chapter bosses have a hidden, chapter-local bonus pool with one eligible reward', () => {

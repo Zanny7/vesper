@@ -7,16 +7,25 @@ export const NORMAL_DROP_WEIGHTS = Object.freeze({ healer: 0.3, tank: 0.175, rog
 const NORMAL_DROP_WEIGHT_UNITS = Object.freeze({ healer: 3000, tank: 1750, rogue: 1750, mage: 1750, ranger: 1750 });
 const OWNERS = ['priest', 'druid', 'tank', 'rogue', 'mage', 'ranger'];
 
-// Each encounter lists one chapter-appropriate item for every possible recipient.
-// The rotation keeps route rewards distinct while leaving item values in data.js.
+// Healer drops rotate through matching slots at matching encounter depths.
+// Companion rotations remain independent of the active healer.
 export function buildNormalLootTables(chapters = CHAPTERS, catalogue = GEAR) {
   const tables = {};
   for (const [chapterIndex, chapter] of chapters.entries()) {
     const chapterNumber = chapterIndex + 1;
     const byOwner = Object.fromEntries(OWNERS.map(owner => [owner, catalogue.filter(item => item.chapter === chapterNumber && item.owner === owner)]));
+    const depthById = new Map();
+    const depth = node => {
+      if (depthById.has(node.id)) return depthById.get(node.id);
+      const value = node.from.length ? 1 + Math.max(...node.from.map(id => depth(chapter.nodes.find(candidate => candidate.id === id)))) : 0;
+      depthById.set(node.id, value);
+      return value;
+    };
     chapter.nodes.forEach((node, encounterIndex) => {
       tables[node.encounter] = OWNERS.flatMap((owner, ownerIndex) => {
         const items = byOwner[owner];
+        if (owner === 'priest' || owner === 'druid')
+          return items.length ? [items[depth(node) % items.length].id] : [];
         return items.length ? [items[(encounterIndex + ownerIndex) % items.length].id] : [];
       });
     });
