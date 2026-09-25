@@ -48,6 +48,20 @@ test('legacy Priest talent IDs migrate to their redesigned names and persist', (
   assert.equal(persisted.healers.priest.allocations['binding-light'], 2);
 });
 
+test('legacy Preserved Growth point becomes Natural Regeneration without losing the Druid budget', () => {
+  const storage = disk();
+  storage.setItem('vesper-talents-v1', JSON.stringify({ version: 1, healers: { druid: {
+    milestones: Array.from({ length: 8 }, (_, index) => `ch1:${index}`),
+    allocations: { 'preserved-growth': 1, 'empowered-rejuvenation': 2, 'nourishing-touch': 1 },
+  } } }));
+  const talents = new TalentProgression(storage, TALENT_TREES);
+  assert.deepEqual(talents.state('druid').allocations, {
+    'natural-regeneration': 1, 'empowered-rejuvenation': 2, 'nourishing-touch': 1,
+  });
+  assert.equal(JSON.parse(storage.getItem('vesper-talents-v1')).healers.druid.allocations['preserved-growth'], undefined);
+  assert.equal(TALENT_TREES.druid.reduce((sum, talent) => sum + (talent.maxRank || 1), 0), 17);
+});
+
 test('earned points, ranks and row rules remain independent per healer', () => {
   const storage = disk(), talents = new TalentProgression(storage, trees); award(talents, 'priest', 8); award(talents, 'druid', 1);
   assert.equal(talents.spend('priest', 'priest-4').ok, false);

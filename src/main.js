@@ -177,7 +177,10 @@ function renderUI(){
     const disabled = String(game.status!=='running'||unavailable||game.mana<manaCost||(spell.consumesHot&&!game.activeHots(target,spell.consumesHot).length));
     if (button.getAttribute('aria-disabled') !== disabled) button.setAttribute('aria-disabled', disabled);
     const tooltip = abilityTooltip(game, spell, target);
-    if (button.dataset.tooltip !== tooltip) button.dataset.tooltip = tooltip;
+    if (button.dataset.tooltip !== tooltip) {
+      button.dataset.tooltip = tooltip;
+      button.setAttribute('aria-label', tooltip.replaceAll('\n', ' '));
+    }
     button.classList.toggle('active',cast?.spell.id===spell.id);
   }
   $('#strike-countdown').textContent = `· ${Math.max(0, Math.ceil(game.nextStrike-game.time))}s`;

@@ -5,7 +5,7 @@ import { Combat } from '../src/combat.js';
 import { DRUID_SPELLS, partyForHealer, SPELLS } from '../src/data.js';
 import { priestTalentLoadout } from '../src/priest-talents.js';
 const sources = effects => effects.map(e => e.source);
-test('display follows real HoT application, refresh, consumption and expiry', () => {
+test('display follows real HoT application, refresh, preservation and expiry', () => {
   const g = new Combat({ name: 'Test', maxHp: 99999, strike: { first: Infinity }, mechanics: [] }, () => 0, partyForHealer('druid'), DRUID_SPELLS);
   g.start(); g.begin('wildGrowth', 'tank'); g.begin('regrowth', 'tank');
   for (let i = 0; i < 90; i++) g.step();
@@ -14,7 +14,7 @@ test('display follows real HoT application, refresh, consumption and expiry', ()
   assert.deepEqual(sources(partyEffects(t, g.time).helpful), ['rejuvenation', 'regrowth', 'wildGrowth']);
   assert.equal(partyEffects(t, g.time).helpful.length, g.activeHots(t).length);
   g.begin('swiftmend', 'tank');
-  assert.deepEqual(sources(partyEffects(t, g.time).helpful), ['rejuvenation', 'regrowth']);
+  assert.deepEqual(sources(partyEffects(t, g.time).helpful), ['rejuvenation', 'regrowth', 'wildGrowth']);
   assert.deepEqual(sources(partyEffects(g.party[1], g.time).helpful), ['wildGrowth']);
   for (let i = 0; i < 120; i++) g.step();
   g.begin('rejuvenation', 'tank');

@@ -15,14 +15,15 @@ export function partyEffects(member, time) {
   return member.hp > 0 ? { helpful, negative } : { helpful: [], negative: [] };
 }
 const key = e => e.source || e.id || e.name;
-const order = e => e.displayOrder ?? (DRUID_HOTS.includes(e.source) ? DRUID_HOTS.indexOf(e.source) : 100);
+const order = e => e.displayOrder ?? (DRUID_HOTS.includes(e.source) ? DRUID_HOTS.indexOf(e.source) : e.source === 'nourish' ? 3 : e.source === 'cenarionWardArmed' ? 4 : e.source === 'cenarionWard' ? 5 : 100);
 const pressure = e => (e.damage || 0) / (e.interval || 1);
 const escape = text => String(text).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 export function effectDescription(effect, time) {
   const modifier = effect.defenseModifier
     ? ` (${effect.modifier > 0 ? '+' : ''}${formatNumber(effect.modifier)} ${effect.stat === 'armor' ? 'Armor' : 'Resistance'})`
     : '';
-  return `${effect.name}${modifier}${effect.expires == null ? '' : `: ${Math.max(0, Math.ceil(effect.expires - time - 1e-8))}s remaining`}`;
+  const pool = effect.pool ? ` (${formatNumber(effect.heal * effect.ticks)} healing in ${effect.ticks} remaining ticks)` : '';
+  return `${effect.name}${modifier}${pool}${effect.expires == null ? '' : `: ${Math.max(0, Math.ceil(effect.expires - time - 1e-8))}s remaining`}`;
 }
 export function effectMarkup(effects, time) {
   return effects.map(effect => `<span class="frame-effect" data-effect="${escape(key(effect))}" title="${escape(effectDescription(effect, time))}">${effectGlyph(effect)}${effect.expires == null ? '' : `<b>${Math.max(0, Math.ceil(effect.expires - time - 1e-8))}</b>`}</span>`).join('');

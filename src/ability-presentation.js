@@ -1,5 +1,5 @@
 // Presentation helpers; these do not alter bindings or combat timing.
-import { formatNumber } from './stats.js';
+import { formatNumber, ticksForDuration } from './stats.js';
 import { ATONEMENT_RATIO } from './data.js';
 export function compactKeybind(binding) {
   const aliases = { shift: 'S', ctrl: 'C', control: 'C', alt: 'A', option: 'A', meta: 'M', cmd: 'M', command: 'M', win: 'M', super: 'M' };
@@ -40,17 +40,21 @@ export function abilityTooltip(game, spell, target = null) {
   }
   if (spell.bindingLight) lines.push(`Binding Light: after Flash Heal, heal the lowest-health eligible other living ally for ${n(spell.bindingLight.ratio * 100)}% of this target’s effective heal; overhealing does not count.`);
   if (spell.earlyMercy) lines.push(`Early Mercy: deliver ${n(spell.earlyMercy.ratio * 100)}% of Greater Heal halfway through this cast and the remainder at completion. Mana is charged once when casting starts; interrupting before halfway grants no heal, and interrupting afterward keeps the provisional heal. Mana is not refunded.`);
-  if (value.hot) lines.push(`HoT: ${n(value.hot.tick)} healing every ${n(value.hot.interval)}s for ${n(value.hot.duration)}s (${value.hot.ticks} ticks, ${n(value.hot.tick * value.hot.ticks)} total${spell.party ? ' per ally' : ''}${value.hot.pending ? ` including ${n(value.hot.pending)} carried healing` : ''}).`);
-  if (spell.hot && !spell.overgrowth) lines.push(spell.party ? 'Each living ally receives a separate HoT; recasting refreshes its duration.' : 'Recasting refreshes the HoT duration and tick timer.');
+  if (value.hot) lines.push(`HoT: ${n(value.hot.tick)} healing every ${n(value.hot.interval)}s for ${n(value.hot.duration)}s (${value.hot.ticks} ticks, ${n(value.hot.tick * value.hot.ticks)} total${spell.party ? ' per ally' : ''}${value.hot.pending ? ` including ${n(value.hot.pending)} unspent healing` : ''}).`);
+  if (spell.hot?.pool) lines.push('Recasting adds new healing to the unspent Nourish pool on this ally, then delivers the pool over a refreshed 4-second window. Nourish is not a qualifying HoT type for its own bonus.');
+  else if (spell.hot && !spell.overgrowth) lines.push(spell.party ? 'Each living ally receives a separate HoT; recasting refreshes its duration.' : 'Recasting refreshes the HoT duration and tick timer.');
   if (value.dot) lines.push(`DoT: ${n(value.dot.tick)} damage every ${n(value.dot.interval)}s for ${n(value.dot.duration)}s (${value.dot.ticks} ticks, ${n(value.dot.tick * value.dot.ticks)} total${value.dot.pending ? ` including ${n(value.dot.pending)} carried damage` : ''}); recasting carries pending damage.`);
   if (spell.consumesHot) lines.push(`Requires ${spell.consumesHot.map(id => ({ rejuvenation: 'Rejuvenation', regrowth: 'Regrowth', wildGrowth: 'Wild Growth' })[id] || id).join(', ')} on the ally; ${spell.preserveHot ? 'does not consume the HoT' : 'consumes the shortest remaining HoT'}.`);
-  if (spell.bloom) lines.push(`Also heals every other living ally for ${n(value.direct * spell.bloom.ratio)}.`);
+  if (spell.bloom) lines.push(`Also heals the ${spell.bloom.targets} lowest-health-percentage other living allies for ${n(value.direct * spell.bloom.ratio)} each (${n(spell.bloom.ratio * 100)}% of the primary raw heal).`);
   if (spell.hot?.maxInstances) lines.push(`Up to ${spell.hot.maxInstances} ${spell.name} HoTs may coexist on one ally.`);
-  if (spell.hot?.living) lines.push('Ticks faster on an ally below 50% Health; at full Health, a tick can move the HoT to the most-injured eligible ally. Duration stays the same.');
-  if (spell.passingBloom) lines.push(`Replacing Regrowth moves the old HoT to the lowest-health eligible ally.`);
-  if (spell.hotBonus && value.hotBonus.current !== null) lines.push(`Selected ally currently has ${value.hotBonus.current} qualifying HoT types: ${n(value.direct)} healing.`);
-  if (spell.hotBonus) lines.push('Qualifying HoTs are counted when the cast completes.');
-  if (spell.overgrowth) lines.push(value.overgrowth ? 'Overgrowth: usable during cooldown with a 1s base cast; carries remaining HoT healing into the refresh.' : 'Overgrowth: may also be cast during cooldown with a 1s base cast and a carried-over HoT.');
+  if (spell.hot?.living) lines.push('Ticks 20% faster on an ally below 50% Health; at full Health, a tick moves the HoT with its remaining healing to the lowest-health-percentage wounded living ally with room for Rejuvenation.');
+  if (spell.passingBloom) lines.push('Replacing Regrowth moves the old HoT to the lowest-health-percentage wounded living ally without Regrowth, refreshed to 9s (3 normal ticks); otherwise the old HoT ends.');
+  if (spell.hotBonus && value.hotBonus.current !== null) lines.push(`Selected ally currently has ${value.hotBonus.current} qualifying HoT ${value.hotBonus.current === 1 ? 'type' : 'types'}: ${n(spell.hot?.pool ? value.hot.tick * value.hot.ticks - value.hot.pending : value.direct)} new healing.`);
+  if (spell.hotBonus) lines.push(`Base ${n(spell.hot?.heal * spell.hot.duration / spell.hot.interval || spell.heal)} healing, plus ${n(spell.hotBonus.amount)} per qualifying type (up to ${spell.hotBonus.max}).`);
+  if (spell.hotBonus) lines.push('Qualifying types are Rejuvenation, Regrowth, and Wild Growth, counted at cast completion; Ward does not count.');
+  if (spell.nourishingTouch) lines.push(`Nourishing Touch: completion adds ${spell.nourishingTouch.extraTicks} normal-strength ${spell.nourishingTouch.extraTicks === 1 ? 'tick' : 'ticks'} to every active Rejuvenation, Regrowth, Wild Growth, and triggered Ward HoT on the target, without a cap. Nourish itself is not extended.`);
+  if (spell.overgrowth) lines.push(value.overgrowth ? 'Overgrowth: usable during cooldown with a 1s base cast; carries remaining HoT healing into the refresh.' : 'Overgrowth: during cooldown, use a 1s base cast and carry remaining HoT healing.');
+  if (spell.overgrowth) lines.push('When a Wild Growth tick leaves an ally above 90% Health, half its remaining healing transfers to the lowest-health-percentage wounded other living ally; existing Wild Growth pools absorb it. Mana cost is 20% lower.');
   if (value.hot?.pending && value.duration > 0) lines.push('Carried healing shown is available now and may change during the cast.');
   if (spell.echoOfGrace) lines.push(`Also heals the lowest-health other wounded ally for ${n(value.direct * spell.echoOfGrace.ratio)}.`);
   if (value.lingering) lines.push(`Lingering Prayer: if a target remains below ${n(spell.lingeringPrayer.threshold * 100)}% Health after this direct heal, add ${n(value.lingering.tick)} healing every ${n(value.lingering.interval)}s for ${n(value.lingering.duration)}s (${value.lingering.ticks} ticks, ${n(value.lingering.tick * value.lingering.ticks)} total for that target).`);
@@ -60,11 +64,17 @@ export function abilityTooltip(game, spell, target = null) {
   if (value.postHaste) lines.push(`Post-Haste: this cast uses one stack, reducing Mana cost and cast time by ${n(spell.postHaste.reduction * 100)}%.`);
   if (spell.sanctuary) lines.push(`Reduce party damage taken by ${n(spell.sanctuary.reduction * 100)}% for ${n(spell.sanctuary.duration)}s.`);
   if (spell.divineFervor) lines.push(`Grant the Priest ${n(spell.divineFervor.speed * 100)}% Haste and reduce all spell Mana costs by ${n(spell.divineFervor.manaReduction * 100)}% for ${n(spell.divineFervor.duration)}s. This cost reduction multiplies with Post-Haste.`);
-  if (spell.ward) lines.push(`Ward an ally for ${n(spell.ward.duration)}s; the next damage grants ${n(spell.ward.healingReceived * 100)}% more healing received for ${n(spell.ward.triggerDuration)}s.`);
-  if (spell.genesis) lines.push(`Extend active Druid HoTs by ${n(spell.genesis.extension)}s, adding normal ticks.`);
+  if (spell.ward) {
+    const wardInterval = game.hotInterval({ baseInterval: spell.ward.hot.interval }, target || game.healer);
+    const wardTicks = ticksForDuration(spell.ward.hot.duration, wardInterval);
+    const wardTotal = spell.ward.hot.heal * ticksForDuration(spell.ward.hot.duration, spell.ward.hot.interval) + Math.max(0, game.spellPower);
+    lines.push(`Arm an ally for ${n(spell.ward.duration)}s. Casts on an ally at or below ${n(spell.ward.threshold * 100)}% Health trigger immediately; otherwise damage that brings them to or below the threshold triggers a HoT of ${n(wardTotal / wardTicks)} every ${n(wardInterval)}s for ${n(spell.ward.hot.duration)}s (${wardTicks} ticks, ${n(wardTotal)} total). Expiry without a trigger gives no heal.`);
+    lines.push('Recasting on an armed ally replaces the armed Ward. Triggered HoTs from separate charges coexist.');
+  }
+  if (spell.genesis) lines.push(`Restore active Rejuvenation, Regrowth, and Wild Growth HoTs to full duration and make them tick ${n(spell.genesis.speed * 100)}% faster for ${n(spell.genesis.duration)}s. Nourish pools and Ward HoTs are excluded.`);
   if (spell.cooldown) lines.push(`${n(spell.cooldown)}s cooldown${value.overgrowth ? ' (base cooldown continues)' : ''}.`);
   const charges = game.availableCharges(spell.id);
-  if (charges !== undefined) lines.push(`${charges}/${spell.charges} charges.`);
+  if (charges !== undefined) lines.push(`${charges}/${spell.charges} charges; one recharges every ${n(spell.cooldown)}s.`);
   const remaining = Math.max(0, (game.cooldowns[spell.id] || 0) - game.time);
   if (remaining > 0) lines.push(value.overgrowth ? `Overgrowth available; base cooldown ${n(remaining)}s remaining.` : `Ready in ${n(remaining)}s.`);
   return lines.join('\n');

@@ -3,6 +3,7 @@ import { compactKeybind } from './ability-presentation.js';
 const icons = {
   wound: '<path d="m25 3-15 17h11l-7 17L32 16H20ZM5 8l4 3M32 30l4 3"/>',
   shield: '<path d="m20 3 14 5v12c0 8-8 14-14 17C14 34 6 28 6 20V8ZM20 11v17M12 19h16"/>',
+  wardBloom: '<path d="M20 4v29M20 18C11 5 6 8 7 19c1 5 7 6 13 6M20 18c9-13 14-10 13 1-1 5-7 6-13 6M11 34h18M15 30l5 4 5-4"/>',
   leaf: '<path d="M8 32C-1 13 17 5 34 5c0 19-9 32-26 27ZM8 32 28 11M16 24l-1-9m8 2 8 1"/>',
   sprout: '<path d="M20 36V18M20 25C5 25 5 13 5 10c12 0 15 7 15 15ZM20 18C20 7 28 4 36 4c0 10-6 16-16 14M10 36h20"/>',
   bloom: '<path d="M20 4c8 5 6 10 0 16-6-6-8-11 0-16ZM36 20c-5 8-10 6-16 0 6-6 11-8 16 0ZM20 36c-8-5-6-10 0-16 6 6 8 11 0 16ZM4 20c5-8 10-6 16 0-6 6-11 8-16 0Z"/>',

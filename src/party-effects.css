@@ -7,7 +7,7 @@
 .frame-health { position: absolute; left: 34%; width: 30%; top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; align-items: center; line-height: 1.3; font-variant-numeric: tabular-nums; white-space: nowrap; text-shadow: 0 1px 2px #000; }
 .frame-health .hp-percent { font-size: 12px; }
 .frame-health .hp-values { font-size: 8px; }
-.frame-effects { position: absolute; right: 3px; display: flex; gap: 2px; pointer-events: auto; }
+.frame-effects { position: absolute; right: 3px; display: flex; flex-wrap: wrap; justify-content: flex-end; max-width: 35%; gap: 2px; pointer-events: auto; }
 .frame-effects-helpful { bottom: 2px; }
 .frame-effects-negative { top: 2px; }
 .frame-effect { width: 19px; height: 20px; position: relative; border: 1px solid #95bc8c80; border-radius: 3px; background: #0a1719ee; color: #c8e4bb; overflow: hidden; }

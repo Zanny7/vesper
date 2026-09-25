@@ -68,18 +68,18 @@ test('equipping and removing a Spell Power weapon refreshes the same combat tool
 });
 
 test('Druid tooltip tracks HoT ticks, target bonuses, and talent-added behavior', () => {
-  const game = makeGame('druid', { 'twin-rejuvenation': 1, 'preserved-growth': 1, 'blooming-swiftmend': 1, 'overgrowth': 1, genesis: 1 }, { haste: 20 });
+  const game = makeGame('druid', { 'twin-rejuvenation': 1, 'blooming-swiftmend': 1, 'overgrowth': 1, genesis: 1 }, { haste: 20 });
   const target = game.party[0];
   const rejuvenation = abilityTooltip(game, spell(game, 'rejuvenation'), target);
   assert.match(rejuvenation, /30 healing every 2.5s for 15s \(6 ticks, 180 total\)/);
   assert.match(rejuvenation, /Up to 2 Rejuvenation HoTs/);
   const swiftmend = abilityTooltip(game, spell(game, 'swiftmend'), target);
   assert.match(swiftmend, /does not consume the HoT/);
-  assert.match(swiftmend, /every other living ally for 26/);
+  assert.match(swiftmend, /2 lowest-health-percentage other living allies for 39 each/);
   game.cooldowns.wildGrowth = game.time + 8;
-  assert.match(abilityTooltip(game, spell(game, 'wildGrowth')), /0.8s cast · 70 Mana/);
+  assert.match(abilityTooltip(game, spell(game, 'wildGrowth')), /0.8s cast · 56 Mana/);
   assert.match(abilityTooltip(game, spell(game, 'wildGrowth')), /Overgrowth available/);
-  assert.match(abilityTooltip(game, spell(game, 'genesis')), /Extend active Druid HoTs by 10s/);
+  assert.match(abilityTooltip(game, spell(game, 'genesis')), /tick 15% faster for 8s/);
 });
 
 test('active DoT rollover appears in the tooltip and matches the next application', () => {
@@ -102,7 +102,7 @@ test('Overgrowth tooltip includes carried HoT healing for the selected ally', ()
   const target = game.party[0], wildGrowth = spell(game, 'wildGrowth');
   game.start(); game.applyHot(target, wildGrowth);
   game.cooldowns.wildGrowth = game.time + 8;
-  assert.match(abilityTooltip(game, wildGrowth, target), /20 healing every 1s for 8s \(8 ticks, 160 total per ally including 80 carried healing\)/);
+  assert.match(abilityTooltip(game, wildGrowth, target), /20 healing every 1s for 8s \(8 ticks, 160 total per ally including 80 unspent healing\)/);
   game.applyHot(target, wildGrowth, { carryPending: true });
   assert.equal(target.hots.find(hot => hot.source === 'wildGrowth').heal, 20);
 });

@@ -38,29 +38,32 @@ test('Swiftmend rejects unprepared targets without spending mana or cooldown', (
   const g = setup(); assert.equal(g.begin('swiftmend', 'tank').ok, false);
   assert.equal(g.mana, CONFIG.mana); assert.equal(g.cooldowns.swiftmend, undefined); assert.equal(g.stats.casts, 0);
   cast(g, 'rejuvenation'); const mana = g.mana; cast(g, 'swiftmend');
-  assert.equal(g.party[0].hp, 131); assert.equal(g.party[0].hots.length, 0);
+  assert.equal(g.party[0].hp, 131); assert.equal(g.party[0].hots.length, 1);
   assert.equal(g.mana, mana - 35); assert.equal(g.cooldowns.swiftmend, g.time + 15);
   cast(g, 'rejuvenation'); assert.match(g.begin('swiftmend', 'tank').reason, /Swiftmend is on cooldown/);
 });
-test('Swiftmend consumes shortest remaining duration, preserving other targets', () => {
+test('Swiftmend preserves its required HoT and all other targets', () => {
   const g = setup(), t = g.party[0];
   cast(g, 'rejuvenation'); advance(g, 10); cast(g, 'regrowth'); cast(g, 'wildGrowth');
   assert.equal(t.hots.length, 3); cast(g, 'swiftmend');
-  assert.deepEqual(t.hots.map(h => h.source), ['regrowth', 'wildGrowth']);
+  assert.deepEqual(t.hots.map(h => h.source), ['rejuvenation', 'regrowth', 'wildGrowth']);
   const other = setup(); cast(other, 'rejuvenation'); cast(other, 'regrowth'); cast(other, 'wildGrowth'); cast(other, 'swiftmend');
-  assert.deepEqual(other.party[0].hots.map(h => h.source), ['rejuvenation', 'regrowth']);
+  assert.deepEqual(other.party[0].hots.map(h => h.source), ['rejuvenation', 'regrowth', 'wildGrowth']);
   assert.ok(other.party.slice(1).every(p => p.hots.some(h => h.source === 'wildGrowth')));
 });
-test('Nourish heals 80/110/140/170 based on HoTs at completion', () => {
+test('Nourish pools 80/110/140/170 based on HoTs at completion', () => {
   for (let count = 0; count <= 3; count++) {
     const g = setup(); for (const id of ['rejuvenation', 'regrowth', 'wildGrowth'].slice(0, count)) cast(g, id);
     const mana = g.mana; assert.equal(g.begin('nourish', 'tank').ok, true); assert.equal(g.mana, mana);
     assert.equal(g.cast.duration, 2); advance(g, 2);
     assert.ok(Math.abs(g.mana - (Math.min(g.maxMana, mana + 2 * g.healer.manaRegen) - 30)) < 1e-8);
-    assert.equal(g.events.filter(e => e.type === 'heal' && e.spell === 'nourish').at(-1).raw, 80 + count * 30);
+    const pool = g.party[0].hots.find(hot => hot.source === 'nourish');
+    assert.equal(pool.heal * pool.ticks, 80 + count * 30);
+    advance(g, 4);
+    assert.equal(g.events.filter(e => e.type === 'heal' && e.spell === 'nourish').reduce((sum, event) => sum + event.raw, 0), 80 + count * 30);
   }
   const g = setup(); cast(g, 'rejuvenation'); advance(g, 14); cast(g, 'nourish');
-  assert.equal(g.events.filter(e => e.type === 'heal' && e.spell === 'nourish').at(-1).raw, 80);
+  assert.equal(g.party[0].hots.find(hot => hot.source === 'nourish').heal * 4, 80);
 });
 test('HoTs pause, clear on death/reset, and do not revive dead allies', () => {
   const g = setup(); cast(g, 'wildGrowth'); const next = g.party[0].hots[0].next;

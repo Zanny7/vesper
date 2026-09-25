@@ -27,6 +27,7 @@ const PRIEST_TALENT_ID_MIGRATIONS = Object.freeze({
   'measured-casting': 'early-mercy',
   'threefold-penance': 'fourfold-penance',
 });
+const DRUID_TALENT_ID_MIGRATIONS = Object.freeze({ 'preserved-growth': 'natural-regeneration' });
 
 function cleanHealerState(saved, tree, healerId) {
   const milestones = Array.isArray(saved?.milestones)
@@ -37,9 +38,10 @@ function cleanHealerState(saved, tree, healerId) {
   if (isRecord(saved?.allocations)) {
     const entries = Object.entries(saved.allocations);
     for (const [oldId, rank] of entries) {
-      const id = healerId === 'priest' ? PRIEST_TALENT_ID_MIGRATIONS[oldId] || oldId : oldId;
+      const migrations = healerId === 'priest' ? PRIEST_TALENT_ID_MIGRATIONS : healerId === 'druid' ? DRUID_TALENT_ID_MIGRATIONS : {};
+      const id = migrations[oldId] || oldId;
       // A save already using the new identifier takes precedence over its legacy alias.
-      if (PRIEST_TALENT_ID_MIGRATIONS[oldId] && Object.hasOwn(saved.allocations, id)) continue;
+      if (migrations[oldId] && Object.hasOwn(saved.allocations, id)) continue;
       const talent = talents.get(id);
       if (talent && Number.isInteger(rank) && rank > 0) allocations[id] = Math.min(rank, rankCap(talent));
     }

@@ -30,12 +30,12 @@ const priestBuilds = [
 ];
 const druidBuilds = [
   {},
-  { 'preserved-growth': 1 },
-  { 'preserved-growth': 1, 'empowered-rejuvenation': 1 },
-  { 'preserved-growth': 1, 'empowered-rejuvenation': 2 },
-  { 'preserved-growth': 1, 'empowered-rejuvenation': 2, 'passing-bloom': 1 },
-  { 'preserved-growth': 1, 'empowered-rejuvenation': 2, 'passing-bloom': 1, 'blooming-swiftmend': 1 },
-  { 'preserved-growth': 1, 'empowered-rejuvenation': 2, 'passing-bloom': 1, 'blooming-swiftmend': 1, 'living-rejuvenation': 1 },
+  { 'natural-regeneration': 1 },
+  { 'natural-regeneration': 1, 'empowered-rejuvenation': 1 },
+  { 'natural-regeneration': 1, 'empowered-rejuvenation': 2 },
+  { 'natural-regeneration': 1, 'empowered-rejuvenation': 2, 'passing-bloom': 1 },
+  { 'natural-regeneration': 1, 'empowered-rejuvenation': 2, 'passing-bloom': 1, 'blooming-swiftmend': 1 },
+  { 'natural-regeneration': 1, 'empowered-rejuvenation': 2, 'passing-bloom': 1, 'blooming-swiftmend': 1, 'living-rejuvenation': 1 },
 ];
 export function allocations(healerId, chapterIndex, earnedFirstPoint, variant) {
   const builds = healerId === 'priest' ? priestBuilds : druidBuilds;

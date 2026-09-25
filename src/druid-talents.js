@@ -11,7 +11,7 @@ function talentSpell(base, usedKeys) {
 
 // Derive a combat loadout without mutating the shared Druid spell definitions.
 export function druidTalentLoadout(party, spells, allocations = {}) {
-  const preservedGrowth = rank(allocations, 'preserved-growth');
+  const naturalRegeneration = rank(allocations, 'natural-regeneration');
   const empoweredRejuvenation = rank(allocations, 'empowered-rejuvenation');
   const nourishingTouch = rank(allocations, 'nourishing-touch');
   const passingBloom = rank(allocations, 'passing-bloom');
@@ -34,37 +34,35 @@ export function druidTalentLoadout(party, spells, allocations = {}) {
       },
     };
     if (spell.id === 'regrowth') return { ...spell, ...(passingBloom ? { passingBloom: true } : {}) };
-    if (spell.id === 'swiftmend') return {
-      ...spell,
-      ...(preservedGrowth ? { preserveHot: true } : {}),
-      ...(bloomingSwiftmend ? { bloom: { ratio: .2 } } : {}),
-    };
-    if (spell.id === 'wildGrowth') return { ...spell, ...(overgrowth ? { overgrowth: true } : {}) };
+    if (spell.id === 'swiftmend') return { ...spell, ...(bloomingSwiftmend ? { bloom: { ratio: .3, targets: 2 } } : {}) };
+    if (spell.id === 'wildGrowth') return { ...spell, ...(overgrowth ? { overgrowth: { transfer: .5, threshold: .9 }, cost: spell.cost * .8 } : {}) };
     if (spell.id === 'nourish') return {
       ...spell,
-      cast: [2, 1.8, 1.6][nourishingTouch],
-      hotBonus: { ...spell.hotBonus, amount: 20 + abundantNourishment * 5 },
+      ...(nourishingTouch ? { nourishingTouch: { extraTicks: nourishingTouch } } : {}),
+      hotBonus: { ...spell.hotBonus, amount: spell.hotBonus.amount + abundantNourishment * 10 },
     };
     return { ...spell };
   });
   const usedKeys = new Set(adjustedSpells.map(spell => spell.key));
   if (cenarionWard) adjustedSpells.push(talentSpell({
     id: 'cenarionWard', name: 'Cenarion Ward', icon: 'shield', cast: 0, cost: 45 / CONFIG.baseMana,
-    heal: 0, cooldown: 30, ward: { duration: 20, triggerDuration: 10, healingReceived: .2 },
-    color: '#91d0a0', effectSummary: 'Next damage grants +20% healing received',
-    description: 'Ward an ally for 20 seconds. The next damage grants 20% increased healing received for 10 seconds.',
+    heal: 0, cooldown: 30, charges: cenarionWard, ward: { duration: 20, threshold: .5, hot: { duration: 6, interval: 1, heal: 30 } },
+    color: '#91d0a0', effectSummary: 'At 50% Health, trigger 180 healing over 6 seconds',
+    description: 'Arm an ally for 20 seconds. At or below 50% Health, immediately trigger a 6-second HoT: 30 each second (180 total).',
   }, usedKeys));
   if (genesis) adjustedSpells.push(talentSpell({
     id: 'genesis', name: 'Genesis', icon: 'sun', cast: 0, cost: 0, heal: 0, party: true,
-    cooldown: 60, genesis: { extension: 10 }, color: '#a9d894', effectSummary: 'Extend active Druid HoTs by 10 seconds',
-    description: 'Extend every active Druid healing-over-time effect by 10 seconds, adding normal ticks.',
+    cooldown: 60, genesis: { duration: 8, speed: .15 }, color: '#a9d894', effectSummary: 'Refresh core Druid HoTs; 15% faster ticks for 8 seconds',
+    description: 'Restore active Rejuvenation, Regrowth, and Wild Growth HoTs to full duration and make them tick 15% faster for 8 seconds. Nourish pools and Ward HoTs are excluded.',
   }, usedKeys));
   if (tranquility) adjustedSpells.push(talentSpell({
     id: 'tranquility', name: 'Tranquility', icon: 'grove', cast: 5, cost: 100 / CONFIG.baseMana,
-    heal: 0, party: true, channel: true, cooldown: 90,
+    heal: 0, party: true, channel: true, cooldown: 60,
     ticks: [1, 2, 3, 4, 5].map(at => ({ at, heal: 30 })), color: '#bce6ae',
     effectSummary: '30 party healing each second for 5 seconds',
     description: 'Channel for 5 seconds, healing every living party member for 30 each second.',
   }, usedKeys));
-  return { party: party.map(member => ({ ...member })), spells: adjustedSpells };
+  return { party: party.map(member => member.label === 'HEALER'
+    ? { ...member, manaRegen: (member.manaRegen ?? CONFIG.manaRegen) * (1 + naturalRegeneration * .1) }
+    : { ...member }), spells: adjustedSpells };
 }

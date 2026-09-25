@@ -54,7 +54,8 @@ export class Combat {
   }
   hotInterval(hot, target) {
     const livingHaste = hot.living && target.hp / target.maxHp < .5 ? hot.living.speed * 100 : 0;
-    return hastedTime(hot.baseInterval, this.haste() + livingHaste);
+    const genesisHaste = hot.genesisUntil > this.time + 1e-8 ? (hot.genesisSpeed || 0) * 100 : 0;
+    return hastedTime(hot.baseInterval, this.haste() + livingHaste + genesisHaste);
   }
   manaCost(spell) {
     const postHaste = Boolean(spell.postHaste && this.buffs.postHaste > 0 && ['greater', 'prayer'].includes(spell.id));
@@ -86,11 +87,15 @@ export class Combat {
     if (!spell.hot) return null;
     const interval = this.hotInterval({ ...spell.hot, baseInterval: spell.hot.interval }, target || this.healer);
     const ticks = Math.max(1, ticksForDuration(spell.hot.duration, interval));
-    const pending = carryPending && target
-      ? (target.hots || []).filter(hot => hot.source === spell.id).reduce((total, hot) => total + hot.heal * hot.ticks, 0)
+    const pending = (carryPending || spell.hot.pool) && target
+      ? this.activeHots(target, [spell.id]).reduce((total, hot) => total + hot.heal * hot.ticks, 0)
       : 0;
+    const bonus = spell.hot.pool && target ? Math.min(spell.hotBonus?.max || 0, new Set(this.activeHots(target, spell.hotBonus?.sources).map(hot => hot.source)).size) * (spell.hotBonus?.amount || 0) : 0;
+    const newHealing = spell.hot.pool
+      ? healingParts(spell, this.spellPower).hotTick * ticksForDuration(spell.hot.duration, spell.hot.interval)
+      : healingParts(spell, this.spellPower).hotTick * ticks;
     return {
-      tick: healingParts(spell, this.spellPower).hotTick + pending / ticks,
+      tick: (newHealing + pending + bonus) / ticks,
       pending, ticks, interval, duration: spell.hot.duration,
     };
   }
@@ -156,21 +161,28 @@ export class Combat {
     return { ok: true };
   }
   activeHots(target, sources) {
-    return (target?.hots || []).filter(hot => hot.expires > this.time + 1e-8 && (!sources || sources.includes(hot.source)));
+    return (target?.hots || []).filter(hot => hot.ticks > 0 && hot.expires > this.time + 1e-8 && (!sources || sources.includes(hot.source)));
   }
   directHealing(spell, target) {
     const bonus = spell.hotBonus;
     const hotTypes = bonus ? new Set(this.activeHots(target, bonus.sources).map(hot => hot.source)).size : 0;
-    return healingParts(spell, this.spellPower).direct + (bonus ? Math.min(bonus.max, hotTypes) * bonus.amount : 0);
+    return healingParts(spell, this.spellPower).direct + (bonus && !spell.hot?.pool ? Math.min(bonus.max, hotTypes) * bonus.amount : 0);
   }
   applyHot(target, spell, { carryPending = false } = {}) {
-    const existing = target.hots.filter(hot => hot.source === spell.id);
+    const existing = this.activeHots(target, [spell.id]);
     if (spell.passingBloom && existing.length) {
       const moving = existing.sort((a, b) => a.expires - b.expires)[0];
       const destination = this.party
-        .filter(member => member.hp > 0 && member.id !== target.id && !this.activeHots(member, [spell.id]).length)
+        .filter(member => member.hp > 0 && member.hp < member.maxHp && member.id !== target.id && !this.activeHots(member, [spell.id]).length)
         .sort((a, b) => a.hp / a.maxHp - b.hp / b.maxHp)[0];
-      if (destination) destination.hots.push(moving);
+      if (destination) {
+        const duration = spell.hot.duration / 2;
+        moving.applied = this.time; moving.expires = this.time + duration;
+        moving.interval = this.hotInterval(moving, destination); moving.next = this.time + moving.interval;
+        moving.ticks = ticksForDuration(duration, moving.interval);
+        moving.heal = moving.baseHeal;
+        destination.hots.push(moving);
+      }
     }
     const profile = this.hotProfile(spell, target, carryPending);
     const maxInstances = spell.hot.maxInstances || 1;
@@ -179,12 +191,57 @@ export class Combat {
       target.hots = target.hots.filter(hot => hot !== replacing);
     }
     if (maxInstances === 1) target.hots = target.hots.filter(hot => hot.source !== spell.id);
-    if (carryPending) target.hots = target.hots.filter(hot => hot.source !== spell.id);
+    if (carryPending || spell.hot.pool) target.hots = target.hots.filter(hot => hot.source !== spell.id);
     target.hots.push({
       ...spell.hot, heal: profile.tick, source: spell.id, name: spell.name,
       icon: spell.icon, color: spell.color, applied: this.time, expires: this.time + spell.hot.duration,
       next: this.time + profile.interval, interval: profile.interval, ticks: profile.ticks, baseInterval: spell.hot.interval,
+      baseHeal: healingParts(spell, this.spellPower).hotTick, normalDuration: spell.hot.duration,
+      pooled: Boolean(spell.hot.pool || carryPending), overgrowthTransfer: spell.overgrowth?.transfer,
+      overgrowthThreshold: spell.overgrowth?.threshold,
     });
+  }
+  extendHots(target, extraTicks) {
+    for (const hot of this.activeHots(target, ['rejuvenation', 'regrowth', 'wildGrowth', 'cenarionWard'])) {
+      hot.expires += extraTicks * hot.baseInterval;
+      if (hot.pooled) hot.heal = (hot.heal * hot.ticks + hot.baseHeal * extraTicks) / (hot.ticks + extraTicks);
+      hot.ticks += extraTicks;
+    }
+  }
+  triggerWard(target) {
+    const ward = target.ward;
+    if (!ward || target.hp <= 0) return;
+    delete target.ward;
+    target.helpfulEffects = target.helpfulEffects.filter(effect => effect.source !== 'cenarionWardArmed');
+    const effect = ward.hot, interval = hastedTime(effect.interval, this.haste());
+    const normalTicks = ticksForDuration(effect.duration, effect.interval);
+    const ticks = ticksForDuration(effect.duration, interval);
+    const normalTick = effect.heal + Math.max(0, this.spellPower) / normalTicks;
+    const tick = normalTick * normalTicks / ticks;
+    target.hots.push({ source: 'cenarionWard', name: 'Cenarion Ward Bloom', icon: 'wardBloom', color: '#91d0a0',
+      heal: tick, baseHeal: normalTick, baseInterval: effect.interval, interval, pooled: true,
+      normalDuration: effect.duration, applied: this.time, expires: this.time + effect.duration,
+      next: this.time + interval, ticks });
+    this.emit('buff', { source: 'cenarionWard', target: target.id, duration: effect.duration });
+  }
+  transferWildGrowth(target, hot) {
+    if (!hot.overgrowthTransfer || target.hp / target.maxHp <= hot.overgrowthThreshold || hot.ticks <= 0) return;
+    const destination = this.lowestHealthAlly(target.id);
+    if (!destination) return;
+    const moved = hot.heal * hot.ticks * hot.overgrowthTransfer;
+    hot.heal = (hot.heal * hot.ticks - moved) / hot.ticks;
+    hot.pooled = true;
+    const existing = this.activeHots(destination, ['wildGrowth'])[0];
+    if (existing) {
+      existing.heal += moved / existing.ticks;
+      existing.pooled = true;
+    } else {
+      const copy = { ...hot, applied: this.time, next: this.time + hot.interval,
+        ticks: ticksForDuration(hot.expires - this.time, hot.interval), pooled: true };
+      if (copy.ticks > 0) { copy.heal = moved / copy.ticks; destination.hots.push(copy); }
+      else { hot.heal += moved / hot.ticks; return; }
+    }
+    this.emit('buff', { source: 'overgrowth', target: destination.id, from: target.id, amount: moved });
   }
   applyLingeringPrayer(target, spell, direct) {
     const hot = spell.lingeringPrayer;
@@ -263,12 +320,18 @@ export class Combat {
     return defenseEffect;
   }
   applyGenesis(effect) {
-    for (const target of this.party) for (const hot of target.hots) {
+    for (const target of this.party) for (const hot of this.activeHots(target)) {
       if (!['rejuvenation', 'regrowth', 'wildGrowth'].includes(hot.source)) continue;
-      hot.expires += effect.extension;
-      hot.ticks += ticksForDuration(effect.extension, hot.interval || hot.baseInterval);
+      const pending = hot.heal * hot.ticks;
+      hot.expires = this.time + hot.normalDuration;
+      hot.genesisUntil = this.time + effect.duration; hot.genesisSpeed = effect.speed;
+      hot.interval = this.hotInterval(hot, target);
+      hot.next = Math.min(hot.next, this.time + hot.interval);
+      const ticks = Math.max(1, ticksForDuration(hot.expires - hot.next, hot.interval) + 1);
+      hot.heal = (pending + Math.max(0, ticks - hot.ticks) * hot.baseHeal) / ticks;
+      hot.ticks = ticks;
     }
-    this.emit('buff', { source: 'genesis', targets: this.party.filter(member => member.hp > 0).map(member => member.id), duration: effect.extension });
+    this.emit('buff', { source: 'genesis', targets: this.party.filter(member => member.hp > 0).map(member => member.id), duration: effect.duration });
   }
   completeCast() {
     const cast = this.cast, spell = cast.spell;
@@ -295,7 +358,10 @@ export class Combat {
       if (spell.ward) {
         const target = this.party.find(member => member.id === cast.target);
         target.ward = { ...spell.ward, expires: this.time + spell.ward.duration };
+        target.helpfulEffects = target.helpfulEffects.filter(effect => effect.source !== 'cenarionWardArmed');
+        target.helpfulEffects.push({ source: 'cenarionWardArmed', name: 'Cenarion Ward Armed', icon: 'shield', color: spell.color, expires: target.ward.expires });
         this.emit('buff', { source: spell.id, target: target.id, duration: spell.ward.duration });
+        if (target.hp / target.maxHp <= spell.ward.threshold) this.triggerWard(target);
       }
       if (spell.genesis) this.applyGenesis(spell.genesis);
       const targets = spell.party ? this.party : [this.party.find(p => p.id === cast.target)];
@@ -315,9 +381,10 @@ export class Combat {
           const secondary = this.lowestHealthAlly(target.id);
           if (secondary) this.heal(secondary, result.effective * spell.bindingLight.ratio, 'binding-light');
         }
-        if (spell.bloom && amount > 0) for (const ally of this.party) {
-          if (ally.hp > 0 && ally.id !== target.id) this.heal(ally, amount * spell.bloom.ratio, 'blooming-swiftmend');
-        }
+        if (spell.bloom && amount > 0) for (const ally of this.party
+          .filter(member => member.hp > 0 && member.id !== target.id)
+          .sort((a, b) => a.hp / a.maxHp - b.hp / b.maxHp)
+          .slice(0, spell.bloom.targets)) this.heal(ally, amount * spell.bloom.ratio, 'blooming-swiftmend');
         if (spell.lightUnspent) directOverheal += result.overheal;
         if (spell.echoOfGrace) {
           const echoTarget = this.lowestHealthAlly(target.id);
@@ -325,6 +392,7 @@ export class Combat {
         }
         lingering.push({ target, amount });
         if (spell.hot) this.applyHot(target, spell, { carryPending: cast.overgrowth });
+        if (spell.nourishingTouch) this.extendHots(target, spell.nourishingTouch.extraTicks);
       }
       if (spell.lightUnspent && directOverheal > 0) {
         const injured = this.party.filter(member => member.hp > 0 && member.hp < member.maxHp);
@@ -357,12 +425,8 @@ export class Combat {
     if (this.buffs.sanctuary?.expires > this.time) amount *= 1 - this.buffs.sanctuary.reduction;
     target.hp = Math.max(0, target.hp - amount);
     this.emit('damage', { target: target.id, amount, raw, source, damageType });
-    if (amount > 0 && target.hp > 0 && target.ward?.expires > this.time) {
-      target.healingReceived = { amount: target.ward.healingReceived, expires: this.time + target.ward.triggerDuration };
-      delete target.ward;
-      this.emit('buff', { source: 'cenarionWard', target: target.id, duration: target.healingReceived.expires - this.time });
-    }
-    if (!target.hp) { target.dots = []; target.hots = []; this.stats.deaths++; this.log(`${target.name} has fallen.`, 'danger'); this.emit('death', { target: target.id }); }
+    if (amount > 0 && target.hp > 0 && target.ward?.expires > this.time && target.hp / target.maxHp <= target.ward.threshold) this.triggerWard(target);
+    if (!target.hp) { target.dots = []; target.hots = []; target.helpfulEffects = []; delete target.ward; this.stats.deaths++; this.log(`${target.name} has fallen.`, 'danger'); this.emit('death', { target: target.id }); }
   }
   rotatingTarget() { const living = this.party.filter(p => p.hp > 0 && p.id !== 'tank'); return living[this.rotation++ % living.length]; }
   randomTargets(count = 1) {
@@ -438,11 +502,14 @@ export class Combat {
             }
           }
           this.heal(target, hot.heal, hot.source); hot.ticks--;
+          if (target === p && hot.source === 'wildGrowth') this.transferWildGrowth(target, hot);
+          const pending = hot.heal * hot.ticks;
           hot.interval = this.hotInterval(hot, target);
           hot.next += hot.interval;
           hot.ticks = hot.next <= hot.expires + 1e-8
             ? ticksForDuration(hot.expires - hot.next, hot.interval) + 1
             : 0;
+          if (hot.pooled && hot.ticks > 0) hot.heal = pending / hot.ticks;
         }
       }
       p.hots = p.hots.filter(hot => hot.ticks > 0);
