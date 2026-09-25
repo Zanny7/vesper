@@ -15,6 +15,10 @@ export const PRIEST_TALENT_VALUES = Object.freeze({
   sanctuary: Object.freeze({ reduction: .20, duration: 12, cooldown: 60 }),
   divineFervor: Object.freeze({ speed: .20, manaReduction: .20, duration: 15, cooldown: 60 }),
 });
+export const DRUID_TALENT_VALUES = Object.freeze({
+  naturalRegeneration: Object.freeze({ manaRegenPerRank: .2 }),
+  abundantNourishment: Object.freeze({ healingPerHotPerRank: 20 }),
+});
 export const SLOTS = {
   healer: ['Weapon', 'Tome', 'Trinket', 'Head', 'Chest', 'Legs'],
   tank: ['Weapon', 'Shield', 'Trinket', 'Head', 'Chest', 'Legs'],
@@ -198,7 +202,7 @@ export const DRUID_SPELLS = [
   { id: 'rejuvenation', name: 'Rejuvenation', key: '1', icon: 'leaf', cast: 0, cost: 1, heal: 0, hot: { duration: 15, interval: 3, heal: 30 }, color: '#9cdb95', description: 'Heal for 30 every 3s for 15s (150 total). Refreshing restarts the duration and tick timer.' },
   { id: 'regrowth', name: 'Regrowth', key: '2', icon: 'sprout', cast: 1.5, cost: 40 / CONFIG.baseMana, heal: 60, hot: { duration: 18, interval: 3, heal: 20 }, color: '#a8e5b9', description: 'Heal for 60 immediately, then 20 every 3s for 18s (180 total). Refreshing restarts the HoT.' },
   { id: 'swiftmend', name: 'Swiftmend', key: '3', icon: 'bloom', cast: 0, cost: 35 / CONFIG.baseMana, heal: 130, cooldown: 15, consumesHot: DRUID_HOTS, preserveHot: true, color: '#e0d497', description: 'Heal for 130. Requires Rejuvenation, Regrowth, or Wild Growth on this ally, but does not consume it.' },
-  { id: 'wildGrowth', name: 'Wild Growth', key: '4', icon: 'grove', cast: 0, cost: 70 / CONFIG.baseMana, heal: 0, party: true, cooldown: 10, hot: { duration: 8, interval: 1, heal: 10 }, color: '#80c9a8', description: 'Heal every living ally for 10 every second for 8s (80 per ally). Each ally has their own HoT.' },
+  { id: 'wildGrowth', name: 'Wild Growth', key: '4', icon: 'grove', cast: 0, cost: 70 / CONFIG.baseMana, heal: 0, party: true, cooldown: 10, hot: { duration: 8, interval: 1, heal: 12 }, color: '#80c9a8', description: 'Heal every living ally for 12 every second for 8s (96 per ally). Each ally has their own HoT.' },
   { id: 'nourish', name: 'Nourish', key: '5', icon: 'seed', cast: 2, cost: 1, heal: 0, hot: { duration: 4, interval: 1, heal: 20, pool: true }, hotBonus: { sources: DRUID_HOTS, amount: 30, max: 3 }, color: '#c8df9b', description: 'A 4-second HoT ticking every second. Its 80 healing grows by 30 per active Rejuvenation, Regrowth, or Wild Growth type at completion. Recasting adds to the unspent pool and refreshes the duration.' },
 ];
 // Healer identity and spell kits are separate from the companion roster.

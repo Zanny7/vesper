@@ -1,4 +1,4 @@
-import { PRIEST_TALENT_VALUES } from './data.js';
+import { DRUID_TALENT_VALUES, PRIEST_TALENT_VALUES } from './data.js';
 
 const priestValues = PRIEST_TALENT_VALUES;
 
@@ -18,12 +18,12 @@ export const TALENT_TREES = {
     { id: 'divine-fervor', row: 4, name: 'Divine Fervor', description: `Instantly grants the Priest ${priestValues.divineFervor.speed * 100}% Haste and reduces all spell Mana costs by ${priestValues.divineFervor.manaReduction * 100}% for ${priestValues.divineFervor.duration}s. ${priestValues.divineFervor.cooldown}s cooldown.` },
   ],
   druid: [
-    { id: 'natural-regeneration', row: 1, maxRank: 2, name: 'Natural Regeneration', description: 'Increase all Druid Mana regeneration by 10% / 20%, including regeneration from gear.' },
+    { id: 'natural-regeneration', row: 1, maxRank: 2, name: 'Natural Regeneration', description: `Increase all Druid Mana regeneration by ${DRUID_TALENT_VALUES.naturalRegeneration.manaRegenPerRank * 100}% / ${DRUID_TALENT_VALUES.naturalRegeneration.manaRegenPerRank * 200}%, including regeneration from gear.` },
     { id: 'empowered-rejuvenation', row: 1, maxRank: 2, name: 'Empowered Rejuvenation', description: 'Increase each Rejuvenation tick and its total healing by 10% / 20%.' },
     { id: 'nourishing-touch', row: 1, maxRank: 2, name: 'Nourishing Touch', description: 'Each completed 2-second Nourish cast adds 1 / 2 normal-strength ticks to each active Rejuvenation, Regrowth, Wild Growth, and triggered Cenarion Ward HoT on its target. Nourish does not extend itself; extensions have no cap.' },
     { id: 'passing-bloom', row: 2, name: 'Passing Bloom', description: 'Replacing Regrowth moves its old HoT to the lowest-health-percentage wounded living ally without Regrowth, refreshed to 9 seconds (3 normal ticks). If none qualifies, the old HoT ends.' },
     { id: 'cenarion-ward', row: 2, maxRank: 2, name: 'Cenarion Ward', description: 'Grant 1 / 2 charges of Cenarion Ward. Each costs 45 Mana and recharges in 30 seconds. The ward lasts 20 seconds and triggers at or below 50% Health, healing 30 each second for 6 seconds (180 total). Recasting replaces an armed Ward; triggered HoTs coexist.' },
-    { id: 'abundant-nourishment', row: 2, maxRank: 2, name: 'Abundant Nourishment', description: 'Add 10 / 20 healing to Nourish per active Rejuvenation, Regrowth, or Wild Growth type. Ward does not count. Nourish ticks each second for 4 seconds; recasting adds to its unspent pool and refreshes the 4-second window.' },
+    { id: 'abundant-nourishment', row: 2, maxRank: 2, name: 'Abundant Nourishment', description: `Add ${DRUID_TALENT_VALUES.abundantNourishment.healingPerHotPerRank} / ${DRUID_TALENT_VALUES.abundantNourishment.healingPerHotPerRank * 2} healing to Nourish per active Rejuvenation, Regrowth, or Wild Growth type. Ward does not count. Nourish ticks each second for 4 seconds; recasting adds to its unspent pool and refreshes the 4-second window.` },
     { id: 'blooming-swiftmend', row: 3, name: 'Blooming Swiftmend', description: 'Swiftmend also heals the two most injured other living allies for 30% of its primary raw heal each. Its required HoT is preserved.' },
     { id: 'overgrowth', row: 3, name: 'Overgrowth', description: 'Wild Growth costs 20% less Mana and remains castable during cooldown with a 1-second base cast, carrying remaining healing. When a tick leaves an ally above 90% Health, transfer half its remaining Wild Growth healing to the lowest-health-percentage wounded eligible ally.' },
     { id: 'living-rejuvenation', row: 3, name: 'Living Rejuvenation', description: 'Rejuvenation ticks 20% faster below 50% Health. At full Health, its next tick moves with its remaining healing to the lowest-health-percentage wounded living ally with room for Rejuvenation.' },

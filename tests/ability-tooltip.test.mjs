@@ -102,9 +102,9 @@ test('Overgrowth tooltip includes carried HoT healing for the selected ally', ()
   const target = game.party[0], wildGrowth = spell(game, 'wildGrowth');
   game.start(); game.applyHot(target, wildGrowth);
   game.cooldowns.wildGrowth = game.time + 8;
-  assert.match(abilityTooltip(game, wildGrowth, target), /20 healing every 1s for 8s \(8 ticks, 160 total per ally including 80 unspent healing\)/);
+  assert.match(abilityTooltip(game, wildGrowth, target), /24 healing every 1s for 8s \(8 ticks, 192 total per ally including 96 unspent healing\)/);
   game.applyHot(target, wildGrowth, { carryPending: true });
-  assert.equal(target.hots.find(hot => hot.source === 'wildGrowth').heal, 20);
+  assert.equal(target.hots.find(hot => hot.source === 'wildGrowth').heal, 24);
 });
 
 test('Penance bolts crit independently and Haste keeps all main and smart bolts', () => {

@@ -9,7 +9,7 @@ function cast(g, id, target = 'tank') { assert.equal(g.begin(id, target).ok, tru
 
 test('Druid costs, durations, exact HoT totals and final ticks', () => {
   for (const [id, cost, castTime, duration, interval, direct, tick, count] of [
-    ['rejuvenation', 30, 0, 15, 3, 0, 30, 5], ['regrowth', 40, 1.5, 18, 3, 60, 20, 6], ['wildGrowth', 70, 0, 8, 1, 0, 10, 8],
+    ['rejuvenation', 30, 0, 15, 3, 0, 30, 5], ['regrowth', 40, 1.5, 18, 3, 60, 20, 6], ['wildGrowth', 70, 0, 8, 1, 0, 12, 8],
   ]) {
     const g = setup(), t = g.party[0];
     assert.equal(g.begin(id, 'tank').ok, true);
@@ -22,7 +22,7 @@ test('Druid costs, durations, exact HoT totals and final ticks', () => {
     advance(g, duration - interval);
     assert.equal(t.hp, 1 + direct + tick * count); assert.equal(t.hots.length, 0);
     assert.equal(g.events.filter(e => e.type === 'heal' && e.target === 'tank').length, count + (direct ? 1 : 0));
-    if (id === 'wildGrowth') for (const ally of g.party) assert.equal(ally.hp, 81);
+    if (id === 'wildGrowth') for (const ally of g.party) assert.equal(ally.hp, 97);
   }
 });
 test('refresh replaces each HoT and restarts duration and tick timer', () => {

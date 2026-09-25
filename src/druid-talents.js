@@ -1,4 +1,4 @@
-import { CONFIG } from './data.js';
+import { CONFIG, DRUID_TALENT_VALUES } from './data.js';
 
 const rank = (allocations, id) => allocations?.[id] || 0;
 const TALENT_KEYS = '67890ABCDEFGHIJKLMNOPQRSTUVWXYZ';
@@ -39,7 +39,7 @@ export function druidTalentLoadout(party, spells, allocations = {}) {
     if (spell.id === 'nourish') return {
       ...spell,
       ...(nourishingTouch ? { nourishingTouch: { extraTicks: nourishingTouch } } : {}),
-      hotBonus: { ...spell.hotBonus, amount: spell.hotBonus.amount + abundantNourishment * 10 },
+      hotBonus: { ...spell.hotBonus, amount: spell.hotBonus.amount + abundantNourishment * DRUID_TALENT_VALUES.abundantNourishment.healingPerHotPerRank },
     };
     return { ...spell };
   });
@@ -63,6 +63,6 @@ export function druidTalentLoadout(party, spells, allocations = {}) {
     description: 'Channel for 5 seconds, healing every living party member for 30 each second.',
   }, usedKeys));
   return { party: party.map(member => member.label === 'HEALER'
-    ? { ...member, manaRegen: (member.manaRegen ?? CONFIG.manaRegen) * (1 + naturalRegeneration * .1) }
+    ? { ...member, manaRegen: (member.manaRegen ?? CONFIG.manaRegen) * (1 + naturalRegeneration * DRUID_TALENT_VALUES.naturalRegeneration.manaRegenPerRank) }
     : { ...member }), spells: adjustedSpells };
 }

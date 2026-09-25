@@ -18,7 +18,7 @@ test('Spell Power adds once to direct, channel, mixed and per-target HoT totals'
   close(healingParts(byId('prayer'), 10).direct, 110);
   close(healingParts(byId('penance'), 10).direct, 130);
   close(healingParts(byId('rejuvenation'), 10).hotTick, 32);
-  close(healingParts(byId('wildGrowth'), 10).hotTick, 11.25);
+  close(healingParts(byId('wildGrowth'), 10).hotTick, 13.25);
   const growth = healingParts(byId('regrowth'), 10);
   close(growth.direct, 60 * 190 / 180); close(growth.hotTick, 20 * 190 / 180); close(growth.direct + growth.hotTick * 6, 190);
 });

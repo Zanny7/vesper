@@ -22,7 +22,7 @@ const near = (actual, expected) => assert.ok(Math.abs(actual - expected) < 1e-7,
 
 test('Druid rank budget, baseline Swiftmend preservation, and gear-inclusive Mana regeneration', () => {
   const party = partyForHealer('druid').map(member => member.label === 'HEALER' ? { ...member, manaRegen: 3 } : member);
-  for (const [ranks, regen] of [[0, 3], [1, 3.3], [2, 3.6]]) {
+  for (const [ranks, regen] of [[0, 3], [1, 3.6], [2, 4.2]]) {
     const loadout = druidTalentLoadout(party, DRUID_SPELLS, { 'natural-regeneration': ranks });
     near(loadout.party.find(member => member.label === 'HEALER').manaRegen, regen);
   }
@@ -52,8 +52,8 @@ test('Nourish is a finite four-tick pool that adds unspent healing on recast', (
   near(game.events.filter(event => event.type === 'heal' && event.spell === 'nourish').reduce((sum, event) => sum + event.raw, 0), 220);
 });
 
-test('Nourish bonus counts three core types only, with 10/20 extra healing per type by rank', () => {
-  for (const [rank, total] of [[0, 170], [1, 200], [2, 230]]) {
+test('Nourish bonus counts three core types only, with 20/40 extra healing per type by rank', () => {
+  for (const [rank, total] of [[0, 170], [1, 230], [2, 290]]) {
     const game = setup({ 'abundant-nourishment': rank, 'cenarion-ward': 1 });
     for (const id of ['rejuvenation', 'regrowth', 'wildGrowth']) cast(game, id);
     cast(game, 'cenarionWard');
@@ -146,6 +146,10 @@ test('Ward triggers at the inclusive 50% edge, shows distinct timed states, expi
   immediate.party[0].hp = immediate.party[0].maxHp / 2;
   cast(immediate, 'cenarionWard');
   assert.ok(hot(immediate, 'cenarionWard'));
+  const below = setup({ 'cenarion-ward': 1 });
+  below.party[0].hp = below.party[0].maxHp / 2 - 1;
+  cast(below, 'cenarionWard');
+  assert.ok(hot(below, 'cenarionWard'));
   const geared = setup({ 'cenarion-ward': 1 }, partyForHealer('druid').map(member => member.label === 'HEALER' ? { ...member, spellPower: 30 } : member));
   cast(geared, 'cenarionWard');
   near(hot(geared, 'cenarionWard').heal * hot(geared, 'cenarionWard').ticks, 210);
@@ -171,12 +175,12 @@ test('Overgrowth lowers cost, bypasses cooldown and conserves transferred remain
   advance(game, 1);
   const after = game.party.reduce((sum, member) => sum + hot(game, 'wildGrowth', member.id).heal * hot(game, 'wildGrowth', member.id).ticks, 0);
   near(after, before - game.events.filter(event => event.type === 'heal' && event.spell === 'wildGrowth').reduce((sum, event) => sum + event.raw, 0));
-  assert.ok(hot(game, 'wildGrowth', game.party[1].id).heal > 10);
+  assert.ok(hot(game, 'wildGrowth', game.party[1].id).heal > 12);
   const conservation = setup({ overgrowth: 1 });
   conservation.party.forEach(member => { member.hp = member.maxHp * .5; });
   conservation.party[0].hp = conservation.party[0].maxHp * .9;
   cast(conservation, 'wildGrowth'); advance(conservation, 8);
-  near(conservation.events.filter(event => event.type === 'heal' && event.spell === 'wildGrowth').reduce((sum, event) => sum + event.raw, 0), 400);
+  near(conservation.events.filter(event => event.type === 'heal' && event.spell === 'wildGrowth').reduce((sum, event) => sum + event.raw, 0), 480);
   assert.ok(conservation.party.every(member => !hot(conservation, 'wildGrowth', member.id)));
   assert.equal(game.begin('wildGrowth', 'tank').ok, true);
   assert.equal(game.cast.duration, 1);
