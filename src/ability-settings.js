@@ -21,12 +21,12 @@ export function bindingFromEvent(event) {
   return normalizeBinding([event.ctrlKey && 'Ctrl', event.altKey && 'Alt', event.shiftKey && 'Shift', key].filter(Boolean).join('+'));
 }
 
-export function restoreAbilitySettings(spells, saved) {
-  const ids = spells.map(s => s.id), savedOrder = Array.isArray(saved?.order) ? saved.order : [];
+export function restoreAbilitySettings(spells, saved, additional = []) {
+  const catalog = [...spells, ...additional], ids = catalog.map(s => s.id), savedOrder = Array.isArray(saved?.order) ? saved.order : [];
   // Keep sections together even if a future class has multiple ability bars.
-  const sections = [...new Set(spells.map(s => s.section || 'healing'))];
+  const sections = [...new Set(catalog.map(s => s.section || 'healing'))];
   const order = sections.flatMap(section => {
-    const members = spells.filter(s => (s.section || 'healing') === section).map(s => s.id);
+    const members = catalog.filter(s => (s.section || 'healing') === section).map(s => s.id);
     return [...new Set([...savedOrder.filter(id => members.includes(id)), ...members])];
   });
   const bindings = {}, used = new Set();
@@ -34,7 +34,7 @@ export function restoreAbilitySettings(spells, saved) {
     const key = normalizeBinding(saved?.bindings?.[id]);
     if (key && !used.has(key)) { bindings[id] = key; used.add(key); }
   }
-  for (const spell of spells) if (!bindings[spell.id]) {
+  for (const spell of catalog) if (!bindings[spell.id]) {
     const key = [normalizeBinding(spell.key), ...'1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ'].find(key => key && !used.has(key));
     if (!key) throw new Error('No available default keybind');
     bindings[spell.id] = key; used.add(key);
@@ -44,12 +44,20 @@ export function restoreAbilitySettings(spells, saved) {
 
 export function createAbilitySettings(storage) {
   const cache = new Map(), prefix = 'vesper-abilities-v1-';
+  const talentSpells = {
+    priest: [
+      { id: 'sanctuary', key: '7' }, { id: 'divineFervor', key: '8' },
+    ],
+    druid: [
+      { id: 'cenarionWard', key: '8' }, { id: 'genesis', key: '9' }, { id: 'tranquility', key: '0' },
+    ],
+  };
   function read(healerId) {
     const healer = activeHealer(healerId);
     if (!cache.has(healer.id)) {
       let saved;
       try { saved = JSON.parse(storage?.getItem(prefix + healer.id)); } catch { /* Use defaults. */ }
-      cache.set(healer.id, restoreAbilitySettings(healer.combatSpells, saved));
+      cache.set(healer.id, restoreAbilitySettings(healer.combatSpells, saved, talentSpells[healer.id] || []));
     }
     return cache.get(healer.id);
   }
@@ -59,15 +67,19 @@ export function createAbilitySettings(storage) {
     try { storage?.setItem(prefix + id, JSON.stringify(settings)); } catch { /* Retain session settings. */ }
   }
   return {
-    spells(healerId) {
-      const settings = read(healerId), spells = activeHealer(healerId).combatSpells;
-      return settings.order.map(id => ({ ...spells.find(s => s.id === id), key: settings.bindings[id] }));
+    spells(healerId, candidates = null) {
+      const settings = read(healerId), spells = candidates || activeHealer(healerId).combatSpells;
+      return settings.order.flatMap(id => {
+        const spell = spells.find(candidate => candidate.id === id);
+        return spell ? [{ ...spell, key: settings.bindings[id] }] : [];
+      });
     },
     move(healerId, sourceId, targetId) {
-      const spells = activeHealer(healerId).combatSpells;
-      const source = spells.find(s => s.id === sourceId), target = spells.find(s => s.id === targetId);
-      if (!source || !target || sourceId === targetId || (source.section || 'healing') !== (target.section || 'healing')) return false;
       const settings = read(healerId), order = [...settings.order];
+      if (!order.includes(sourceId) || !order.includes(targetId) || sourceId === targetId) return false;
+      const catalog = [...activeHealer(healerId).combatSpells, ...(talentSpells[activeHealer(healerId).id] || [])];
+      const section = id => catalog.find(spell => spell.id === id)?.section || 'healing';
+      if (section(sourceId) !== section(targetId)) return false;
       const destination = order.indexOf(targetId);
       order.splice(order.indexOf(sourceId), 1); order.splice(destination, 0, sourceId);
       save(healerId, { ...settings, order }); return true;

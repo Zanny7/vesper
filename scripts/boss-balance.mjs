@@ -26,7 +26,7 @@ const priestBuilds = [
   { 'conservation-of-faith': 2, 'post-haste': 1 },
   { 'conservation-of-faith': 2, 'post-haste': 2 },
   { 'conservation-of-faith': 2, 'post-haste': 2, 'lingering-prayer': 1 },
-  { 'conservation-of-faith': 2, 'post-haste': 2, 'lingering-prayer': 1, 'threefold-penance': 1 },
+  { 'conservation-of-faith': 2, 'post-haste': 2, 'lingering-prayer': 1, 'fourfold-penance': 1 },
 ];
 const druidBuilds = [
   {},

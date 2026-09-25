@@ -40,9 +40,12 @@ const runs = new ChapterRuns(abilityStorage);
 const equipment = new Equipment(abilityStorage);
 const loadout = healerId => {
   const party = equipment.party(healerId), spells = abilitySettings.spells(healerId);
-  if (healerId === 'priest') return priestTalentLoadout(party, spells, talents?.state('priest').allocations);
-  if (healerId === 'druid') return druidTalentLoadout(party, spells, talents?.state('druid').allocations);
-  return { party, spells };
+  const adjusted = healerId === 'priest'
+    ? priestTalentLoadout(party, spells, talents?.state('priest').allocations)
+    : healerId === 'druid'
+      ? druidTalentLoadout(party, spells, talents?.state('druid').allocations)
+      : { party, spells };
+  return { ...adjusted, spells: abilitySettings.spells(healerId, adjusted.spells) };
 };
 const party = healerId => loadout(healerId).party;
 const resetLoadout = healerId => { const next = loadout(healerId); game.setLoadout(next.party, next.spells); };

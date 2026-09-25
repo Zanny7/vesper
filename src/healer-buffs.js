@@ -14,7 +14,7 @@ const DEFINITIONS = {
   },
   divineFervor: {
     name: 'Divine Fervor', icon: 'wings', color: '#9ed8b3',
-    effect: value => `Increases your casting speed by ${Math.round(value.speed * 100)}%.`,
+    effect: value => `Increases your casting speed by ${Math.round(value.speed * 100)}% and reduces all spell Mana costs by ${Math.round(value.manaReduction * 100)}%.`,
     present: (value, time) => ({ remaining: Math.max(0, value.expires - time) }),
   },
 };

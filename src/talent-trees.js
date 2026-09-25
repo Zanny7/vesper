@@ -1,19 +1,21 @@
-// Definitions are presentation and progression data only. Their combat effects
-// are implemented in the healer-specific talent issues that follow BAT-31.
+import { PRIEST_TALENT_VALUES } from './data.js';
+
+const priestValues = PRIEST_TALENT_VALUES;
+
 export const TALENT_TREES = {
   priest: [
-    { id: 'conservation-of-faith', row: 1, maxRank: 2, name: 'Conservation of Faith', description: 'Increase Mana regeneration by 10% per rank.' },
-    { id: 'quick-remedy', row: 1, maxRank: 2, name: 'Quick Remedy', description: 'Reduce Flash Heal Mana cost by 3 per rank.' },
-    { id: 'measured-casting', row: 1, maxRank: 2, name: 'Measured Casting', description: 'Reduce Greater Heal cast time: 3.0 → 2.8 → 2.5 sec.' },
-    { id: 'post-haste', row: 2, maxRank: 2, name: 'Post-Haste', description: 'Flash Heal stores a stack for the next Greater Heal or Prayer.' },
-    { id: 'focused-penance', row: 2, maxRank: 2, name: 'Focused Penance', description: 'Reduce Penance cooldown: 12 → 10 → 8 sec.' },
-    { id: 'lingering-prayer', row: 2, name: 'Lingering Prayer', description: 'Prayer adds a short healing-over-time effect to every ally.' },
-    { id: 'threefold-penance', row: 3, name: 'Threefold Penance', description: 'Penance gains a third main bolt and a smart healing bolt.' },
-    { id: 'echo-of-grace', row: 3, name: 'Echo of Grace', description: 'Flash Heal and Greater Heal echo 20% healing to another wounded ally.' },
-    { id: 'light-unspent', row: 3, name: 'Light Unspent', description: 'Redistribute half of Prayer of Healing’s direct overhealing.' },
-    { id: 'twin-penance', row: 4, name: 'Twin Penance', description: 'Penance gains a second charge.' },
-    { id: 'sanctuary', row: 4, name: 'Sanctuary', description: 'Grant the party 20% damage reduction for 10 sec.' },
-    { id: 'divine-fervor', row: 4, name: 'Divine Fervor', description: 'Grant 20% Haste or companion attack speed for 20 sec.' },
+    { id: 'conservation-of-faith', row: 1, maxRank: 2, name: 'Conservation of Faith', description: `Increase the Priest’s Mana regeneration by ${priestValues.conservationOfFaith.manaRegenPerRank * 100}% / ${priestValues.conservationOfFaith.manaRegenPerRank * 200}%.` },
+    { id: 'binding-light', row: 1, maxRank: 2, name: 'Binding Light', description: `Flash Heal also heals the lowest-health eligible other living ally for ${priestValues.bindingLight.effectiveHealRatioByRank[1] * 100}% / ${priestValues.bindingLight.effectiveHealRatioByRank[2] * 100}% of the primary target’s effective heal.` },
+    { id: 'early-mercy', row: 1, maxRank: 2, name: 'Early Mercy', description: `Greater Heal delivers ${priestValues.earlyMercy.provisionalRatioByRank[1] * 100}% / ${priestValues.earlyMercy.provisionalRatioByRank[2] * 100}% of its heal halfway through the cast, then the remainder at completion. Mana is charged once when casting starts; interrupting before halfway gives no heal, while interrupting afterward keeps the provisional heal. Mana is not refunded.` },
+    { id: 'post-haste', row: 2, maxRank: 2, name: 'Post-Haste', description: `Each Flash Heal grants one stack, up to 1 / 2. The next Greater Heal or Prayer of Healing consumes one stack, reducing its cast time and Mana cost by ${priestValues.postHaste.castAndManaReduction * 100}%.` },
+    { id: 'focused-penance', row: 2, maxRank: 2, name: 'Focused Penance', description: `Subtract ${priestValues.focusedPenance.cooldownReductionPerRank}s / ${priestValues.focusedPenance.cooldownReductionPerRank * 2}s from Penance’s current base cooldown.` },
+    { id: 'lingering-prayer', row: 2, name: 'Lingering Prayer', description: `After Prayer of Healing, each target still below ${priestValues.lingeringPrayer.threshold * 100}% Health receives a ${priestValues.lingeringPrayer.duration}s HoT worth ${priestValues.lingeringPrayer.ratio * 100}% of that target’s direct heal (${priestValues.lingeringPrayer.interval}s ticks).` },
+    { id: 'fourfold-penance', row: 3, name: 'Fourfold Penance', description: `Penance fires ${priestValues.fourfoldPenance.mainBolts} main bolts at its target and one additional bolt that heals the lowest-health other living ally; all four bolts use the normal Penance healing or damage rules.` },
+    { id: 'echo-of-grace', row: 3, name: 'Echo of Grace', description: `Flash Heal and Greater Heal also heal the lowest-health other wounded ally for ${priestValues.echoOfGrace.ratio * 100}% of their direct heal.` },
+    { id: 'light-unspent', row: 3, name: 'Light Unspent', description: `Prayer of Healing shares ${priestValues.lightUnspent.overhealRatio * 100}% of its direct overhealing evenly among allies still injured after its direct heals.` },
+    { id: 'twin-penance', row: 4, name: 'Twin Penance', description: `Penance stores ${priestValues.twinPenance.charges} charges. Each charge recharges in its current cooldown time; recharges occur one at a time.` },
+    { id: 'sanctuary', row: 4, name: 'Sanctuary', description: `Instantly reduces all party damage taken by ${priestValues.sanctuary.reduction * 100}% for ${priestValues.sanctuary.duration}s. ${priestValues.sanctuary.cooldown}s cooldown.` },
+    { id: 'divine-fervor', row: 4, name: 'Divine Fervor', description: `Instantly grants the Priest ${priestValues.divineFervor.speed * 100}% Haste and reduces all spell Mana costs by ${priestValues.divineFervor.manaReduction * 100}% for ${priestValues.divineFervor.duration}s. ${priestValues.divineFervor.cooldown}s cooldown.` },
   ],
   druid: [
     { id: 'preserved-growth', row: 1, name: 'Preserved Growth', description: 'Swiftmend no longer consumes its required HoT.' },

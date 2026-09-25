@@ -12,11 +12,12 @@ export function setupTeamAbilities({ settings, onChange, getLoadout }) {
   const feedback = document.querySelector('#ability-bind-feedback');
   const left = document.querySelector('#ability-move-left'), right = document.querySelector('#ability-move-right');
   let healerId, configuring = null, drag = null, suppressClick = false;
-  const spells = () => settings.spells(healerId);
+  const spells = () => getLoadout(healerId).spells;
   const buttonFor = id => [...root.querySelectorAll('[data-ability]')].find(el => el.dataset.ability === id);
   function render() {
-    const abilities = spells(), sections = [...new Set(abilities.map(s => s.section || 'healing'))];
-    const loadout = getLoadout(healerId), preview = new Combat(undefined, Math.random, loadout.party, loadout.spells);
+    const loadout = getLoadout(healerId), abilities = loadout.spells;
+    const sections = [...new Set(abilities.map(s => s.section || 'healing'))];
+    const preview = new Combat(undefined, Math.random, loadout.party, loadout.spells);
     root.innerHTML = sections.map(section => `<div class="ability-bar team-ability-bar" role="group" aria-label="${activeHealer(healerId).role} ${section} abilities" aria-describedby="ability-instructions">${abilities.filter(s => (s.section || 'healing') === section).map(s => {
       const resolved = loadout.spells.find(spell => spell.id === s.id) || s;
       return `<button type="button" class="spell" data-ability="${s.id}" data-icon="${s.icon}" aria-haspopup="dialog" aria-label="Configure ${s.name}, key ${s.key}" data-tooltip="${abilityTooltip(preview, resolved)}\nDrag to reorder · Right-click to rebind">${abilityIcon(s)}</button>`;

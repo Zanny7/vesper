@@ -1,6 +1,20 @@
 export const CONFIG = { mana: 600, baseMana: 30, manaRegen: 2, step: 1 / 60, enrage: 150 };
 export const ATONEMENT_RATIO = 1;
 export const DAMAGE_TYPES = ['Physical', 'Magic', 'Bleed', 'Chaos'];
+export const PRIEST_TALENT_VALUES = Object.freeze({
+  conservationOfFaith: Object.freeze({ manaRegenPerRank: .1 }),
+  bindingLight: Object.freeze({ effectiveHealRatioByRank: Object.freeze([0, .15, .30]) }),
+  earlyMercy: Object.freeze({ provisionalRatioByRank: Object.freeze([0, .30, .50]), midpoint: .5 }),
+  postHaste: Object.freeze({ castAndManaReduction: .20 }),
+  focusedPenance: Object.freeze({ cooldownReductionPerRank: 2 }),
+  lingeringPrayer: Object.freeze({ ratio: .30, duration: 6, interval: 2, threshold: .70 }),
+  fourfoldPenance: Object.freeze({ mainBolts: 3 }),
+  echoOfGrace: Object.freeze({ ratio: .20 }),
+  lightUnspent: Object.freeze({ overhealRatio: .40 }),
+  twinPenance: Object.freeze({ charges: 2 }),
+  sanctuary: Object.freeze({ reduction: .20, duration: 12, cooldown: 60 }),
+  divineFervor: Object.freeze({ speed: .20, manaReduction: .20, duration: 15, cooldown: 60 }),
+});
 export const SLOTS = {
   healer: ['Weapon', 'Tome', 'Trinket', 'Head', 'Chest', 'Legs'],
   tank: ['Weapon', 'Shield', 'Trinket', 'Head', 'Chest', 'Legs'],

@@ -36,6 +36,7 @@ export class Battlefield {
       if (e.type === 'heal') { this.effects.push({ ...base, duration: 1.3 }); this.hits[e.target] = { time: this.clock, heal: true }; }
       if (e.type === 'damage') { this.hits[e.target] = { time: this.clock, heal: false }; this.effects.push({ ...base, duration: 1.1 }); }
       if (e.type === 'bolt') this.effects.push({ ...base, duration: e.travel });
+      if (e.type === 'buff') this.effects.push({ ...base, duration: 1.4 });
       if (e.type === 'rangedAttack') { this.effects.push({ ...base, duration: 0.4 }); this.attacks[e.source] = this.clock; }
       if (e.type === 'attack') { this.attacks[e.source] = this.clock; this.effects.push({ ...base, duration: 0.45 }); }
       if (e.type === 'bossAttack') this.attacks.boss = this.clock;
@@ -322,6 +323,17 @@ export class Battlefield {
     }
     if(e.type==='damage'){
       c.globalAlpha=1-progress;c.font='12px "DM Sans",sans-serif';c.textAlign='center';c.fillStyle='#edaaa0';c.shadowColor='#000';c.shadowBlur=5;c.fillText(`−${formatNumber(e.amount)}`,p.x+22,p.y-15-progress*30);
+    }
+    if(e.type==='buff'){
+      c.globalAlpha=1-progress;c.globalCompositeOperation='lighter';
+      const targets=e.targets?.length?e.targets:[e.target].filter(Boolean);
+      const color=e.source==='sanctuary'?'#d9cf9b':'#f1d27e';
+      for(const id of targets){
+        const target=this.point(id),scale=1+progress*1.8;
+        this.glow(c,target.x,target.y+8,30+progress*20,color+'22');
+        this.ellipse(c,target.x,target.y+22,19*scale,8*scale,null,color,2);
+        this.ellipse(c,target.x,target.y+22,13*scale,5*scale,null,color+'88',1);
+      }
     }
     if(e.type==='attack'){
       const a=this.point(e.source),b=this.point('boss');

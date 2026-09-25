@@ -30,6 +30,24 @@ test('production Priest and Druid definitions expose all twelve named talents', 
   }
 });
 
+test('legacy Priest talent IDs migrate to their redesigned names and persist', () => {
+  const storage = disk();
+  storage.setItem('vesper-talents-v1', JSON.stringify({
+    version: 1,
+    healers: { priest: {
+      milestones: Array.from({ length: 8 }, (_, index) => `ch1:${index}`),
+      allocations: { 'quick-remedy': 2, 'measured-casting': 1, 'threefold-penance': 1 },
+    } },
+  }));
+  const talents = new TalentProgression(storage, TALENT_TREES);
+  assert.deepEqual(talents.state('priest').allocations, {
+    'binding-light': 2, 'early-mercy': 1, 'fourfold-penance': 1,
+  });
+  const persisted = JSON.parse(storage.getItem('vesper-talents-v1'));
+  assert.equal(persisted.healers.priest.allocations['quick-remedy'], undefined);
+  assert.equal(persisted.healers.priest.allocations['binding-light'], 2);
+});
+
 test('earned points, ranks and row rules remain independent per healer', () => {
   const storage = disk(), talents = new TalentProgression(storage, trees); award(talents, 'priest', 8); award(talents, 'druid', 1);
   assert.equal(talents.spend('priest', 'priest-4').ok, false);

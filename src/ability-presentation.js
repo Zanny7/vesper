@@ -32,12 +32,14 @@ export function abilityTooltip(game, spell, target = null) {
     if (damageBolts.length) lines.push(`Enemy: ${damageBolts.length} ${damageBolts.length === 1 ? 'bolt' : 'bolts'} for ${n(damageBolts[0].damage)} damage each (${n(damageBolts.reduce((total, bolt) => total + bolt.damage, 0))} total)${spell.id === 'penance' ? '; each hit triggers Atonement' : ''}.`);
     if (value.smartBolt) lines.push(`An additional smart bolt heals the lowest-health other ally for ${n(value.smartBolt)}. Main-target bolts are unchanged.`);
   } else {
-    if (value.direct > 0) {
+  if (value.direct > 0) {
       const baseDirect = value.direct - (value.hotBonus?.current || 0) * (value.hotBonus?.perHot || 0);
       lines.push(`Heal ${spell.party ? 'each living ally' : 'one ally'} for ${n(baseDirect)}${value.hotBonus ? ` plus ${n(value.hotBonus.perHot)} per active Druid HoT type (up to ${value.hotBonus.max})` : ''}.`);
     }
     if (value.damage > 0) lines.push(`Deal ${n(value.damage)} damage to the enemy${spell.atonement ? ' and trigger Atonement' : ''}.`);
   }
+  if (spell.bindingLight) lines.push(`Binding Light: after Flash Heal, heal the lowest-health eligible other living ally for ${n(spell.bindingLight.ratio * 100)}% of this target’s effective heal; overhealing does not count.`);
+  if (spell.earlyMercy) lines.push(`Early Mercy: deliver ${n(spell.earlyMercy.ratio * 100)}% of Greater Heal halfway through this cast and the remainder at completion. Mana is charged once when casting starts; interrupting before halfway grants no heal, and interrupting afterward keeps the provisional heal. Mana is not refunded.`);
   if (value.hot) lines.push(`HoT: ${n(value.hot.tick)} healing every ${n(value.hot.interval)}s for ${n(value.hot.duration)}s (${value.hot.ticks} ticks, ${n(value.hot.tick * value.hot.ticks)} total${spell.party ? ' per ally' : ''}${value.hot.pending ? ` including ${n(value.hot.pending)} carried healing` : ''}).`);
   if (spell.hot && !spell.overgrowth) lines.push(spell.party ? 'Each living ally receives a separate HoT; recasting refreshes its duration.' : 'Recasting refreshes the HoT duration and tick timer.');
   if (value.dot) lines.push(`DoT: ${n(value.dot.tick)} damage every ${n(value.dot.interval)}s for ${n(value.dot.duration)}s (${value.dot.ticks} ticks, ${n(value.dot.tick * value.dot.ticks)} total${value.dot.pending ? ` including ${n(value.dot.pending)} carried damage` : ''}); recasting carries pending damage.`);
@@ -51,13 +53,13 @@ export function abilityTooltip(game, spell, target = null) {
   if (spell.overgrowth) lines.push(value.overgrowth ? 'Overgrowth: usable during cooldown with a 1s base cast; carries remaining HoT healing into the refresh.' : 'Overgrowth: may also be cast during cooldown with a 1s base cast and a carried-over HoT.');
   if (value.hot?.pending && value.duration > 0) lines.push('Carried healing shown is available now and may change during the cast.');
   if (spell.echoOfGrace) lines.push(`Also heals the lowest-health other wounded ally for ${n(value.direct * spell.echoOfGrace.ratio)}.`);
-  if (value.lingering) lines.push(`Adds Lingering Prayer: ${n(value.lingering.tick)} healing every ${n(value.lingering.interval)}s for ${n(value.lingering.duration)}s (${value.lingering.ticks} ticks, ${n(value.lingering.tick * value.lingering.ticks)} total per ally).`);
+  if (value.lingering) lines.push(`Lingering Prayer: if a target remains below ${n(spell.lingeringPrayer.threshold * 100)}% Health after this direct heal, add ${n(value.lingering.tick)} healing every ${n(value.lingering.interval)}s for ${n(value.lingering.duration)}s (${value.lingering.ticks} ticks, ${n(value.lingering.tick * value.lingering.ticks)} total for that target).`);
   if (spell.atonement || value.bolts.some(bolt => bolt.damage > 0)) lines.push(`Atonement heals the lowest-health living ally for ${n(ATONEMENT_RATIO * 100)}% of actual damage dealt; it does not Crit separately.`);
   if (spell.lightUnspent) lines.push(`${n(spell.lightUnspent.ratio * 100)}% of direct overhealing is shared among injured allies.`);
-  if (spell.postHaste && spell.id === 'flash') lines.push(`Grants a Post-Haste stack (up to ${spell.postHaste.maxStacks}) for Greater Heal or Prayer.`);
-  if (value.postHaste) lines.push('Post-Haste: this cast uses one stack, reducing Mana cost and cast time by 20%.');
+  if (spell.postHaste && spell.id === 'flash') lines.push(`Grants a Post-Haste stack (up to ${spell.postHaste.maxStacks}) for Greater Heal or Prayer; each stack reduces its cast time and Mana cost by ${n(spell.postHaste.reduction * 100)}%.`);
+  if (value.postHaste) lines.push(`Post-Haste: this cast uses one stack, reducing Mana cost and cast time by ${n(spell.postHaste.reduction * 100)}%.`);
   if (spell.sanctuary) lines.push(`Reduce party damage taken by ${n(spell.sanctuary.reduction * 100)}% for ${n(spell.sanctuary.duration)}s.`);
-  if (spell.divineFervor) lines.push(`Grant the healer ${n(spell.divineFervor.speed * 100)}% Haste or a companion the same Attack Speed for ${n(spell.divineFervor.duration)}s.`);
+  if (spell.divineFervor) lines.push(`Grant the Priest ${n(spell.divineFervor.speed * 100)}% Haste and reduce all spell Mana costs by ${n(spell.divineFervor.manaReduction * 100)}% for ${n(spell.divineFervor.duration)}s. This cost reduction multiplies with Post-Haste.`);
   if (spell.ward) lines.push(`Ward an ally for ${n(spell.ward.duration)}s; the next damage grants ${n(spell.ward.healingReceived * 100)}% more healing received for ${n(spell.ward.triggerDuration)}s.`);
   if (spell.genesis) lines.push(`Extend active Druid HoTs by ${n(spell.genesis.extension)}s, adding normal ticks.`);
   if (spell.cooldown) lines.push(`${n(spell.cooldown)}s cooldown${value.overgrowth ? ' (base cooldown continues)' : ''}.`);

@@ -4,6 +4,8 @@ import { SPELLS } from '../src/data.js';
 import { bindingFromEvent, normalizeBinding, restoreAbilitySettings, createAbilitySettings } from '../src/ability-settings.js';
 import { Combat } from '../src/combat.js';
 import { activeParty } from '../src/healers.js';
+import { partyForHealer } from '../src/data.js';
+import { priestTalentLoadout } from '../src/priest-talents.js';
 
 function storage() {
   const saved = new Map();
@@ -60,4 +62,20 @@ test('configured order and keys keep spell mechanics intact when consumed by com
   for (let i = 0; i < 90; i++) game.step();
   assert.equal(game.party[0].hp, 190);
   assert.deepEqual(game.buffs, {});
+});
+
+test('talent-granted Priest spells retain bar order and custom keybinds across reloads', () => {
+  const disk = storage(), settings = createAbilitySettings(disk);
+  const priestSpells = (current, allocations) => {
+    const base = current.spells('priest');
+    return current.spells('priest', priestTalentLoadout(partyForHealer('priest'), base, allocations).spells);
+  };
+  const allocations = { sanctuary: 1, 'divine-fervor': 1 };
+  assert.deepEqual(priestSpells(settings, allocations).slice(-2).map(spell => [spell.id, spell.key]), [['sanctuary', '7'], ['divineFervor', '8']]);
+  assert.equal(settings.move('priest', 'sanctuary', 'penance'), true);
+  assert.equal(settings.bind('priest', 'divineFervor', 'Ctrl+Alt+Q').ok, true);
+  const restored = createAbilitySettings(disk);
+  const spells = priestSpells(restored, allocations);
+  assert.ok(spells.findIndex(spell => spell.id === 'sanctuary') < spells.findIndex(spell => spell.id === 'penance'));
+  assert.equal(spells.find(spell => spell.id === 'divineFervor').key, 'Ctrl+Alt+Q');
 });

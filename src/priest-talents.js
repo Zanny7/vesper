@@ -1,4 +1,4 @@
-import { CONFIG } from './data.js';
+import { PRIEST_TALENT_VALUES } from './data.js';
 
 const rank = (allocations, id) => allocations?.[id] || 0;
 const TALENT_KEYS = '7890ABCDEFGHIJKLMNOPQRSTUVWXYZ';
@@ -12,48 +12,52 @@ function talentSpell(base, usedKeys) {
 // Talent definitions remain progression data. This adapter creates an encounter
 // loadout, keeping the base spell book and party data immutable.
 export function priestTalentLoadout(party, spells, allocations = {}) {
+  const values = PRIEST_TALENT_VALUES;
   const conservation = rank(allocations, 'conservation-of-faith');
-  const quickRemedy = rank(allocations, 'quick-remedy');
-  const measuredCasting = rank(allocations, 'measured-casting');
+  const bindingLight = rank(allocations, 'binding-light');
+  const earlyMercy = rank(allocations, 'early-mercy');
   const postHaste = rank(allocations, 'post-haste');
   const focusedPenance = rank(allocations, 'focused-penance');
   const lingeringPrayer = rank(allocations, 'lingering-prayer');
-  const threefoldPenance = rank(allocations, 'threefold-penance');
+  const fourfoldPenance = rank(allocations, 'fourfold-penance');
   const echoOfGrace = rank(allocations, 'echo-of-grace');
   const lightUnspent = rank(allocations, 'light-unspent');
   const twinPenance = rank(allocations, 'twin-penance');
   const sanctuary = rank(allocations, 'sanctuary');
   const divineFervor = rank(allocations, 'divine-fervor');
   const adjustedParty = party.map(member => member.label === 'HEALER'
-    ? { ...member, manaRegen: member.manaRegen * (1 + conservation * .1) }
+    ? { ...member, manaRegen: member.manaRegen * (1 + conservation * values.conservationOfFaith.manaRegenPerRank) }
     : member);
   const adjustedSpells = spells.map(spell => {
     if (spell.id === 'flash') return {
       ...spell,
-      cost: spell.cost - quickRemedy * 3 / CONFIG.baseMana,
-      ...(postHaste ? { postHaste: { maxStacks: postHaste } } : {}),
-      ...(echoOfGrace ? { echoOfGrace: { ratio: .2 } } : {}),
+      ...(bindingLight ? { bindingLight: { ratio: values.bindingLight.effectiveHealRatioByRank[bindingLight] } } : {}),
+      ...(postHaste ? { postHaste: { maxStacks: postHaste, reduction: PRIEST_TALENT_VALUES.postHaste.castAndManaReduction } } : {}),
+      ...(echoOfGrace ? { echoOfGrace: { ratio: PRIEST_TALENT_VALUES.echoOfGrace.ratio } } : {}),
     };
     if (spell.id === 'greater') return {
       ...spell,
-      cast: [3, 2.8, 2.5][measuredCasting],
-      ...(postHaste ? { postHaste: { maxStacks: postHaste } } : {}),
-      ...(echoOfGrace ? { echoOfGrace: { ratio: .2 } } : {}),
+      ...(earlyMercy ? { earlyMercy: { ratio: values.earlyMercy.provisionalRatioByRank[earlyMercy], midpoint: values.earlyMercy.midpoint } } : {}),
+      ...(postHaste ? { postHaste: { maxStacks: postHaste, reduction: PRIEST_TALENT_VALUES.postHaste.castAndManaReduction } } : {}),
+      ...(echoOfGrace ? { echoOfGrace: { ratio: PRIEST_TALENT_VALUES.echoOfGrace.ratio } } : {}),
     };
     if (spell.id === 'prayer') return {
       ...spell,
-      ...(postHaste ? { postHaste: { maxStacks: postHaste } } : {}),
-      ...(lingeringPrayer ? { lingeringPrayer: { ratio: .2, duration: 6, interval: 2 } } : {}),
-      ...(lightUnspent ? { lightUnspent: { ratio: .5 } } : {}),
+      ...(postHaste ? { postHaste: { maxStacks: postHaste, reduction: PRIEST_TALENT_VALUES.postHaste.castAndManaReduction } } : {}),
+      ...(lingeringPrayer ? { lingeringPrayer: { ...values.lingeringPrayer } } : {}),
+      ...(lightUnspent ? { lightUnspent: { ratio: values.lightUnspent.overhealRatio } } : {}),
     };
     if (spell.id === 'penance') return {
       ...spell,
-      cooldown: [12, 10, 8][focusedPenance],
-      ...(twinPenance ? { charges: 2 } : {}),
-      ...(threefoldPenance ? {
-        heal: spell.ticks[0].heal * 3,
-        ticks: [2 / 3, 4 / 3, 2].map(at => ({ at, heal: spell.ticks[0].heal, damage: spell.ticks[0].damage })),
-        smartHealingBolt: { at: 2, heal: spell.ticks[0].heal },
+      cooldown: Math.max(0, spell.cooldown - focusedPenance * values.focusedPenance.cooldownReductionPerRank),
+      ...(twinPenance ? { charges: PRIEST_TALENT_VALUES.twinPenance.charges } : {}),
+      ...(fourfoldPenance ? {
+        heal: spell.ticks[0].heal * PRIEST_TALENT_VALUES.fourfoldPenance.mainBolts,
+        ticks: Array.from({ length: PRIEST_TALENT_VALUES.fourfoldPenance.mainBolts }, (_, index) => ({
+          at: spell.cast * (index + 1) / PRIEST_TALENT_VALUES.fourfoldPenance.mainBolts,
+          heal: spell.ticks[0].heal, damage: spell.ticks[0].damage,
+        })),
+        smartHealingBolt: { at: spell.cast, heal: spell.ticks[0].heal },
       } : {}),
     };
     return { ...spell };
@@ -61,13 +65,16 @@ export function priestTalentLoadout(party, spells, allocations = {}) {
   const usedKeys = new Set(adjustedSpells.map(spell => spell.key));
   if (sanctuary) adjustedSpells.push(talentSpell({
     id: 'sanctuary', name: 'Sanctuary', icon: 'shield', cast: 0, cost: 0, heal: 0, party: true,
-    cooldown: 90, sanctuary: { duration: 10, reduction: .2 }, color: '#d9cf9b', effectSummary: '20% party damage reduction',
-    description: 'Reduce all damage taken by the party by 20% for 10 seconds.',
+    cooldown: values.sanctuary.cooldown, sanctuary: { duration: values.sanctuary.duration, reduction: values.sanctuary.reduction }, color: '#d9cf9b', effectSummary: `${values.sanctuary.reduction * 100}% party damage reduction`,
+    description: `Reduce party damage taken by ${values.sanctuary.reduction * 100}% for ${values.sanctuary.duration} seconds. ${values.sanctuary.cooldown}-second cooldown.`,
   }, usedKeys));
   if (divineFervor) adjustedSpells.push(talentSpell({
     id: 'divineFervor', name: 'Divine Fervor', icon: 'sun', cast: 0, cost: 0, heal: 0,
-    cooldown: 90, divineFervor: { duration: 20, speed: .2 }, color: '#f1d27e', effectSummary: '20% Haste or Attack Speed',
-    description: 'Grant the healer 20% Haste or a companion 20% Attack Speed for 20 seconds.',
+    selfTarget: true,
+    cooldown: values.divineFervor.cooldown,
+    divineFervor: { duration: values.divineFervor.duration, speed: values.divineFervor.speed, manaReduction: values.divineFervor.manaReduction },
+    color: '#f1d27e', effectSummary: `${values.divineFervor.speed * 100}% Haste and ${values.divineFervor.manaReduction * 100}% reduced Mana cost`,
+    description: `Grant the Priest ${values.divineFervor.speed * 100}% Haste and ${values.divineFervor.manaReduction * 100}% reduced spell Mana costs for ${values.divineFervor.duration} seconds. ${values.divineFervor.cooldown}-second cooldown.`,
   }, usedKeys));
   return { party: adjustedParty, spells: adjustedSpells };
 }

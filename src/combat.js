@@ -58,7 +58,10 @@ export class Combat {
   }
   manaCost(spell) {
     const postHaste = Boolean(spell.postHaste && this.buffs.postHaste > 0 && ['greater', 'prayer'].includes(spell.id));
-    return spell.cost * CONFIG.baseMana * (postHaste ? .8 : 1);
+    const fervor = this.buffs.divineFervor?.expires > this.time && this.buffs.divineFervor.target === this.healer?.id
+      ? 1 - (this.buffs.divineFervor.manaReduction || 0)
+      : 1;
+    return spell.cost * CONFIG.baseMana * (postHaste ? 1 - spell.postHaste.reduction : 1) * fervor;
   }
   resolveCast(spell) {
     const overgrowth = Boolean(spell.overgrowth && (this.cooldowns[spell.id] || 0) > this.time + 0.00001);
@@ -66,7 +69,7 @@ export class Combat {
     return {
       cost: this.manaCost(spell), overgrowth, postHaste,
       hasteMultiplier: this.hasteMultiplier(),
-      duration: hastedTime(overgrowth ? 1 : spell.cast, this.haste()) * (postHaste ? .8 : 1),
+      duration: hastedTime(overgrowth ? 1 : spell.cast, this.haste()) * (postHaste ? 1 - spell.postHaste.reduction : 1),
     };
   }
   enemyDotProfile(spell) {
@@ -96,7 +99,7 @@ export class Combat {
     const effect = spell.lingeringPrayer;
     const interval = hastedTime(effect.interval, this.haste());
     const ticks = Math.max(1, ticksForDuration(effect.duration, interval));
-    return { tick: direct * effect.ratio / Math.round(effect.duration / effect.interval), ticks, interval, duration: effect.duration };
+    return { tick: direct * effect.ratio / Math.max(1, ticks), ticks, interval, duration: effect.duration };
   }
   resolveSpell(spell, target = null) {
     const cast = this.resolveCast(spell);
@@ -115,11 +118,12 @@ export class Combat {
   }
   begin(id, targetId) {
     const spell = this.spells.find(s => s.id === id);
-    const enemyTarget = targetId === 'boss';
-    const target = this.party.find(p => p.id === targetId);
     if (this.status !== 'running') return { ok: false, reason: 'Begin or resume the encounter first.' };
     if (this.cast) return { ok: false, reason: 'Already casting. Press Esc to cancel.' };
     if (!spell) return { ok: false, reason: 'Unknown spell.' };
+    if (spell.selfTarget) targetId = this.healer?.id;
+    const enemyTarget = targetId === 'boss';
+    const target = this.party.find(p => p.id === targetId);
     if (spell.enemy) targetId = 'boss';
     else if (spell.dualTarget && !enemyTarget && (!target || target.hp <= 0)) return { ok: false, reason: 'Select a living ally or the enemy.' };
     else if (!spell.party && !spell.dualTarget && (!target || target.hp <= 0)) return { ok: false, reason: 'Select a living ally.' };
@@ -131,7 +135,7 @@ export class Combat {
     const resolved = this.resolveCast(spell);
     const { postHaste, cost, duration, hasteMultiplier: castHaste } = resolved;
     if (this.mana < cost) return { ok: false, reason: 'Not enough mana.' };
-    const spendAtStart = duration === 0 || spell.channel;
+    const spendAtStart = duration === 0 || spell.channel || !!spell.earlyMercy;
     if (spendAtStart) this.mana -= cost;
     if (postHaste) {
       this.buffs.postHaste--;
@@ -184,7 +188,7 @@ export class Combat {
   }
   applyLingeringPrayer(target, spell, direct) {
     const hot = spell.lingeringPrayer;
-    if (!hot) return;
+    if (!hot || target.hp <= 0 || target.hp / target.maxHp >= hot.threshold) return;
     const profile = this.lingeringPrayerProfile(spell, direct);
     target.hots = target.hots.filter(effect => effect.source !== 'lingering-prayer');
     target.hots.push({
@@ -226,15 +230,13 @@ export class Combat {
     });
   }
   applyDivineFervor(target, effect) {
-    const buff = { target: target.id, expires: this.time + effect.duration, speed: effect.speed };
-    if (target.label === 'HEALER') this.buffs.divineFervor = buff;
-    else {
-      const oldMultiplier = this.hasteMultiplier(target);
-      target.attackSpeedBuff = buff;
-      const newMultiplier = this.hasteMultiplier(target);
-      target.nextAttack = this.time + Math.max(0, target.nextAttack - this.time) * oldMultiplier / newMultiplier;
-    }
-    this.emit('buff', { source: 'divineFervor', target: target.id, duration: effect.duration });
+    const healer = this.healer;
+    if (!healer) return;
+    const buff = { target: healer.id, expires: this.time + effect.duration, speed: effect.speed, manaReduction: effect.manaReduction };
+    this.buffs.divineFervor = buff;
+    healer.helpfulEffects = (healer.helpfulEffects || []).filter(current => current.source !== 'divineFervor');
+    healer.helpfulEffects.push({ source: 'divineFervor', name: 'Divine Fervor', icon: 'sun', color: '#f1d27e', expires: buff.expires });
+    this.emit('buff', { source: 'divineFervor', target: healer.id, duration: effect.duration });
   }
   applyDefenseModifier(targetOrId, effect) {
     const target = typeof targetOrId === 'string'
@@ -283,9 +285,13 @@ export class Combat {
       }
       if (spell.sanctuary) {
         this.buffs.sanctuary = { expires: this.time + spell.sanctuary.duration, reduction: spell.sanctuary.reduction };
+        for (const member of this.party) {
+          member.helpfulEffects = (member.helpfulEffects || []).filter(current => current.source !== 'sanctuary');
+          if (member.hp > 0) member.helpfulEffects.push({ source: 'sanctuary', name: 'Sanctuary', icon: 'shield', color: spell.color, expires: this.buffs.sanctuary.expires });
+        }
         this.emit('buff', { source: spell.id, targets: this.party.filter(member => member.hp > 0).map(member => member.id), duration: spell.sanctuary.duration });
       }
-      if (spell.divineFervor) this.applyDivineFervor(this.party.find(member => member.id === cast.target), spell.divineFervor);
+      if (spell.divineFervor) this.applyDivineFervor(this.healer, spell.divineFervor);
       if (spell.ward) {
         const target = this.party.find(member => member.id === cast.target);
         target.ward = { ...spell.ward, expires: this.time + spell.ward.duration };
@@ -303,14 +309,19 @@ export class Combat {
           target.hots = target.hots.filter(hot => hot !== consumed);
         }
         const amount = this.directHealing(spell, target);
-        const result = amount > 0 ? this.heal(target, amount, spell.id) : { effective: 0, overheal: 0 };
+        const earlyMercyRemainder = spell.earlyMercy ? 1 - spell.earlyMercy.ratio : 1;
+        const result = amount > 0 ? this.heal(target, amount * earlyMercyRemainder, spell.id) : { effective: 0, overheal: 0 };
+        if (spell.bindingLight && result.effective > 0) {
+          const secondary = this.lowestHealthAlly(target.id);
+          if (secondary) this.heal(secondary, result.effective * spell.bindingLight.ratio, 'binding-light');
+        }
         if (spell.bloom && amount > 0) for (const ally of this.party) {
           if (ally.hp > 0 && ally.id !== target.id) this.heal(ally, amount * spell.bloom.ratio, 'blooming-swiftmend');
         }
         if (spell.lightUnspent) directOverheal += result.overheal;
         if (spell.echoOfGrace) {
           const echoTarget = this.lowestHealthAlly(target.id);
-          if (echoTarget) this.heal(echoTarget, amount * spell.echoOfGrace.ratio, 'echo-of-grace');
+          if (echoTarget) this.heal(echoTarget, amount * earlyMercyRemainder * spell.echoOfGrace.ratio, 'echo-of-grace');
         }
         lingering.push({ target, amount });
         if (spell.hot) this.applyHot(target, spell, { carryPending: cast.overgrowth });
@@ -439,6 +450,18 @@ export class Combat {
     const cast = this.cast;
     if (cast) {
       cast.elapsed += dt;
+      if (cast.spell.earlyMercy && !cast.provisionalDelivered
+        && cast.elapsed + 1e-8 >= cast.duration * cast.spell.earlyMercy.midpoint) {
+        const target = this.party.find(member => member.id === cast.target);
+        const amount = this.directHealing(cast.spell, target) * cast.spell.earlyMercy.ratio;
+        const result = target?.hp > 0 ? this.heal(target, amount, 'early-mercy') : { effective: 0 };
+        if (cast.spell.echoOfGrace && result.effective > 0) {
+          const echoTarget = this.lowestHealthAlly(target.id);
+          if (echoTarget) this.heal(echoTarget, amount * cast.spell.echoOfGrace.ratio, 'echo-of-grace');
+        }
+        cast.provisionalDelivered = true;
+        this.emit('provisionalHeal', { target: cast.target, spell: cast.spell.id, ratio: cast.spell.earlyMercy.ratio });
+      }
       if (cast.spell.channel) {
         const ticks = cast.spell.ticks;
         const channelElapsed = cast.elapsed * cast.hasteMultiplier;
@@ -459,7 +482,7 @@ export class Combat {
           const target = this.lowestHealthAlly(cast.target === 'boss' ? null : cast.target, false);
           if (target) {
             this.emit('bolt', { target: target.id, spell: cast.spell.id, travel: 0.3 / cast.hasteMultiplier, bolt: ticks.length, smart: true });
-            this.heal(target, smartBolt.heal * healingParts(cast.spell, this.spellPower).factor, 'threefold-penance');
+            this.heal(target, smartBolt.heal * healingParts(cast.spell, this.spellPower).factor, 'fourfold-penance');
           }
           cast.smartLanded = true;
         }

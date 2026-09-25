@@ -2,7 +2,8 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { partyEffects, effectMarkup } from '../src/party-effects.js';
 import { Combat } from '../src/combat.js';
-import { DRUID_SPELLS, partyForHealer } from '../src/data.js';
+import { DRUID_SPELLS, partyForHealer, SPELLS } from '../src/data.js';
+import { priestTalentLoadout } from '../src/priest-talents.js';
 const sources = effects => effects.map(e => e.source);
 test('display follows real HoT application, refresh, consumption and expiry', () => {
   const g = new Combat({ name: 'Test', maxHp: 99999, strike: { first: Infinity }, mechanics: [] }, () => 0, partyForHealer('druid'), DRUID_SPELLS);
@@ -47,4 +48,24 @@ test('temporary defense modifiers appear as helpful or negative status effects w
   assert.deepEqual(sources(effects.helpful), ['ward']);
   assert.match(effectMarkup(effects.negative, g.time), /Sundered Armor \(-30 Armor\): 8s remaining/);
   assert.match(effectMarkup(effects.helpful, g.time), /Ward \(\+20 Resistance\): 12s remaining/);
+});
+
+test('Priest HoTs and active talent buffs appear in the party effect strip', () => {
+  const loadout = priestTalentLoadout(partyForHealer('priest'), SPELLS, {
+    'lingering-prayer': 1, sanctuary: 1, 'divine-fervor': 1,
+  });
+  const g = new Combat({ name: 'Test', maxHp: 99999, strike: { first: Infinity }, mechanics: [] }, () => .99, loadout.party, loadout.spells);
+  g.start(); g.party.forEach(member => { member.hp = 1; });
+  g.begin('prayer', 'tank'); for (let i = 0; i < 180; i++) g.step();
+  const lingering = partyEffects(g.party[0], g.time).helpful.find(effect => effect.source === 'lingering-prayer');
+  assert.equal(lingering.name, 'Lingering Prayer');
+  assert.ok(lingering.icon);
+  assert.equal(lingering.expires, g.time + 6);
+  assert.match(effectMarkup([lingering], g.time), /Lingering Prayer: 6s remaining/);
+
+  g.begin('sanctuary', 'tank');
+  assert.ok(partyEffects(g.party[0], g.time).helpful.some(effect => effect.source === 'sanctuary'));
+  assert.ok(partyEffects(g.party[1], g.time).helpful.some(effect => effect.source === 'sanctuary'));
+  g.begin('divineFervor', 'tank');
+  assert.ok(partyEffects(g.healer, g.time).helpful.some(effect => effect.source === 'divineFervor'));
 });

@@ -22,15 +22,27 @@ export function validateTalentTree(tree) {
   return errors;
 }
 
-function cleanHealerState(saved, tree) {
+const PRIEST_TALENT_ID_MIGRATIONS = Object.freeze({
+  'quick-remedy': 'binding-light',
+  'measured-casting': 'early-mercy',
+  'threefold-penance': 'fourfold-penance',
+});
+
+function cleanHealerState(saved, tree, healerId) {
   const milestones = Array.isArray(saved?.milestones)
     ? [...new Set(saved.milestones.filter(id => typeof id === 'string' && id))]
     : [];
   const talents = new Map((tree || []).map(talent => [talent.id, talent]));
   const allocations = {};
-  if (isRecord(saved?.allocations)) for (const [id, rank] of Object.entries(saved.allocations)) {
-    const talent = talents.get(id);
-    if (talent && Number.isInteger(rank) && rank > 0) allocations[id] = Math.min(rank, rankCap(talent));
+  if (isRecord(saved?.allocations)) {
+    const entries = Object.entries(saved.allocations);
+    for (const [oldId, rank] of entries) {
+      const id = healerId === 'priest' ? PRIEST_TALENT_ID_MIGRATIONS[oldId] || oldId : oldId;
+      // A save already using the new identifier takes precedence over its legacy alias.
+      if (PRIEST_TALENT_ID_MIGRATIONS[oldId] && Object.hasOwn(saved.allocations, id)) continue;
+      const talent = talents.get(id);
+      if (talent && Number.isInteger(rank) && rank > 0) allocations[id] = Math.min(rank, rankCap(talent));
+    }
   }
   // A damaged or older save may claim more ranks than it has earned. Remove the
   // deepest rows first, then later declarations, until the budget is valid.
@@ -71,7 +83,7 @@ export class TalentProgression {
       if (isRecord(saved?.healers)) this.healers = saved.healers;
       this.legacyCampaignReconciled = saved?.legacyCampaignReconciled === true;
     } catch { /* Start clean when storage is unavailable or unreadable. */ }
-    for (const healerId of new Set([...Object.keys(this.healers), ...Object.keys(this.trees)])) this.healers[healerId] = cleanHealerState(this.healers[healerId], this.trees[healerId]);
+    for (const healerId of new Set([...Object.keys(this.healers), ...Object.keys(this.trees)])) this.healers[healerId] = cleanHealerState(this.healers[healerId], this.trees[healerId], healerId);
     this.save();
   }
 
@@ -81,7 +93,7 @@ export class TalentProgression {
 
   ensure(healerId) {
     if (typeof healerId !== 'string' || !healerId) return null;
-    if (!this.healers[healerId]) this.healers[healerId] = cleanHealerState(null, this.trees[healerId]);
+    if (!this.healers[healerId]) this.healers[healerId] = cleanHealerState(null, this.trees[healerId], healerId);
     return this.healers[healerId];
   }
 
