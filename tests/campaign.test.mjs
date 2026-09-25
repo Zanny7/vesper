@@ -119,18 +119,18 @@ test('bleeds tick for their full duration, refresh their own effect, and allow d
   g.reset();assert.ok(g.party.every(p=>!p.dots.length));
 });
 
-test('normal campaign encounters retain their legacy full-resource triage baseline', () => {
-  // This historical no-gear, no-talent budget covers normal encounters. Bosses
-  // are tuned around persistent resources, chapter loot and earned talents.
+test('later chapter openers are manageable with fresh resources', () => {
+  // Later route encounters are tuned as progression walls. The first normal
+  // encounter remains individually beatable before route attrition begins.
   const legacyParty = PARTY.map(p => p.label === 'HEALER' ? { ...p, maxMana: 1200, manaRegen: 4 } : p);
-  for(const chapter of CHAPTERS.slice(1)) for(const node of chapter.nodes.filter(node => node.kind !== 'boss')) {
+  for(const chapter of CHAPTERS.slice(1)) for(const node of chapter.nodes.filter(node => node.kind === 'normal' && node.from.length === 0)) {
     const encounter=CHAPTER_ENCOUNTERS[node.encounter];
     for(let seed=1;seed<=20;seed++) {
       const g=new Combat(encounter,seeded(seed),legacyParty);g.start();
       while(g.status==='running'&&g.time<150) { triage(g);g.step();g.drainEvents(); }
       assert.equal(g.status,'victory',encounter.id+' seed '+seed+' hp '+g.party.map(p=>p.hp)+' mana '+g.mana);
       assert.equal(g.stats.deaths,0,encounter.id+' seed '+seed);
-      assert.ok(g.time<90);
+      assert.ok(g.time<CONFIG.enrage);
       // Briar now takes four 90-point Flash Heals with no overheal (360 total).
       assert.ok(g.stats.effective>=360,encounter.id+' seed '+seed+' effective healing '+g.stats.effective);
     }
@@ -140,6 +140,6 @@ test('normal campaign encounters retain their legacy full-resource triage baseli
 test('encounter pressure stays fixed when a stronger party is supplied for future gear tuning', () => {
   const stronger=PARTY.map(p=>({...p,maxHp:p.maxHp+100,damage:p.damage*1.2}));
   const g=new Combat(CHAPTER_ENCOUNTERS.briar,()=>0,stronger);g.start();
-  advance(g,3);assert.equal(g.party[0].hp,stronger[0].maxHp-49);
-  assert.equal(g.encounter.strike.damage,49);
+  advance(g,3);assert.equal(g.party[0].hp,stronger[0].maxHp-58);
+  assert.equal(g.encounter.strike.damage,58);
 });

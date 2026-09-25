@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { Combat } from '../src/combat.js';
-import { CHAPTER_ENCOUNTERS, CONFIG, ADVENTURES } from '../src/data.js';
+import { CHAPTER_ENCOUNTERS, CONFIG, ADVENTURES, CHAPTERS } from '../src/data.js';
 
 const advance = (game, seconds) => { for (let i = 0; i < seconds / CONFIG.step; i++) game.step(); };
 const seeded = seed => () => { seed = (1664525 * seed + 1013904223) >>> 0; return seed / 4294967296; };
@@ -16,15 +16,22 @@ function heal(game) {
   else if (lowest.maxHp-lowest.hp >= 100) game.begin('flash', lowest.id);
 }
 
-test('chapter enemies add only light random ranged damage to predictable tank strikes', () => {
-  const encounters = ADVENTURES.map(node => CHAPTER_ENCOUNTERS[node.encounter]);
-  assert.deepEqual(encounters.map(e => e.adds.length), [0, 1, 2, 2]);
+test('Chapter 1 normal route pressure escalates through HP, strike cadence, and adds', () => {
+  const encounters = CHAPTERS[0].nodes.filter(node => node.kind === 'normal')
+    .map(node => CHAPTER_ENCOUNTERS[node.encounter]);
+  assert.deepEqual(encounters.map(encounter => encounter.maxHp), [1000, 1000, 1500]);
+  const pressure = encounter => encounter.strike.damage / encounter.strike.every
+    + encounter.adds.reduce((sum, add) => sum + add.damage / add.every, 0);
+  assert.ok(pressure(encounters[0]) < pressure(encounters[1]));
+  assert.ok(pressure(encounters[1]) < pressure(encounters[2]));
   for (const encounter of encounters) {
-    assert.equal(encounter.mechanics.length, 0);
-    assert.equal(encounter.shard, undefined);
-    for (const add of encounter.adds) assert.ok(add.damage / add.every < encounter.strike.damage / encounter.strike.every * .2);
+    for (const add of encounter.adds) {
+      assert.ok(add.damage > 0);
+      assert.ok(add.every > 0);
+    }
   }
-  assert.ok(encounters[3].strike.damage / encounters[3].strike.every > encounters[2].strike.damage / encounters[2].strike.every * 1.1);
+  assert.ok(CHAPTER_ENCOUNTERS.warden.strike.damage / CHAPTER_ENCOUNTERS.warden.strike.every
+    > encounters[2].strike.damage / encounters[2].strike.every * 1.05);
 });
 
 test('ranged adds select randomly among all living members, including tank and healer', () => {

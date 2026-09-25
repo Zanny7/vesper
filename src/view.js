@@ -43,7 +43,7 @@ export function setupView(scene) {
     toggle.setAttribute('aria-pressed', String(enabled));
     toggle.title = enabled ? 'Return to the detailed panel layout' : 'Expand the battlefield and use compact overlay controls';
     try { localStorage.setItem('vesper-view', enabled ? 'immersive' : 'panels'); } catch { /* Storage may be unavailable. */ }
-    // ResizeObserver handles the resized canvas; no encounter reset or pause.
+    // ResizeObserver handles changes after the view is visible.
   }
 
   toggle.addEventListener('click', () => setImmersive(!immersivePreferred));
@@ -74,6 +74,9 @@ export function setupView(scene) {
       encounterVisible = visible;
       document.body.classList.toggle('immersive', immersivePreferred && visible);
       scene.immersive = immersivePreferred && visible;
+      // The canvas was initialized while its screen was hidden. Size it as
+      // soon as the encounter is shown so the first rendered frame is visible.
+      if (visible) scene.resize();
     },
   };
 }

@@ -180,7 +180,7 @@ function renderUI(){
   $('#strike-countdown').textContent = `· ${Math.max(0, Math.ceil(game.nextStrike-game.time))}s`;
   for (const add of game.adds) $('[data-add-countdown="'+add.id+'"]').textContent = `· ${Math.max(0, Math.ceil(add.next-game.time))}s`;
   for (const m of game.mechanics) {
-    const row = $('[data-mechanic="'+m.id+'"]');
+    const row = $('#timeline [data-mechanic="'+m.id+'"]');
     row.querySelector('b').textContent = `· ${Math.max(0, Math.ceil(m.next-game.time))}s`;
     row.classList.toggle('warning', m.warned);
   }

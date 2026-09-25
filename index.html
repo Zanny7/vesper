@@ -10,7 +10,7 @@
       <h1 id="home-title" tabindex="-1">A moment of light<br>in the dark.</h1>
       <p>Vesper is a quiet test of attention. Your party will face the darkness; you will keep their light alive.</p>
       <button class="primary" data-navigate="adventures">Begin your vigil <span>→</span></button>
-      <p class="dev-tools"><a id="dev-catalogue-link" href="/dev/catalogue.html" target="_blank" rel="noopener" hidden>Development · Gear catalogue ↗</a></p>
+      <p class="dev-tools"><a id="dev-catalogue-link" href="/dev/catalogue.html" target="_blank" rel="noopener" hidden>Development · Gear catalogue ↗</a><button id="dev-reset-button" class="quiet dev-reset-button" hidden>Development · Hard Reset</button></p>
     </section>
     <div class="home-ritual" aria-hidden="true"><span></span><i></i><b></b></div>
   </main>
@@ -97,6 +97,12 @@ Flash Heal grants a charge, up to two. Each Greater Heal or Prayer consumes one 
   <dialog id="leave-encounter" aria-labelledby="leave-title" aria-describedby="leave-description">
     <span class="eyebrow">LEAVE THE SANCTUM</span><h2 id="leave-title">Abandon this encounter?</h2><p id="leave-description">Leaving ends this encounter. Your chapter route and resources before this fight remain available when you return.</p>
     <div class="dialog-actions"><button class="quiet" id="stay-encounter" autofocus>Stay in encounter</button><button class="primary" id="confirm-leave">Abandon encounter</button></div>
+  </dialog>
+  <dialog id="dev-reset-dialog" aria-labelledby="dev-reset-title" aria-describedby="dev-reset-description">
+    <span class="eyebrow">DEVELOPMENT / LOCAL TESTING</span><h2 id="dev-reset-title">Reset all local progress?</h2>
+    <p id="dev-reset-description">This permanently clears the local Vesper save and starts a completely new game. All local Vesper progress and settings will be erased.</p>
+    <p id="dev-reset-error" role="alert" hidden></p>
+    <div class="dialog-actions"><button class="quiet" id="cancel-dev-reset" autofocus>Cancel</button><button class="primary" id="confirm-dev-reset">Reset Everything</button></div>
   </dialog>
   <dialog id="help"><button id="close-help" class="quiet close-dialog" aria-label="Close help">✕</button><span class="eyebrow">THE HEALER'S FIELD GUIDE</span><h2>Keep their light alive.</h2><p>Hover over a party frame and press the key shown on a spell. Without a hovered frame, spells use your selected target. Click a party frame for an ally, or the enemy heading for the hostile target. Use <b>↑ / ↓</b> to return to ally selection.</p><div class="help-spells"></div><p id="help-haste" hidden></p><p><b>Atonement:</b> Priest spell damage heals the living party member with the lowest health percentage for 40% of the damage. It is wasted when everyone is at full health.</p><p><b>Watch the whole party.</b> Enemies strike Aldric while supporting enemies pressure the party. Your party focuses the leader; supporting enemies flee when it falls. Chapter 2 introduces party-wide damage. Chapter 3 highlights two or three allies before a split attack. Chapter 4 adds timed bleeds: heal through their ticks until they expire; there is no dispel.</p><p><b>Space</b> pauses. <b>Esc</b> cancels a cast; spent mana and cooldowns are not refunded. Switching targets during a cast does not redirect it. The encounter continues when you leave the tab; use Pause or Space to stop it manually.</p><p>Defeat follows if you or the tank die, fewer than three allies remain, or the 150-second enrage expires. Defeat each leader to advance. Complete all four encounters in Chapter 1. In later chapters, follow either branch and defeat the final boss to unlock the next chapter. Replay a completed chapter to try another path.</p><button class="primary" id="help-done">Understood</button></dialog>
   <script type="module" src="/src/main.js"></script>
