@@ -15,7 +15,10 @@ export function shamanTalentLoadout(party, spells, allocations = {}) {
     if (spell.id === 'healingWave' || spell.id === 'chainHeal') return {
       ...spell,
       ...(rank('tidal-waves') ? { tidalWavesEligible: values.tidalWaves } : {}),
-      ...(rank('earthliving') ? { earthlivingDuration: spell.id === 'healingWave' ? values.earthliving.waveDuration : values.earthliving.chainDuration } : {}),
+      ...(rank('earthliving') ? {
+        earthlivingDuration: spell.id === 'healingWave' ? values.earthliving.waveDuration : values.earthliving.chainDuration,
+        earthlivingHealingRatio: values.earthliving.healingRatio,
+      } : {}),
       ...(spell.id === 'healingWave' ? {
         ...(rank('tidal-momentum') ? { tidalMomentum: rank('tidal-momentum') * values.tidalMomentum.healingBonusPerRank } : {}),
         ...(rank('ancestral-echo') ? { ancestralEcho: values.ancestralEcho.effectiveRatio } : {}),

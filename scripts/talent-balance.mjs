@@ -78,7 +78,7 @@ export function equipmentFor(chapter, healer, seed) {
   return equipment;
 }
 
-function decide(game, healer, skill = 'veryGood') {
+export function decide(game, healer, skill = 'veryGood') {
   if (game.cast || game.status !== 'running') return;
   const threshold = value => value * ({ veryGood: 1, average: .85, weak: .75 }[skill] ?? 1);
   const living = game.party.filter(p => p.hp > 0);

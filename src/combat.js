@@ -190,13 +190,13 @@ export class Combat {
     return [primary, ...this.party.filter(member => member.hp > 0 && member.id !== primary.id)
       .sort((a, b) => a.hp / a.maxHp - b.hp / b.maxHp)].slice(0, spell.chain.targets);
   }
-  applySurge(target, spell, empowered, duration = spell.hot.duration) {
+  applySurge(target, spell, empowered, duration = spell.hot.duration, healingRatio = 1) {
     const existing = this.activeHots(target, [spell.id])[0];
     const interval = existing?.interval || hastedTime(spell.hot.interval, this.haste());
     const next = existing?.next ?? this.time + interval;
     const expires = Math.min((existing?.expires ?? this.time) + duration, this.time + spell.hot.bankCap);
     const ticks = next <= expires + 1e-8 ? ticksForDuration(expires - next, interval) + 1 : 0;
-    const newTick = healingParts(spell, this.spellPower).hotTick * this.healingEmpowerment(spell, empowered);
+    const newTick = healingParts(spell, this.spellPower).hotTick * this.healingEmpowerment(spell, empowered) * healingRatio;
     // Each queued tick owns its original healing. Extending never buffs or scales the old bank again.
     const bankedHealing = [...(existing?.bankedHealing || []), ...Array(Math.max(0, ticks - (existing?.ticks || 0))).fill(newTick)].slice(0, ticks);
     const hot = existing || { ...spell.hot, source: spell.id, name: spell.name, icon: spell.icon, color: spell.color,
@@ -476,7 +476,7 @@ export class Combat {
         if (spell.hot) this.applyHot(target, spell, { carryPending: cast.overgrowth, empowered: cast.unleashLife });
         if (spell.earthlivingDuration) {
           const surge = this.spells.find(candidate => candidate.id === 'recurringSurge');
-          if (surge) this.applySurge(target, surge, cast.unleashLife, spell.earthlivingDuration);
+          if (surge) this.applySurge(target, surge, cast.unleashLife, spell.earthlivingDuration, spell.earthlivingHealingRatio ?? 1);
         }
         if (spell.nourishingTouch) this.extendHots(target, spell.nourishingTouch.extraTicks);
       }

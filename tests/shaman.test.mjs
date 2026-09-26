@@ -50,7 +50,7 @@ test('Shaman registers a separate six-spell baseline loadout, bindings and share
 
 test('all six baseline spells use the agreed actual Mana, cast time and cooldown', () => {
   for (const [id, cost, duration, cooldown] of [
-    ['recurringSurge', 24, 1.5, 0], ['healingWave', 28, 2.5, 0], ['riptide', 32, 0, 6],
+    ['recurringSurge', 24, 1.5, 0], ['healingWave', 32, 2.5, 0], ['riptide', 36, 0, 6],
     ['chainHeal', 65, 2.5, 0], ['unleashLife', 24, 0, 15], ['healingStream', 35, 0, 15],
   ]) {
     const game = setup();
@@ -68,7 +68,7 @@ test('Healing Wave heals exactly at completion and requires a living ally', () =
   assert.equal(game.begin('healingWave', 'boss').ok, false);
   assert.equal(game.begin('healingWave', 'tank').ok, true);
   advance(game, 2.5 - CONFIG.step); assert.equal(game.party[0].hp, 1);
-  advance(game, CONFIG.step); assert.equal(game.party[0].hp, 111);
+  advance(game, CONFIG.step); assert.equal(game.party[0].hp, 126);
   game.damage(game.party[1], 1000, 'test');
   assert.equal(game.begin('healingWave', 'rogue').ok, false);
 });
@@ -77,12 +77,12 @@ test('Surge has three baseline ticks including its final tick; extension preserv
   const game = setup(); cast(game, 'recurringSurge');
   const hot = surge(game), originalNext = hot.next, originalExpiry = hot.expires;
   advance(game, 2 - CONFIG.step); assert.equal(heals(game, 'recurringSurge').length, 0);
-  advance(game, CONFIG.step); assert.equal(game.party[0].hp, 45);
+  advance(game, CONFIG.step); assert.equal(game.party[0].hp, 37);
   cast(game, 'recurringSurge');
   assert.equal(surge(game), hot); near(hot.next, originalNext + 2); near(hot.expires, originalExpiry + 6);
   assert.equal(game.party[0].hots.length, 1);
   advance(game, 8.5);
-  assert.deepEqual(heals(game, 'recurringSurge').map(event => event.raw), Array(6).fill(44));
+  assert.deepEqual(heals(game, 'recurringSurge').map(event => event.raw), Array(6).fill(36));
   assert.equal(game.party[0].hots.length, 0);
 });
 
@@ -92,12 +92,12 @@ test('prestacking Surge adds coverage without stacks and the completion-time cap
   const hot = surge(game);
   near(hot.expires - game.time, 18); assert.equal(game.party[0].hots.length, 1);
   assert.equal(hot.bankedHealing.length, hot.ticks);
-  assert.ok(hot.bankedHealing.every(amount => amount === 44));
+  assert.ok(hot.bankedHealing.every(amount => amount === 36));
   const expected = heals(game, 'recurringSurge').length + hot.ticks;
   advance(game, 20);
   assert.equal(heals(game, 'recurringSurge').length, expected);
   assert.equal(game.party[0].hots.length, 0);
-  near(game.stats.effective + game.stats.overheal, expected * 44);
+  near(game.stats.effective + game.stats.overheal, expected * 36);
 });
 
 test('Surge has independent ally banks; overhealing spends ticks rather than saving them', () => {
@@ -107,7 +107,7 @@ test('Surge has independent ally banks; overhealing spends ticks rather than sav
   advance(game, 2); assert.ok(surge(game).next > tankNext);
   advance(game, 6);
   const tankTicks = heals(game, 'recurringSurge').filter(event => event.target === 'tank');
-  assert.equal(tankTicks.length, 3); assert.ok(tankTicks.every(event => event.amount === 0 && event.raw === 44));
+  assert.equal(tankTicks.length, 3); assert.ok(tankTicks.every(event => event.amount === 0 && event.raw === 36));
   assert.equal(heals(game, 'recurringSurge').filter(event => event.target === 'rogue').length, 3);
 });
 
@@ -151,7 +151,7 @@ test('Unleash Life stores one persistent empowerment, preserves it through insta
   assert.equal(game.begin('healingWave', 'tank').ok, true); near(game.cast.duration, 2);
   assert.equal(healerBuffs(game).find(buff => buff.id === 'unleashLife').reserved, 1);
   advance(game, 1); game.cancel(); assert.equal(game.buffs.unleashLife, 1); near(game.mana, mana);
-  cast(game, 'healingWave'); near(heals(game, 'healingWave').at(-1).raw, 132); near(game.mana, mana - 28);
+  cast(game, 'healingWave'); near(heals(game, 'healingWave').at(-1).raw, 150); near(game.mana, mana - 32);
   assert.equal(game.buffs.unleashLife, undefined);
   assert.equal(healerBuffs(game).some(buff => buff.id === 'unleashLife'), false);
   game.begin('healingWave', 'tank'); near(game.cast.duration, 2.5); game.cancel();
@@ -172,9 +172,9 @@ test('empowered Surge appends only empowered new ticks without changing the orig
   const hot = surge(game), next = hot.next;
   cast(game, 'unleashLife'); game.begin('recurringSurge', 'tank'); near(game.cast.duration, 1.2); finish(game);
   near(hot.next, next); assert.equal(game.buffs.unleashLife, undefined);
-  hot.bankedHealing.forEach((amount, index) => near(amount, index < 3 ? 44 : 52.8));
+  hot.bankedHealing.forEach((amount, index) => near(amount, index < 3 ? 36 : 43.2));
   advance(game, 12);
-  heals(game, 'recurringSurge').forEach((event, index) => near(event.raw, index < 3 ? 44 : 52.8));
+  heals(game, 'recurringSurge').forEach((event, index) => near(event.raw, index < 3 ? 36 : 43.2));
   assert.equal(heals(game, 'recurringSurge').length, 6);
 });
 
@@ -184,7 +184,7 @@ test('a fully clipped empowered Surge cannot retain extra tick strength beyond t
   cast(game, 'unleashLife'); cast(game, 'recurringSurge');
   const hot = surge(game);
   near(hot.expires - game.time, 18);
-  assert.ok(hot.bankedHealing.every(amount => amount === 44), 'no newly scheduled tick fits this clipped extension');
+  assert.ok(hot.bankedHealing.every(amount => amount === 36), 'no newly scheduled tick fits this clipped extension');
   assert.equal(game.buffs.unleashLife, undefined);
 });
 
@@ -228,8 +228,8 @@ test('Totem replacement leaves one instance and its ticks continue while casting
 test('Spell Power scales each new healing budget once, including chain and mixed spells', () => {
   const power = 30;
   for (const [id, expected, duration] of [
-    ['healingWave', 110 + power, 0], ['chainHeal', 352.968 + power, 0],
-    ['riptide', 202 + power, 18], ['recurringSurge', 132 + power, 6],
+    ['healingWave', 125 + power, 0], ['chainHeal', 352.968 + power, 0],
+    ['riptide', 202 + power, 18], ['recurringSurge', 108 + power, 6],
     ['unleashLife', 90 + power, 0], ['healingStream', 192 + power, 12],
   ]) {
     const game = setup({ spellPower: power }); cast(game, id); advance(game, duration);
@@ -238,7 +238,7 @@ test('Spell Power scales each new healing budget once, including chain and mixed
   const game = setup({ spellPower: power }); cast(game, 'recurringSurge');
   const old = surge(game).bankedHealing[0]; game.healer.spellPower = 60;
   cast(game, 'unleashLife'); cast(game, 'recurringSurge');
-  surge(game).bankedHealing.forEach((amount, index) => near(amount, index < 3 ? old : (44 + 60 / 3) * 1.2));
+  surge(game).bankedHealing.forEach((amount, index) => near(amount, index < 3 ? old : (36 + 60 / 3) * 1.2));
   const empowered = setup({ spellPower: power }); cast(empowered, 'unleashLife'); cast(empowered, 'chainHeal');
   near(heals(empowered, 'chainHeal').reduce((sum, event) => sum + event.raw, 0), (352.968 + power) * 1.2);
 });
@@ -246,10 +246,10 @@ test('Spell Power scales each new healing budget once, including chain and mixed
 test('Haste follows shared HoT and cast scaling; Totem remains six ticks and Crit rolls per heal', () => {
   const game = setup({ haste: 50, crit: 100 });
   game.begin('healingWave', 'tank'); near(game.cast.duration, 2.5 / 1.5); finish(game);
-  near(heals(game, 'healingWave')[0].raw, 165);
+  near(heals(game, 'healingWave')[0].raw, 187.5);
   cast(game, 'recurringSurge'); near(surge(game).interval, 2 / 1.5);
   advance(game, 6); assert.equal(heals(game, 'recurringSurge').length, 4);
-  heals(game, 'recurringSurge').forEach(event => near(event.raw, 66));
+  heals(game, 'recurringSurge').forEach(event => near(event.raw, 54));
   cast(game, 'healingStream'); advance(game, 12);
   assert.equal(game.events.filter(event => event.type === 'totemTick').length, 6);
 });
@@ -293,14 +293,14 @@ test('Shaman tooltips and effect indicators expose resolved healing, bank durati
   const game = setup(); cast(game, 'recurringSurge'); cast(game, 'unleashLife');
   const tooltip = id => abilityTooltip(game, game.spells.find(spell => spell.id === id), game.party[0]);
   assert.match(tooltip('recurringSurge'), /1.2s cast · 24 Mana/);
-  assert.match(tooltip('recurringSurge'), /52.8 healing every 2s/);
+  assert.match(tooltip('recurringSurge'), /43.2 healing every 2s/);
   assert.match(tooltip('recurringSurge'), /6s banked remaining/);
-  assert.match(tooltip('healingWave'), /2s cast · 28 Mana/);
-  assert.match(tooltip('healingWave'), /Heal one ally for 132/);
+  assert.match(tooltip('healingWave'), /2s cast · 32 Mana/);
+  assert.match(tooltip('healingWave'), /Heal one ally for 150/);
   assert.match(tooltip('chainHeal'), /126 → 100.8 → 80.6 → 64.5 → 51.6/);
   assert.match(tooltip('healingStream'), /6 ticks, 192 total/);
   assert.match(tooltip('riptide'), /27 healing every 3s/);
-  assert.match(effectDescription(partyEffects(game.party[0], game.time).helpful[0], game.time), /132 banked healing in 3 remaining ticks.*6s remaining/);
+  assert.match(effectDescription(partyEffects(game.party[0], game.time).helpful[0], game.time), /108 banked healing in 3 remaining ticks.*6s remaining/);
   const stored = healerBuffs(game).find(buff => buff.id === 'unleashLife');
   assert.equal(stored.stacks, 1); assert.equal(stored.remaining, null);
 });

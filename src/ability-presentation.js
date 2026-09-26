@@ -83,7 +83,8 @@ export function abilityTooltip(game, spell, target = null) {
   if (spell.earthlivingDuration) {
     const surge = game.spells.find(candidate => candidate.id === 'recurringSurge');
     const profile = game.hotProfile(surge, target);
-    lines.push(`Earthliving: each healed target gains ${n(spell.earthlivingDuration)}s of Recurring Surge at ${n(profile.tick)} per ${n(profile.interval)}s tick (${spell.earthlivingDuration / surge.hot.interval} normal ${spell.earthlivingDuration === surge.hot.interval ? 'tick' : 'ticks'}). Extend existing banks without resetting the next tick, capped at ${n(surge.hot.bankCap)}s. Current Surge strength and Spell Power apply once; Unleash affects only new ticks.`);
+    const ratio = spell.earthlivingHealingRatio ?? 1;
+    lines.push(`Earthliving: each healed target gains ${n(spell.earthlivingDuration)}s of Recurring Surge at ${n(profile.tick * ratio)} per ${n(profile.interval)}s tick (${spell.earthlivingDuration / surge.hot.interval} ${spell.earthlivingDuration === surge.hot.interval ? 'tick' : 'ticks'} at ${n(ratio * 100)}% strength). Extend existing banks without resetting the next tick, capped at ${n(surge.hot.bankCap)}s. Current Surge strength and Spell Power apply once; Unleash affects only new ticks. Paid Surge ticks keep full strength.`);
   }
   if (spell.sanctuary) lines.push(`Reduce party damage taken by ${n(spell.sanctuary.reduction * 100)}% for ${n(spell.sanctuary.duration)}s.`);
   if (spell.divineFervor) lines.push(`Grant the Priest ${n(spell.divineFervor.speed * 100)}% Haste and reduce all spell Mana costs by ${n(spell.divineFervor.manaReduction * 100)}% for ${n(spell.divineFervor.duration)}s. This cost reduction multiplies with Post-Haste.`);
