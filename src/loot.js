@@ -1,11 +1,13 @@
 import { CHAPTERS, GEAR } from './data.js';
-import { canEquipItem } from './item-model.js';
+import { canEquipItem, isHealerOwner } from './item-model.js';
 
 export const NORMAL_DROP_WEIGHTS = Object.freeze({ healer: 0.3, tank: 0.175, rogue: 0.175, mage: 0.175, ranger: 0.175 });
 // Hundredth-percent units represent the documented percentages exactly and
 // keep exact cumulative boundaries out of floating-point weight summation.
 const NORMAL_DROP_WEIGHT_UNITS = Object.freeze({ healer: 3000, tank: 1750, rogue: 1750, mage: 1750, ranger: 1750 });
-const OWNERS = ['priest', 'druid', 'tank', 'rogue', 'mage', 'ranger'];
+const OWNERS = ['priest', 'druid', 'shaman', 'tank', 'rogue', 'mage', 'ranger'];
+// Keep companion rotations fixed when the healer roster grows.
+const COMPANION_ROTATION_OFFSETS = Object.freeze({ tank: 2, rogue: 3, mage: 4, ranger: 5 });
 
 // Healer drops rotate through matching slots at matching encounter depths.
 // Companion rotations remain independent of the active healer.
@@ -22,11 +24,11 @@ export function buildNormalLootTables(chapters = CHAPTERS, catalogue = GEAR) {
       return value;
     };
     chapter.nodes.forEach((node, encounterIndex) => {
-      tables[node.encounter] = OWNERS.flatMap((owner, ownerIndex) => {
+      tables[node.encounter] = OWNERS.flatMap(owner => {
         const items = byOwner[owner];
-        if (owner === 'priest' || owner === 'druid')
+        if (isHealerOwner(owner))
           return items.length ? [items[depth(node) % items.length].id] : [];
-        return items.length ? [items[(encounterIndex + ownerIndex) % items.length].id] : [];
+        return items.length ? [items[(encounterIndex + COMPANION_ROTATION_OFFSETS[owner]) % items.length].id] : [];
       });
     });
   }

@@ -1,0 +1,1257 @@
+[
+  {
+    "chapter": 1,
+    "routes": [
+      [
+        "sentinel",
+        "keeper",
+        "watcher"
+      ]
+    ],
+    "healer": {
+      "priest": {
+        "Weapon": {
+          "authored": [
+            {
+              "id": "ch1-sepulcher-candle",
+              "ilvl": 3,
+              "budgetScore": 2,
+              "stats": {
+                "maxHp": 0,
+                "maxMana": 0,
+                "manaRegen": 0,
+                "spellPower": 10,
+                "haste": 0,
+                "crit": 0,
+                "armor": 0,
+                "resistance": 0
+              }
+            }
+          ],
+          "preBoss": [
+            "ch1-sepulcher-candle"
+          ],
+          "routeCoverage": "1/1",
+          "bonusOnly": []
+        },
+        "Tome": {
+          "authored": [
+            {
+              "id": "ch1-book-of-last-names",
+              "ilvl": 2,
+              "budgetScore": 1.71,
+              "stats": {
+                "maxHp": 0,
+                "maxMana": 60,
+                "manaRegen": 0,
+                "spellPower": 0,
+                "haste": 0,
+                "crit": 0,
+                "armor": 0,
+                "resistance": 0
+              }
+            }
+          ],
+          "preBoss": [
+            "ch1-book-of-last-names"
+          ],
+          "routeCoverage": "1/1",
+          "bonusOnly": []
+        },
+        "Trinket": {
+          "authored": [
+            {
+              "id": "ch1-bell-of-the-vigil",
+              "ilvl": 3,
+              "budgetScore": 4.8,
+              "stats": {
+                "maxHp": 0,
+                "maxMana": 0,
+                "manaRegen": 0.6,
+                "spellPower": 0,
+                "haste": 0,
+                "crit": 0,
+                "armor": 0,
+                "resistance": 0
+              }
+            }
+          ],
+          "preBoss": [
+            "ch1-bell-of-the-vigil"
+          ],
+          "routeCoverage": "1/1",
+          "bonusOnly": []
+        },
+        "Head": {
+          "authored": [
+            {
+              "id": "ch1-burial-linen-hood",
+              "ilvl": 1,
+              "budgetScore": 0.83,
+              "stats": {
+                "maxHp": 25,
+                "maxMana": 0,
+                "manaRegen": 0,
+                "spellPower": 0,
+                "haste": 0,
+                "crit": 0,
+                "armor": 0,
+                "resistance": 0
+              }
+            }
+          ],
+          "preBoss": [],
+          "routeCoverage": "0/1",
+          "bonusOnly": []
+        },
+        "Chest": {
+          "authored": [
+            {
+              "id": "ch1-vestment-of-quiet-prayer",
+              "ilvl": 2,
+              "budgetScore": 1.5,
+              "stats": {
+                "maxHp": 15,
+                "maxMana": 0,
+                "manaRegen": 0,
+                "spellPower": 0,
+                "haste": 0,
+                "crit": 0,
+                "armor": 0,
+                "resistance": 3
+              }
+            }
+          ],
+          "preBoss": [],
+          "routeCoverage": "0/1",
+          "bonusOnly": [
+            "ch1-vestment-of-quiet-prayer"
+          ]
+        },
+        "Legs": {
+          "authored": [
+            {
+              "id": "ch1-processional-gaiters",
+              "ilvl": 1,
+              "budgetScore": 0.67,
+              "stats": {
+                "maxHp": 0,
+                "maxMana": 0,
+                "manaRegen": 0,
+                "spellPower": 0,
+                "haste": 0,
+                "crit": 0,
+                "armor": 2,
+                "resistance": 0
+              }
+            }
+          ],
+          "preBoss": [],
+          "routeCoverage": "0/1",
+          "bonusOnly": [
+            "ch1-processional-gaiters"
+          ]
+        }
+      },
+      "druid": {
+        "Weapon": {
+          "authored": [
+            {
+              "id": "ch1-rootbound-crook",
+              "ilvl": 3,
+              "budgetScore": 2.1,
+              "stats": {
+                "maxHp": 15,
+                "maxMana": 0,
+                "manaRegen": 0,
+                "spellPower": 8,
+                "haste": 0,
+                "crit": 0,
+                "armor": 0,
+                "resistance": 0
+              }
+            }
+          ],
+          "preBoss": [
+            "ch1-rootbound-crook"
+          ],
+          "routeCoverage": "1/1",
+          "bonusOnly": []
+        },
+        "Tome": {
+          "authored": [
+            {
+              "id": "ch1-lichen-folio",
+              "ilvl": 2,
+              "budgetScore": 2.49,
+              "stats": {
+                "maxHp": 0,
+                "maxMana": 45,
+                "manaRegen": 0.15,
+                "spellPower": 0,
+                "haste": 0,
+                "crit": 0,
+                "armor": 0,
+                "resistance": 0
+              }
+            }
+          ],
+          "preBoss": [
+            "ch1-lichen-folio"
+          ],
+          "routeCoverage": "1/1",
+          "bonusOnly": []
+        },
+        "Trinket": {
+          "authored": [
+            {
+              "id": "ch1-amber-spore",
+              "ilvl": 3,
+              "budgetScore": 4.43,
+              "stats": {
+                "maxHp": 0,
+                "maxMana": 15,
+                "manaRegen": 0.5,
+                "spellPower": 0,
+                "haste": 0,
+                "crit": 0,
+                "armor": 0,
+                "resistance": 0
+              }
+            }
+          ],
+          "preBoss": [
+            "ch1-amber-spore"
+          ],
+          "routeCoverage": "1/1",
+          "bonusOnly": []
+        },
+        "Head": {
+          "authored": [
+            {
+              "id": "ch1-morel-cap",
+              "ilvl": 1,
+              "budgetScore": 1,
+              "stats": {
+                "maxHp": 20,
+                "maxMana": 0,
+                "manaRegen": 0,
+                "spellPower": 0,
+                "haste": 0,
+                "crit": 0,
+                "armor": 0,
+                "resistance": 1
+              }
+            }
+          ],
+          "preBoss": [],
+          "routeCoverage": "0/1",
+          "bonusOnly": []
+        },
+        "Chest": {
+          "authored": [
+            {
+              "id": "ch1-cryptmoss-mantle",
+              "ilvl": 2,
+              "budgetScore": 1.33,
+              "stats": {
+                "maxHp": 0,
+                "maxMana": 0,
+                "manaRegen": 0,
+                "spellPower": 0,
+                "haste": 0,
+                "crit": 0,
+                "armor": 2,
+                "resistance": 2
+              }
+            }
+          ],
+          "preBoss": [],
+          "routeCoverage": "0/1",
+          "bonusOnly": [
+            "ch1-cryptmoss-mantle"
+          ]
+        },
+        "Legs": {
+          "authored": [
+            {
+              "id": "ch1-rootstitch-leggings",
+              "ilvl": 1,
+              "budgetScore": 0.67,
+              "stats": {
+                "maxHp": 20,
+                "maxMana": 0,
+                "manaRegen": 0,
+                "spellPower": 0,
+                "haste": 0,
+                "crit": 0,
+                "armor": 0,
+                "resistance": 0
+              }
+            }
+          ],
+          "preBoss": [],
+          "routeCoverage": "0/1",
+          "bonusOnly": [
+            "ch1-rootstitch-leggings"
+          ]
+        }
+      }
+    },
+    "companionDifferences": []
+  },
+  {
+    "chapter": 2,
+    "routes": [
+      [
+        "briar",
+        "moth",
+        "choir"
+      ],
+      [
+        "briar",
+        "boar",
+        "mire"
+      ]
+    ],
+    "healer": {
+      "priest": {
+        "Weapon": {
+          "authored": [
+            {
+              "id": "ch2-briarheart-thurible",
+              "ilvl": 6,
+              "budgetScore": 5,
+              "stats": {
+                "maxHp": 0,
+                "maxMana": 0,
+                "manaRegen": 0.2,
+                "spellPower": 17,
+                "haste": 0,
+                "crit": 0,
+                "armor": 0,
+                "resistance": 0
+              }
+            }
+          ],
+          "preBoss": [
+            "ch2-briarheart-thurible"
+          ],
+          "routeCoverage": "2/2",
+          "bonusOnly": []
+        },
+        "Tome": {
+          "authored": [
+            {
+              "id": "ch2-litany-of-falling-leaves",
+              "ilvl": 5,
+              "budgetScore": 3.31,
+              "stats": {
+                "maxHp": 0,
+                "maxMana": 95,
+                "manaRegen": 0,
+                "spellPower": 3,
+                "haste": 0,
+                "crit": 0,
+                "armor": 0,
+                "resistance": 0
+              }
+            }
+          ],
+          "preBoss": [
+            "ch2-litany-of-falling-leaves"
+          ],
+          "routeCoverage": "2/2",
+          "bonusOnly": []
+        },
+        "Trinket": {
+          "authored": [
+            {
+              "id": "ch2-dewfall-rosary",
+              "ilvl": 6,
+              "budgetScore": 8.5,
+              "stats": {
+                "maxHp": 15,
+                "maxMana": 0,
+                "manaRegen": 1,
+                "spellPower": 0,
+                "haste": 0,
+                "crit": 0,
+                "armor": 0,
+                "resistance": 0
+              }
+            }
+          ],
+          "preBoss": [
+            "ch2-dewfall-rosary"
+          ],
+          "routeCoverage": "2/2",
+          "bonusOnly": []
+        },
+        "Head": {
+          "authored": [
+            {
+              "id": "ch2-canopy-mitre",
+              "ilvl": 4,
+              "budgetScore": 2,
+              "stats": {
+                "maxHp": 40,
+                "maxMana": 0,
+                "manaRegen": 0,
+                "spellPower": 0,
+                "haste": 0,
+                "crit": 0,
+                "armor": 0,
+                "resistance": 2
+              }
+            }
+          ],
+          "preBoss": [],
+          "routeCoverage": "0/2",
+          "bonusOnly": []
+        },
+        "Chest": {
+          "authored": [
+            {
+              "id": "ch2-rainblessed-surplice",
+              "ilvl": 5,
+              "budgetScore": 2.17,
+              "stats": {
+                "maxHp": 25,
+                "maxMana": 0,
+                "manaRegen": 0,
+                "spellPower": 0,
+                "haste": 0,
+                "crit": 0,
+                "armor": 4,
+                "resistance": 0
+              }
+            }
+          ],
+          "preBoss": [],
+          "routeCoverage": "0/2",
+          "bonusOnly": [
+            "ch2-rainblessed-surplice"
+          ]
+        },
+        "Legs": {
+          "authored": [
+            {
+              "id": "ch2-fernbound-buskins",
+              "ilvl": 4,
+              "budgetScore": 1.9,
+              "stats": {
+                "maxHp": 0,
+                "maxMana": 20,
+                "manaRegen": 0,
+                "spellPower": 0,
+                "haste": 0,
+                "crit": 0,
+                "armor": 0,
+                "resistance": 4
+              }
+            }
+          ],
+          "preBoss": [],
+          "routeCoverage": "0/2",
+          "bonusOnly": [
+            "ch2-fernbound-buskins"
+          ]
+        }
+      },
+      "druid": {
+        "Weapon": {
+          "authored": [
+            {
+              "id": "ch2-hartwood-scepter",
+              "ilvl": 6,
+              "budgetScore": 5.4,
+              "stats": {
+                "maxHp": 0,
+                "maxMana": 0,
+                "manaRegen": 0.3,
+                "spellPower": 15,
+                "haste": 0,
+                "crit": 0,
+                "armor": 0,
+                "resistance": 0
+              }
+            }
+          ],
+          "preBoss": [
+            "ch2-hartwood-scepter"
+          ],
+          "routeCoverage": "2/2",
+          "bonusOnly": []
+        },
+        "Tome": {
+          "authored": [
+            {
+              "id": "ch2-rainroot-codex",
+              "ilvl": 5,
+              "budgetScore": 3.09,
+              "stats": {
+                "maxHp": 0,
+                "maxMana": 80,
+                "manaRegen": 0,
+                "spellPower": 4,
+                "haste": 0,
+                "crit": 0,
+                "armor": 0,
+                "resistance": 0
+              }
+            }
+          ],
+          "preBoss": [
+            "ch2-rainroot-codex"
+          ],
+          "routeCoverage": "2/2",
+          "bonusOnly": []
+        },
+        "Trinket": {
+          "authored": [
+            {
+              "id": "ch2-moonwell-acorn",
+              "ilvl": 6,
+              "budgetScore": 7.87,
+              "stats": {
+                "maxHp": 0,
+                "maxMana": 0,
+                "manaRegen": 0.9,
+                "spellPower": 0,
+                "haste": 0,
+                "crit": 0,
+                "armor": 0,
+                "resistance": 2
+              }
+            }
+          ],
+          "preBoss": [
+            "ch2-moonwell-acorn"
+          ],
+          "routeCoverage": "2/2",
+          "bonusOnly": []
+        },
+        "Head": {
+          "authored": [
+            {
+              "id": "ch2-bramble-antlers",
+              "ilvl": 4,
+              "budgetScore": 1.83,
+              "stats": {
+                "maxHp": 35,
+                "maxMana": 0,
+                "manaRegen": 0,
+                "spellPower": 0,
+                "haste": 0,
+                "crit": 0,
+                "armor": 2,
+                "resistance": 0
+              }
+            }
+          ],
+          "preBoss": [],
+          "routeCoverage": "0/2",
+          "bonusOnly": []
+        },
+        "Chest": {
+          "authored": [
+            {
+              "id": "ch2-willowbark-coat",
+              "ilvl": 5,
+              "budgetScore": 2.67,
+              "stats": {
+                "maxHp": 30,
+                "maxMana": 0,
+                "manaRegen": 0,
+                "spellPower": 0,
+                "haste": 0,
+                "crit": 0,
+                "armor": 5,
+                "resistance": 0
+              }
+            }
+          ],
+          "preBoss": [],
+          "routeCoverage": "0/2",
+          "bonusOnly": [
+            "ch2-willowbark-coat"
+          ]
+        },
+        "Legs": {
+          "authored": [
+            {
+              "id": "ch2-streamreed-wraps",
+              "ilvl": 4,
+              "budgetScore": 1.9,
+              "stats": {
+                "maxHp": 0,
+                "maxMana": 20,
+                "manaRegen": 0,
+                "spellPower": 0,
+                "haste": 0,
+                "crit": 0,
+                "armor": 0,
+                "resistance": 4
+              }
+            }
+          ],
+          "preBoss": [],
+          "routeCoverage": "0/2",
+          "bonusOnly": [
+            "ch2-streamreed-wraps"
+          ]
+        }
+      }
+    },
+    "companionDifferences": []
+  },
+  {
+    "chapter": 3,
+    "routes": [
+      [
+        "gatekeeper",
+        "twins",
+        "furnace",
+        "harrier",
+        "bridge"
+      ],
+      [
+        "gatekeeper",
+        "ravens",
+        "furnace",
+        "harrier",
+        "bridge"
+      ],
+      [
+        "gatekeeper",
+        "twins",
+        "furnace",
+        "tribunal",
+        "bells"
+      ],
+      [
+        "gatekeeper",
+        "ravens",
+        "furnace",
+        "tribunal",
+        "bells"
+      ]
+    ],
+    "healer": {
+      "priest": {
+        "Weapon": {
+          "authored": [
+            {
+              "id": "ch3-lantern-of-unspent-dawn",
+              "ilvl": 9,
+              "budgetScore": 5.57,
+              "stats": {
+                "maxHp": 0,
+                "maxMana": 20,
+                "manaRegen": 0,
+                "spellPower": 25,
+                "haste": 0,
+                "crit": 0,
+                "armor": 0,
+                "resistance": 0
+              }
+            }
+          ],
+          "preBoss": [
+            "ch3-lantern-of-unspent-dawn"
+          ],
+          "routeCoverage": "4/4",
+          "bonusOnly": []
+        },
+        "Tome": {
+          "authored": [
+            {
+              "id": "ch3-canticles-in-copper",
+              "ilvl": 8,
+              "budgetScore": 4.71,
+              "stats": {
+                "maxHp": 0,
+                "maxMana": 130,
+                "manaRegen": 0,
+                "spellPower": 0,
+                "haste": 0,
+                "crit": 0,
+                "armor": 0,
+                "resistance": 3
+              }
+            }
+          ],
+          "preBoss": [
+            "ch3-canticles-in-copper"
+          ],
+          "routeCoverage": "4/4",
+          "bonusOnly": []
+        },
+        "Trinket": {
+          "authored": [
+            {
+              "id": "ch3-coalglass-hourglass",
+              "ilvl": 9,
+              "budgetScore": 13.6,
+              "stats": {
+                "maxHp": 0,
+                "maxMana": 0,
+                "manaRegen": 1.6,
+                "spellPower": 4,
+                "haste": 0,
+                "crit": 0,
+                "armor": 0,
+                "resistance": 0
+              }
+            }
+          ],
+          "preBoss": [
+            "ch3-coalglass-hourglass"
+          ],
+          "routeCoverage": "4/4",
+          "bonusOnly": []
+        },
+        "Head": {
+          "authored": [
+            {
+              "id": "ch3-crown-of-the-ash-saint",
+              "ilvl": 7,
+              "budgetScore": 2.83,
+              "stats": {
+                "maxHp": 55,
+                "maxMana": 0,
+                "manaRegen": 0,
+                "spellPower": 0,
+                "haste": 0,
+                "crit": 0,
+                "armor": 3,
+                "resistance": 0
+              }
+            }
+          ],
+          "preBoss": [
+            "ch3-crown-of-the-ash-saint"
+          ],
+          "routeCoverage": "4/4",
+          "bonusOnly": []
+        },
+        "Chest": {
+          "authored": [
+            {
+              "id": "ch3-furnace-chapel-vestments",
+              "ilvl": 8,
+              "budgetScore": 3.5,
+              "stats": {
+                "maxHp": 35,
+                "maxMana": 0,
+                "manaRegen": 0,
+                "spellPower": 0,
+                "haste": 0,
+                "crit": 0,
+                "armor": 0,
+                "resistance": 7
+              }
+            }
+          ],
+          "preBoss": [
+            "ch3-furnace-chapel-vestments"
+          ],
+          "routeCoverage": "4/4",
+          "bonusOnly": []
+        },
+        "Legs": {
+          "authored": [
+            {
+              "id": "ch3-cinderstep-sandals",
+              "ilvl": 7,
+              "budgetScore": 2.05,
+              "stats": {
+                "maxHp": 0,
+                "maxMana": 25,
+                "manaRegen": 0,
+                "spellPower": 0,
+                "haste": 0,
+                "crit": 0,
+                "armor": 4,
+                "resistance": 0
+              }
+            }
+          ],
+          "preBoss": [],
+          "routeCoverage": "0/4",
+          "bonusOnly": []
+        }
+      },
+      "druid": {
+        "Weapon": {
+          "authored": [
+            {
+              "id": "ch3-phoenixroot-branch",
+              "ilvl": 9,
+              "budgetScore": 5.27,
+              "stats": {
+                "maxHp": 20,
+                "maxMana": 0,
+                "manaRegen": 0,
+                "spellPower": 23,
+                "haste": 0,
+                "crit": 0,
+                "armor": 0,
+                "resistance": 0
+              }
+            }
+          ],
+          "preBoss": [
+            "ch3-phoenixroot-branch"
+          ],
+          "routeCoverage": "4/4",
+          "bonusOnly": []
+        },
+        "Tome": {
+          "authored": [
+            {
+              "id": "ch3-charred-ring-almanac",
+              "ilvl": 8,
+              "budgetScore": 5.69,
+              "stats": {
+                "maxHp": 0,
+                "maxMana": 115,
+                "manaRegen": 0.3,
+                "spellPower": 0,
+                "haste": 0,
+                "crit": 0,
+                "armor": 0,
+                "resistance": 0
+              }
+            }
+          ],
+          "preBoss": [
+            "ch3-charred-ring-almanac"
+          ],
+          "routeCoverage": "4/4",
+          "bonusOnly": []
+        },
+        "Trinket": {
+          "authored": [
+            {
+              "id": "ch3-salamander-egg",
+              "ilvl": 9,
+              "budgetScore": 11.2,
+              "stats": {
+                "maxHp": 0,
+                "maxMana": 0,
+                "manaRegen": 1.3,
+                "spellPower": 4,
+                "haste": 0,
+                "crit": 0,
+                "armor": 0,
+                "resistance": 0
+              }
+            }
+          ],
+          "preBoss": [
+            "ch3-salamander-egg"
+          ],
+          "routeCoverage": "4/4",
+          "bonusOnly": []
+        },
+        "Head": {
+          "authored": [
+            {
+              "id": "ch3-basalt-bloom-circlet",
+              "ilvl": 7,
+              "budgetScore": 2.5,
+              "stats": {
+                "maxHp": 45,
+                "maxMana": 0,
+                "manaRegen": 0,
+                "spellPower": 0,
+                "haste": 0,
+                "crit": 0,
+                "armor": 0,
+                "resistance": 3
+              }
+            }
+          ],
+          "preBoss": [
+            "ch3-basalt-bloom-circlet"
+          ],
+          "routeCoverage": "4/4",
+          "bonusOnly": []
+        },
+        "Chest": {
+          "authored": [
+            {
+              "id": "ch3-ashbark-carapace",
+              "ilvl": 8,
+              "budgetScore": 3.33,
+              "stats": {
+                "maxHp": 40,
+                "maxMana": 0,
+                "manaRegen": 0,
+                "spellPower": 0,
+                "haste": 0,
+                "crit": 0,
+                "armor": 0,
+                "resistance": 6
+              }
+            }
+          ],
+          "preBoss": [
+            "ch3-ashbark-carapace"
+          ],
+          "routeCoverage": "4/4",
+          "bonusOnly": []
+        },
+        "Legs": {
+          "authored": [
+            {
+              "id": "ch3-embervine-bindings",
+              "ilvl": 7,
+              "budgetScore": 3.38,
+              "stats": {
+                "maxHp": 0,
+                "maxMana": 25,
+                "manaRegen": 0,
+                "spellPower": 0,
+                "haste": 0,
+                "crit": 0,
+                "armor": 8,
+                "resistance": 0
+              }
+            }
+          ],
+          "preBoss": [],
+          "routeCoverage": "0/4",
+          "bonusOnly": []
+        }
+      }
+    },
+    "companionDifferences": []
+  },
+  {
+    "chapter": 4,
+    "routes": [
+      [
+        "huntsman",
+        "hounds",
+        "chapel",
+        "leech",
+        "garden"
+      ],
+      [
+        "huntsman",
+        "roses",
+        "chapel",
+        "leech",
+        "garden"
+      ],
+      [
+        "huntsman",
+        "hounds",
+        "chapel",
+        "procession",
+        "cryptkeeper"
+      ],
+      [
+        "huntsman",
+        "roses",
+        "chapel",
+        "procession",
+        "cryptkeeper"
+      ]
+    ],
+    "healer": {
+      "priest": {
+        "Weapon": {
+          "authored": [
+            {
+              "id": "ch4-scepter-of-the-last-mercy",
+              "ilvl": 12,
+              "budgetScore": 7.63,
+              "stats": {
+                "maxHp": 25,
+                "maxMana": 0,
+                "manaRegen": 0,
+                "spellPower": 34,
+                "haste": 0,
+                "crit": 0,
+                "armor": 0,
+                "resistance": 0
+              }
+            }
+          ],
+          "preBoss": [
+            "ch4-scepter-of-the-last-mercy"
+          ],
+          "routeCoverage": "4/4",
+          "bonusOnly": []
+        },
+        "Tome": {
+          "authored": [
+            {
+              "id": "ch4-thornlit-testament",
+              "ilvl": 11,
+              "budgetScore": 5.71,
+              "stats": {
+                "maxHp": 0,
+                "maxMana": 165,
+                "manaRegen": 0,
+                "spellPower": 5,
+                "haste": 0,
+                "crit": 0,
+                "armor": 0,
+                "resistance": 0
+              }
+            }
+          ],
+          "preBoss": [
+            "ch4-thornlit-testament"
+          ],
+          "routeCoverage": "4/4",
+          "bonusOnly": []
+        },
+        "Trinket": {
+          "authored": [
+            {
+              "id": "ch4-tear-of-the-pale-queen",
+              "ilvl": 12,
+              "budgetScore": 17,
+              "stats": {
+                "maxHp": 0,
+                "maxMana": 0,
+                "manaRegen": 2,
+                "spellPower": 0,
+                "haste": 0,
+                "crit": 0,
+                "armor": 3,
+                "resistance": 0
+              }
+            }
+          ],
+          "preBoss": [
+            "ch4-tear-of-the-pale-queen"
+          ],
+          "routeCoverage": "4/4",
+          "bonusOnly": []
+        },
+        "Head": {
+          "authored": [
+            {
+              "id": "ch4-veiled-pontiff-tiara",
+              "ilvl": 10,
+              "budgetScore": 3.5,
+              "stats": {
+                "maxHp": 65,
+                "maxMana": 0,
+                "manaRegen": 0,
+                "spellPower": 0,
+                "haste": 0,
+                "crit": 0,
+                "armor": 0,
+                "resistance": 4
+              }
+            }
+          ],
+          "preBoss": [
+            "ch4-veiled-pontiff-tiara"
+          ],
+          "routeCoverage": "4/4",
+          "bonusOnly": []
+        },
+        "Chest": {
+          "authored": [
+            {
+              "id": "ch4-moonpetal-chasuble",
+              "ilvl": 11,
+              "budgetScore": 4.67,
+              "stats": {
+                "maxHp": 60,
+                "maxMana": 0,
+                "manaRegen": 0,
+                "spellPower": 0,
+                "haste": 0,
+                "crit": 0,
+                "armor": 8,
+                "resistance": 0
+              }
+            }
+          ],
+          "preBoss": [
+            "ch4-moonpetal-chasuble"
+          ],
+          "routeCoverage": "4/4",
+          "bonusOnly": []
+        },
+        "Legs": {
+          "authored": [
+            {
+              "id": "ch4-pilgrimage-of-thorns",
+              "ilvl": 10,
+              "budgetScore": 3.48,
+              "stats": {
+                "maxHp": 0,
+                "maxMana": 40,
+                "manaRegen": 0,
+                "spellPower": 0,
+                "haste": 0,
+                "crit": 0,
+                "armor": 0,
+                "resistance": 7
+              }
+            }
+          ],
+          "preBoss": [],
+          "routeCoverage": "0/4",
+          "bonusOnly": []
+        }
+      },
+      "druid": {
+        "Weapon": {
+          "authored": [
+            {
+              "id": "ch4-crook-of-the-elder-hart",
+              "ilvl": 12,
+              "budgetScore": 7.4,
+              "stats": {
+                "maxHp": 0,
+                "maxMana": 0,
+                "manaRegen": 0,
+                "spellPower": 32,
+                "haste": 0,
+                "crit": 0,
+                "armor": 0,
+                "resistance": 3
+              }
+            }
+          ],
+          "preBoss": [
+            "ch4-crook-of-the-elder-hart"
+          ],
+          "routeCoverage": "4/4",
+          "bonusOnly": []
+        },
+        "Tome": {
+          "authored": [
+            {
+              "id": "ch4-briarqueen-herbarium",
+              "ilvl": 11,
+              "budgetScore": 5.14,
+              "stats": {
+                "maxHp": 0,
+                "maxMana": 145,
+                "manaRegen": 0,
+                "spellPower": 5,
+                "haste": 0,
+                "crit": 0,
+                "armor": 0,
+                "resistance": 0
+              }
+            }
+          ],
+          "preBoss": [
+            "ch4-briarqueen-herbarium"
+          ],
+          "routeCoverage": "4/4",
+          "bonusOnly": []
+        },
+        "Trinket": {
+          "authored": [
+            {
+              "id": "ch4-seed-of-the-silver-eclipse",
+              "ilvl": 12,
+              "budgetScore": 17,
+              "stats": {
+                "maxHp": 30,
+                "maxMana": 0,
+                "manaRegen": 2,
+                "spellPower": 0,
+                "haste": 0,
+                "crit": 0,
+                "armor": 0,
+                "resistance": 0
+              }
+            }
+          ],
+          "preBoss": [
+            "ch4-seed-of-the-silver-eclipse"
+          ],
+          "routeCoverage": "4/4",
+          "bonusOnly": []
+        },
+        "Head": {
+          "authored": [
+            {
+              "id": "ch4-crescentwood-antlers",
+              "ilvl": 10,
+              "budgetScore": 3.33,
+              "stats": {
+                "maxHp": 60,
+                "maxMana": 0,
+                "manaRegen": 0,
+                "spellPower": 0,
+                "haste": 0,
+                "crit": 0,
+                "armor": 4,
+                "resistance": 0
+              }
+            }
+          ],
+          "preBoss": [
+            "ch4-crescentwood-antlers"
+          ],
+          "routeCoverage": "4/4",
+          "bonusOnly": []
+        },
+        "Chest": {
+          "authored": [
+            {
+              "id": "ch4-rosebark-aegis",
+              "ilvl": 11,
+              "budgetScore": 4.33,
+              "stats": {
+                "maxHp": 50,
+                "maxMana": 0,
+                "manaRegen": 0,
+                "spellPower": 0,
+                "haste": 0,
+                "crit": 0,
+                "armor": 8,
+                "resistance": 0
+              }
+            }
+          ],
+          "preBoss": [
+            "ch4-rosebark-aegis"
+          ],
+          "routeCoverage": "4/4",
+          "bonusOnly": []
+        },
+        "Legs": {
+          "authored": [
+            {
+              "id": "ch4-nightwater-reedweave",
+              "ilvl": 10,
+              "budgetScore": 3.81,
+              "stats": {
+                "maxHp": 0,
+                "maxMana": 40,
+                "manaRegen": 0,
+                "spellPower": 0,
+                "haste": 0,
+                "crit": 0,
+                "armor": 0,
+                "resistance": 8
+              }
+            }
+          ],
+          "preBoss": [],
+          "routeCoverage": "0/4",
+          "bonusOnly": []
+        }
+      }
+    },
+    "companionDifferences": []
+  }
+]

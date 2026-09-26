@@ -6,7 +6,7 @@ import { Equipment } from '../src/gear.js';
 import { priestTalentLoadout } from '../src/priest-talents.js';
 import { druidTalentLoadout } from '../src/druid-talents.js';
 import { BOSS_BONUS_LOOT_TABLES, NORMAL_LOOT_TABLES, rollBossBonusLoot, rollNormalLoot } from '../src/loot.js';
-import { canEquipItem } from '../src/item-model.js';
+import { canEquipItem, isHealerOwner } from '../src/item-model.js';
 import { pathToFileURL } from 'node:url';
 
 const samples = Number(process.argv[2] || 40);
@@ -56,7 +56,7 @@ export const routes = chapter => {
 const owners = ['tank', 'rogue', 'mage', 'ranger'];
 function itemScore(item, member) {
   const stats = item.stats;
-  const healer = member === 'priest' || member === 'druid';
+  const healer = isHealerOwner(member);
   return healer
     ? (stats.maxHp || 0) / 30 + (stats.maxMana || 0) / 35 + (stats.manaRegen || 0) * 8
       + (stats.spellPower || 0) / 5 + (stats.haste || 0) / 2 + (stats.crit || 0) / 2

@@ -6,7 +6,7 @@ export const ITEM_STATS = {
 };
 export const isHealerOwner = owner => Object.hasOwn(HEALERS, owner);
 // Authored catalogue owners; playable healers may also use universal gear.
-export const ITEM_OWNERS = ['priest', 'druid', 'tank', 'rogue', 'mage', 'ranger'];
+export const ITEM_OWNERS = ['priest', 'druid', 'shaman', 'tank', 'rogue', 'mage', 'ranger'];
 export const slotsForOwner = owner => isHealerOwner(owner) ? SLOTS.healer : ITEM_OWNERS.includes(owner) ? SLOTS[owner] : [];
 // Pure validation is reusable for authoring tools and future loot tables.
 export function validateCatalogue(items) {

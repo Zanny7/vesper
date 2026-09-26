@@ -1,0 +1,6214 @@
+{
+  "model": "Live normal/hidden boss loot, shared compatibility, no duplicates, shared weighted equipment sampler. Previous chapters use average-profile recursive inheritance (3 farming routes, boss approach, normal and bonus boss rewards, then 0–1 extra routes). Current chapter snapshots are before its boss. Victories assumed; no talents or combat simulation.",
+  "rows": [
+    {
+      "chapter": 1,
+      "healer": "priest",
+      "clears": 0,
+      "samples": 256,
+      "meanCurrentSlots": 0,
+      "meanPartyCurrentSlots": 0,
+      "meanPartyIlvl": 0,
+      "slotOccupancy": {
+        "Weapon": 0,
+        "Tome": 0,
+        "Trinket": 0,
+        "Head": 0,
+        "Chest": 0,
+        "Legs": 0
+      },
+      "meanStats": {
+        "maxHp": 400,
+        "maxMana": 600,
+        "manaRegen": 2,
+        "spellPower": 0,
+        "haste": 0,
+        "crit": 0,
+        "armor": 0,
+        "resistance": 0
+      },
+      "representative": {
+        "seed": 88128,
+        "history": [],
+        "currentSlots": [],
+        "currentCount": 0,
+        "partyCurrentCount": 0,
+        "avgPartyIlvl": 0,
+        "stats": {
+          "maxHp": 400,
+          "maxMana": 600,
+          "manaRegen": 2,
+          "spellPower": 0,
+          "haste": 0,
+          "crit": 0,
+          "armor": 0,
+          "resistance": 0
+        },
+        "loadout": {}
+      }
+    },
+    {
+      "chapter": 1,
+      "healer": "priest",
+      "clears": 1,
+      "samples": 256,
+      "meanCurrentSlots": 0.66,
+      "meanPartyCurrentSlots": 1.73,
+      "meanPartyIlvl": 0.146,
+      "slotOccupancy": {
+        "Weapon": 0.074,
+        "Tome": 0.102,
+        "Trinket": 0.223,
+        "Head": 0,
+        "Chest": 0.051,
+        "Legs": 0.211
+      },
+      "meanStats": {
+        "maxHp": 405.566,
+        "maxMana": 607.41,
+        "manaRegen": 2.092,
+        "spellPower": 0.742,
+        "haste": 0,
+        "crit": 0,
+        "armor": 0.004,
+        "resistance": 0.254
+      },
+      "representative": {
+        "seed": 88011,
+        "history": [],
+        "currentSlots": [
+          "Legs"
+        ],
+        "currentCount": 1,
+        "partyCurrentCount": 1,
+        "avgPartyIlvl": 0.033,
+        "stats": {
+          "maxHp": 420,
+          "maxMana": 600,
+          "manaRegen": 2,
+          "spellPower": 0,
+          "haste": 0,
+          "crit": 0,
+          "armor": 0,
+          "resistance": 0
+        },
+        "loadout": {
+          "priest": {
+            "Legs": "ch1-dustwalker-strides"
+          }
+        }
+      }
+    },
+    {
+      "chapter": 1,
+      "healer": "priest",
+      "clears": 2,
+      "samples": 256,
+      "meanCurrentSlots": 1.43,
+      "meanPartyCurrentSlots": 3.617,
+      "meanPartyIlvl": 0.298,
+      "slotOccupancy": {
+        "Weapon": 0.195,
+        "Tome": 0.227,
+        "Trinket": 0.461,
+        "Head": 0,
+        "Chest": 0.141,
+        "Legs": 0.406
+      },
+      "meanStats": {
+        "maxHp": 411.875,
+        "maxMana": 615.867,
+        "manaRegen": 2.189,
+        "spellPower": 1.953,
+        "haste": 0,
+        "crit": 0,
+        "armor": 0.012,
+        "resistance": 0.609
+      },
+      "representative": {
+        "seed": 88083,
+        "history": [],
+        "currentSlots": [
+          "Weapon"
+        ],
+        "currentCount": 1,
+        "partyCurrentCount": 4,
+        "avgPartyIlvl": 0.373,
+        "stats": {
+          "maxHp": 400,
+          "maxMana": 600,
+          "manaRegen": 2,
+          "spellPower": 10,
+          "haste": 0,
+          "crit": 0,
+          "armor": 0,
+          "resistance": 0
+        },
+        "loadout": {
+          "rogue": {
+            "Sword": "ch1-graveglass-edge"
+          },
+          "ranger": {
+            "Bow": "ch1-coffin-yew"
+          },
+          "priest": {
+            "Weapon": "ch1-sepulcher-candle"
+          },
+          "tank": {
+            "Head": "ch1-tombwatch-sallet"
+          }
+        }
+      }
+    },
+    {
+      "chapter": 1,
+      "healer": "priest",
+      "clears": 3,
+      "samples": 256,
+      "meanCurrentSlots": 2.094,
+      "meanPartyCurrentSlots": 5.434,
+      "meanPartyIlvl": 0.441,
+      "slotOccupancy": {
+        "Weapon": 0.32,
+        "Tome": 0.352,
+        "Trinket": 0.609,
+        "Head": 0,
+        "Chest": 0.211,
+        "Legs": 0.602
+      },
+      "meanStats": {
+        "maxHp": 417.617,
+        "maxMana": 623.797,
+        "manaRegen": 2.28,
+        "spellPower": 3.203,
+        "haste": 0,
+        "crit": 0,
+        "armor": 0.016,
+        "resistance": 0.715
+      },
+      "representative": {
+        "seed": 88226,
+        "history": [],
+        "currentSlots": [
+          "Weapon",
+          "Legs"
+        ],
+        "currentCount": 2,
+        "partyCurrentCount": 6,
+        "avgPartyIlvl": 0.447,
+        "stats": {
+          "maxHp": 420,
+          "maxMana": 600,
+          "manaRegen": 2,
+          "spellPower": 10,
+          "haste": 0,
+          "crit": 0,
+          "armor": 0,
+          "resistance": 0
+        },
+        "loadout": {
+          "mage": {
+            "Staff": "ch1-bonewick-rod"
+          },
+          "ranger": {
+            "Bow": "ch1-coffin-yew",
+            "Head": "ch1-lanternwatch-hood"
+          },
+          "priest": {
+            "Weapon": "ch1-sepulcher-candle",
+            "Legs": "ch1-sootwoven-hose"
+          },
+          "tank": {
+            "Head": "ch1-tombwatch-sallet"
+          }
+        }
+      }
+    },
+    {
+      "chapter": 1,
+      "healer": "priest",
+      "clears": 4,
+      "samples": 256,
+      "meanCurrentSlots": 2.734,
+      "meanPartyCurrentSlots": 7.176,
+      "meanPartyIlvl": 0.575,
+      "slotOccupancy": {
+        "Weapon": 0.438,
+        "Tome": 0.477,
+        "Trinket": 0.77,
+        "Head": 0,
+        "Chest": 0.316,
+        "Legs": 0.734
+      },
+      "meanStats": {
+        "maxHp": 423.457,
+        "maxMana": 631.344,
+        "manaRegen": 2.346,
+        "spellPower": 4.375,
+        "haste": 0,
+        "crit": 0,
+        "armor": 0.043,
+        "resistance": 0.996
+      },
+      "representative": {
+        "seed": 88108,
+        "history": [],
+        "currentSlots": [
+          "Weapon",
+          "Tome",
+          "Trinket"
+        ],
+        "currentCount": 3,
+        "partyCurrentCount": 6,
+        "avgPartyIlvl": 0.513,
+        "stats": {
+          "maxHp": 400,
+          "maxMana": 675,
+          "manaRegen": 2.5,
+          "spellPower": 10,
+          "haste": 0,
+          "crit": 0,
+          "armor": 0,
+          "resistance": 0
+        },
+        "loadout": {
+          "priest": {
+            "Trinket": "ch1-amber-spore",
+            "Weapon": "ch1-sepulcher-candle",
+            "Tome": "ch1-book-of-last-names"
+          },
+          "tank": {
+            "Chest": "ch1-pallbearer-leather",
+            "Trinket": "ch1-sentinel-seal"
+          },
+          "ranger": {
+            "Trinket": "ch1-raven-quill"
+          }
+        }
+      }
+    },
+    {
+      "chapter": 1,
+      "healer": "priest",
+      "clears": 5,
+      "samples": 256,
+      "meanCurrentSlots": 3.305,
+      "meanPartyCurrentSlots": 8.871,
+      "meanPartyIlvl": 0.702,
+      "slotOccupancy": {
+        "Weapon": 0.543,
+        "Tome": 0.609,
+        "Trinket": 0.883,
+        "Head": 0,
+        "Chest": 0.418,
+        "Legs": 0.852
+      },
+      "meanStats": {
+        "maxHp": 428.574,
+        "maxMana": 640.207,
+        "manaRegen": 2.422,
+        "spellPower": 5.43,
+        "haste": 0,
+        "crit": 0,
+        "armor": 0.055,
+        "resistance": 1.094
+      },
+      "representative": {
+        "seed": 88085,
+        "history": [],
+        "currentSlots": [
+          "Weapon",
+          "Trinket",
+          "Legs"
+        ],
+        "currentCount": 3,
+        "partyCurrentCount": 9,
+        "avgPartyIlvl": 0.84,
+        "stats": {
+          "maxHp": 420,
+          "maxMana": 608,
+          "manaRegen": 2.55,
+          "spellPower": 10,
+          "haste": 0,
+          "crit": 0,
+          "armor": 0,
+          "resistance": 0
+        },
+        "loadout": {
+          "rogue": {
+            "Sword": "ch1-graveglass-edge"
+          },
+          "mage": {
+            "Staff": "ch1-bonewick-rod"
+          },
+          "ranger": {
+            "Bow": "ch1-coffin-yew",
+            "Trinket": "ch1-raven-quill"
+          },
+          "priest": {
+            "Trinket": "ch1-ancestral-shell",
+            "Weapon": "ch1-sepulcher-candle",
+            "Legs": "ch1-sootwoven-hose"
+          },
+          "tank": {
+            "Chest": "ch1-pallbearer-leather",
+            "Trinket": "ch1-sentinel-seal"
+          }
+        }
+      }
+    },
+    {
+      "chapter": 1,
+      "healer": "druid",
+      "clears": 0,
+      "samples": 256,
+      "meanCurrentSlots": 0,
+      "meanPartyCurrentSlots": 0,
+      "meanPartyIlvl": 0,
+      "slotOccupancy": {
+        "Weapon": 0,
+        "Tome": 0,
+        "Trinket": 0,
+        "Head": 0,
+        "Chest": 0,
+        "Legs": 0
+      },
+      "meanStats": {
+        "maxHp": 400,
+        "maxMana": 600,
+        "manaRegen": 2,
+        "spellPower": 0,
+        "haste": 0,
+        "crit": 0,
+        "armor": 0,
+        "resistance": 0
+      },
+      "representative": {
+        "seed": 88128,
+        "history": [],
+        "currentSlots": [],
+        "currentCount": 0,
+        "partyCurrentCount": 0,
+        "avgPartyIlvl": 0,
+        "stats": {
+          "maxHp": 400,
+          "maxMana": 600,
+          "manaRegen": 2,
+          "spellPower": 0,
+          "haste": 0,
+          "crit": 0,
+          "armor": 0,
+          "resistance": 0
+        },
+        "loadout": {}
+      }
+    },
+    {
+      "chapter": 1,
+      "healer": "druid",
+      "clears": 1,
+      "samples": 256,
+      "meanCurrentSlots": 0.66,
+      "meanPartyCurrentSlots": 1.73,
+      "meanPartyIlvl": 0.146,
+      "slotOccupancy": {
+        "Weapon": 0.074,
+        "Tome": 0.102,
+        "Trinket": 0.223,
+        "Head": 0,
+        "Chest": 0.051,
+        "Legs": 0.211
+      },
+      "meanStats": {
+        "maxHp": 406.68,
+        "maxMana": 605.914,
+        "manaRegen": 2.107,
+        "spellPower": 0.594,
+        "haste": 0,
+        "crit": 0,
+        "armor": 0.004,
+        "resistance": 0.254
+      },
+      "representative": {
+        "seed": 88011,
+        "history": [],
+        "currentSlots": [
+          "Legs"
+        ],
+        "currentCount": 1,
+        "partyCurrentCount": 1,
+        "avgPartyIlvl": 0.033,
+        "stats": {
+          "maxHp": 420,
+          "maxMana": 600,
+          "manaRegen": 2,
+          "spellPower": 0,
+          "haste": 0,
+          "crit": 0,
+          "armor": 0,
+          "resistance": 0
+        },
+        "loadout": {
+          "druid": {
+            "Legs": "ch1-dustwalker-strides"
+          }
+        }
+      }
+    },
+    {
+      "chapter": 1,
+      "healer": "druid",
+      "clears": 2,
+      "samples": 256,
+      "meanCurrentSlots": 1.43,
+      "meanPartyCurrentSlots": 3.617,
+      "meanPartyIlvl": 0.298,
+      "slotOccupancy": {
+        "Weapon": 0.195,
+        "Tome": 0.227,
+        "Trinket": 0.461,
+        "Head": 0,
+        "Chest": 0.141,
+        "Legs": 0.406
+      },
+      "meanStats": {
+        "maxHp": 414.805,
+        "maxMana": 612.551,
+        "manaRegen": 2.222,
+        "spellPower": 1.563,
+        "haste": 0,
+        "crit": 0,
+        "armor": 0.012,
+        "resistance": 0.609
+      },
+      "representative": {
+        "seed": 88083,
+        "history": [],
+        "currentSlots": [
+          "Weapon"
+        ],
+        "currentCount": 1,
+        "partyCurrentCount": 4,
+        "avgPartyIlvl": 0.373,
+        "stats": {
+          "maxHp": 415,
+          "maxMana": 600,
+          "manaRegen": 2,
+          "spellPower": 8,
+          "haste": 0,
+          "crit": 0,
+          "armor": 0,
+          "resistance": 0
+        },
+        "loadout": {
+          "rogue": {
+            "Sword": "ch1-graveglass-edge"
+          },
+          "ranger": {
+            "Bow": "ch1-coffin-yew"
+          },
+          "druid": {
+            "Weapon": "ch1-rootbound-crook"
+          },
+          "tank": {
+            "Head": "ch1-tombwatch-sallet"
+          }
+        }
+      }
+    },
+    {
+      "chapter": 1,
+      "healer": "druid",
+      "clears": 3,
+      "samples": 256,
+      "meanCurrentSlots": 2.094,
+      "meanPartyCurrentSlots": 5.434,
+      "meanPartyIlvl": 0.441,
+      "slotOccupancy": {
+        "Weapon": 0.32,
+        "Tome": 0.352,
+        "Trinket": 0.609,
+        "Head": 0,
+        "Chest": 0.211,
+        "Legs": 0.602
+      },
+      "meanStats": {
+        "maxHp": 422.422,
+        "maxMana": 618.824,
+        "manaRegen": 2.331,
+        "spellPower": 2.563,
+        "haste": 0,
+        "crit": 0,
+        "armor": 0.016,
+        "resistance": 0.715
+      },
+      "representative": {
+        "seed": 88226,
+        "history": [],
+        "currentSlots": [
+          "Weapon",
+          "Legs"
+        ],
+        "currentCount": 2,
+        "partyCurrentCount": 6,
+        "avgPartyIlvl": 0.447,
+        "stats": {
+          "maxHp": 435,
+          "maxMana": 600,
+          "manaRegen": 2,
+          "spellPower": 8,
+          "haste": 0,
+          "crit": 0,
+          "armor": 0,
+          "resistance": 0
+        },
+        "loadout": {
+          "mage": {
+            "Staff": "ch1-bonewick-rod"
+          },
+          "ranger": {
+            "Bow": "ch1-coffin-yew",
+            "Head": "ch1-lanternwatch-hood"
+          },
+          "druid": {
+            "Weapon": "ch1-rootbound-crook",
+            "Legs": "ch1-sootwoven-hose"
+          },
+          "tank": {
+            "Head": "ch1-tombwatch-sallet"
+          }
+        }
+      }
+    },
+    {
+      "chapter": 1,
+      "healer": "druid",
+      "clears": 4,
+      "samples": 256,
+      "meanCurrentSlots": 2.734,
+      "meanPartyCurrentSlots": 7.176,
+      "meanPartyIlvl": 0.575,
+      "slotOccupancy": {
+        "Weapon": 0.438,
+        "Tome": 0.477,
+        "Trinket": 0.77,
+        "Head": 0,
+        "Chest": 0.316,
+        "Legs": 0.734
+      },
+      "meanStats": {
+        "maxHp": 430.02,
+        "maxMana": 624.578,
+        "manaRegen": 2.414,
+        "spellPower": 3.5,
+        "haste": 0,
+        "crit": 0,
+        "armor": 0.043,
+        "resistance": 0.996
+      },
+      "representative": {
+        "seed": 88108,
+        "history": [],
+        "currentSlots": [
+          "Weapon",
+          "Tome",
+          "Trinket"
+        ],
+        "currentCount": 3,
+        "partyCurrentCount": 6,
+        "avgPartyIlvl": 0.513,
+        "stats": {
+          "maxHp": 415,
+          "maxMana": 660,
+          "manaRegen": 2.65,
+          "spellPower": 8,
+          "haste": 0,
+          "crit": 0,
+          "armor": 0,
+          "resistance": 0
+        },
+        "loadout": {
+          "druid": {
+            "Trinket": "ch1-amber-spore",
+            "Tome": "ch1-lichen-folio",
+            "Weapon": "ch1-rootbound-crook"
+          },
+          "tank": {
+            "Chest": "ch1-pallbearer-leather",
+            "Trinket": "ch1-sentinel-seal"
+          },
+          "ranger": {
+            "Trinket": "ch1-raven-quill"
+          }
+        }
+      }
+    },
+    {
+      "chapter": 1,
+      "healer": "druid",
+      "clears": 5,
+      "samples": 256,
+      "meanCurrentSlots": 3.305,
+      "meanPartyCurrentSlots": 8.871,
+      "meanPartyIlvl": 0.702,
+      "slotOccupancy": {
+        "Weapon": 0.543,
+        "Tome": 0.609,
+        "Trinket": 0.883,
+        "Head": 0,
+        "Chest": 0.418,
+        "Legs": 0.852
+      },
+      "meanStats": {
+        "maxHp": 436.719,
+        "maxMana": 631.586,
+        "manaRegen": 2.509,
+        "spellPower": 4.344,
+        "haste": 0,
+        "crit": 0,
+        "armor": 0.055,
+        "resistance": 1.094
+      },
+      "representative": {
+        "seed": 88085,
+        "history": [],
+        "currentSlots": [
+          "Weapon",
+          "Trinket",
+          "Legs"
+        ],
+        "currentCount": 3,
+        "partyCurrentCount": 9,
+        "avgPartyIlvl": 0.84,
+        "stats": {
+          "maxHp": 435,
+          "maxMana": 608,
+          "manaRegen": 2.55,
+          "spellPower": 8,
+          "haste": 0,
+          "crit": 0,
+          "armor": 0,
+          "resistance": 0
+        },
+        "loadout": {
+          "rogue": {
+            "Sword": "ch1-graveglass-edge"
+          },
+          "mage": {
+            "Staff": "ch1-bonewick-rod"
+          },
+          "ranger": {
+            "Bow": "ch1-coffin-yew",
+            "Trinket": "ch1-raven-quill"
+          },
+          "druid": {
+            "Trinket": "ch1-ancestral-shell",
+            "Weapon": "ch1-rootbound-crook",
+            "Legs": "ch1-sootwoven-hose"
+          },
+          "tank": {
+            "Chest": "ch1-pallbearer-leather",
+            "Trinket": "ch1-sentinel-seal"
+          }
+        }
+      }
+    },
+    {
+      "chapter": 1,
+      "healer": "shaman",
+      "clears": 0,
+      "samples": 256,
+      "meanCurrentSlots": 0,
+      "meanPartyCurrentSlots": 0,
+      "meanPartyIlvl": 0,
+      "slotOccupancy": {
+        "Weapon": 0,
+        "Tome": 0,
+        "Trinket": 0,
+        "Head": 0,
+        "Chest": 0,
+        "Legs": 0
+      },
+      "meanStats": {
+        "maxHp": 400,
+        "maxMana": 600,
+        "manaRegen": 2,
+        "spellPower": 0,
+        "haste": 0,
+        "crit": 0,
+        "armor": 0,
+        "resistance": 0
+      },
+      "representative": {
+        "seed": 88128,
+        "history": [],
+        "currentSlots": [],
+        "currentCount": 0,
+        "partyCurrentCount": 0,
+        "avgPartyIlvl": 0,
+        "stats": {
+          "maxHp": 400,
+          "maxMana": 600,
+          "manaRegen": 2,
+          "spellPower": 0,
+          "haste": 0,
+          "crit": 0,
+          "armor": 0,
+          "resistance": 0
+        },
+        "loadout": {}
+      }
+    },
+    {
+      "chapter": 1,
+      "healer": "shaman",
+      "clears": 1,
+      "samples": 256,
+      "meanCurrentSlots": 0.66,
+      "meanPartyCurrentSlots": 1.73,
+      "meanPartyIlvl": 0.146,
+      "slotOccupancy": {
+        "Weapon": 0.074,
+        "Tome": 0.102,
+        "Trinket": 0.223,
+        "Head": 0,
+        "Chest": 0.051,
+        "Legs": 0.211
+      },
+      "meanStats": {
+        "maxHp": 406.16,
+        "maxMana": 606.395,
+        "manaRegen": 2.102,
+        "spellPower": 0.668,
+        "haste": 0,
+        "crit": 0,
+        "armor": 0.004,
+        "resistance": 0.254
+      },
+      "representative": {
+        "seed": 88011,
+        "history": [],
+        "currentSlots": [
+          "Legs"
+        ],
+        "currentCount": 1,
+        "partyCurrentCount": 1,
+        "avgPartyIlvl": 0.033,
+        "stats": {
+          "maxHp": 420,
+          "maxMana": 600,
+          "manaRegen": 2,
+          "spellPower": 0,
+          "haste": 0,
+          "crit": 0,
+          "armor": 0,
+          "resistance": 0
+        },
+        "loadout": {
+          "shaman": {
+            "Legs": "ch1-dustwalker-strides"
+          }
+        }
+      }
+    },
+    {
+      "chapter": 1,
+      "healer": "shaman",
+      "clears": 2,
+      "samples": 256,
+      "meanCurrentSlots": 1.43,
+      "meanPartyCurrentSlots": 3.617,
+      "meanPartyIlvl": 0.298,
+      "slotOccupancy": {
+        "Weapon": 0.195,
+        "Tome": 0.227,
+        "Trinket": 0.461,
+        "Head": 0,
+        "Chest": 0.141,
+        "Legs": 0.406
+      },
+      "meanStats": {
+        "maxHp": 413.438,
+        "maxMana": 613.852,
+        "manaRegen": 2.21,
+        "spellPower": 1.758,
+        "haste": 0,
+        "crit": 0,
+        "armor": 0.012,
+        "resistance": 0.609
+      },
+      "representative": {
+        "seed": 88083,
+        "history": [],
+        "currentSlots": [
+          "Weapon"
+        ],
+        "currentCount": 1,
+        "partyCurrentCount": 4,
+        "avgPartyIlvl": 0.373,
+        "stats": {
+          "maxHp": 408,
+          "maxMana": 600,
+          "manaRegen": 2,
+          "spellPower": 9,
+          "haste": 0,
+          "crit": 0,
+          "armor": 0,
+          "resistance": 0
+        },
+        "loadout": {
+          "rogue": {
+            "Sword": "ch1-graveglass-edge"
+          },
+          "ranger": {
+            "Bow": "ch1-coffin-yew"
+          },
+          "shaman": {
+            "Weapon": "ch1-gravewater-conduit"
+          },
+          "tank": {
+            "Head": "ch1-tombwatch-sallet"
+          }
+        }
+      }
+    },
+    {
+      "chapter": 1,
+      "healer": "shaman",
+      "clears": 3,
+      "samples": 256,
+      "meanCurrentSlots": 2.094,
+      "meanPartyCurrentSlots": 5.434,
+      "meanPartyIlvl": 0.441,
+      "slotOccupancy": {
+        "Weapon": 0.32,
+        "Tome": 0.352,
+        "Trinket": 0.609,
+        "Head": 0,
+        "Chest": 0.211,
+        "Legs": 0.602
+      },
+      "meanStats": {
+        "maxHp": 420.18,
+        "maxMana": 620.719,
+        "manaRegen": 2.313,
+        "spellPower": 2.883,
+        "haste": 0,
+        "crit": 0,
+        "armor": 0.016,
+        "resistance": 0.715
+      },
+      "representative": {
+        "seed": 88226,
+        "history": [],
+        "currentSlots": [
+          "Weapon",
+          "Legs"
+        ],
+        "currentCount": 2,
+        "partyCurrentCount": 6,
+        "avgPartyIlvl": 0.447,
+        "stats": {
+          "maxHp": 428,
+          "maxMana": 600,
+          "manaRegen": 2,
+          "spellPower": 9,
+          "haste": 0,
+          "crit": 0,
+          "armor": 0,
+          "resistance": 0
+        },
+        "loadout": {
+          "mage": {
+            "Staff": "ch1-bonewick-rod"
+          },
+          "ranger": {
+            "Bow": "ch1-coffin-yew",
+            "Head": "ch1-lanternwatch-hood"
+          },
+          "shaman": {
+            "Weapon": "ch1-gravewater-conduit",
+            "Legs": "ch1-sootwoven-hose"
+          },
+          "tank": {
+            "Head": "ch1-tombwatch-sallet"
+          }
+        }
+      }
+    },
+    {
+      "chapter": 1,
+      "healer": "shaman",
+      "clears": 4,
+      "samples": 256,
+      "meanCurrentSlots": 2.734,
+      "meanPartyCurrentSlots": 7.176,
+      "meanPartyIlvl": 0.575,
+      "slotOccupancy": {
+        "Weapon": 0.438,
+        "Tome": 0.477,
+        "Trinket": 0.77,
+        "Head": 0,
+        "Chest": 0.316,
+        "Legs": 0.734
+      },
+      "meanStats": {
+        "maxHp": 426.957,
+        "maxMana": 627.578,
+        "manaRegen": 2.387,
+        "spellPower": 3.938,
+        "haste": 0,
+        "crit": 0,
+        "armor": 0.043,
+        "resistance": 0.996
+      },
+      "representative": {
+        "seed": 88108,
+        "history": [],
+        "currentSlots": [
+          "Weapon",
+          "Tome",
+          "Trinket"
+        ],
+        "currentCount": 3,
+        "partyCurrentCount": 6,
+        "avgPartyIlvl": 0.513,
+        "stats": {
+          "maxHp": 408,
+          "maxMana": 665,
+          "manaRegen": 2.6,
+          "spellPower": 9,
+          "haste": 0,
+          "crit": 0,
+          "armor": 0,
+          "resistance": 0
+        },
+        "loadout": {
+          "shaman": {
+            "Trinket": "ch1-amber-spore",
+            "Tome": "ch1-whispers-in-riverstone",
+            "Weapon": "ch1-gravewater-conduit"
+          },
+          "tank": {
+            "Chest": "ch1-pallbearer-leather",
+            "Trinket": "ch1-sentinel-seal"
+          },
+          "ranger": {
+            "Trinket": "ch1-raven-quill"
+          }
+        }
+      }
+    },
+    {
+      "chapter": 1,
+      "healer": "shaman",
+      "clears": 5,
+      "samples": 256,
+      "meanCurrentSlots": 3.305,
+      "meanPartyCurrentSlots": 8.871,
+      "meanPartyIlvl": 0.702,
+      "slotOccupancy": {
+        "Weapon": 0.543,
+        "Tome": 0.609,
+        "Trinket": 0.883,
+        "Head": 0,
+        "Chest": 0.418,
+        "Legs": 0.852
+      },
+      "meanStats": {
+        "maxHp": 432.918,
+        "maxMana": 635.738,
+        "manaRegen": 2.472,
+        "spellPower": 4.887,
+        "haste": 0,
+        "crit": 0,
+        "armor": 0.055,
+        "resistance": 1.094
+      },
+      "representative": {
+        "seed": 88085,
+        "history": [],
+        "currentSlots": [
+          "Weapon",
+          "Trinket",
+          "Legs"
+        ],
+        "currentCount": 3,
+        "partyCurrentCount": 9,
+        "avgPartyIlvl": 0.84,
+        "stats": {
+          "maxHp": 428,
+          "maxMana": 608,
+          "manaRegen": 2.55,
+          "spellPower": 9,
+          "haste": 0,
+          "crit": 0,
+          "armor": 0,
+          "resistance": 0
+        },
+        "loadout": {
+          "rogue": {
+            "Sword": "ch1-graveglass-edge"
+          },
+          "mage": {
+            "Staff": "ch1-bonewick-rod"
+          },
+          "ranger": {
+            "Bow": "ch1-coffin-yew",
+            "Trinket": "ch1-raven-quill"
+          },
+          "shaman": {
+            "Trinket": "ch1-ancestral-shell",
+            "Weapon": "ch1-gravewater-conduit",
+            "Legs": "ch1-sootwoven-hose"
+          },
+          "tank": {
+            "Chest": "ch1-pallbearer-leather",
+            "Trinket": "ch1-sentinel-seal"
+          }
+        }
+      }
+    },
+    {
+      "chapter": 2,
+      "healer": "priest",
+      "clears": 0,
+      "samples": 256,
+      "meanCurrentSlots": 0,
+      "meanPartyCurrentSlots": 0,
+      "meanPartyIlvl": 0.768,
+      "slotOccupancy": {
+        "Weapon": 0,
+        "Tome": 0,
+        "Trinket": 0,
+        "Head": 0,
+        "Chest": 0,
+        "Legs": 0
+      },
+      "meanStats": {
+        "maxHp": 436.379,
+        "maxMana": 635.125,
+        "manaRegen": 2.437,
+        "spellPower": 5.469,
+        "haste": 0,
+        "crit": 0,
+        "armor": 0.242,
+        "resistance": 1.348
+      },
+      "representative": {
+        "seed": 98150,
+        "history": [
+          {
+            "chapter": 1,
+            "readinessClears": 3,
+            "extraClears": 0,
+            "equippedCountAfter": 9,
+            "chapterEquippedCountAfter": 9
+          }
+        ],
+        "currentSlots": [],
+        "currentCount": 0,
+        "partyCurrentCount": 0,
+        "avgPartyIlvl": 0.773,
+        "stats": {
+          "maxHp": 420,
+          "maxMana": 600,
+          "manaRegen": 2.6,
+          "spellPower": 0,
+          "haste": 0,
+          "crit": 0,
+          "armor": 0,
+          "resistance": 0
+        },
+        "loadout": {
+          "tank": {
+            "Weapon": "ch1-ossuary-falchion",
+            "Trinket": "ch1-sentinel-seal",
+            "Head": "ch1-tombwatch-sallet"
+          },
+          "rogue": {
+            "Sword": "ch1-graveglass-edge"
+          },
+          "mage": {
+            "Staff": "ch1-bonewick-rod"
+          },
+          "ranger": {
+            "Bow": "ch1-coffin-yew",
+            "Trinket": "ch1-raven-quill"
+          },
+          "priest": {
+            "Trinket": "ch1-bell-of-the-vigil",
+            "Legs": "ch1-dustwalker-strides"
+          }
+        }
+      }
+    },
+    {
+      "chapter": 2,
+      "healer": "priest",
+      "clears": 1,
+      "samples": 256,
+      "meanCurrentSlots": 0.609,
+      "meanPartyCurrentSlots": 1.84,
+      "meanPartyIlvl": 1.054,
+      "slotOccupancy": {
+        "Weapon": 0.078,
+        "Tome": 0.113,
+        "Trinket": 0.215,
+        "Head": 0.109,
+        "Chest": 0.012,
+        "Legs": 0.082
+      },
+      "meanStats": {
+        "maxHp": 443.91,
+        "maxMana": 641.203,
+        "manaRegen": 2.56,
+        "spellPower": 6.551,
+        "haste": 0,
+        "crit": 0,
+        "armor": 0.559,
+        "resistance": 1.871
+      },
+      "representative": {
+        "seed": 98125,
+        "history": [
+          {
+            "chapter": 1,
+            "readinessClears": 3,
+            "extraClears": 1,
+            "equippedCountAfter": 13,
+            "chapterEquippedCountAfter": 13
+          }
+        ],
+        "currentSlots": [],
+        "currentCount": 0,
+        "partyCurrentCount": 3,
+        "avgPartyIlvl": 1.587,
+        "stats": {
+          "maxHp": 440,
+          "maxMana": 660,
+          "manaRegen": 2.6,
+          "spellPower": 10,
+          "haste": 0,
+          "crit": 0,
+          "armor": 3,
+          "resistance": 0
+        },
+        "loadout": {
+          "mage": {
+            "Staff": "ch2-witchhazel-spire",
+            "Legs": "ch1-sootwoven-hose"
+          },
+          "tank": {
+            "Weapon": "ch1-ossuary-falchion",
+            "Chest": "ch2-greenwatch-lamellar",
+            "Trinket": "ch2-stagwarden-badge"
+          },
+          "rogue": {
+            "Sword": "ch1-graveglass-edge",
+            "Trinket": "ch1-sentinel-seal"
+          },
+          "ranger": {
+            "Bow": "ch1-coffin-yew",
+            "Trinket": "ch1-raven-quill",
+            "Head": "ch1-lanternwatch-hood"
+          },
+          "priest": {
+            "Trinket": "ch1-bell-of-the-vigil",
+            "Weapon": "ch1-sepulcher-candle",
+            "Tome": "ch1-book-of-last-names",
+            "Chest": "ch1-pallbearer-leather",
+            "Legs": "ch1-dustwalker-strides"
+          }
+        }
+      }
+    },
+    {
+      "chapter": 2,
+      "healer": "priest",
+      "clears": 2,
+      "samples": 256,
+      "meanCurrentSlots": 1.359,
+      "meanPartyCurrentSlots": 3.652,
+      "meanPartyIlvl": 1.333,
+      "slotOccupancy": {
+        "Weapon": 0.184,
+        "Tome": 0.219,
+        "Trinket": 0.414,
+        "Head": 0.234,
+        "Chest": 0.066,
+        "Legs": 0.242
+      },
+      "meanStats": {
+        "maxHp": 450.961,
+        "maxMana": 646.738,
+        "manaRegen": 2.681,
+        "spellPower": 8.27,
+        "haste": 0,
+        "crit": 0,
+        "armor": 1.004,
+        "resistance": 2.652
+      },
+      "representative": {
+        "seed": 98119,
+        "history": [
+          {
+            "chapter": 1,
+            "readinessClears": 3,
+            "extraClears": 1,
+            "equippedCountAfter": 10,
+            "chapterEquippedCountAfter": 10
+          }
+        ],
+        "currentSlots": [
+          "Trinket"
+        ],
+        "currentCount": 1,
+        "partyCurrentCount": 4,
+        "avgPartyIlvl": 1.487,
+        "stats": {
+          "maxHp": 460,
+          "maxMana": 660,
+          "manaRegen": 3,
+          "spellPower": 0,
+          "haste": 0,
+          "crit": 0,
+          "armor": 0,
+          "resistance": 2
+        },
+        "loadout": {
+          "tank": {
+            "Weapon": "ch2-ironbriar-cleaver",
+            "Trinket": "ch2-stagwarden-badge",
+            "Head": "ch1-tombwatch-sallet"
+          },
+          "rogue": {
+            "Sword": "ch1-graveglass-edge",
+            "Trinket": "ch1-sentinel-seal",
+            "Head": "ch1-ashveil-mask"
+          },
+          "mage": {
+            "Staff": "ch1-bonewick-rod",
+            "Trinket": "ch2-stormseed-crystal",
+            "Legs": "ch1-sootwoven-hose"
+          },
+          "ranger": {
+            "Bow": "ch1-coffin-yew"
+          },
+          "priest": {
+            "Trinket": "ch2-dewfall-rosary",
+            "Tome": "ch1-book-of-last-names",
+            "Chest": "ch1-mortuary-hauberk",
+            "Legs": "ch1-dustwalker-strides"
+          }
+        }
+      }
+    },
+    {
+      "chapter": 2,
+      "healer": "priest",
+      "clears": 3,
+      "samples": 256,
+      "meanCurrentSlots": 2.094,
+      "meanPartyCurrentSlots": 5.297,
+      "meanPartyIlvl": 1.593,
+      "slotOccupancy": {
+        "Weapon": 0.348,
+        "Tome": 0.32,
+        "Trinket": 0.57,
+        "Head": 0.328,
+        "Chest": 0.145,
+        "Legs": 0.383
+      },
+      "meanStats": {
+        "maxHp": 457.742,
+        "maxMana": 651.84,
+        "manaRegen": 2.806,
+        "spellPower": 10.465,
+        "haste": 0,
+        "crit": 0,
+        "armor": 1.5,
+        "resistance": 3.164
+      },
+      "representative": {
+        "seed": 98198,
+        "history": [
+          {
+            "chapter": 1,
+            "readinessClears": 3,
+            "extraClears": 0,
+            "equippedCountAfter": 9,
+            "chapterEquippedCountAfter": 9
+          }
+        ],
+        "currentSlots": [
+          "Weapon",
+          "Tome"
+        ],
+        "currentCount": 2,
+        "partyCurrentCount": 6,
+        "avgPartyIlvl": 1.633,
+        "stats": {
+          "maxHp": 425,
+          "maxMana": 695,
+          "manaRegen": 2.8,
+          "spellPower": 20,
+          "haste": 0,
+          "crit": 0,
+          "armor": 0,
+          "resistance": 2
+        },
+        "loadout": {
+          "mage": {
+            "Staff": "ch2-witchhazel-spire",
+            "Trinket": "ch1-shattered-reliquary"
+          },
+          "rogue": {
+            "Sword": "ch1-graveglass-edge"
+          },
+          "ranger": {
+            "Bow": "ch1-coffin-yew",
+            "Head": "ch1-lanternwatch-hood"
+          },
+          "priest": {
+            "Weapon": "ch2-briarheart-thurible",
+            "Trinket": "ch1-bell-of-the-vigil",
+            "Tome": "ch2-litany-of-falling-leaves",
+            "Chest": "ch1-mortuary-hauberk"
+          },
+          "tank": {
+            "Chest": "ch2-blackbriar-jerkin",
+            "Trinket": "ch2-stagwarden-badge",
+            "Legs": "ch2-briarstep-legguards"
+          }
+        }
+      }
+    },
+    {
+      "chapter": 2,
+      "healer": "priest",
+      "clears": 4,
+      "samples": 256,
+      "meanCurrentSlots": 2.734,
+      "meanPartyCurrentSlots": 6.988,
+      "meanPartyIlvl": 1.864,
+      "slotOccupancy": {
+        "Weapon": 0.445,
+        "Tome": 0.414,
+        "Trinket": 0.664,
+        "Head": 0.473,
+        "Chest": 0.238,
+        "Legs": 0.5
+      },
+      "meanStats": {
+        "maxHp": 463.699,
+        "maxMana": 657.66,
+        "manaRegen": 2.873,
+        "spellPower": 11.82,
+        "haste": 0,
+        "crit": 0,
+        "armor": 2.148,
+        "resistance": 3.691
+      },
+      "representative": {
+        "seed": 98145,
+        "history": [
+          {
+            "chapter": 1,
+            "readinessClears": 3,
+            "extraClears": 1,
+            "equippedCountAfter": 10,
+            "chapterEquippedCountAfter": 10
+          }
+        ],
+        "currentSlots": [
+          "Trinket",
+          "Head",
+          "Legs"
+        ],
+        "currentCount": 3,
+        "partyCurrentCount": 6,
+        "avgPartyIlvl": 1.647,
+        "stats": {
+          "maxHp": 455,
+          "maxMana": 600,
+          "manaRegen": 3,
+          "spellPower": 10,
+          "haste": 0,
+          "crit": 0,
+          "armor": 0,
+          "resistance": 6
+        },
+        "loadout": {
+          "ranger": {
+            "Bow": "ch2-hawthorn-recurve",
+            "Trinket": "ch1-raven-quill"
+          },
+          "rogue": {
+            "Sword": "ch1-graveglass-edge",
+            "Trinket": "ch2-stagwarden-badge",
+            "Legs": "ch1-dustwalker-strides"
+          },
+          "mage": {
+            "Staff": "ch1-bonewick-rod",
+            "Trinket": "ch1-sentinel-seal"
+          },
+          "priest": {
+            "Trinket": "ch2-dewfall-rosary",
+            "Weapon": "ch1-sepulcher-candle",
+            "Legs": "ch2-mistspun-leggings",
+            "Head": "ch2-owlfeather-cowl"
+          },
+          "tank": {
+            "Trinket": "ch2-kestrel-talon",
+            "Head": "ch1-tombwatch-sallet"
+          }
+        }
+      }
+    },
+    {
+      "chapter": 2,
+      "healer": "priest",
+      "clears": 5,
+      "samples": 256,
+      "meanCurrentSlots": 3.453,
+      "meanPartyCurrentSlots": 8.723,
+      "meanPartyIlvl": 2.139,
+      "slotOccupancy": {
+        "Weapon": 0.566,
+        "Tome": 0.523,
+        "Trinket": 0.754,
+        "Head": 0.594,
+        "Chest": 0.367,
+        "Legs": 0.648
+      },
+      "meanStats": {
+        "maxHp": 470.734,
+        "maxMana": 664.672,
+        "manaRegen": 2.948,
+        "spellPower": 13.504,
+        "haste": 0,
+        "crit": 0,
+        "armor": 2.711,
+        "resistance": 4.258
+      },
+      "representative": {
+        "seed": 98034,
+        "history": [
+          {
+            "chapter": 1,
+            "readinessClears": 3,
+            "extraClears": 0,
+            "equippedCountAfter": 10,
+            "chapterEquippedCountAfter": 10
+          }
+        ],
+        "currentSlots": [
+          "Tome",
+          "Trinket",
+          "Head",
+          "Legs"
+        ],
+        "currentCount": 4,
+        "partyCurrentCount": 5,
+        "avgPartyIlvl": 1.447,
+        "stats": {
+          "maxHp": 460,
+          "maxMana": 695,
+          "manaRegen": 2.9,
+          "spellPower": 3,
+          "haste": 0,
+          "crit": 0,
+          "armor": 0,
+          "resistance": 6
+        },
+        "loadout": {
+          "ranger": {
+            "Bow": "ch2-hawthorn-recurve",
+            "Head": "ch1-lanternwatch-hood"
+          },
+          "rogue": {
+            "Sword": "ch1-graveglass-edge",
+            "Legs": "ch1-dustwalker-strides",
+            "Head": "ch1-morel-cap"
+          },
+          "mage": {
+            "Staff": "ch1-bonewick-rod",
+            "Trinket": "ch1-shattered-reliquary"
+          },
+          "priest": {
+            "Trinket": "ch2-moonwell-acorn",
+            "Tome": "ch2-litany-of-falling-leaves",
+            "Head": "ch2-firefly-coronet",
+            "Legs": "ch2-mistspun-leggings"
+          },
+          "tank": {
+            "Trinket": "ch1-sentinel-seal",
+            "Head": "ch1-tombwatch-sallet",
+            "Legs": "ch1-siltwalker-bindings"
+          }
+        }
+      }
+    },
+    {
+      "chapter": 2,
+      "healer": "druid",
+      "clears": 0,
+      "samples": 256,
+      "meanCurrentSlots": 0,
+      "meanPartyCurrentSlots": 0,
+      "meanPartyIlvl": 0.769,
+      "slotOccupancy": {
+        "Weapon": 0,
+        "Tome": 0,
+        "Trinket": 0,
+        "Head": 0,
+        "Chest": 0,
+        "Legs": 0
+      },
+      "meanStats": {
+        "maxHp": 444.441,
+        "maxMana": 627.785,
+        "manaRegen": 2.51,
+        "spellPower": 4.438,
+        "haste": 0,
+        "crit": 0,
+        "armor": 0.258,
+        "resistance": 1.395
+      },
+      "representative": {
+        "seed": 98150,
+        "history": [
+          {
+            "chapter": 1,
+            "readinessClears": 3,
+            "extraClears": 0,
+            "equippedCountAfter": 9,
+            "chapterEquippedCountAfter": 9
+          }
+        ],
+        "currentSlots": [],
+        "currentCount": 0,
+        "partyCurrentCount": 0,
+        "avgPartyIlvl": 0.773,
+        "stats": {
+          "maxHp": 420,
+          "maxMana": 600,
+          "manaRegen": 2.6,
+          "spellPower": 0,
+          "haste": 0,
+          "crit": 0,
+          "armor": 0,
+          "resistance": 0
+        },
+        "loadout": {
+          "tank": {
+            "Weapon": "ch1-ossuary-falchion",
+            "Trinket": "ch1-sentinel-seal",
+            "Head": "ch1-tombwatch-sallet"
+          },
+          "rogue": {
+            "Sword": "ch1-graveglass-edge"
+          },
+          "mage": {
+            "Staff": "ch1-bonewick-rod"
+          },
+          "ranger": {
+            "Bow": "ch1-coffin-yew",
+            "Trinket": "ch1-raven-quill"
+          },
+          "druid": {
+            "Trinket": "ch1-bell-of-the-vigil",
+            "Legs": "ch1-dustwalker-strides"
+          }
+        }
+      }
+    },
+    {
+      "chapter": 2,
+      "healer": "druid",
+      "clears": 1,
+      "samples": 256,
+      "meanCurrentSlots": 0.613,
+      "meanPartyCurrentSlots": 1.84,
+      "meanPartyIlvl": 1.055,
+      "slotOccupancy": {
+        "Weapon": 0.078,
+        "Tome": 0.113,
+        "Trinket": 0.219,
+        "Head": 0.105,
+        "Chest": 0.016,
+        "Legs": 0.082
+      },
+      "meanStats": {
+        "maxHp": 451.141,
+        "maxMana": 632.906,
+        "manaRegen": 2.632,
+        "spellPower": 5.625,
+        "haste": 0,
+        "crit": 0,
+        "armor": 0.602,
+        "resistance": 1.887
+      },
+      "representative": {
+        "seed": 98125,
+        "history": [
+          {
+            "chapter": 1,
+            "readinessClears": 3,
+            "extraClears": 1,
+            "equippedCountAfter": 13,
+            "chapterEquippedCountAfter": 13
+          }
+        ],
+        "currentSlots": [],
+        "currentCount": 0,
+        "partyCurrentCount": 3,
+        "avgPartyIlvl": 1.587,
+        "stats": {
+          "maxHp": 455,
+          "maxMana": 645,
+          "manaRegen": 2.75,
+          "spellPower": 8,
+          "haste": 0,
+          "crit": 0,
+          "armor": 3,
+          "resistance": 0
+        },
+        "loadout": {
+          "mage": {
+            "Staff": "ch2-witchhazel-spire",
+            "Legs": "ch1-sootwoven-hose"
+          },
+          "tank": {
+            "Weapon": "ch1-ossuary-falchion",
+            "Chest": "ch2-greenwatch-lamellar",
+            "Trinket": "ch2-stagwarden-badge"
+          },
+          "rogue": {
+            "Sword": "ch1-graveglass-edge",
+            "Trinket": "ch1-sentinel-seal"
+          },
+          "ranger": {
+            "Bow": "ch1-coffin-yew",
+            "Trinket": "ch1-raven-quill",
+            "Head": "ch1-lanternwatch-hood"
+          },
+          "druid": {
+            "Trinket": "ch1-bell-of-the-vigil",
+            "Tome": "ch1-lichen-folio",
+            "Weapon": "ch1-rootbound-crook",
+            "Chest": "ch1-pallbearer-leather",
+            "Legs": "ch1-dustwalker-strides"
+          }
+        }
+      }
+    },
+    {
+      "chapter": 2,
+      "healer": "druid",
+      "clears": 2,
+      "samples": 256,
+      "meanCurrentSlots": 1.367,
+      "meanPartyCurrentSlots": 3.664,
+      "meanPartyIlvl": 1.336,
+      "slotOccupancy": {
+        "Weapon": 0.184,
+        "Tome": 0.219,
+        "Trinket": 0.418,
+        "Head": 0.23,
+        "Chest": 0.07,
+        "Legs": 0.246
+      },
+      "meanStats": {
+        "maxHp": 457.77,
+        "maxMana": 637.633,
+        "manaRegen": 2.756,
+        "spellPower": 7.285,
+        "haste": 0,
+        "crit": 0,
+        "armor": 1.051,
+        "resistance": 2.66
+      },
+      "representative": {
+        "seed": 98119,
+        "history": [
+          {
+            "chapter": 1,
+            "readinessClears": 3,
+            "extraClears": 1,
+            "equippedCountAfter": 10,
+            "chapterEquippedCountAfter": 10
+          }
+        ],
+        "currentSlots": [
+          "Trinket"
+        ],
+        "currentCount": 1,
+        "partyCurrentCount": 4,
+        "avgPartyIlvl": 1.487,
+        "stats": {
+          "maxHp": 460,
+          "maxMana": 645,
+          "manaRegen": 3.15,
+          "spellPower": 0,
+          "haste": 0,
+          "crit": 0,
+          "armor": 0,
+          "resistance": 2
+        },
+        "loadout": {
+          "tank": {
+            "Weapon": "ch2-ironbriar-cleaver",
+            "Trinket": "ch2-stagwarden-badge",
+            "Head": "ch1-tombwatch-sallet"
+          },
+          "rogue": {
+            "Sword": "ch1-graveglass-edge",
+            "Trinket": "ch1-sentinel-seal",
+            "Head": "ch1-ashveil-mask"
+          },
+          "mage": {
+            "Staff": "ch1-bonewick-rod",
+            "Trinket": "ch2-stormseed-crystal",
+            "Legs": "ch1-sootwoven-hose"
+          },
+          "ranger": {
+            "Bow": "ch1-coffin-yew"
+          },
+          "druid": {
+            "Trinket": "ch2-dewfall-rosary",
+            "Tome": "ch1-lichen-folio",
+            "Chest": "ch1-mortuary-hauberk",
+            "Legs": "ch1-dustwalker-strides"
+          }
+        }
+      }
+    },
+    {
+      "chapter": 2,
+      "healer": "druid",
+      "clears": 3,
+      "samples": 256,
+      "meanCurrentSlots": 2.102,
+      "meanPartyCurrentSlots": 5.305,
+      "meanPartyIlvl": 1.596,
+      "slotOccupancy": {
+        "Weapon": 0.348,
+        "Tome": 0.32,
+        "Trinket": 0.574,
+        "Head": 0.324,
+        "Chest": 0.148,
+        "Legs": 0.387
+      },
+      "meanStats": {
+        "maxHp": 463.203,
+        "maxMana": 642.238,
+        "manaRegen": 2.889,
+        "spellPower": 9.434,
+        "haste": 0,
+        "crit": 0,
+        "armor": 1.547,
+        "resistance": 3.172
+      },
+      "representative": {
+        "seed": 98198,
+        "history": [
+          {
+            "chapter": 1,
+            "readinessClears": 3,
+            "extraClears": 0,
+            "equippedCountAfter": 9,
+            "chapterEquippedCountAfter": 9
+          }
+        ],
+        "currentSlots": [
+          "Weapon",
+          "Tome"
+        ],
+        "currentCount": 2,
+        "partyCurrentCount": 6,
+        "avgPartyIlvl": 1.633,
+        "stats": {
+          "maxHp": 425,
+          "maxMana": 680,
+          "manaRegen": 2.9,
+          "spellPower": 19,
+          "haste": 0,
+          "crit": 0,
+          "armor": 0,
+          "resistance": 2
+        },
+        "loadout": {
+          "mage": {
+            "Staff": "ch2-witchhazel-spire",
+            "Trinket": "ch1-shattered-reliquary"
+          },
+          "rogue": {
+            "Sword": "ch1-graveglass-edge"
+          },
+          "ranger": {
+            "Bow": "ch1-coffin-yew",
+            "Head": "ch1-lanternwatch-hood"
+          },
+          "druid": {
+            "Weapon": "ch2-hartwood-scepter",
+            "Trinket": "ch1-bell-of-the-vigil",
+            "Tome": "ch2-rainroot-codex",
+            "Chest": "ch1-mortuary-hauberk"
+          },
+          "tank": {
+            "Chest": "ch2-blackbriar-jerkin",
+            "Trinket": "ch2-stagwarden-badge",
+            "Legs": "ch2-briarstep-legguards"
+          }
+        }
+      }
+    },
+    {
+      "chapter": 2,
+      "healer": "druid",
+      "clears": 4,
+      "samples": 256,
+      "meanCurrentSlots": 2.738,
+      "meanPartyCurrentSlots": 6.992,
+      "meanPartyIlvl": 1.867,
+      "slotOccupancy": {
+        "Weapon": 0.445,
+        "Tome": 0.414,
+        "Trinket": 0.664,
+        "Head": 0.469,
+        "Chest": 0.242,
+        "Legs": 0.504
+      },
+      "meanStats": {
+        "maxHp": 468.086,
+        "maxMana": 647.297,
+        "manaRegen": 2.958,
+        "spellPower": 10.805,
+        "haste": 0,
+        "crit": 0,
+        "armor": 2.184,
+        "resistance": 3.707
+      },
+      "representative": {
+        "seed": 98212,
+        "history": [
+          {
+            "chapter": 1,
+            "readinessClears": 3,
+            "extraClears": 0,
+            "equippedCountAfter": 8,
+            "chapterEquippedCountAfter": 8
+          }
+        ],
+        "currentSlots": [
+          "Weapon",
+          "Chest",
+          "Legs"
+        ],
+        "currentCount": 3,
+        "partyCurrentCount": 6,
+        "avgPartyIlvl": 1.647,
+        "stats": {
+          "maxHp": 495,
+          "maxMana": 608,
+          "manaRegen": 2.85,
+          "spellPower": 15,
+          "haste": 0,
+          "crit": 0,
+          "armor": 5,
+          "resistance": 2
+        },
+        "loadout": {
+          "ranger": {
+            "Bow": "ch2-hawthorn-recurve"
+          },
+          "rogue": {
+            "Sword": "ch1-graveglass-edge",
+            "Chest": "ch1-mortuary-hauberk"
+          },
+          "druid": {
+            "Weapon": "ch2-hartwood-scepter",
+            "Trinket": "ch1-ancestral-shell",
+            "Chest": "ch2-greenwatch-lamellar",
+            "Legs": "ch2-bogiron-treads",
+            "Head": "ch1-burial-linen-hood"
+          },
+          "mage": {
+            "Trinket": "ch2-stormseed-crystal",
+            "Legs": "ch1-sootwoven-hose"
+          },
+          "tank": {
+            "Chest": "ch2-blackbriar-jerkin",
+            "Trinket": "ch1-sentinel-seal",
+            "Head": "ch1-tombwatch-sallet"
+          }
+        }
+      }
+    },
+    {
+      "chapter": 2,
+      "healer": "druid",
+      "clears": 5,
+      "samples": 256,
+      "meanCurrentSlots": 3.465,
+      "meanPartyCurrentSlots": 8.742,
+      "meanPartyIlvl": 2.143,
+      "slotOccupancy": {
+        "Weapon": 0.57,
+        "Tome": 0.523,
+        "Trinket": 0.754,
+        "Head": 0.594,
+        "Chest": 0.371,
+        "Legs": 0.652
+      },
+      "meanStats": {
+        "maxHp": 474.34,
+        "maxMana": 653.496,
+        "manaRegen": 3.04,
+        "spellPower": 12.523,
+        "haste": 0,
+        "crit": 0,
+        "armor": 2.723,
+        "resistance": 4.273
+      },
+      "representative": {
+        "seed": 98004,
+        "history": [
+          {
+            "chapter": 1,
+            "readinessClears": 3,
+            "extraClears": 0,
+            "equippedCountAfter": 10,
+            "chapterEquippedCountAfter": 10
+          }
+        ],
+        "currentSlots": [
+          "Weapon",
+          "Tome",
+          "Trinket",
+          "Legs"
+        ],
+        "currentCount": 4,
+        "partyCurrentCount": 7,
+        "avgPartyIlvl": 1.833,
+        "stats": {
+          "maxHp": 445,
+          "maxMana": 680,
+          "manaRegen": 3.3,
+          "spellPower": 19,
+          "haste": 0,
+          "crit": 0,
+          "armor": 2,
+          "resistance": 2
+        },
+        "loadout": {
+          "ranger": {
+            "Bow": "ch2-hawthorn-recurve",
+            "Trinket": "ch1-raven-quill"
+          },
+          "tank": {
+            "Weapon": "ch1-ossuary-falchion",
+            "Chest": "ch2-greenwatch-lamellar",
+            "Head": "ch2-thorncrown-bascinet",
+            "Trinket": "ch1-sentinel-seal"
+          },
+          "rogue": {
+            "Sword": "ch1-graveglass-edge",
+            "Legs": "ch1-dustwalker-strides"
+          },
+          "mage": {
+            "Staff": "ch1-bonewick-rod"
+          },
+          "druid": {
+            "Trinket": "ch2-dewfall-rosary",
+            "Weapon": "ch2-hartwood-scepter",
+            "Tome": "ch2-rainroot-codex",
+            "Legs": "ch2-mistspun-leggings",
+            "Head": "ch1-tombwatch-sallet"
+          }
+        }
+      }
+    },
+    {
+      "chapter": 2,
+      "healer": "shaman",
+      "clears": 0,
+      "samples": 256,
+      "meanCurrentSlots": 0,
+      "meanPartyCurrentSlots": 0,
+      "meanPartyIlvl": 0.767,
+      "slotOccupancy": {
+        "Weapon": 0,
+        "Tome": 0,
+        "Trinket": 0,
+        "Head": 0,
+        "Chest": 0,
+        "Legs": 0
+      },
+      "meanStats": {
+        "maxHp": 440.332,
+        "maxMana": 631.602,
+        "manaRegen": 2.479,
+        "spellPower": 4.922,
+        "haste": 0,
+        "crit": 0,
+        "armor": 0.25,
+        "resistance": 1.32
+      },
+      "representative": {
+        "seed": 98159,
+        "history": [
+          {
+            "chapter": 1,
+            "readinessClears": 3,
+            "extraClears": 1,
+            "equippedCountAfter": 11,
+            "chapterEquippedCountAfter": 11
+          }
+        ],
+        "currentSlots": [],
+        "currentCount": 0,
+        "partyCurrentCount": 0,
+        "avgPartyIlvl": 0.773,
+        "stats": {
+          "maxHp": 473,
+          "maxMana": 608,
+          "manaRegen": 2.55,
+          "spellPower": 9,
+          "haste": 0,
+          "crit": 0,
+          "armor": 0,
+          "resistance": 3
+        },
+        "loadout": {
+          "rogue": {
+            "Sword": "ch1-graveglass-edge"
+          },
+          "mage": {
+            "Staff": "ch1-bonewick-rod",
+            "Trinket": "ch1-shattered-reliquary",
+            "Head": "ch1-cinder-diadem",
+            "Legs": "ch1-sootwoven-hose"
+          },
+          "shaman": {
+            "Trinket": "ch1-ancestral-shell",
+            "Weapon": "ch1-gravewater-conduit",
+            "Chest": "ch1-mortuary-hauberk",
+            "Head": "ch1-morel-cap",
+            "Legs": "ch1-dustwalker-strides"
+          },
+          "ranger": {
+            "Head": "ch1-lanternwatch-hood"
+          }
+        }
+      }
+    },
+    {
+      "chapter": 2,
+      "healer": "shaman",
+      "clears": 1,
+      "samples": 256,
+      "meanCurrentSlots": 0.613,
+      "meanPartyCurrentSlots": 1.84,
+      "meanPartyIlvl": 1.054,
+      "slotOccupancy": {
+        "Weapon": 0.078,
+        "Tome": 0.113,
+        "Trinket": 0.219,
+        "Head": 0.105,
+        "Chest": 0.016,
+        "Legs": 0.082
+      },
+      "meanStats": {
+        "maxHp": 447.441,
+        "maxMana": 637.617,
+        "manaRegen": 2.603,
+        "spellPower": 5.984,
+        "haste": 0,
+        "crit": 0,
+        "armor": 0.602,
+        "resistance": 1.832
+      },
+      "representative": {
+        "seed": 98125,
+        "history": [
+          {
+            "chapter": 1,
+            "readinessClears": 3,
+            "extraClears": 1,
+            "equippedCountAfter": 13,
+            "chapterEquippedCountAfter": 13
+          }
+        ],
+        "currentSlots": [],
+        "currentCount": 0,
+        "partyCurrentCount": 3,
+        "avgPartyIlvl": 1.587,
+        "stats": {
+          "maxHp": 448,
+          "maxMana": 658,
+          "manaRegen": 2.65,
+          "spellPower": 9,
+          "haste": 0,
+          "crit": 0,
+          "armor": 3,
+          "resistance": 0
+        },
+        "loadout": {
+          "mage": {
+            "Staff": "ch2-witchhazel-spire",
+            "Legs": "ch1-sootwoven-hose"
+          },
+          "tank": {
+            "Weapon": "ch1-ossuary-falchion",
+            "Chest": "ch2-greenwatch-lamellar",
+            "Trinket": "ch2-stagwarden-badge"
+          },
+          "rogue": {
+            "Sword": "ch1-graveglass-edge",
+            "Trinket": "ch1-sentinel-seal"
+          },
+          "ranger": {
+            "Bow": "ch1-coffin-yew",
+            "Trinket": "ch1-raven-quill",
+            "Head": "ch1-lanternwatch-hood"
+          },
+          "shaman": {
+            "Trinket": "ch1-ancestral-shell",
+            "Tome": "ch1-whispers-in-riverstone",
+            "Weapon": "ch1-gravewater-conduit",
+            "Chest": "ch1-pallbearer-leather",
+            "Legs": "ch1-dustwalker-strides"
+          }
+        }
+      }
+    },
+    {
+      "chapter": 2,
+      "healer": "shaman",
+      "clears": 2,
+      "samples": 256,
+      "meanCurrentSlots": 1.367,
+      "meanPartyCurrentSlots": 3.664,
+      "meanPartyIlvl": 1.335,
+      "slotOccupancy": {
+        "Weapon": 0.184,
+        "Tome": 0.219,
+        "Trinket": 0.418,
+        "Head": 0.23,
+        "Chest": 0.07,
+        "Legs": 0.246
+      },
+      "meanStats": {
+        "maxHp": 454.414,
+        "maxMana": 642.906,
+        "manaRegen": 2.725,
+        "spellPower": 7.637,
+        "haste": 0,
+        "crit": 0,
+        "armor": 1.031,
+        "resistance": 2.617
+      },
+      "representative": {
+        "seed": 98148,
+        "history": [
+          {
+            "chapter": 1,
+            "readinessClears": 3,
+            "extraClears": 0,
+            "equippedCountAfter": 7,
+            "chapterEquippedCountAfter": 7
+          }
+        ],
+        "currentSlots": [
+          "Trinket"
+        ],
+        "currentCount": 1,
+        "partyCurrentCount": 5,
+        "avgPartyIlvl": 1.493,
+        "stats": {
+          "maxHp": 508,
+          "maxMana": 600,
+          "manaRegen": 2,
+          "spellPower": 9,
+          "haste": 0,
+          "crit": 0,
+          "armor": 3,
+          "resistance": 2
+        },
+        "loadout": {
+          "tank": {
+            "Weapon": "ch2-ironbriar-cleaver",
+            "Chest": "ch1-pallbearer-leather",
+            "Head": "ch1-tombwatch-sallet"
+          },
+          "ranger": {
+            "Bow": "ch2-hawthorn-recurve",
+            "Head": "ch1-lanternwatch-hood"
+          },
+          "rogue": {
+            "Sword": "ch2-nightpetal-saber"
+          },
+          "mage": {
+            "Staff": "ch2-witchhazel-spire"
+          },
+          "shaman": {
+            "Trinket": "ch2-stagwarden-badge",
+            "Weapon": "ch1-gravewater-conduit",
+            "Chest": "ch1-gravepath-brigandine",
+            "Legs": "ch1-sootwoven-hose"
+          }
+        }
+      }
+    },
+    {
+      "chapter": 2,
+      "healer": "shaman",
+      "clears": 3,
+      "samples": 256,
+      "meanCurrentSlots": 2.098,
+      "meanPartyCurrentSlots": 5.305,
+      "meanPartyIlvl": 1.594,
+      "slotOccupancy": {
+        "Weapon": 0.348,
+        "Tome": 0.32,
+        "Trinket": 0.57,
+        "Head": 0.324,
+        "Chest": 0.148,
+        "Legs": 0.387
+      },
+      "meanStats": {
+        "maxHp": 460.047,
+        "maxMana": 647.863,
+        "manaRegen": 2.851,
+        "spellPower": 9.723,
+        "haste": 0,
+        "crit": 0,
+        "armor": 1.508,
+        "resistance": 3.191
+      },
+      "representative": {
+        "seed": 98090,
+        "history": [
+          {
+            "chapter": 1,
+            "readinessClears": 3,
+            "extraClears": 0,
+            "equippedCountAfter": 13,
+            "chapterEquippedCountAfter": 13
+          }
+        ],
+        "currentSlots": [
+          "Trinket",
+          "Chest"
+        ],
+        "currentCount": 2,
+        "partyCurrentCount": 4,
+        "avgPartyIlvl": 1.64,
+        "stats": {
+          "maxHp": 478,
+          "maxMana": 650,
+          "manaRegen": 3,
+          "spellPower": 9,
+          "haste": 0,
+          "crit": 0,
+          "armor": 5,
+          "resistance": 3
+        },
+        "loadout": {
+          "ranger": {
+            "Bow": "ch2-hawthorn-recurve",
+            "Trinket": "ch1-raven-quill"
+          },
+          "tank": {
+            "Weapon": "ch1-ossuary-falchion",
+            "Chest": "ch2-stormroot-cuirass",
+            "Trinket": "ch1-sentinel-seal",
+            "Head": "ch1-tombwatch-sallet"
+          },
+          "rogue": {
+            "Sword": "ch1-graveglass-edge",
+            "Trinket": "ch1-widow-coin"
+          },
+          "mage": {
+            "Staff": "ch1-bonewick-rod"
+          },
+          "shaman": {
+            "Trinket": "ch2-moonwell-acorn",
+            "Chest": "ch2-blackbriar-jerkin",
+            "Tome": "ch1-whispers-in-riverstone",
+            "Weapon": "ch1-gravewater-conduit",
+            "Head": "ch1-morel-cap",
+            "Legs": "ch1-dustwalker-strides"
+          }
+        }
+      }
+    },
+    {
+      "chapter": 2,
+      "healer": "shaman",
+      "clears": 4,
+      "samples": 256,
+      "meanCurrentSlots": 2.734,
+      "meanPartyCurrentSlots": 6.992,
+      "meanPartyIlvl": 1.865,
+      "slotOccupancy": {
+        "Weapon": 0.445,
+        "Tome": 0.414,
+        "Trinket": 0.66,
+        "Head": 0.469,
+        "Chest": 0.242,
+        "Legs": 0.504
+      },
+      "meanStats": {
+        "maxHp": 465.238,
+        "maxMana": 653.582,
+        "manaRegen": 2.916,
+        "spellPower": 11.074,
+        "haste": 0,
+        "crit": 0,
+        "armor": 2.133,
+        "resistance": 3.84
+      },
+      "representative": {
+        "seed": 98212,
+        "history": [
+          {
+            "chapter": 1,
+            "readinessClears": 3,
+            "extraClears": 0,
+            "equippedCountAfter": 8,
+            "chapterEquippedCountAfter": 8
+          }
+        ],
+        "currentSlots": [
+          "Weapon",
+          "Chest",
+          "Legs"
+        ],
+        "currentCount": 3,
+        "partyCurrentCount": 6,
+        "avgPartyIlvl": 1.647,
+        "stats": {
+          "maxHp": 495,
+          "maxMana": 608,
+          "manaRegen": 2.8,
+          "spellPower": 16,
+          "haste": 0,
+          "crit": 0,
+          "armor": 5,
+          "resistance": 2
+        },
+        "loadout": {
+          "ranger": {
+            "Bow": "ch2-hawthorn-recurve"
+          },
+          "rogue": {
+            "Sword": "ch1-graveglass-edge",
+            "Chest": "ch1-mortuary-hauberk"
+          },
+          "shaman": {
+            "Weapon": "ch2-thunderreed-channeler",
+            "Trinket": "ch1-ancestral-shell",
+            "Chest": "ch2-greenwatch-lamellar",
+            "Legs": "ch2-bogiron-treads",
+            "Head": "ch1-burial-linen-hood"
+          },
+          "mage": {
+            "Trinket": "ch2-stormseed-crystal",
+            "Legs": "ch1-sootwoven-hose"
+          },
+          "tank": {
+            "Chest": "ch2-blackbriar-jerkin",
+            "Trinket": "ch1-sentinel-seal",
+            "Head": "ch1-tombwatch-sallet"
+          }
+        }
+      }
+    },
+    {
+      "chapter": 2,
+      "healer": "shaman",
+      "clears": 5,
+      "samples": 256,
+      "meanCurrentSlots": 3.461,
+      "meanPartyCurrentSlots": 8.742,
+      "meanPartyIlvl": 2.142,
+      "slotOccupancy": {
+        "Weapon": 0.57,
+        "Tome": 0.523,
+        "Trinket": 0.75,
+        "Head": 0.594,
+        "Chest": 0.371,
+        "Legs": 0.652
+      },
+      "meanStats": {
+        "maxHp": 471.613,
+        "maxMana": 660.563,
+        "manaRegen": 2.993,
+        "spellPower": 12.734,
+        "haste": 0,
+        "crit": 0,
+        "armor": 2.68,
+        "resistance": 4.398
+      },
+      "representative": {
+        "seed": 98004,
+        "history": [
+          {
+            "chapter": 1,
+            "readinessClears": 3,
+            "extraClears": 0,
+            "equippedCountAfter": 10,
+            "chapterEquippedCountAfter": 10
+          }
+        ],
+        "currentSlots": [
+          "Weapon",
+          "Tome",
+          "Trinket",
+          "Legs"
+        ],
+        "currentCount": 4,
+        "partyCurrentCount": 7,
+        "avgPartyIlvl": 1.833,
+        "stats": {
+          "maxHp": 445,
+          "maxMana": 690,
+          "manaRegen": 3.25,
+          "spellPower": 19,
+          "haste": 0,
+          "crit": 0,
+          "armor": 2,
+          "resistance": 2
+        },
+        "loadout": {
+          "ranger": {
+            "Bow": "ch2-hawthorn-recurve",
+            "Trinket": "ch1-raven-quill"
+          },
+          "tank": {
+            "Weapon": "ch1-ossuary-falchion",
+            "Chest": "ch2-greenwatch-lamellar",
+            "Head": "ch2-thorncrown-bascinet",
+            "Trinket": "ch1-sentinel-seal"
+          },
+          "rogue": {
+            "Sword": "ch1-graveglass-edge",
+            "Legs": "ch1-dustwalker-strides"
+          },
+          "mage": {
+            "Staff": "ch1-bonewick-rod"
+          },
+          "shaman": {
+            "Trinket": "ch2-dewfall-rosary",
+            "Weapon": "ch2-thunderreed-channeler",
+            "Tome": "ch2-rainkeeper-tablets",
+            "Legs": "ch2-mistspun-leggings",
+            "Head": "ch1-tombwatch-sallet"
+          }
+        }
+      }
+    },
+    {
+      "chapter": 3,
+      "healer": "priest",
+      "clears": 0,
+      "samples": 256,
+      "meanCurrentSlots": 0,
+      "meanPartyCurrentSlots": 0,
+      "meanPartyIlvl": 2.373,
+      "slotOccupancy": {
+        "Weapon": 0,
+        "Tome": 0,
+        "Trinket": 0,
+        "Head": 0,
+        "Chest": 0,
+        "Legs": 0
+      },
+      "meanStats": {
+        "maxHp": 477.816,
+        "maxMana": 662.59,
+        "manaRegen": 2.933,
+        "spellPower": 13.695,
+        "haste": 0,
+        "crit": 0,
+        "armor": 2.965,
+        "resistance": 4.613
+      },
+      "representative": {
+        "seed": 108029,
+        "history": [
+          {
+            "chapter": 1,
+            "readinessClears": 3,
+            "extraClears": 1,
+            "equippedCountAfter": 16,
+            "chapterEquippedCountAfter": 16
+          },
+          {
+            "chapter": 2,
+            "readinessClears": 3,
+            "extraClears": 0,
+            "equippedCountAfter": 19,
+            "chapterEquippedCountAfter": 9
+          }
+        ],
+        "currentSlots": [],
+        "currentCount": 0,
+        "partyCurrentCount": 0,
+        "avgPartyIlvl": 2.353,
+        "stats": {
+          "maxHp": 485,
+          "maxMana": 695,
+          "manaRegen": 3.1,
+          "spellPower": 20,
+          "haste": 0,
+          "crit": 0,
+          "armor": 0,
+          "resistance": 8
+        },
+        "loadout": {
+          "ranger": {
+            "Bow": "ch2-hawthorn-recurve"
+          },
+          "rogue": {
+            "Sword": "ch2-nightpetal-saber",
+            "Trinket": "ch1-sentinel-seal",
+            "Legs": "ch1-dustwalker-strides",
+            "Head": "ch1-morel-cap"
+          },
+          "mage": {
+            "Staff": "ch2-witchhazel-spire",
+            "Chest": "ch1-shroud-of-pale-embers",
+            "Trinket": "ch1-shattered-reliquary",
+            "Legs": "ch1-sootwoven-hose"
+          },
+          "priest": {
+            "Trinket": "ch2-moonwell-acorn",
+            "Weapon": "ch2-briarheart-thurible",
+            "Tome": "ch2-litany-of-falling-leaves",
+            "Head": "ch2-firefly-coronet",
+            "Legs": "ch2-mistspun-leggings",
+            "Chest": "ch1-mortuary-hauberk"
+          },
+          "tank": {
+            "Trinket": "ch2-adder-fang-pendant",
+            "Chest": "ch1-pallbearer-leather",
+            "Head": "ch1-tombwatch-sallet",
+            "Legs": "ch1-stoneward-sabatons"
+          }
+        }
+      }
+    },
+    {
+      "chapter": 3,
+      "healer": "priest",
+      "clears": 1,
+      "samples": 256,
+      "meanCurrentSlots": 1.23,
+      "meanPartyCurrentSlots": 3.363,
+      "meanPartyIlvl": 3.135,
+      "slotOccupancy": {
+        "Weapon": 0.125,
+        "Tome": 0.086,
+        "Trinket": 0.266,
+        "Head": 0.254,
+        "Chest": 0.457,
+        "Legs": 0.043
+      },
+      "meanStats": {
+        "maxHp": 495.273,
+        "maxMana": 669.48,
+        "manaRegen": 3.073,
+        "spellPower": 16.391,
+        "haste": 0,
+        "crit": 0,
+        "armor": 2.465,
+        "resistance": 7.113
+      },
+      "representative": {
+        "seed": 108016,
+        "history": [
+          {
+            "chapter": 1,
+            "readinessClears": 3,
+            "extraClears": 0,
+            "equippedCountAfter": 6,
+            "chapterEquippedCountAfter": 6
+          },
+          {
+            "chapter": 2,
+            "readinessClears": 3,
+            "extraClears": 1,
+            "equippedCountAfter": 17,
+            "chapterEquippedCountAfter": 13
+          }
+        ],
+        "currentSlots": [
+          "Chest"
+        ],
+        "currentCount": 1,
+        "partyCurrentCount": 3,
+        "avgPartyIlvl": 3.333,
+        "stats": {
+          "maxHp": 490,
+          "maxMana": 660,
+          "manaRegen": 3.2,
+          "spellPower": 17,
+          "haste": 0,
+          "crit": 0,
+          "armor": 0,
+          "resistance": 9
+        },
+        "loadout": {
+          "ranger": {
+            "Bow": "ch3-firescar-longbow",
+            "Chest": "ch2-greenwatch-lamellar",
+            "Trinket": "ch1-raven-quill"
+          },
+          "rogue": {
+            "Sword": "ch3-obsidian-stiletto",
+            "Chest": "ch2-blackbriar-jerkin",
+            "Trinket": "ch2-stagwarden-badge"
+          },
+          "tank": {
+            "Weapon": "ch2-ironbriar-cleaver",
+            "Shield": "ch2-heartoak-pavise",
+            "Trinket": "ch2-kestrel-talon",
+            "Chest": "ch2-stormroot-cuirass",
+            "Legs": "ch2-mistspun-leggings"
+          },
+          "priest": {
+            "Trinket": "ch2-dewfall-rosary",
+            "Weapon": "ch2-briarheart-thurible",
+            "Chest": "ch3-furnace-chapel-vestments",
+            "Tome": "ch1-book-of-last-names",
+            "Legs": "ch2-bogiron-treads"
+          },
+          "mage": {
+            "Chest": "ch1-pallbearer-leather"
+          }
+        }
+      }
+    },
+    {
+      "chapter": 3,
+      "healer": "priest",
+      "clears": 2,
+      "samples": 256,
+      "meanCurrentSlots": 2.336,
+      "meanPartyCurrentSlots": 6.582,
+      "meanPartyIlvl": 3.877,
+      "slotOccupancy": {
+        "Weapon": 0.234,
+        "Tome": 0.215,
+        "Trinket": 0.52,
+        "Head": 0.52,
+        "Chest": 0.684,
+        "Legs": 0.164
+      },
+      "meanStats": {
+        "maxHp": 508.379,
+        "maxMana": 680.25,
+        "manaRegen": 3.211,
+        "spellPower": 18.699,
+        "haste": 0,
+        "crit": 0,
+        "armor": 2.758,
+        "resistance": 8.488
+      },
+      "representative": {
+        "seed": 108164,
+        "history": [
+          {
+            "chapter": 1,
+            "readinessClears": 3,
+            "extraClears": 0,
+            "equippedCountAfter": 4,
+            "chapterEquippedCountAfter": 4
+          },
+          {
+            "chapter": 2,
+            "readinessClears": 3,
+            "extraClears": 1,
+            "equippedCountAfter": 15,
+            "chapterEquippedCountAfter": 13
+          }
+        ],
+        "currentSlots": [
+          "Trinket",
+          "Chest"
+        ],
+        "currentCount": 2,
+        "partyCurrentCount": 7,
+        "avgPartyIlvl": 4.42,
+        "stats": {
+          "maxHp": 505,
+          "maxMana": 660,
+          "manaRegen": 3.8,
+          "spellPower": 21,
+          "haste": 0,
+          "crit": 0,
+          "armor": 0,
+          "resistance": 12
+        },
+        "loadout": {
+          "mage": {
+            "Staff": "ch3-crucible-helix",
+            "Chest": "ch2-blackbriar-jerkin",
+            "Trinket": "ch2-stagwarden-badge",
+            "Legs": "ch2-mistspun-leggings"
+          },
+          "ranger": {
+            "Bow": "ch3-firescar-longbow",
+            "Trinket": "ch3-brass-falcon-whistle",
+            "Chest": "ch2-greenwatch-lamellar"
+          },
+          "rogue": {
+            "Sword": "ch2-nightpetal-saber",
+            "Trinket": "ch2-kestrel-talon",
+            "Chest": "ch3-sootsilk-doublet",
+            "Legs": "ch1-dustwalker-strides"
+          },
+          "priest": {
+            "Trinket": "ch3-coalglass-hourglass",
+            "Weapon": "ch2-briarheart-thurible",
+            "Chest": "ch3-furnacehide-coat",
+            "Tome": "ch1-book-of-last-names",
+            "Legs": "ch2-bogiron-treads",
+            "Head": "ch2-mothwing-veil"
+          },
+          "tank": {
+            "Trinket": "ch2-adder-fang-pendant",
+            "Chest": "ch2-stormroot-cuirass",
+            "Legs": "ch3-ashscript-pantaloons"
+          }
+        }
+      }
+    },
+    {
+      "chapter": 3,
+      "healer": "priest",
+      "clears": 3,
+      "samples": 256,
+      "meanCurrentSlots": 3.195,
+      "meanPartyCurrentSlots": 9.613,
+      "meanPartyIlvl": 4.572,
+      "slotOccupancy": {
+        "Weapon": 0.375,
+        "Tome": 0.348,
+        "Trinket": 0.668,
+        "Head": 0.699,
+        "Chest": 0.82,
+        "Legs": 0.285
+      },
+      "meanStats": {
+        "maxHp": 517.188,
+        "maxMana": 690.492,
+        "manaRegen": 3.31,
+        "spellPower": 20.723,
+        "haste": 0,
+        "crit": 0,
+        "armor": 3.078,
+        "resistance": 9.457
+      },
+      "representative": {
+        "seed": 108237,
+        "history": [
+          {
+            "chapter": 1,
+            "readinessClears": 3,
+            "extraClears": 1,
+            "equippedCountAfter": 14,
+            "chapterEquippedCountAfter": 14
+          },
+          {
+            "chapter": 2,
+            "readinessClears": 3,
+            "extraClears": 0,
+            "equippedCountAfter": 17,
+            "chapterEquippedCountAfter": 6
+          }
+        ],
+        "currentSlots": [
+          "Head",
+          "Chest",
+          "Legs"
+        ],
+        "currentCount": 3,
+        "partyCurrentCount": 12,
+        "avgPartyIlvl": 4.767,
+        "stats": {
+          "maxHp": 550,
+          "maxMana": 615,
+          "manaRegen": 2.7,
+          "spellPower": 17,
+          "haste": 0,
+          "crit": 0,
+          "armor": 8,
+          "resistance": 6
+        },
+        "loadout": {
+          "mage": {
+            "Staff": "ch3-crucible-helix",
+            "Legs": "ch3-ashscript-pantaloons",
+            "Chest": "ch1-vestment-of-quiet-prayer",
+            "Trinket": "ch1-sentinel-seal",
+            "Head": "ch1-tombwatch-sallet"
+          },
+          "ranger": {
+            "Bow": "ch3-firescar-longbow",
+            "Head": "ch2-owlfeather-cowl",
+            "Trinket": "ch1-raven-quill",
+            "Chest": "ch1-mortuary-hauberk",
+            "Legs": "ch1-dustwalker-strides"
+          },
+          "rogue": {
+            "Sword": "ch3-obsidian-stiletto",
+            "Trinket": "ch3-marshal-chain",
+            "Head": "ch3-basalt-bloom-circlet",
+            "Chest": "ch1-pallbearer-leather",
+            "Legs": "ch2-mistspun-leggings"
+          },
+          "priest": {
+            "Weapon": "ch2-briarheart-thurible",
+            "Trinket": "ch1-amber-spore",
+            "Chest": "ch3-furnacehide-coat",
+            "Head": "ch3-crown-of-the-ash-saint",
+            "Legs": "ch3-glassrunner-cuisses"
+          },
+          "tank": {
+            "Trinket": "ch2-adder-fang-pendant",
+            "Legs": "ch3-slagpath-guards",
+            "Head": "ch3-smokefox-visage",
+            "Chest": "ch3-ashbark-carapace"
+          }
+        }
+      }
+    },
+    {
+      "chapter": 3,
+      "healer": "priest",
+      "clears": 4,
+      "samples": 256,
+      "meanCurrentSlots": 3.984,
+      "meanPartyCurrentSlots": 12.523,
+      "meanPartyIlvl": 5.222,
+      "slotOccupancy": {
+        "Weapon": 0.551,
+        "Tome": 0.426,
+        "Trinket": 0.789,
+        "Head": 0.832,
+        "Chest": 0.918,
+        "Legs": 0.469
+      },
+      "meanStats": {
+        "maxHp": 524.723,
+        "maxMana": 699.379,
+        "manaRegen": 3.399,
+        "spellPower": 23.133,
+        "haste": 0,
+        "crit": 0,
+        "armor": 3.797,
+        "resistance": 9.793
+      },
+      "representative": {
+        "seed": 108154,
+        "history": [
+          {
+            "chapter": 1,
+            "readinessClears": 3,
+            "extraClears": 0,
+            "equippedCountAfter": 11,
+            "chapterEquippedCountAfter": 11
+          },
+          {
+            "chapter": 2,
+            "readinessClears": 3,
+            "extraClears": 1,
+            "equippedCountAfter": 22,
+            "chapterEquippedCountAfter": 13
+          }
+        ],
+        "currentSlots": [
+          "Trinket",
+          "Head",
+          "Chest",
+          "Legs"
+        ],
+        "currentCount": 4,
+        "partyCurrentCount": 10,
+        "avgPartyIlvl": 5.167,
+        "stats": {
+          "maxHp": 520,
+          "maxMana": 600,
+          "manaRegen": 3.65,
+          "spellPower": 21,
+          "haste": 0,
+          "crit": 0,
+          "armor": 3,
+          "resistance": 11
+        },
+        "loadout": {
+          "mage": {
+            "Staff": "ch3-crucible-helix",
+            "Chest": "ch2-stormroot-cuirass",
+            "Trinket": "ch2-stagwarden-badge",
+            "Legs": "ch2-mistspun-leggings",
+            "Head": "ch1-tombwatch-sallet"
+          },
+          "tank": {
+            "Weapon": "ch2-ironbriar-cleaver",
+            "Legs": "ch3-anvil-march-greaves",
+            "Chest": "ch3-vest-of-the-last-pyre",
+            "Trinket": "ch2-adder-fang-pendant",
+            "Head": "ch3-kilnforged-greathelm"
+          },
+          "rogue": {
+            "Sword": "ch2-nightpetal-saber",
+            "Trinket": "ch3-marshal-chain",
+            "Chest": "ch3-ashbark-carapace",
+            "Legs": "ch2-foxglove-trousers",
+            "Head": "ch2-mothwing-veil"
+          },
+          "priest": {
+            "Trinket": "ch3-emberheart-totem",
+            "Weapon": "ch2-briarheart-thurible",
+            "Chest": "ch3-cinderwall-harness",
+            "Head": "ch3-molten-halo",
+            "Legs": "ch3-ashscript-pantaloons"
+          },
+          "ranger": {
+            "Bow": "ch1-coffin-yew",
+            "Chest": "ch2-greenwatch-lamellar",
+            "Head": "ch2-owlfeather-cowl",
+            "Trinket": "ch1-sentinel-seal",
+            "Legs": "ch1-stoneward-sabatons"
+          }
+        }
+      }
+    },
+    {
+      "chapter": 3,
+      "healer": "priest",
+      "clears": 5,
+      "samples": 256,
+      "meanCurrentSlots": 4.551,
+      "meanPartyCurrentSlots": 14.945,
+      "meanPartyIlvl": 5.755,
+      "slotOccupancy": {
+        "Weapon": 0.617,
+        "Tome": 0.539,
+        "Trinket": 0.867,
+        "Head": 0.914,
+        "Chest": 0.973,
+        "Legs": 0.641
+      },
+      "meanStats": {
+        "maxHp": 530.277,
+        "maxMana": 708.605,
+        "manaRegen": 3.458,
+        "spellPower": 24.039,
+        "haste": 0,
+        "crit": 0,
+        "armor": 4.504,
+        "resistance": 10.055
+      },
+      "representative": {
+        "seed": 108021,
+        "history": [
+          {
+            "chapter": 1,
+            "readinessClears": 3,
+            "extraClears": 1,
+            "equippedCountAfter": 11,
+            "chapterEquippedCountAfter": 11
+          },
+          {
+            "chapter": 2,
+            "readinessClears": 3,
+            "extraClears": 0,
+            "equippedCountAfter": 20,
+            "chapterEquippedCountAfter": 12
+          }
+        ],
+        "currentSlots": [
+          "Weapon",
+          "Tome",
+          "Trinket",
+          "Head",
+          "Chest"
+        ],
+        "currentCount": 5,
+        "partyCurrentCount": 11,
+        "avgPartyIlvl": 5.093,
+        "stats": {
+          "maxHp": 545,
+          "maxMana": 750,
+          "manaRegen": 3.45,
+          "spellPower": 29,
+          "haste": 0,
+          "crit": 0,
+          "armor": 1,
+          "resistance": 12
+        },
+        "loadout": {
+          "mage": {
+            "Staff": "ch3-crucible-helix",
+            "Trinket": "ch2-stormseed-crystal",
+            "Chest": "ch3-lavaward-scales",
+            "Legs": "ch2-mistspun-leggings",
+            "Head": "ch1-tombwatch-sallet"
+          },
+          "ranger": {
+            "Bow": "ch3-firescar-longbow",
+            "Chest": "ch1-gravepath-brigandine",
+            "Trinket": "ch1-raven-quill",
+            "Legs": "ch1-sootwoven-hose"
+          },
+          "tank": {
+            "Weapon": "ch2-ironbriar-cleaver",
+            "Chest": "ch2-stormroot-cuirass",
+            "Trinket": "ch3-marshal-chain",
+            "Head": "ch3-coalfeather-helm",
+            "Legs": "ch2-briarstep-legguards"
+          },
+          "priest": {
+            "Trinket": "ch3-emberheart-totem",
+            "Weapon": "ch3-lantern-of-unspent-dawn",
+            "Tome": "ch3-canticles-in-copper",
+            "Chest": "ch3-sootsilk-doublet",
+            "Head": "ch3-ashcloud-visor",
+            "Legs": "ch2-bogiron-treads"
+          },
+          "rogue": {
+            "Sword": "ch1-graveglass-edge",
+            "Trinket": "ch3-smuggler-ember-locket",
+            "Chest": "ch2-blackbriar-jerkin",
+            "Head": "ch2-mothwing-veil",
+            "Legs": "ch1-dustwalker-strides"
+          }
+        }
+      }
+    },
+    {
+      "chapter": 3,
+      "healer": "druid",
+      "clears": 0,
+      "samples": 256,
+      "meanCurrentSlots": 0,
+      "meanPartyCurrentSlots": 0,
+      "meanPartyIlvl": 2.375,
+      "slotOccupancy": {
+        "Weapon": 0,
+        "Tome": 0,
+        "Trinket": 0,
+        "Head": 0,
+        "Chest": 0,
+        "Legs": 0
+      },
+      "meanStats": {
+        "maxHp": 482.477,
+        "maxMana": 651.18,
+        "manaRegen": 3.03,
+        "spellPower": 12.352,
+        "haste": 0,
+        "crit": 0,
+        "armor": 3.148,
+        "resistance": 4.477
+      },
+      "representative": {
+        "seed": 108082,
+        "history": [
+          {
+            "chapter": 1,
+            "readinessClears": 3,
+            "extraClears": 0,
+            "equippedCountAfter": 12,
+            "chapterEquippedCountAfter": 12
+          },
+          {
+            "chapter": 2,
+            "readinessClears": 3,
+            "extraClears": 1,
+            "equippedCountAfter": 19,
+            "chapterEquippedCountAfter": 9
+          }
+        ],
+        "currentSlots": [],
+        "currentCount": 0,
+        "partyCurrentCount": 0,
+        "avgPartyIlvl": 2.353,
+        "stats": {
+          "maxHp": 478,
+          "maxMana": 680,
+          "manaRegen": 2.9,
+          "spellPower": 19,
+          "haste": 0,
+          "crit": 0,
+          "armor": 4,
+          "resistance": 1
+        },
+        "loadout": {
+          "ranger": {
+            "Bow": "ch2-hawthorn-recurve",
+            "Chest": "ch1-gravepath-brigandine",
+            "Head": "ch2-owlfeather-cowl"
+          },
+          "rogue": {
+            "Sword": "ch1-graveglass-edge",
+            "Trinket": "ch1-sentinel-seal",
+            "Head": "ch1-ashveil-mask"
+          },
+          "mage": {
+            "Staff": "ch1-bonewick-rod",
+            "Trinket": "ch2-stormseed-crystal",
+            "Head": "ch1-cinder-diadem"
+          },
+          "druid": {
+            "Weapon": "ch2-hartwood-scepter",
+            "Trinket": "ch1-bell-of-the-vigil",
+            "Tome": "ch2-rainroot-codex",
+            "Head": "ch2-cloudherd-headdress",
+            "Chest": "ch1-pallbearer-leather",
+            "Legs": "ch1-dustwalker-strides"
+          },
+          "tank": {
+            "Chest": "ch2-stormroot-cuirass",
+            "Trinket": "ch2-stagwarden-badge",
+            "Legs": "ch2-briarstep-legguards",
+            "Head": "ch1-tombwatch-sallet"
+          }
+        }
+      }
+    },
+    {
+      "chapter": 3,
+      "healer": "druid",
+      "clears": 1,
+      "samples": 256,
+      "meanCurrentSlots": 1.152,
+      "meanPartyCurrentSlots": 3.309,
+      "meanPartyIlvl": 3.131,
+      "slotOccupancy": {
+        "Weapon": 0.07,
+        "Tome": 0.086,
+        "Trinket": 0.266,
+        "Head": 0.23,
+        "Chest": 0.457,
+        "Legs": 0.043
+      },
+      "meanStats": {
+        "maxHp": 498.34,
+        "maxMana": 655.309,
+        "manaRegen": 3.205,
+        "spellPower": 14.516,
+        "haste": 0,
+        "crit": 0,
+        "armor": 2.477,
+        "resistance": 6.91
+      },
+      "representative": {
+        "seed": 108217,
+        "history": [
+          {
+            "chapter": 1,
+            "readinessClears": 3,
+            "extraClears": 1,
+            "equippedCountAfter": 11,
+            "chapterEquippedCountAfter": 11
+          },
+          {
+            "chapter": 2,
+            "readinessClears": 3,
+            "extraClears": 0,
+            "equippedCountAfter": 20,
+            "chapterEquippedCountAfter": 11
+          }
+        ],
+        "currentSlots": [
+          "Chest"
+        ],
+        "currentCount": 1,
+        "partyCurrentCount": 2,
+        "avgPartyIlvl": 3.187,
+        "stats": {
+          "maxHp": 533,
+          "maxMana": 645,
+          "manaRegen": 3.1,
+          "spellPower": 0,
+          "haste": 0,
+          "crit": 0,
+          "armor": 1,
+          "resistance": 10
+        },
+        "loadout": {
+          "tank": {
+            "Weapon": "ch2-ironbriar-cleaver",
+            "Trinket": "ch2-kestrel-talon",
+            "Legs": "ch3-glassrunner-cuisses",
+            "Chest": "ch2-blackbriar-jerkin",
+            "Head": "ch1-tombwatch-sallet"
+          },
+          "ranger": {
+            "Bow": "ch2-hawthorn-recurve",
+            "Head": "ch2-owlfeather-cowl",
+            "Trinket": "ch1-raven-quill",
+            "Legs": "ch1-stoneward-sabatons"
+          },
+          "rogue": {
+            "Sword": "ch2-nightpetal-saber",
+            "Chest": "ch1-pallbearer-leather",
+            "Head": "ch2-mothwing-veil",
+            "Trinket": "ch1-sentinel-seal",
+            "Legs": "ch1-dustwalker-strides"
+          },
+          "mage": {
+            "Staff": "ch1-bonewick-rod",
+            "Trinket": "ch2-stormseed-crystal",
+            "Legs": "ch1-sootwoven-hose"
+          },
+          "druid": {
+            "Trinket": "ch2-stormcallers-bead",
+            "Chest": "ch3-furnacehide-coat",
+            "Tome": "ch1-lichen-folio",
+            "Head": "ch2-cloudherd-headdress",
+            "Legs": "ch2-mistspun-leggings"
+          }
+        }
+      }
+    },
+    {
+      "chapter": 3,
+      "healer": "druid",
+      "clears": 2,
+      "samples": 256,
+      "meanCurrentSlots": 2.199,
+      "meanPartyCurrentSlots": 6.465,
+      "meanPartyIlvl": 3.868,
+      "slotOccupancy": {
+        "Weapon": 0.117,
+        "Tome": 0.215,
+        "Trinket": 0.516,
+        "Head": 0.504,
+        "Chest": 0.684,
+        "Legs": 0.164
+      },
+      "meanStats": {
+        "maxHp": 510.41,
+        "maxMana": 663.688,
+        "manaRegen": 3.39,
+        "spellPower": 16.219,
+        "haste": 0,
+        "crit": 0,
+        "armor": 2.664,
+        "resistance": 7.996
+      },
+      "representative": {
+        "seed": 108055,
+        "history": [
+          {
+            "chapter": 1,
+            "readinessClears": 3,
+            "extraClears": 1,
+            "equippedCountAfter": 13,
+            "chapterEquippedCountAfter": 13
+          },
+          {
+            "chapter": 2,
+            "readinessClears": 3,
+            "extraClears": 0,
+            "equippedCountAfter": 22,
+            "chapterEquippedCountAfter": 12
+          }
+        ],
+        "currentSlots": [
+          "Trinket",
+          "Head"
+        ],
+        "currentCount": 2,
+        "partyCurrentCount": 6,
+        "avgPartyIlvl": 4.187,
+        "stats": {
+          "maxHp": 490,
+          "maxMana": 645,
+          "manaRegen": 3.75,
+          "spellPower": 19,
+          "haste": 0,
+          "crit": 0,
+          "armor": 7,
+          "resistance": 5
+        },
+        "loadout": {
+          "tank": {
+            "Weapon": "ch3-gatebreaker-mace",
+            "Trinket": "ch2-adder-fang-pendant",
+            "Chest": "ch2-blackbriar-jerkin",
+            "Head": "ch3-kilnforged-greathelm",
+            "Legs": "ch3-ashscript-pantaloons"
+          },
+          "ranger": {
+            "Bow": "ch2-hawthorn-recurve",
+            "Trinket": "ch1-raven-quill",
+            "Head": "ch1-tombwatch-sallet",
+            "Legs": "ch1-sootwoven-hose"
+          },
+          "mage": {
+            "Staff": "ch2-witchhazel-spire",
+            "Legs": "ch2-mistspun-leggings",
+            "Chest": "ch1-shroud-of-pale-embers",
+            "Head": "ch2-bramble-antlers",
+            "Trinket": "ch1-shattered-reliquary"
+          },
+          "druid": {
+            "Trinket": "ch3-salamander-egg",
+            "Weapon": "ch2-hartwood-scepter",
+            "Tome": "ch1-lichen-folio",
+            "Chest": "ch2-greenwatch-lamellar",
+            "Head": "ch3-molten-halo",
+            "Legs": "ch2-foxglove-trousers"
+          },
+          "rogue": {
+            "Sword": "ch1-graveglass-edge",
+            "Trinket": "ch3-marshal-chain",
+            "Chest": "ch1-pallbearer-leather",
+            "Head": "ch2-thorncrown-bascinet",
+            "Legs": "ch1-dustwalker-strides"
+          }
+        }
+      }
+    },
+    {
+      "chapter": 3,
+      "healer": "druid",
+      "clears": 3,
+      "samples": 256,
+      "meanCurrentSlots": 2.984,
+      "meanPartyCurrentSlots": 9.414,
+      "meanPartyIlvl": 4.555,
+      "slotOccupancy": {
+        "Weapon": 0.176,
+        "Tome": 0.348,
+        "Trinket": 0.668,
+        "Head": 0.688,
+        "Chest": 0.82,
+        "Legs": 0.285
+      },
+      "meanStats": {
+        "maxHp": 520.223,
+        "maxMana": 671.273,
+        "manaRegen": 3.537,
+        "spellPower": 17.551,
+        "haste": 0,
+        "crit": 0,
+        "armor": 2.859,
+        "resistance": 8.609
+      },
+      "representative": {
+        "seed": 108253,
+        "history": [
+          {
+            "chapter": 1,
+            "readinessClears": 3,
+            "extraClears": 1,
+            "equippedCountAfter": 11,
+            "chapterEquippedCountAfter": 11
+          },
+          {
+            "chapter": 2,
+            "readinessClears": 3,
+            "extraClears": 0,
+            "equippedCountAfter": 16,
+            "chapterEquippedCountAfter": 9
+          }
+        ],
+        "currentSlots": [
+          "Trinket",
+          "Head",
+          "Chest"
+        ],
+        "currentCount": 3,
+        "partyCurrentCount": 11,
+        "avgPartyIlvl": 4.62,
+        "stats": {
+          "maxHp": 530,
+          "maxMana": 680,
+          "manaRegen": 3.45,
+          "spellPower": 16,
+          "haste": 0,
+          "crit": 0,
+          "armor": 2,
+          "resistance": 9
+        },
+        "loadout": {
+          "mage": {
+            "Staff": "ch3-crucible-helix",
+            "Chest": "ch3-furnace-chapel-vestments",
+            "Legs": "ch1-sootwoven-hose"
+          },
+          "rogue": {
+            "Sword": "ch3-obsidian-stiletto",
+            "Chest": "ch3-sootsilk-doublet",
+            "Legs": "ch1-dustwalker-strides",
+            "Head": "ch1-tombwatch-sallet"
+          },
+          "tank": {
+            "Weapon": "ch2-ironbriar-cleaver",
+            "Shield": "ch2-heartoak-pavise",
+            "Chest": "ch2-stormroot-cuirass",
+            "Trinket": "ch3-marshal-chain",
+            "Head": "ch3-coalfeather-helm",
+            "Legs": "ch3-ashscript-pantaloons"
+          },
+          "ranger": {
+            "Bow": "ch2-hawthorn-recurve",
+            "Chest": "ch3-lavaward-scales",
+            "Head": "ch1-lanternwatch-hood"
+          },
+          "druid": {
+            "Trinket": "ch3-emberheart-totem",
+            "Chest": "ch3-ashbark-carapace",
+            "Tome": "ch2-rainroot-codex",
+            "Head": "ch3-basalt-bloom-circlet",
+            "Weapon": "ch1-rootbound-crook",
+            "Legs": "ch2-foxglove-trousers"
+          }
+        }
+      }
+    },
+    {
+      "chapter": 3,
+      "healer": "druid",
+      "clears": 4,
+      "samples": 256,
+      "meanCurrentSlots": 3.645,
+      "meanPartyCurrentSlots": 12.203,
+      "meanPartyIlvl": 5.194,
+      "slotOccupancy": {
+        "Weapon": 0.227,
+        "Tome": 0.426,
+        "Trinket": 0.789,
+        "Head": 0.813,
+        "Chest": 0.918,
+        "Legs": 0.473
+      },
+      "meanStats": {
+        "maxHp": 528.512,
+        "maxMana": 676.867,
+        "manaRegen": 3.674,
+        "spellPower": 18.922,
+        "haste": 0,
+        "crit": 0,
+        "armor": 3.383,
+        "resistance": 8.836
+      },
+      "representative": {
+        "seed": 108020,
+        "history": [
+          {
+            "chapter": 1,
+            "readinessClears": 3,
+            "extraClears": 0,
+            "equippedCountAfter": 8,
+            "chapterEquippedCountAfter": 8
+          },
+          {
+            "chapter": 2,
+            "readinessClears": 3,
+            "extraClears": 1,
+            "equippedCountAfter": 16,
+            "chapterEquippedCountAfter": 11
+          }
+        ],
+        "currentSlots": [
+          "Weapon",
+          "Tome",
+          "Trinket",
+          "Chest"
+        ],
+        "currentCount": 4,
+        "partyCurrentCount": 11,
+        "avgPartyIlvl": 4.76,
+        "stats": {
+          "maxHp": 500,
+          "maxMana": 715,
+          "manaRegen": 3.9,
+          "spellPower": 27,
+          "haste": 0,
+          "crit": 0,
+          "armor": 0,
+          "resistance": 12
+        },
+        "loadout": {
+          "mage": {
+            "Staff": "ch3-crucible-helix",
+            "Trinket": "ch2-stagwarden-badge",
+            "Chest": "ch2-rainblessed-surplice",
+            "Head": "ch1-tombwatch-sallet"
+          },
+          "ranger": {
+            "Bow": "ch3-firescar-longbow",
+            "Trinket": "ch1-raven-quill"
+          },
+          "rogue": {
+            "Sword": "ch3-obsidian-stiletto",
+            "Chest": "ch3-sootsilk-doublet",
+            "Trinket": "ch3-marshal-chain",
+            "Legs": "ch1-dustwalker-strides",
+            "Head": "ch1-mistcaller-cowl"
+          },
+          "tank": {
+            "Weapon": "ch2-ironbriar-cleaver",
+            "Trinket": "ch3-captured-flare",
+            "Chest": "ch2-stormroot-cuirass",
+            "Head": "ch3-coalfeather-helm",
+            "Legs": "ch2-briarstep-legguards"
+          },
+          "druid": {
+            "Trinket": "ch3-coalglass-hourglass",
+            "Tome": "ch3-charred-ring-almanac",
+            "Weapon": "ch3-phoenixroot-branch",
+            "Chest": "ch3-ashbark-carapace",
+            "Legs": "ch2-mistspun-leggings",
+            "Head": "ch2-owlfeather-cowl"
+          }
+        }
+      }
+    },
+    {
+      "chapter": 3,
+      "healer": "druid",
+      "clears": 5,
+      "samples": 256,
+      "meanCurrentSlots": 4.184,
+      "meanPartyCurrentSlots": 14.582,
+      "meanPartyIlvl": 5.722,
+      "slotOccupancy": {
+        "Weapon": 0.25,
+        "Tome": 0.539,
+        "Trinket": 0.867,
+        "Head": 0.906,
+        "Chest": 0.973,
+        "Legs": 0.648
+      },
+      "meanStats": {
+        "maxHp": 534.906,
+        "maxMana": 683.508,
+        "manaRegen": 3.772,
+        "spellPower": 19.445,
+        "haste": 0,
+        "crit": 0,
+        "armor": 4.035,
+        "resistance": 8.742
+      },
+      "representative": {
+        "seed": 108144,
+        "history": [
+          {
+            "chapter": 1,
+            "readinessClears": 3,
+            "extraClears": 0,
+            "equippedCountAfter": 10,
+            "chapterEquippedCountAfter": 10
+          },
+          {
+            "chapter": 2,
+            "readinessClears": 3,
+            "extraClears": 1,
+            "equippedCountAfter": 22,
+            "chapterEquippedCountAfter": 16
+          }
+        ],
+        "currentSlots": [
+          "Trinket",
+          "Head",
+          "Chest",
+          "Legs"
+        ],
+        "currentCount": 4,
+        "partyCurrentCount": 14,
+        "avgPartyIlvl": 6.113,
+        "stats": {
+          "maxHp": 550,
+          "maxMana": 680,
+          "manaRegen": 3.9,
+          "spellPower": 23,
+          "haste": 0,
+          "crit": 0,
+          "armor": 8,
+          "resistance": 6
+        },
+        "loadout": {
+          "ranger": {
+            "Bow": "ch3-firescar-longbow",
+            "Chest": "ch3-lavaward-scales",
+            "Trinket": "ch2-stagwarden-badge",
+            "Legs": "ch2-briarstep-legguards"
+          },
+          "rogue": {
+            "Sword": "ch3-obsidian-stiletto",
+            "Chest": "ch3-sootsilk-doublet",
+            "Trinket": "ch3-marshal-chain",
+            "Legs": "ch2-foxglove-trousers",
+            "Head": "ch2-canopy-mitre"
+          },
+          "tank": {
+            "Weapon": "ch3-gatebreaker-mace",
+            "Legs": "ch3-anvil-march-greaves",
+            "Trinket": "ch2-kestrel-talon",
+            "Chest": "ch2-stormroot-cuirass",
+            "Shield": "ch1-door-of-the-dead",
+            "Head": "ch3-kilnforged-greathelm"
+          },
+          "mage": {
+            "Staff": "ch2-witchhazel-spire",
+            "Trinket": "ch2-stormseed-crystal",
+            "Chest": "ch3-furnace-chapel-vestments",
+            "Legs": "ch3-ashscript-pantaloons",
+            "Head": "ch1-tombwatch-sallet"
+          },
+          "druid": {
+            "Trinket": "ch3-coalglass-hourglass",
+            "Weapon": "ch2-hartwood-scepter",
+            "Chest": "ch3-furnacehide-coat",
+            "Tome": "ch2-rainroot-codex",
+            "Legs": "ch3-glassrunner-cuisses",
+            "Head": "ch3-crown-of-the-ash-saint"
+          }
+        }
+      }
+    },
+    {
+      "chapter": 3,
+      "healer": "shaman",
+      "clears": 0,
+      "samples": 256,
+      "meanCurrentSlots": 0,
+      "meanPartyCurrentSlots": 0,
+      "meanPartyIlvl": 2.373,
+      "slotOccupancy": {
+        "Weapon": 0,
+        "Tome": 0,
+        "Trinket": 0,
+        "Head": 0,
+        "Chest": 0,
+        "Legs": 0
+      },
+      "meanStats": {
+        "maxHp": 477.566,
+        "maxMana": 658.07,
+        "manaRegen": 2.978,
+        "spellPower": 12.875,
+        "haste": 0,
+        "crit": 0,
+        "armor": 3.031,
+        "resistance": 4.789
+      },
+      "representative": {
+        "seed": 108068,
+        "history": [
+          {
+            "chapter": 1,
+            "readinessClears": 3,
+            "extraClears": 0,
+            "equippedCountAfter": 13,
+            "chapterEquippedCountAfter": 13
+          },
+          {
+            "chapter": 2,
+            "readinessClears": 3,
+            "extraClears": 1,
+            "equippedCountAfter": 17,
+            "chapterEquippedCountAfter": 9
+          }
+        ],
+        "currentSlots": [],
+        "currentCount": 0,
+        "partyCurrentCount": 0,
+        "avgPartyIlvl": 2.367,
+        "stats": {
+          "maxHp": 450,
+          "maxMana": 665,
+          "manaRegen": 2.85,
+          "spellPower": 16,
+          "haste": 0,
+          "crit": 0,
+          "armor": 3,
+          "resistance": 2
+        },
+        "loadout": {
+          "ranger": {
+            "Bow": "ch2-hawthorn-recurve",
+            "Trinket": "ch2-kestrel-talon",
+            "Head": "ch1-lanternwatch-hood"
+          },
+          "mage": {
+            "Staff": "ch2-witchhazel-spire",
+            "Trinket": "ch1-shattered-reliquary",
+            "Legs": "ch1-sootwoven-hose"
+          },
+          "rogue": {
+            "Sword": "ch1-graveglass-edge",
+            "Trinket": "ch2-stagwarden-badge",
+            "Legs": "ch1-dustwalker-strides"
+          },
+          "shaman": {
+            "Weapon": "ch2-thunderreed-channeler",
+            "Trinket": "ch1-amber-spore",
+            "Tome": "ch1-whispers-in-riverstone",
+            "Chest": "ch1-pallbearer-leather",
+            "Legs": "ch2-mistspun-leggings"
+          },
+          "tank": {
+            "Shield": "ch2-heartoak-pavise",
+            "Trinket": "ch2-adder-fang-pendant",
+            "Chest": "ch2-blackbriar-jerkin"
+          }
+        }
+      }
+    },
+    {
+      "chapter": 3,
+      "healer": "shaman",
+      "clears": 1,
+      "samples": 256,
+      "meanCurrentSlots": 1.191,
+      "meanPartyCurrentSlots": 3.348,
+      "meanPartyIlvl": 3.131,
+      "slotOccupancy": {
+        "Weapon": 0.121,
+        "Tome": 0.086,
+        "Trinket": 0.27,
+        "Head": 0.223,
+        "Chest": 0.453,
+        "Legs": 0.039
+      },
+      "meanStats": {
+        "maxHp": 493.863,
+        "maxMana": 663.133,
+        "manaRegen": 3.129,
+        "spellPower": 15.422,
+        "haste": 0,
+        "crit": 0,
+        "armor": 2.398,
+        "resistance": 7.266
+      },
+      "representative": {
+        "seed": 108016,
+        "history": [
+          {
+            "chapter": 1,
+            "readinessClears": 3,
+            "extraClears": 0,
+            "equippedCountAfter": 6,
+            "chapterEquippedCountAfter": 6
+          },
+          {
+            "chapter": 2,
+            "readinessClears": 3,
+            "extraClears": 1,
+            "equippedCountAfter": 16,
+            "chapterEquippedCountAfter": 12
+          }
+        ],
+        "currentSlots": [
+          "Chest"
+        ],
+        "currentCount": 1,
+        "partyCurrentCount": 3,
+        "avgPartyIlvl": 3.247,
+        "stats": {
+          "maxHp": 485,
+          "maxMana": 650,
+          "manaRegen": 3.3,
+          "spellPower": 16,
+          "haste": 0,
+          "crit": 0,
+          "armor": 0,
+          "resistance": 10
+        },
+        "loadout": {
+          "ranger": {
+            "Bow": "ch3-firescar-longbow",
+            "Chest": "ch2-greenwatch-lamellar",
+            "Trinket": "ch1-raven-quill"
+          },
+          "rogue": {
+            "Sword": "ch3-obsidian-stiletto",
+            "Trinket": "ch2-stagwarden-badge",
+            "Chest": "ch1-pallbearer-leather"
+          },
+          "tank": {
+            "Weapon": "ch2-ironbriar-cleaver",
+            "Shield": "ch2-heartoak-pavise",
+            "Trinket": "ch2-kestrel-talon",
+            "Chest": "ch2-blackbriar-jerkin",
+            "Legs": "ch2-mistspun-leggings"
+          },
+          "shaman": {
+            "Trinket": "ch2-stormcallers-bead",
+            "Weapon": "ch2-thunderreed-channeler",
+            "Chest": "ch3-furnace-chapel-vestments",
+            "Tome": "ch1-whispers-in-riverstone",
+            "Legs": "ch2-bogiron-treads"
+          },
+          "mage": {
+            "Chest": "ch1-gravepath-brigandine"
+          }
+        }
+      }
+    },
+    {
+      "chapter": 3,
+      "healer": "shaman",
+      "clears": 2,
+      "samples": 256,
+      "meanCurrentSlots": 2.289,
+      "meanPartyCurrentSlots": 6.543,
+      "meanPartyIlvl": 3.87,
+      "slotOccupancy": {
+        "Weapon": 0.23,
+        "Tome": 0.211,
+        "Trinket": 0.512,
+        "Head": 0.496,
+        "Chest": 0.68,
+        "Legs": 0.16
+      },
+      "meanStats": {
+        "maxHp": 507.172,
+        "maxMana": 671.719,
+        "manaRegen": 3.28,
+        "spellPower": 17.672,
+        "haste": 0,
+        "crit": 0,
+        "armor": 2.652,
+        "resistance": 8.379
+      },
+      "representative": {
+        "seed": 108171,
+        "history": [
+          {
+            "chapter": 1,
+            "readinessClears": 3,
+            "extraClears": 1,
+            "equippedCountAfter": 8,
+            "chapterEquippedCountAfter": 8
+          },
+          {
+            "chapter": 2,
+            "readinessClears": 3,
+            "extraClears": 0,
+            "equippedCountAfter": 14,
+            "chapterEquippedCountAfter": 10
+          }
+        ],
+        "currentSlots": [
+          "Head",
+          "Chest"
+        ],
+        "currentCount": 2,
+        "partyCurrentCount": 9,
+        "avgPartyIlvl": 4.36,
+        "stats": {
+          "maxHp": 580,
+          "maxMana": 690,
+          "manaRegen": 2.25,
+          "spellPower": 19,
+          "haste": 0,
+          "crit": 0,
+          "armor": 3,
+          "resistance": 11
+        },
+        "loadout": {
+          "ranger": {
+            "Bow": "ch3-firescar-longbow",
+            "Chest": "ch1-mortuary-hauberk"
+          },
+          "tank": {
+            "Weapon": "ch3-gatebreaker-mace",
+            "Trinket": "ch3-captured-flare",
+            "Chest": "ch2-blackbriar-jerkin",
+            "Shield": "ch1-door-of-the-dead",
+            "Head": "ch3-kilnforged-greathelm",
+            "Legs": "ch2-briarstep-legguards"
+          },
+          "rogue": {
+            "Sword": "ch2-nightpetal-saber",
+            "Chest": "ch3-sootsilk-doublet",
+            "Head": "ch2-mothwing-veil"
+          },
+          "mage": {
+            "Staff": "ch1-bonewick-rod",
+            "Chest": "ch3-furnace-chapel-vestments",
+            "Head": "ch3-molten-halo",
+            "Legs": "ch1-sootwoven-hose"
+          },
+          "shaman": {
+            "Weapon": "ch2-thunderreed-channeler",
+            "Chest": "ch3-lavaward-scales",
+            "Tome": "ch2-rainkeeper-tablets",
+            "Head": "ch3-crown-of-the-ash-saint",
+            "Trinket": "ch2-stagwarden-badge",
+            "Legs": "ch2-mistspun-leggings"
+          }
+        }
+      }
+    },
+    {
+      "chapter": 3,
+      "healer": "shaman",
+      "clears": 3,
+      "samples": 256,
+      "meanCurrentSlots": 3.172,
+      "meanPartyCurrentSlots": 9.598,
+      "meanPartyIlvl": 4.57,
+      "slotOccupancy": {
+        "Weapon": 0.371,
+        "Tome": 0.344,
+        "Trinket": 0.668,
+        "Head": 0.68,
+        "Chest": 0.82,
+        "Legs": 0.289
+      },
+      "meanStats": {
+        "maxHp": 518.02,
+        "maxMana": 680.09,
+        "manaRegen": 3.392,
+        "spellPower": 19.742,
+        "haste": 0,
+        "crit": 0,
+        "armor": 2.941,
+        "resistance": 9.094
+      },
+      "representative": {
+        "seed": 108169,
+        "history": [
+          {
+            "chapter": 1,
+            "readinessClears": 3,
+            "extraClears": 1,
+            "equippedCountAfter": 10,
+            "chapterEquippedCountAfter": 10
+          },
+          {
+            "chapter": 2,
+            "readinessClears": 3,
+            "extraClears": 0,
+            "equippedCountAfter": 14,
+            "chapterEquippedCountAfter": 5
+          }
+        ],
+        "currentSlots": [
+          "Trinket",
+          "Head",
+          "Chest"
+        ],
+        "currentCount": 3,
+        "partyCurrentCount": 12,
+        "avgPartyIlvl": 4.78,
+        "stats": {
+          "maxHp": 533,
+          "maxMana": 600,
+          "manaRegen": 3.6,
+          "spellPower": 13,
+          "haste": 0,
+          "crit": 0,
+          "armor": 1,
+          "resistance": 8
+        },
+        "loadout": {
+          "rogue": {
+            "Sword": "ch3-obsidian-stiletto",
+            "Trinket": "ch3-smuggler-ember-locket",
+            "Chest": "ch3-sootsilk-doublet",
+            "Head": "ch1-tombwatch-sallet"
+          },
+          "tank": {
+            "Weapon": "ch3-gatebreaker-mace",
+            "Shield": "ch3-furnace-bastion",
+            "Legs": "ch3-anvil-march-greaves",
+            "Trinket": "ch3-captured-flare",
+            "Chest": "ch2-duskweald-robe",
+            "Head": "ch3-coalfeather-helm"
+          },
+          "ranger": {
+            "Bow": "ch2-hawthorn-recurve",
+            "Head": "ch2-owlfeather-cowl",
+            "Chest": "ch1-pallbearer-leather",
+            "Trinket": "ch1-raven-quill"
+          },
+          "shaman": {
+            "Trinket": "ch3-coalglass-hourglass",
+            "Chest": "ch3-furnacehide-coat",
+            "Head": "ch3-ashcloud-visor",
+            "Weapon": "ch1-gravewater-conduit",
+            "Legs": "ch1-dustwalker-strides"
+          },
+          "mage": {
+            "Staff": "ch1-bonewick-rod",
+            "Head": "ch3-molten-halo",
+            "Chest": "ch2-rainblessed-surplice"
+          }
+        }
+      }
+    },
+    {
+      "chapter": 3,
+      "healer": "shaman",
+      "clears": 4,
+      "samples": 256,
+      "meanCurrentSlots": 3.957,
+      "meanPartyCurrentSlots": 12.496,
+      "meanPartyIlvl": 5.219,
+      "slotOccupancy": {
+        "Weapon": 0.543,
+        "Tome": 0.422,
+        "Trinket": 0.789,
+        "Head": 0.809,
+        "Chest": 0.918,
+        "Legs": 0.477
+      },
+      "meanStats": {
+        "maxHp": 527.672,
+        "maxMana": 687.305,
+        "manaRegen": 3.487,
+        "spellPower": 22.133,
+        "haste": 0,
+        "crit": 0,
+        "armor": 3.488,
+        "resistance": 9.395
+      },
+      "representative": {
+        "seed": 108145,
+        "history": [
+          {
+            "chapter": 1,
+            "readinessClears": 3,
+            "extraClears": 1,
+            "equippedCountAfter": 13,
+            "chapterEquippedCountAfter": 13
+          },
+          {
+            "chapter": 2,
+            "readinessClears": 3,
+            "extraClears": 0,
+            "equippedCountAfter": 20,
+            "chapterEquippedCountAfter": 12
+          }
+        ],
+        "currentSlots": [
+          "Trinket",
+          "Head",
+          "Chest",
+          "Legs"
+        ],
+        "currentCount": 4,
+        "partyCurrentCount": 10,
+        "avgPartyIlvl": 5.127,
+        "stats": {
+          "maxHp": 525,
+          "maxMana": 650,
+          "manaRegen": 3.8,
+          "spellPower": 20,
+          "haste": 0,
+          "crit": 0,
+          "armor": 5,
+          "resistance": 10
+        },
+        "loadout": {
+          "ranger": {
+            "Bow": "ch3-firescar-longbow",
+            "Trinket": "ch3-brass-falcon-whistle",
+            "Legs": "ch2-briarstep-legguards"
+          },
+          "tank": {
+            "Weapon": "ch2-ironbriar-cleaver",
+            "Shield": "ch3-furnace-bastion",
+            "Legs": "ch3-anvil-march-greaves",
+            "Chest": "ch3-vest-of-the-last-pyre",
+            "Trinket": "ch2-kestrel-talon",
+            "Head": "ch1-tombwatch-sallet"
+          },
+          "rogue": {
+            "Sword": "ch2-nightpetal-saber",
+            "Trinket": "ch3-smuggler-ember-locket",
+            "Chest": "ch2-blackbriar-jerkin",
+            "Legs": "ch2-foxglove-trousers",
+            "Head": "ch2-mothwing-veil"
+          },
+          "mage": {
+            "Staff": "ch2-witchhazel-spire",
+            "Chest": "ch1-pallbearer-leather",
+            "Legs": "ch2-fordkeepers-greaves",
+            "Trinket": "ch1-sentinel-seal"
+          },
+          "shaman": {
+            "Trinket": "ch3-emberheart-totem",
+            "Weapon": "ch2-thunderreed-channeler",
+            "Chest": "ch3-sootsilk-doublet",
+            "Legs": "ch3-glassrunner-cuisses",
+            "Head": "ch3-molten-halo",
+            "Tome": "ch1-whispers-in-riverstone"
+          }
+        }
+      }
+    },
+    {
+      "chapter": 3,
+      "healer": "shaman",
+      "clears": 5,
+      "samples": 256,
+      "meanCurrentSlots": 4.523,
+      "meanPartyCurrentSlots": 14.891,
+      "meanPartyIlvl": 5.744,
+      "slotOccupancy": {
+        "Weapon": 0.613,
+        "Tome": 0.531,
+        "Trinket": 0.867,
+        "Head": 0.895,
+        "Chest": 0.973,
+        "Legs": 0.645
+      },
+      "meanStats": {
+        "maxHp": 534.363,
+        "maxMana": 694.402,
+        "manaRegen": 3.559,
+        "spellPower": 23.125,
+        "haste": 0,
+        "crit": 0,
+        "armor": 3.965,
+        "resistance": 9.531
+      },
+      "representative": {
+        "seed": 108021,
+        "history": [
+          {
+            "chapter": 1,
+            "readinessClears": 3,
+            "extraClears": 1,
+            "equippedCountAfter": 11,
+            "chapterEquippedCountAfter": 11
+          },
+          {
+            "chapter": 2,
+            "readinessClears": 3,
+            "extraClears": 0,
+            "equippedCountAfter": 20,
+            "chapterEquippedCountAfter": 12
+          }
+        ],
+        "currentSlots": [
+          "Weapon",
+          "Tome",
+          "Trinket",
+          "Head",
+          "Chest"
+        ],
+        "currentCount": 5,
+        "partyCurrentCount": 11,
+        "avgPartyIlvl": 5.1,
+        "stats": {
+          "maxHp": 535,
+          "maxMana": 730,
+          "manaRegen": 3.6,
+          "spellPower": 28,
+          "haste": 0,
+          "crit": 0,
+          "armor": 1,
+          "resistance": 12
+        },
+        "loadout": {
+          "mage": {
+            "Staff": "ch3-crucible-helix",
+            "Trinket": "ch2-stormseed-crystal",
+            "Chest": "ch2-blackbriar-jerkin",
+            "Legs": "ch2-mistspun-leggings",
+            "Head": "ch1-tombwatch-sallet"
+          },
+          "ranger": {
+            "Bow": "ch3-firescar-longbow",
+            "Chest": "ch1-gravepath-brigandine",
+            "Trinket": "ch1-raven-quill",
+            "Legs": "ch1-sootwoven-hose"
+          },
+          "tank": {
+            "Weapon": "ch2-ironbriar-cleaver",
+            "Chest": "ch2-stormroot-cuirass",
+            "Trinket": "ch3-marshal-chain",
+            "Head": "ch3-coalfeather-helm",
+            "Legs": "ch2-briarstep-legguards"
+          },
+          "shaman": {
+            "Trinket": "ch3-emberheart-totem",
+            "Weapon": "ch3-cinderstorm-focus",
+            "Tome": "ch3-songs-of-molten-rain",
+            "Chest": "ch3-lavaward-scales",
+            "Head": "ch3-ashcloud-visor",
+            "Legs": "ch2-bogiron-treads"
+          },
+          "rogue": {
+            "Sword": "ch1-graveglass-edge",
+            "Trinket": "ch3-smuggler-ember-locket",
+            "Chest": "ch3-sootsilk-doublet",
+            "Head": "ch2-mothwing-veil",
+            "Legs": "ch1-dustwalker-strides"
+          }
+        }
+      }
+    },
+    {
+      "chapter": 4,
+      "healer": "priest",
+      "clears": 0,
+      "samples": 256,
+      "meanCurrentSlots": 0,
+      "meanPartyCurrentSlots": 0,
+      "meanPartyIlvl": 5.715,
+      "slotOccupancy": {
+        "Weapon": 0,
+        "Tome": 0,
+        "Trinket": 0,
+        "Head": 0,
+        "Chest": 0,
+        "Legs": 0
+      },
+      "meanStats": {
+        "maxHp": 526.594,
+        "maxMana": 713.336,
+        "manaRegen": 3.419,
+        "spellPower": 23.09,
+        "haste": 0,
+        "crit": 0,
+        "armor": 4.836,
+        "resistance": 10.289
+      },
+      "representative": {
+        "seed": 118056,
+        "history": [
+          {
+            "chapter": 1,
+            "readinessClears": 3,
+            "extraClears": 0,
+            "equippedCountAfter": 11,
+            "chapterEquippedCountAfter": 11
+          },
+          {
+            "chapter": 2,
+            "readinessClears": 3,
+            "extraClears": 1,
+            "equippedCountAfter": 20,
+            "chapterEquippedCountAfter": 12
+          },
+          {
+            "chapter": 3,
+            "readinessClears": 3,
+            "extraClears": 0,
+            "equippedCountAfter": 26,
+            "chapterEquippedCountAfter": 13
+          }
+        ],
+        "currentSlots": [],
+        "currentCount": 0,
+        "partyCurrentCount": 0,
+        "avgPartyIlvl": 5.7,
+        "stats": {
+          "maxHp": 570,
+          "maxMana": 660,
+          "manaRegen": 3.2,
+          "spellPower": 17,
+          "haste": 0,
+          "crit": 0,
+          "armor": 3,
+          "resistance": 8
+        },
+        "loadout": {
+          "mage": {
+            "Staff": "ch3-crucible-helix",
+            "Chest": "ch3-furnace-chapel-vestments",
+            "Head": "ch3-basalt-bloom-circlet",
+            "Legs": "ch2-mistspun-leggings",
+            "Trinket": "ch1-shattered-reliquary"
+          },
+          "ranger": {
+            "Bow": "ch3-firescar-longbow",
+            "Trinket": "ch2-kestrel-talon",
+            "Chest": "ch3-lavaward-scales",
+            "Legs": "ch2-briarstep-legguards",
+            "Head": "ch2-cloudherd-headdress"
+          },
+          "tank": {
+            "Weapon": "ch3-gatebreaker-mace",
+            "Trinket": "ch3-captured-flare",
+            "Head": "ch3-kilnforged-greathelm",
+            "Chest": "ch2-rainblessed-surplice",
+            "Legs": "ch3-ashscript-pantaloons"
+          },
+          "rogue": {
+            "Sword": "ch2-nightpetal-saber",
+            "Chest": "ch3-sootsilk-doublet",
+            "Head": "ch3-ashcloud-visor",
+            "Trinket": "ch1-sentinel-seal",
+            "Legs": "ch1-dustwalker-strides"
+          },
+          "priest": {
+            "Trinket": "ch2-dewfall-rosary",
+            "Weapon": "ch2-briarheart-thurible",
+            "Chest": "ch3-cinderwall-harness",
+            "Head": "ch3-crown-of-the-ash-saint",
+            "Tome": "ch1-book-of-last-names",
+            "Legs": "ch2-bogiron-treads"
+          }
+        }
+      }
+    },
+    {
+      "chapter": 4,
+      "healer": "priest",
+      "clears": 1,
+      "samples": 256,
+      "meanCurrentSlots": 1.063,
+      "meanPartyCurrentSlots": 3.391,
+      "meanPartyIlvl": 6.492,
+      "slotOccupancy": {
+        "Weapon": 0.141,
+        "Tome": 0.078,
+        "Trinket": 0.293,
+        "Head": 0.316,
+        "Chest": 0.121,
+        "Legs": 0.113
+      },
+      "meanStats": {
+        "maxHp": 544.59,
+        "maxMana": 716.422,
+        "manaRegen": 3.618,
+        "spellPower": 24.844,
+        "haste": 0,
+        "crit": 0,
+        "armor": 5.984,
+        "resistance": 10.492
+      },
+      "representative": {
+        "seed": 118134,
+        "history": [
+          {
+            "chapter": 1,
+            "readinessClears": 3,
+            "extraClears": 0,
+            "equippedCountAfter": 8,
+            "chapterEquippedCountAfter": 8
+          },
+          {
+            "chapter": 2,
+            "readinessClears": 3,
+            "extraClears": 1,
+            "equippedCountAfter": 20,
+            "chapterEquippedCountAfter": 13
+          },
+          {
+            "chapter": 3,
+            "readinessClears": 3,
+            "extraClears": 0,
+            "equippedCountAfter": 26,
+            "chapterEquippedCountAfter": 13
+          }
+        ],
+        "currentSlots": [
+          "Weapon"
+        ],
+        "currentCount": 1,
+        "partyCurrentCount": 4,
+        "avgPartyIlvl": 6.587,
+        "stats": {
+          "maxHp": 555,
+          "maxMana": 730,
+          "manaRegen": 3.6,
+          "spellPower": 38,
+          "haste": 0,
+          "crit": 0,
+          "armor": 2,
+          "resistance": 12
+        },
+        "loadout": {
+          "mage": {
+            "Staff": "ch3-crucible-helix",
+            "Chest": "ch3-furnace-chapel-vestments",
+            "Trinket": "ch3-marshal-chain",
+            "Legs": "ch2-mistspun-leggings",
+            "Head": "ch1-morel-cap"
+          },
+          "ranger": {
+            "Bow": "ch3-firescar-longbow",
+            "Trinket": "ch2-kestrel-talon",
+            "Chest": "ch2-greenwatch-lamellar",
+            "Head": "ch3-coalfeather-helm",
+            "Legs": "ch1-rootstitch-leggings"
+          },
+          "tank": {
+            "Weapon": "ch3-gatebreaker-mace",
+            "Legs": "ch4-astral-briar-stockings",
+            "Chest": "ch3-vest-of-the-last-pyre",
+            "Trinket": "ch4-masquerade-spider-brooch",
+            "Head": "ch4-crescentwood-antlers"
+          },
+          "rogue": {
+            "Sword": "ch2-nightpetal-saber",
+            "Trinket": "ch3-smuggler-ember-locket",
+            "Chest": "ch2-blackbriar-jerkin",
+            "Head": "ch2-cloudherd-headdress",
+            "Legs": "ch1-dustwalker-strides"
+          },
+          "priest": {
+            "Trinket": "ch3-coalglass-hourglass",
+            "Weapon": "ch4-scepter-of-the-last-mercy",
+            "Tome": "ch3-canticles-in-copper",
+            "Chest": "ch3-furnacehide-coat",
+            "Head": "ch3-basalt-bloom-circlet",
+            "Legs": "ch2-foxglove-trousers"
+          }
+        }
+      }
+    },
+    {
+      "chapter": 4,
+      "healer": "priest",
+      "clears": 2,
+      "samples": 256,
+      "meanCurrentSlots": 2.172,
+      "meanPartyCurrentSlots": 6.656,
+      "meanPartyIlvl": 7.219,
+      "slotOccupancy": {
+        "Weapon": 0.273,
+        "Tome": 0.242,
+        "Trinket": 0.484,
+        "Head": 0.555,
+        "Chest": 0.375,
+        "Legs": 0.242
+      },
+      "meanStats": {
+        "maxHp": 561.227,
+        "maxMana": 726.926,
+        "manaRegen": 3.723,
+        "spellPower": 26.773,
+        "haste": 0,
+        "crit": 0,
+        "armor": 7.715,
+        "resistance": 10.152
+      },
+      "representative": {
+        "seed": 118013,
+        "history": [
+          {
+            "chapter": 1,
+            "readinessClears": 3,
+            "extraClears": 1,
+            "equippedCountAfter": 13,
+            "chapterEquippedCountAfter": 13
+          },
+          {
+            "chapter": 2,
+            "readinessClears": 3,
+            "extraClears": 0,
+            "equippedCountAfter": 18,
+            "chapterEquippedCountAfter": 8
+          },
+          {
+            "chapter": 3,
+            "readinessClears": 3,
+            "extraClears": 1,
+            "equippedCountAfter": 27,
+            "chapterEquippedCountAfter": 17
+          }
+        ],
+        "currentSlots": [
+          "Tome",
+          "Trinket"
+        ],
+        "currentCount": 2,
+        "partyCurrentCount": 5,
+        "avgPartyIlvl": 7.473,
+        "stats": {
+          "maxHp": 560,
+          "maxMana": 785,
+          "manaRegen": 4,
+          "spellPower": 30,
+          "haste": 0,
+          "crit": 0,
+          "armor": 9,
+          "resistance": 7
+        },
+        "loadout": {
+          "ranger": {
+            "Bow": "ch4-white-hart-greatbow",
+            "Trinket": "ch3-marshal-chain",
+            "Legs": "ch2-briarstep-legguards",
+            "Chest": "ch1-pallbearer-leather",
+            "Head": "ch1-lanternwatch-hood"
+          },
+          "mage": {
+            "Staff": "ch3-crucible-helix",
+            "Trinket": "ch2-stormseed-crystal",
+            "Chest": "ch3-lavaward-scales",
+            "Legs": "ch3-ashscript-pantaloons",
+            "Head": "ch3-ashcloud-visor"
+          },
+          "priest": {
+            "Trinket": "ch4-pearl-of-the-elder-tide",
+            "Tome": "ch4-thornlit-testament",
+            "Weapon": "ch3-lantern-of-unspent-dawn",
+            "Chest": "ch3-furnace-chapel-vestments",
+            "Legs": "ch3-anvil-march-greaves",
+            "Head": "ch3-crown-of-the-ash-saint"
+          },
+          "tank": {
+            "Weapon": "ch2-ironbriar-cleaver",
+            "Shield": "ch3-furnace-bastion",
+            "Legs": "ch4-wild-hunt-legplates",
+            "Trinket": "ch3-captured-flare",
+            "Head": "ch4-starless-coronation",
+            "Chest": "ch2-duskweald-robe"
+          },
+          "rogue": {
+            "Sword": "ch2-nightpetal-saber",
+            "Trinket": "ch3-smuggler-ember-locket",
+            "Chest": "ch3-sootsilk-doublet",
+            "Legs": "ch3-embervine-bindings",
+            "Head": "ch3-smokefox-visage"
+          }
+        }
+      }
+    },
+    {
+      "chapter": 4,
+      "healer": "priest",
+      "clears": 3,
+      "samples": 256,
+      "meanCurrentSlots": 3.172,
+      "meanPartyCurrentSlots": 9.668,
+      "meanPartyIlvl": 7.877,
+      "slotOccupancy": {
+        "Weapon": 0.441,
+        "Tome": 0.375,
+        "Trinket": 0.641,
+        "Head": 0.707,
+        "Chest": 0.59,
+        "Legs": 0.418
+      },
+      "meanStats": {
+        "maxHp": 576.93,
+        "maxMana": 731.398,
+        "manaRegen": 3.803,
+        "spellPower": 29.398,
+        "haste": 0,
+        "crit": 0,
+        "armor": 9.594,
+        "resistance": 9.34
+      },
+      "representative": {
+        "seed": 118013,
+        "history": [
+          {
+            "chapter": 1,
+            "readinessClears": 3,
+            "extraClears": 1,
+            "equippedCountAfter": 13,
+            "chapterEquippedCountAfter": 13
+          },
+          {
+            "chapter": 2,
+            "readinessClears": 3,
+            "extraClears": 0,
+            "equippedCountAfter": 18,
+            "chapterEquippedCountAfter": 8
+          },
+          {
+            "chapter": 3,
+            "readinessClears": 3,
+            "extraClears": 1,
+            "equippedCountAfter": 27,
+            "chapterEquippedCountAfter": 17
+          }
+        ],
+        "currentSlots": [
+          "Tome",
+          "Trinket",
+          "Legs"
+        ],
+        "currentCount": 3,
+        "partyCurrentCount": 8,
+        "avgPartyIlvl": 8.053,
+        "stats": {
+          "maxHp": 555,
+          "maxMana": 785,
+          "manaRegen": 4,
+          "spellPower": 30,
+          "haste": 0,
+          "crit": 0,
+          "armor": 10,
+          "resistance": 7
+        },
+        "loadout": {
+          "ranger": {
+            "Bow": "ch4-white-hart-greatbow",
+            "Trinket": "ch3-marshal-chain",
+            "Head": "ch3-ashcloud-visor",
+            "Legs": "ch2-briarstep-legguards",
+            "Chest": "ch1-pallbearer-leather"
+          },
+          "mage": {
+            "Staff": "ch4-sovereign-moonglass",
+            "Trinket": "ch2-stormseed-crystal",
+            "Head": "ch4-starless-coronation",
+            "Chest": "ch3-lavaward-scales",
+            "Legs": "ch3-embervine-bindings"
+          },
+          "priest": {
+            "Trinket": "ch4-pearl-of-the-elder-tide",
+            "Tome": "ch4-thornlit-testament",
+            "Weapon": "ch3-lantern-of-unspent-dawn",
+            "Chest": "ch3-furnace-chapel-vestments",
+            "Legs": "ch4-courtshadow-boots",
+            "Head": "ch3-crown-of-the-ash-saint"
+          },
+          "tank": {
+            "Weapon": "ch2-ironbriar-cleaver",
+            "Shield": "ch3-furnace-bastion",
+            "Head": "ch4-regent-warcrown",
+            "Legs": "ch4-wild-hunt-legplates",
+            "Trinket": "ch3-captured-flare",
+            "Chest": "ch2-duskweald-robe"
+          },
+          "rogue": {
+            "Sword": "ch2-nightpetal-saber",
+            "Trinket": "ch3-smuggler-ember-locket",
+            "Chest": "ch3-sootsilk-doublet",
+            "Legs": "ch3-anvil-march-greaves",
+            "Head": "ch3-smokefox-visage"
+          }
+        }
+      }
+    },
+    {
+      "chapter": 4,
+      "healer": "priest",
+      "clears": 4,
+      "samples": 256,
+      "meanCurrentSlots": 3.965,
+      "meanPartyCurrentSlots": 12.59,
+      "meanPartyIlvl": 8.472,
+      "slotOccupancy": {
+        "Weapon": 0.574,
+        "Tome": 0.441,
+        "Trinket": 0.766,
+        "Head": 0.832,
+        "Chest": 0.781,
+        "Legs": 0.57
+      },
+      "meanStats": {
+        "maxHp": 589.898,
+        "maxMana": 733.672,
+        "manaRegen": 3.87,
+        "spellPower": 30.895,
+        "haste": 0,
+        "crit": 0,
+        "armor": 10.977,
+        "resistance": 8.938
+      },
+      "representative": {
+        "seed": 118010,
+        "history": [
+          {
+            "chapter": 1,
+            "readinessClears": 3,
+            "extraClears": 0,
+            "equippedCountAfter": 8,
+            "chapterEquippedCountAfter": 8
+          },
+          {
+            "chapter": 2,
+            "readinessClears": 3,
+            "extraClears": 1,
+            "equippedCountAfter": 12,
+            "chapterEquippedCountAfter": 6
+          },
+          {
+            "chapter": 3,
+            "readinessClears": 3,
+            "extraClears": 0,
+            "equippedCountAfter": 22,
+            "chapterEquippedCountAfter": 14
+          }
+        ],
+        "currentSlots": [
+          "Weapon",
+          "Trinket",
+          "Head",
+          "Chest"
+        ],
+        "currentCount": 4,
+        "partyCurrentCount": 14,
+        "avgPartyIlvl": 8.42,
+        "stats": {
+          "maxHp": 635,
+          "maxMana": 730,
+          "manaRegen": 4,
+          "spellPower": 34,
+          "haste": 0,
+          "crit": 0,
+          "armor": 13,
+          "resistance": 7
+        },
+        "loadout": {
+          "rogue": {
+            "Sword": "ch4-petal-of-the-final-dance",
+            "Trinket": "ch4-moonhawk-jess",
+            "Chest": "ch4-velvet-thorn-corslet",
+            "Legs": "ch3-glassrunner-cuisses",
+            "Head": "ch3-crown-of-the-ash-saint"
+          },
+          "ranger": {
+            "Bow": "ch4-white-hart-greatbow",
+            "Trinket": "ch3-brass-falcon-whistle",
+            "Chest": "ch4-rosebark-aegis",
+            "Head": "ch1-lanternwatch-hood"
+          },
+          "tank": {
+            "Weapon": "ch3-gatebreaker-mace",
+            "Shield": "ch3-furnace-bastion",
+            "Chest": "ch4-pale-court-panoply",
+            "Legs": "ch4-astral-briar-stockings",
+            "Trinket": "ch4-masquerade-spider-brooch",
+            "Head": "ch3-kilnforged-greathelm"
+          },
+          "priest": {
+            "Trinket": "ch4-seed-of-the-silver-eclipse",
+            "Weapon": "ch4-scepter-of-the-last-mercy",
+            "Tome": "ch3-canticles-in-copper",
+            "Chest": "ch4-moonpetal-chasuble",
+            "Head": "ch4-veiled-pontiff-tiara",
+            "Legs": "ch3-anvil-march-greaves"
+          },
+          "mage": {
+            "Staff": "ch2-witchhazel-spire",
+            "Chest": "ch4-tempest-courtmail",
+            "Trinket": "ch4-lion-of-the-empty-throne",
+            "Head": "ch2-mothwing-veil"
+          }
+        }
+      }
+    },
+    {
+      "chapter": 4,
+      "healer": "priest",
+      "clears": 5,
+      "samples": 256,
+      "meanCurrentSlots": 4.605,
+      "meanPartyCurrentSlots": 15.184,
+      "meanPartyIlvl": 8.963,
+      "slotOccupancy": {
+        "Weapon": 0.684,
+        "Tome": 0.551,
+        "Trinket": 0.844,
+        "Head": 0.914,
+        "Chest": 0.891,
+        "Legs": 0.723
+      },
+      "meanStats": {
+        "maxHp": 599.012,
+        "maxMana": 741.289,
+        "manaRegen": 3.931,
+        "spellPower": 32.688,
+        "haste": 0,
+        "crit": 0,
+        "armor": 11.727,
+        "resistance": 8.734
+      },
+      "representative": {
+        "seed": 118097,
+        "history": [
+          {
+            "chapter": 1,
+            "readinessClears": 3,
+            "extraClears": 1,
+            "equippedCountAfter": 12,
+            "chapterEquippedCountAfter": 12
+          },
+          {
+            "chapter": 2,
+            "readinessClears": 3,
+            "extraClears": 0,
+            "equippedCountAfter": 20,
+            "chapterEquippedCountAfter": 11
+          },
+          {
+            "chapter": 3,
+            "readinessClears": 3,
+            "extraClears": 1,
+            "equippedCountAfter": 24,
+            "chapterEquippedCountAfter": 18
+          }
+        ],
+        "currentSlots": [
+          "Weapon",
+          "Tome",
+          "Trinket",
+          "Head",
+          "Chest"
+        ],
+        "currentCount": 5,
+        "partyCurrentCount": 16,
+        "avgPartyIlvl": 8.66,
+        "stats": {
+          "maxHp": 605,
+          "maxMana": 765,
+          "manaRegen": 4,
+          "spellPower": 39,
+          "haste": 0,
+          "crit": 0,
+          "armor": 9,
+          "resistance": 6
+        },
+        "loadout": {
+          "rogue": {
+            "Sword": "ch4-petal-of-the-final-dance",
+            "Trinket": "ch3-smuggler-ember-locket",
+            "Chest": "ch4-velvet-thorn-corslet",
+            "Head": "ch4-mask-of-the-unnamed-guest",
+            "Legs": "ch1-sootwoven-hose"
+          },
+          "ranger": {
+            "Bow": "ch4-white-hart-greatbow",
+            "Trinket": "ch2-kestrel-talon",
+            "Chest": "ch3-furnacehide-coat",
+            "Head": "ch4-briarflight-coif"
+          },
+          "mage": {
+            "Staff": "ch4-sovereign-moonglass",
+            "Trinket": "ch3-captured-flare",
+            "Chest": "ch4-tempest-courtmail",
+            "Head": "ch3-molten-halo",
+            "Legs": "ch3-ashscript-pantaloons"
+          },
+          "tank": {
+            "Weapon": "ch4-oath-of-the-thorn-regent",
+            "Chest": "ch4-pale-court-panoply",
+            "Legs": "ch4-astral-briar-stockings",
+            "Trinket": "ch4-masquerade-spider-brooch",
+            "Head": "ch3-kilnforged-greathelm"
+          },
+          "priest": {
+            "Trinket": "ch4-pearl-of-the-elder-tide",
+            "Weapon": "ch4-scepter-of-the-last-mercy",
+            "Tome": "ch4-thornlit-testament",
+            "Chest": "ch4-moonpetal-chasuble",
+            "Head": "ch4-veiled-pontiff-tiara",
+            "Legs": "ch2-bogiron-treads"
+          }
+        }
+      }
+    },
+    {
+      "chapter": 4,
+      "healer": "druid",
+      "clears": 0,
+      "samples": 256,
+      "meanCurrentSlots": 0,
+      "meanPartyCurrentSlots": 0,
+      "meanPartyIlvl": 5.691,
+      "slotOccupancy": {
+        "Weapon": 0,
+        "Tome": 0,
+        "Trinket": 0,
+        "Head": 0,
+        "Chest": 0,
+        "Legs": 0
+      },
+      "meanStats": {
+        "maxHp": 531.398,
+        "maxMana": 687.68,
+        "manaRegen": 3.731,
+        "spellPower": 19.438,
+        "haste": 0,
+        "crit": 0,
+        "armor": 4.309,
+        "resistance": 8.969
+      },
+      "representative": {
+        "seed": 118041,
+        "history": [
+          {
+            "chapter": 1,
+            "readinessClears": 3,
+            "extraClears": 1,
+            "equippedCountAfter": 10,
+            "chapterEquippedCountAfter": 10
+          },
+          {
+            "chapter": 2,
+            "readinessClears": 3,
+            "extraClears": 0,
+            "equippedCountAfter": 17,
+            "chapterEquippedCountAfter": 11
+          },
+          {
+            "chapter": 3,
+            "readinessClears": 3,
+            "extraClears": 1,
+            "equippedCountAfter": 25,
+            "chapterEquippedCountAfter": 14
+          }
+        ],
+        "currentSlots": [],
+        "currentCount": 0,
+        "partyCurrentCount": 0,
+        "avgPartyIlvl": 5.68,
+        "stats": {
+          "maxHp": 505,
+          "maxMana": 700,
+          "manaRegen": 3.75,
+          "spellPower": 23,
+          "haste": 0,
+          "crit": 0,
+          "armor": 0,
+          "resistance": 13
+        },
+        "loadout": {
+          "ranger": {
+            "Bow": "ch3-firescar-longbow",
+            "Trinket": "ch2-adder-fang-pendant",
+            "Head": "ch2-owlfeather-cowl",
+            "Chest": "ch1-pallbearer-leather"
+          },
+          "rogue": {
+            "Sword": "ch3-obsidian-stiletto",
+            "Trinket": "ch3-smuggler-ember-locket",
+            "Chest": "ch3-ashbark-carapace",
+            "Head": "ch3-ashcloud-visor",
+            "Legs": "ch1-dustwalker-strides"
+          },
+          "tank": {
+            "Weapon": "ch2-ironbriar-cleaver",
+            "Shield": "ch3-furnace-bastion",
+            "Trinket": "ch3-captured-flare",
+            "Head": "ch3-coalfeather-helm",
+            "Chest": "ch3-lavaward-scales",
+            "Legs": "ch3-ashscript-pantaloons"
+          },
+          "druid": {
+            "Trinket": "ch3-emberheart-totem",
+            "Weapon": "ch2-hartwood-scepter",
+            "Chest": "ch3-cinderwall-harness",
+            "Tome": "ch2-rainroot-codex",
+            "Head": "ch3-basalt-bloom-circlet",
+            "Legs": "ch2-fernbound-buskins"
+          },
+          "mage": {
+            "Staff": "ch1-bonewick-rod",
+            "Trinket": "ch2-stormseed-crystal",
+            "Head": "ch3-molten-halo",
+            "Chest": "ch1-shroud-of-pale-embers"
+          }
+        }
+      }
+    },
+    {
+      "chapter": 4,
+      "healer": "druid",
+      "clears": 1,
+      "samples": 256,
+      "meanCurrentSlots": 1.035,
+      "meanPartyCurrentSlots": 3.344,
+      "meanPartyIlvl": 6.46,
+      "slotOccupancy": {
+        "Weapon": 0.145,
+        "Tome": 0.043,
+        "Trinket": 0.293,
+        "Head": 0.32,
+        "Chest": 0.121,
+        "Legs": 0.113
+      },
+      "meanStats": {
+        "maxHp": 545.176,
+        "maxMana": 690.98,
+        "manaRegen": 3.902,
+        "spellPower": 21.316,
+        "haste": 0,
+        "crit": 0,
+        "armor": 5.719,
+        "resistance": 9.543
+      },
+      "representative": {
+        "seed": 118188,
+        "history": [
+          {
+            "chapter": 1,
+            "readinessClears": 3,
+            "extraClears": 0,
+            "equippedCountAfter": 13,
+            "chapterEquippedCountAfter": 13
+          },
+          {
+            "chapter": 2,
+            "readinessClears": 3,
+            "extraClears": 1,
+            "equippedCountAfter": 20,
+            "chapterEquippedCountAfter": 12
+          },
+          {
+            "chapter": 3,
+            "readinessClears": 3,
+            "extraClears": 0,
+            "equippedCountAfter": 25,
+            "chapterEquippedCountAfter": 13
+          }
+        ],
+        "currentSlots": [
+          "Head"
+        ],
+        "currentCount": 1,
+        "partyCurrentCount": 3,
+        "avgPartyIlvl": 6.473,
+        "stats": {
+          "maxHp": 520,
+          "maxMana": 645,
+          "manaRegen": 3.75,
+          "spellPower": 19,
+          "haste": 0,
+          "crit": 0,
+          "armor": 3,
+          "resistance": 12
+        },
+        "loadout": {
+          "tank": {
+            "Weapon": "ch4-oath-of-the-thorn-regent",
+            "Shield": "ch3-furnace-bastion",
+            "Chest": "ch4-moonpetal-chasuble",
+            "Legs": "ch3-anvil-march-greaves",
+            "Trinket": "ch3-marshal-chain",
+            "Head": "ch3-kilnforged-greathelm"
+          },
+          "mage": {
+            "Staff": "ch3-crucible-helix",
+            "Trinket": "ch2-stormseed-crystal",
+            "Head": "ch2-firefly-coronet",
+            "Legs": "ch2-mistspun-leggings"
+          },
+          "ranger": {
+            "Bow": "ch3-firescar-longbow",
+            "Trinket": "ch3-brass-falcon-whistle",
+            "Chest": "ch2-greenwatch-lamellar",
+            "Head": "ch2-cloudherd-headdress",
+            "Legs": "ch1-sootwoven-hose"
+          },
+          "rogue": {
+            "Sword": "ch3-obsidian-stiletto",
+            "Trinket": "ch3-smuggler-ember-locket",
+            "Chest": "ch2-blackbriar-jerkin",
+            "Head": "ch3-basalt-bloom-circlet",
+            "Legs": "ch1-dustwalker-strides"
+          },
+          "druid": {
+            "Trinket": "ch3-salamander-egg",
+            "Weapon": "ch2-hartwood-scepter",
+            "Chest": "ch3-furnacehide-coat",
+            "Head": "ch4-mask-of-the-unnamed-guest",
+            "Tome": "ch1-lichen-folio",
+            "Legs": "ch3-ashscript-pantaloons"
+          }
+        }
+      }
+    },
+    {
+      "chapter": 4,
+      "healer": "druid",
+      "clears": 2,
+      "samples": 256,
+      "meanCurrentSlots": 2.086,
+      "meanPartyCurrentSlots": 6.559,
+      "meanPartyIlvl": 7.184,
+      "slotOccupancy": {
+        "Weapon": 0.277,
+        "Tome": 0.145,
+        "Trinket": 0.488,
+        "Head": 0.57,
+        "Chest": 0.371,
+        "Legs": 0.234
+      },
+      "meanStats": {
+        "maxHp": 558.004,
+        "maxMana": 700.371,
+        "manaRegen": 3.989,
+        "spellPower": 22.98,
+        "haste": 0,
+        "crit": 0,
+        "armor": 7.563,
+        "resistance": 9.684
+      },
+      "representative": {
+        "seed": 118226,
+        "history": [
+          {
+            "chapter": 1,
+            "readinessClears": 3,
+            "extraClears": 0,
+            "equippedCountAfter": 8,
+            "chapterEquippedCountAfter": 8
+          },
+          {
+            "chapter": 2,
+            "readinessClears": 3,
+            "extraClears": 1,
+            "equippedCountAfter": 20,
+            "chapterEquippedCountAfter": 15
+          },
+          {
+            "chapter": 3,
+            "readinessClears": 3,
+            "extraClears": 0,
+            "equippedCountAfter": 26,
+            "chapterEquippedCountAfter": 16
+          }
+        ],
+        "currentSlots": [
+          "Head",
+          "Chest"
+        ],
+        "currentCount": 2,
+        "partyCurrentCount": 5,
+        "avgPartyIlvl": 7.213,
+        "stats": {
+          "maxHp": 557,
+          "maxMana": 680,
+          "manaRegen": 3.75,
+          "spellPower": 23,
+          "haste": 0,
+          "crit": 0,
+          "armor": 15,
+          "resistance": 2
+        },
+        "loadout": {
+          "mage": {
+            "Staff": "ch4-sovereign-moonglass",
+            "Trinket": "ch2-stormseed-crystal",
+            "Chest": "ch3-furnace-chapel-vestments",
+            "Head": "ch3-molten-halo",
+            "Legs": "ch3-ashscript-pantaloons"
+          },
+          "ranger": {
+            "Bow": "ch3-firescar-longbow",
+            "Trinket": "ch3-brass-falcon-whistle",
+            "Chest": "ch3-furnacehide-coat",
+            "Head": "ch3-coalfeather-helm",
+            "Legs": "ch2-briarstep-legguards"
+          },
+          "rogue": {
+            "Sword": "ch2-nightpetal-saber",
+            "Trinket": "ch2-adder-fang-pendant",
+            "Chest": "ch3-sootsilk-doublet",
+            "Head": "ch3-crown-of-the-ash-saint",
+            "Legs": "ch2-foxglove-trousers"
+          },
+          "druid": {
+            "Trinket": "ch3-emberheart-totem",
+            "Weapon": "ch2-hartwood-scepter",
+            "Chest": "ch4-tempest-courtmail",
+            "Head": "ch4-nighttide-crown",
+            "Tome": "ch2-rainroot-codex",
+            "Legs": "ch3-glassrunner-cuisses"
+          },
+          "tank": {
+            "Chest": "ch4-velvet-thorn-corslet",
+            "Legs": "ch3-embervine-bindings",
+            "Trinket": "ch3-captured-flare",
+            "Head": "ch4-crescentwood-antlers",
+            "Shield": "ch1-door-of-the-dead"
+          }
+        }
+      }
+    },
+    {
+      "chapter": 4,
+      "healer": "druid",
+      "clears": 3,
+      "samples": 256,
+      "meanCurrentSlots": 2.984,
+      "meanPartyCurrentSlots": 9.484,
+      "meanPartyIlvl": 7.839,
+      "slotOccupancy": {
+        "Weapon": 0.441,
+        "Tome": 0.188,
+        "Trinket": 0.641,
+        "Head": 0.734,
+        "Chest": 0.586,
+        "Legs": 0.395
+      },
+      "meanStats": {
+        "maxHp": 569.141,
+        "maxMana": 703.77,
+        "manaRegen": 4.047,
+        "spellPower": 25.277,
+        "haste": 0,
+        "crit": 0,
+        "armor": 9.457,
+        "resistance": 9.531
+      },
+      "representative": {
+        "seed": 118114,
+        "history": [
+          {
+            "chapter": 1,
+            "readinessClears": 3,
+            "extraClears": 0,
+            "equippedCountAfter": 9,
+            "chapterEquippedCountAfter": 9
+          },
+          {
+            "chapter": 2,
+            "readinessClears": 3,
+            "extraClears": 1,
+            "equippedCountAfter": 19,
+            "chapterEquippedCountAfter": 13
+          },
+          {
+            "chapter": 3,
+            "readinessClears": 3,
+            "extraClears": 0,
+            "equippedCountAfter": 26,
+            "chapterEquippedCountAfter": 13
+          }
+        ],
+        "currentSlots": [
+          "Trinket",
+          "Head",
+          "Chest"
+        ],
+        "currentCount": 3,
+        "partyCurrentCount": 8,
+        "avgPartyIlvl": 7.74,
+        "stats": {
+          "maxHp": 570,
+          "maxMana": 600,
+          "manaRegen": 4.3,
+          "spellPower": 15,
+          "haste": 0,
+          "crit": 0,
+          "armor": 3,
+          "resistance": 14
+        },
+        "loadout": {
+          "ranger": {
+            "Bow": "ch4-white-hart-greatbow",
+            "Chest": "ch3-furnace-chapel-vestments",
+            "Trinket": "ch2-stagwarden-badge",
+            "Head": "ch3-basalt-bloom-circlet",
+            "Legs": "ch2-mistspun-leggings"
+          },
+          "tank": {
+            "Weapon": "ch4-oath-of-the-thorn-regent",
+            "Chest": "ch4-velvet-thorn-corslet",
+            "Shield": "ch2-heartoak-pavise",
+            "Legs": "ch4-astral-briar-stockings",
+            "Trinket": "ch2-adder-fang-pendant",
+            "Head": "ch2-thorncrown-bascinet"
+          },
+          "mage": {
+            "Staff": "ch3-crucible-helix",
+            "Trinket": "ch4-prism-of-the-waning-court",
+            "Chest": "ch3-vest-of-the-last-pyre",
+            "Head": "ch3-molten-halo",
+            "Legs": "ch3-ashscript-pantaloons"
+          },
+          "rogue": {
+            "Sword": "ch3-obsidian-stiletto",
+            "Chest": "ch3-sootsilk-doublet",
+            "Trinket": "ch3-marshal-chain",
+            "Head": "ch3-ashcloud-visor",
+            "Legs": "ch2-foxglove-trousers"
+          },
+          "druid": {
+            "Trinket": "ch4-tear-of-the-pale-queen",
+            "Weapon": "ch2-hartwood-scepter",
+            "Chest": "ch4-eclipseweave-regalia",
+            "Head": "ch4-veiled-pontiff-tiara",
+            "Legs": "ch2-bogiron-treads"
+          }
+        }
+      }
+    },
+    {
+      "chapter": 4,
+      "healer": "druid",
+      "clears": 4,
+      "samples": 256,
+      "meanCurrentSlots": 3.742,
+      "meanPartyCurrentSlots": 12.352,
+      "meanPartyIlvl": 8.431,
+      "slotOccupancy": {
+        "Weapon": 0.578,
+        "Tome": 0.219,
+        "Trinket": 0.762,
+        "Head": 0.859,
+        "Chest": 0.777,
+        "Legs": 0.547
+      },
+      "meanStats": {
+        "maxHp": 579.891,
+        "maxMana": 706.621,
+        "manaRegen": 4.098,
+        "spellPower": 27.09,
+        "haste": 0,
+        "crit": 0,
+        "armor": 10.664,
+        "resistance": 9.676
+      },
+      "representative": {
+        "seed": 118218,
+        "history": [
+          {
+            "chapter": 1,
+            "readinessClears": 3,
+            "extraClears": 0,
+            "equippedCountAfter": 9,
+            "chapterEquippedCountAfter": 9
+          },
+          {
+            "chapter": 2,
+            "readinessClears": 3,
+            "extraClears": 1,
+            "equippedCountAfter": 18,
+            "chapterEquippedCountAfter": 12
+          },
+          {
+            "chapter": 3,
+            "readinessClears": 3,
+            "extraClears": 0,
+            "equippedCountAfter": 23,
+            "chapterEquippedCountAfter": 9
+          }
+        ],
+        "currentSlots": [
+          "Weapon",
+          "Trinket",
+          "Head",
+          "Chest"
+        ],
+        "currentCount": 4,
+        "partyCurrentCount": 15,
+        "avgPartyIlvl": 7.933,
+        "stats": {
+          "maxHp": 567,
+          "maxMana": 680,
+          "manaRegen": 4,
+          "spellPower": 36,
+          "haste": 0,
+          "crit": 0,
+          "armor": 13,
+          "resistance": 5
+        },
+        "loadout": {
+          "ranger": {
+            "Bow": "ch4-white-hart-greatbow",
+            "Trinket": "ch2-kestrel-talon",
+            "Chest": "ch3-lavaward-scales",
+            "Head": "ch3-ashcloud-visor"
+          },
+          "mage": {
+            "Staff": "ch4-sovereign-moonglass",
+            "Trinket": "ch4-prism-of-the-waning-court",
+            "Chest": "ch4-rosebark-aegis",
+            "Head": "ch4-starless-coronation",
+            "Legs": "ch2-mistspun-leggings"
+          },
+          "tank": {
+            "Weapon": "ch3-gatebreaker-mace",
+            "Chest": "ch4-velvet-thorn-corslet",
+            "Legs": "ch4-astral-briar-stockings",
+            "Trinket": "ch4-moonhawk-jess",
+            "Head": "ch4-crescentwood-antlers"
+          },
+          "druid": {
+            "Trinket": "ch4-pearl-of-the-elder-tide",
+            "Weapon": "ch4-crook-of-the-elder-hart",
+            "Chest": "ch4-moonpetal-chasuble",
+            "Head": "ch4-nighttide-crown",
+            "Tome": "ch2-rainroot-codex",
+            "Legs": "ch2-foxglove-trousers"
+          },
+          "rogue": {
+            "Sword": "ch1-graveglass-edge",
+            "Trinket": "ch2-stormseed-crystal",
+            "Chest": "ch4-tempest-courtmail",
+            "Head": "ch4-mask-of-the-unnamed-guest",
+            "Legs": "ch1-dustwalker-strides"
+          }
+        }
+      }
+    },
+    {
+      "chapter": 4,
+      "healer": "druid",
+      "clears": 5,
+      "samples": 256,
+      "meanCurrentSlots": 4.32,
+      "meanPartyCurrentSlots": 14.918,
+      "meanPartyIlvl": 8.927,
+      "slotOccupancy": {
+        "Weapon": 0.688,
+        "Tome": 0.281,
+        "Trinket": 0.848,
+        "Head": 0.922,
+        "Chest": 0.887,
+        "Legs": 0.695
+      },
+      "meanStats": {
+        "maxHp": 590.141,
+        "maxMana": 713.164,
+        "manaRegen": 4.133,
+        "spellPower": 28.871,
+        "haste": 0,
+        "crit": 0,
+        "armor": 11.082,
+        "resistance": 10.008
+      },
+      "representative": {
+        "seed": 118100,
+        "history": [
+          {
+            "chapter": 1,
+            "readinessClears": 3,
+            "extraClears": 0,
+            "equippedCountAfter": 7,
+            "chapterEquippedCountAfter": 7
+          },
+          {
+            "chapter": 2,
+            "readinessClears": 3,
+            "extraClears": 1,
+            "equippedCountAfter": 19,
+            "chapterEquippedCountAfter": 15
+          },
+          {
+            "chapter": 3,
+            "readinessClears": 3,
+            "extraClears": 0,
+            "equippedCountAfter": 25,
+            "chapterEquippedCountAfter": 10
+          }
+        ],
+        "currentSlots": [
+          "Weapon",
+          "Head",
+          "Chest",
+          "Legs"
+        ],
+        "currentCount": 4,
+        "partyCurrentCount": 18,
+        "avgPartyIlvl": 9.527,
+        "stats": {
+          "maxHp": 585,
+          "maxMana": 680,
+          "manaRegen": 3.6,
+          "spellPower": 40,
+          "haste": 0,
+          "crit": 0,
+          "armor": 6,
+          "resistance": 15
+        },
+        "loadout": {
+          "rogue": {
+            "Sword": "ch4-petal-of-the-final-dance",
+            "Chest": "ch4-rosebark-aegis",
+            "Legs": "ch4-courtshadow-boots",
+            "Head": "ch4-mask-of-the-unnamed-guest",
+            "Trinket": "ch2-stagwarden-badge"
+          },
+          "ranger": {
+            "Bow": "ch4-white-hart-greatbow",
+            "Chest": "ch3-furnacehide-coat",
+            "Head": "ch3-coalfeather-helm",
+            "Legs": "ch3-ashscript-pantaloons",
+            "Trinket": "ch1-raven-quill"
+          },
+          "mage": {
+            "Staff": "ch4-sovereign-moonglass",
+            "Trinket": "ch4-prism-of-the-waning-court",
+            "Head": "ch4-starless-coronation",
+            "Chest": "ch3-sootsilk-doublet",
+            "Legs": "ch3-glassrunner-cuisses"
+          },
+          "tank": {
+            "Weapon": "ch4-oath-of-the-thorn-regent",
+            "Shield": "ch4-moonthorn-bulwark",
+            "Chest": "ch4-velvet-thorn-corslet",
+            "Legs": "ch4-astral-briar-stockings",
+            "Trinket": "ch4-lion-of-the-empty-throne",
+            "Head": "ch4-crescentwood-antlers"
+          },
+          "druid": {
+            "Trinket": "ch3-coalglass-hourglass",
+            "Weapon": "ch4-crook-of-the-elder-hart",
+            "Chest": "ch4-eclipseweave-regalia",
+            "Legs": "ch4-wild-hunt-legplates",
+            "Head": "ch4-veiled-pontiff-tiara",
+            "Tome": "ch2-rainroot-codex"
+          }
+        }
+      }
+    },
+    {
+      "chapter": 4,
+      "healer": "shaman",
+      "clears": 0,
+      "samples": 256,
+      "meanCurrentSlots": 0,
+      "meanPartyCurrentSlots": 0,
+      "meanPartyIlvl": 5.725,
+      "slotOccupancy": {
+        "Weapon": 0,
+        "Tome": 0,
+        "Trinket": 0,
+        "Head": 0,
+        "Chest": 0,
+        "Legs": 0
+      },
+      "meanStats": {
+        "maxHp": 527.457,
+        "maxMana": 701.426,
+        "manaRegen": 3.548,
+        "spellPower": 22.344,
+        "haste": 0,
+        "crit": 0,
+        "armor": 4.313,
+        "resistance": 9.797
+      },
+      "representative": {
+        "seed": 118194,
+        "history": [
+          {
+            "chapter": 1,
+            "readinessClears": 3,
+            "extraClears": 0,
+            "equippedCountAfter": 10,
+            "chapterEquippedCountAfter": 10
+          },
+          {
+            "chapter": 2,
+            "readinessClears": 3,
+            "extraClears": 1,
+            "equippedCountAfter": 23,
+            "chapterEquippedCountAfter": 15
+          },
+          {
+            "chapter": 3,
+            "readinessClears": 3,
+            "extraClears": 0,
+            "equippedCountAfter": 27,
+            "chapterEquippedCountAfter": 12
+          }
+        ],
+        "currentSlots": [],
+        "currentCount": 0,
+        "partyCurrentCount": 0,
+        "avgPartyIlvl": 5.713,
+        "stats": {
+          "maxHp": 538,
+          "maxMana": 660,
+          "manaRegen": 3.7,
+          "spellPower": 28,
+          "haste": 0,
+          "crit": 0,
+          "armor": 3,
+          "resistance": 7
+        },
+        "loadout": {
+          "ranger": {
+            "Bow": "ch3-firescar-longbow",
+            "Head": "ch3-coalfeather-helm",
+            "Trinket": "ch2-stagwarden-badge",
+            "Chest": "ch1-pallbearer-leather",
+            "Legs": "ch1-sootwoven-hose"
+          },
+          "rogue": {
+            "Sword": "ch3-obsidian-stiletto",
+            "Trinket": "ch2-adder-fang-pendant",
+            "Chest": "ch3-sootsilk-doublet",
+            "Head": "ch2-bramble-antlers",
+            "Legs": "ch1-dustwalker-strides"
+          },
+          "tank": {
+            "Weapon": "ch3-gatebreaker-mace",
+            "Shield": "ch3-furnace-bastion",
+            "Trinket": "ch3-captured-flare",
+            "Chest": "ch2-blackbriar-jerkin",
+            "Head": "ch2-thorncrown-bascinet",
+            "Legs": "ch3-ashscript-pantaloons"
+          },
+          "shaman": {
+            "Trinket": "ch3-coalglass-hourglass",
+            "Weapon": "ch3-cinderstorm-focus",
+            "Chest": "ch3-cinderwall-harness",
+            "Tome": "ch1-whispers-in-riverstone",
+            "Head": "ch2-cloudherd-headdress",
+            "Legs": "ch2-foxglove-trousers"
+          },
+          "mage": {
+            "Staff": "ch1-bonewick-rod",
+            "Trinket": "ch3-marshal-chain",
+            "Chest": "ch2-rainblessed-surplice",
+            "Legs": "ch2-mistspun-leggings",
+            "Head": "ch2-owlfeather-cowl"
+          }
+        }
+      }
+    },
+    {
+      "chapter": 4,
+      "healer": "shaman",
+      "clears": 1,
+      "samples": 256,
+      "meanCurrentSlots": 1.07,
+      "meanPartyCurrentSlots": 3.383,
+      "meanPartyIlvl": 6.501,
+      "slotOccupancy": {
+        "Weapon": 0.145,
+        "Tome": 0.078,
+        "Trinket": 0.289,
+        "Head": 0.324,
+        "Chest": 0.121,
+        "Legs": 0.113
+      },
+      "meanStats": {
+        "maxHp": 544.254,
+        "maxMana": 704.977,
+        "manaRegen": 3.733,
+        "spellPower": 24.102,
+        "haste": 0,
+        "crit": 0,
+        "armor": 5.621,
+        "resistance": 10.059
+      },
+      "representative": {
+        "seed": 118098,
+        "history": [
+          {
+            "chapter": 1,
+            "readinessClears": 3,
+            "extraClears": 0,
+            "equippedCountAfter": 8,
+            "chapterEquippedCountAfter": 8
+          },
+          {
+            "chapter": 2,
+            "readinessClears": 3,
+            "extraClears": 1,
+            "equippedCountAfter": 13,
+            "chapterEquippedCountAfter": 8
+          },
+          {
+            "chapter": 3,
+            "readinessClears": 3,
+            "extraClears": 0,
+            "equippedCountAfter": 26,
+            "chapterEquippedCountAfter": 16
+          }
+        ],
+        "currentSlots": [
+          "Chest"
+        ],
+        "currentCount": 1,
+        "partyCurrentCount": 4,
+        "avgPartyIlvl": 6.613,
+        "stats": {
+          "maxHp": 503,
+          "maxMana": 763,
+          "manaRegen": 2.7,
+          "spellPower": 24,
+          "haste": 0,
+          "crit": 0,
+          "armor": 13,
+          "resistance": 2
+        },
+        "loadout": {
+          "mage": {
+            "Staff": "ch3-crucible-helix",
+            "Trinket": "ch3-captured-flare",
+            "Chest": "ch3-cinderwall-harness",
+            "Legs": "ch3-ashscript-pantaloons",
+            "Head": "ch1-lanternwatch-hood"
+          },
+          "tank": {
+            "Weapon": "ch3-gatebreaker-mace",
+            "Chest": "ch4-velvet-thorn-corslet",
+            "Shield": "ch2-heartoak-pavise",
+            "Trinket": "ch4-moonhawk-jess",
+            "Legs": "ch3-glassrunner-cuisses",
+            "Head": "ch3-kilnforged-greathelm"
+          },
+          "ranger": {
+            "Bow": "ch2-hawthorn-recurve",
+            "Trinket": "ch3-brass-falcon-whistle",
+            "Chest": "ch3-furnacehide-coat",
+            "Head": "ch3-coalfeather-helm"
+          },
+          "rogue": {
+            "Sword": "ch1-graveglass-edge",
+            "Trinket": "ch2-adder-fang-pendant",
+            "Chest": "ch4-rosebark-aegis",
+            "Legs": "ch2-foxglove-trousers",
+            "Head": "ch1-tombwatch-sallet"
+          },
+          "shaman": {
+            "Weapon": "ch3-cinderstorm-focus",
+            "Tome": "ch3-songs-of-molten-rain",
+            "Trinket": "ch1-ancestral-shell",
+            "Chest": "ch4-tempest-courtmail",
+            "Head": "ch2-cloudherd-headdress",
+            "Legs": "ch3-cinderstep-sandals"
+          }
+        }
+      }
+    },
+    {
+      "chapter": 4,
+      "healer": "shaman",
+      "clears": 2,
+      "samples": 256,
+      "meanCurrentSlots": 2.184,
+      "meanPartyCurrentSlots": 6.641,
+      "meanPartyIlvl": 7.223,
+      "slotOccupancy": {
+        "Weapon": 0.277,
+        "Tome": 0.242,
+        "Trinket": 0.48,
+        "Head": 0.57,
+        "Chest": 0.371,
+        "Legs": 0.242
+      },
+      "meanStats": {
+        "maxHp": 560.504,
+        "maxMana": 714.496,
+        "manaRegen": 3.823,
+        "spellPower": 25.98,
+        "haste": 0,
+        "crit": 0,
+        "armor": 7.465,
+        "resistance": 9.699
+      },
+      "representative": {
+        "seed": 118005,
+        "history": [
+          {
+            "chapter": 1,
+            "readinessClears": 3,
+            "extraClears": 1,
+            "equippedCountAfter": 8,
+            "chapterEquippedCountAfter": 8
+          },
+          {
+            "chapter": 2,
+            "readinessClears": 3,
+            "extraClears": 0,
+            "equippedCountAfter": 15,
+            "chapterEquippedCountAfter": 8
+          },
+          {
+            "chapter": 3,
+            "readinessClears": 3,
+            "extraClears": 1,
+            "equippedCountAfter": 24,
+            "chapterEquippedCountAfter": 16
+          }
+        ],
+        "currentSlots": [
+          "Tome",
+          "Head"
+        ],
+        "currentCount": 2,
+        "partyCurrentCount": 7,
+        "avgPartyIlvl": 7.473,
+        "stats": {
+          "maxHp": 575,
+          "maxMana": 765,
+          "manaRegen": 3.45,
+          "spellPower": 33,
+          "haste": 0,
+          "crit": 0,
+          "armor": 5,
+          "resistance": 10
+        },
+        "loadout": {
+          "ranger": {
+            "Bow": "ch4-white-hart-greatbow",
+            "Chest": "ch3-ashbark-carapace",
+            "Head": "ch3-ashcloud-visor",
+            "Legs": "ch2-foxglove-trousers",
+            "Trinket": "ch1-raven-quill"
+          },
+          "mage": {
+            "Staff": "ch3-crucible-helix",
+            "Chest": "ch3-furnace-chapel-vestments",
+            "Head": "ch3-molten-halo",
+            "Legs": "ch3-ashscript-pantaloons",
+            "Trinket": "ch2-stagwarden-badge"
+          },
+          "rogue": {
+            "Sword": "ch3-obsidian-stiletto",
+            "Legs": "ch3-glassrunner-cuisses",
+            "Chest": "ch2-blackbriar-jerkin",
+            "Trinket": "ch3-marshal-chain",
+            "Head": "ch3-kilnforged-greathelm"
+          },
+          "shaman": {
+            "Trinket": "ch3-emberheart-totem",
+            "Tome": "ch4-covenant-of-deep-waters",
+            "Weapon": "ch3-cinderstorm-focus",
+            "Chest": "ch3-furnacehide-coat",
+            "Head": "ch4-veiled-pontiff-tiara",
+            "Legs": "ch3-slagpath-guards"
+          },
+          "tank": {
+            "Chest": "ch4-moonpetal-chasuble",
+            "Legs": "ch4-astral-briar-stockings",
+            "Head": "ch4-regent-warcrown",
+            "Trinket": "ch4-moonhawk-jess"
+          }
+        }
+      }
+    },
+    {
+      "chapter": 4,
+      "healer": "shaman",
+      "clears": 3,
+      "samples": 256,
+      "meanCurrentSlots": 3.195,
+      "meanPartyCurrentSlots": 9.648,
+      "meanPartyIlvl": 7.878,
+      "slotOccupancy": {
+        "Weapon": 0.445,
+        "Tome": 0.375,
+        "Trinket": 0.633,
+        "Head": 0.734,
+        "Chest": 0.586,
+        "Legs": 0.422
+      },
+      "meanStats": {
+        "maxHp": 574.469,
+        "maxMana": 719.809,
+        "manaRegen": 3.879,
+        "spellPower": 28.535,
+        "haste": 0,
+        "crit": 0,
+        "armor": 9.391,
+        "resistance": 9.137
+      },
+      "representative": {
+        "seed": 118126,
+        "history": [
+          {
+            "chapter": 1,
+            "readinessClears": 3,
+            "extraClears": 0,
+            "equippedCountAfter": 8,
+            "chapterEquippedCountAfter": 8
+          },
+          {
+            "chapter": 2,
+            "readinessClears": 3,
+            "extraClears": 1,
+            "equippedCountAfter": 17,
+            "chapterEquippedCountAfter": 14
+          },
+          {
+            "chapter": 3,
+            "readinessClears": 3,
+            "extraClears": 0,
+            "equippedCountAfter": 26,
+            "chapterEquippedCountAfter": 14
+          }
+        ],
+        "currentSlots": [
+          "Weapon",
+          "Tome",
+          "Head"
+        ],
+        "currentCount": 3,
+        "partyCurrentCount": 10,
+        "avgPartyIlvl": 8.053,
+        "stats": {
+          "maxHp": 550,
+          "maxMana": 755,
+          "manaRegen": 3.6,
+          "spellPower": 42,
+          "haste": 0,
+          "crit": 0,
+          "armor": 9,
+          "resistance": 8
+        },
+        "loadout": {
+          "rogue": {
+            "Sword": "ch4-petal-of-the-final-dance",
+            "Trinket": "ch2-adder-fang-pendant",
+            "Chest": "ch2-blackbriar-jerkin",
+            "Head": "ch3-smokefox-visage",
+            "Legs": "ch2-bogiron-treads"
+          },
+          "ranger": {
+            "Bow": "ch4-white-hart-greatbow",
+            "Trinket": "ch2-kestrel-talon",
+            "Chest": "ch2-greenwatch-lamellar",
+            "Head": "ch3-basalt-bloom-circlet",
+            "Legs": "ch1-sootwoven-hose"
+          },
+          "mage": {
+            "Staff": "ch4-sovereign-moonglass",
+            "Trinket": "ch4-prism-of-the-waning-court",
+            "Chest": "ch3-vest-of-the-last-pyre",
+            "Head": "ch3-ashcloud-visor",
+            "Legs": "ch2-mistspun-leggings"
+          },
+          "tank": {
+            "Weapon": "ch2-ironbriar-cleaver",
+            "Shield": "ch4-moonthorn-bulwark",
+            "Chest": "ch4-velvet-thorn-corslet",
+            "Head": "ch4-regent-warcrown",
+            "Legs": "ch3-embervine-bindings",
+            "Trinket": "ch3-captured-flare"
+          },
+          "shaman": {
+            "Trinket": "ch3-coalglass-hourglass",
+            "Weapon": "ch4-moonstorm-scepter",
+            "Tome": "ch4-covenant-of-deep-waters",
+            "Chest": "ch3-lavaward-scales",
+            "Head": "ch4-crescentwood-antlers",
+            "Legs": "ch3-glassrunner-cuisses"
+          }
+        }
+      }
+    },
+    {
+      "chapter": 4,
+      "healer": "shaman",
+      "clears": 4,
+      "samples": 256,
+      "meanCurrentSlots": 3.988,
+      "meanPartyCurrentSlots": 12.57,
+      "meanPartyIlvl": 8.469,
+      "slotOccupancy": {
+        "Weapon": 0.578,
+        "Tome": 0.441,
+        "Trinket": 0.758,
+        "Head": 0.859,
+        "Chest": 0.777,
+        "Legs": 0.574
+      },
+      "meanStats": {
+        "maxHp": 586.578,
+        "maxMana": 722.824,
+        "manaRegen": 3.941,
+        "spellPower": 30.031,
+        "haste": 0,
+        "crit": 0,
+        "armor": 10.566,
+        "resistance": 9.051
+      },
+      "representative": {
+        "seed": 118039,
+        "history": [
+          {
+            "chapter": 1,
+            "readinessClears": 3,
+            "extraClears": 1,
+            "equippedCountAfter": 13,
+            "chapterEquippedCountAfter": 13
+          },
+          {
+            "chapter": 2,
+            "readinessClears": 3,
+            "extraClears": 0,
+            "equippedCountAfter": 17,
+            "chapterEquippedCountAfter": 7
+          },
+          {
+            "chapter": 3,
+            "readinessClears": 3,
+            "extraClears": 1,
+            "equippedCountAfter": 24,
+            "chapterEquippedCountAfter": 17
+          }
+        ],
+        "currentSlots": [
+          "Weapon",
+          "Trinket",
+          "Head",
+          "Legs"
+        ],
+        "currentCount": 4,
+        "partyCurrentCount": 12,
+        "avgPartyIlvl": 8.42,
+        "stats": {
+          "maxHp": 607,
+          "maxMana": 720,
+          "manaRegen": 4.15,
+          "spellPower": 33,
+          "haste": 0,
+          "crit": 0,
+          "armor": 5,
+          "resistance": 17
+        },
+        "loadout": {
+          "rogue": {
+            "Sword": "ch4-petal-of-the-final-dance",
+            "Trinket": "ch3-smuggler-ember-locket",
+            "Chest": "ch3-sootsilk-doublet",
+            "Head": "ch4-veiled-pontiff-tiara",
+            "Legs": "ch1-dustwalker-strides"
+          },
+          "ranger": {
+            "Bow": "ch4-white-hart-greatbow",
+            "Chest": "ch3-furnacehide-coat",
+            "Head": "ch3-ashcloud-visor",
+            "Trinket": "ch1-raven-quill",
+            "Legs": "ch1-sootwoven-hose"
+          },
+          "tank": {
+            "Weapon": "ch4-oath-of-the-thorn-regent",
+            "Shield": "ch4-moonthorn-bulwark",
+            "Chest": "ch4-pale-court-panoply",
+            "Legs": "ch4-astral-briar-stockings",
+            "Head": "ch4-regent-warcrown",
+            "Trinket": "ch3-captured-flare"
+          },
+          "shaman": {
+            "Trinket": "ch4-tear-of-the-pale-queen",
+            "Weapon": "ch4-moonstorm-scepter",
+            "Tome": "ch3-songs-of-molten-rain",
+            "Legs": "ch4-thornward-ramparts",
+            "Chest": "ch3-cinderwall-harness",
+            "Head": "ch4-nighttide-crown"
+          },
+          "mage": {
+            "Staff": "ch2-witchhazel-spire",
+            "Chest": "ch3-vest-of-the-last-pyre",
+            "Trinket": "ch3-marshal-chain",
+            "Head": "ch3-molten-halo",
+            "Legs": "ch3-ashscript-pantaloons"
+          }
+        }
+      }
+    },
+    {
+      "chapter": 4,
+      "healer": "shaman",
+      "clears": 5,
+      "samples": 256,
+      "meanCurrentSlots": 4.617,
+      "meanPartyCurrentSlots": 15.164,
+      "meanPartyIlvl": 8.959,
+      "slotOccupancy": {
+        "Weapon": 0.688,
+        "Tome": 0.551,
+        "Trinket": 0.844,
+        "Head": 0.922,
+        "Chest": 0.887,
+        "Legs": 0.727
+      },
+      "meanStats": {
+        "maxHp": 596.586,
+        "maxMana": 730.41,
+        "manaRegen": 3.981,
+        "spellPower": 31.82,
+        "haste": 0,
+        "crit": 0,
+        "armor": 11.035,
+        "resistance": 9.199
+      },
+      "representative": {
+        "seed": 118185,
+        "history": [
+          {
+            "chapter": 1,
+            "readinessClears": 3,
+            "extraClears": 1,
+            "equippedCountAfter": 11,
+            "chapterEquippedCountAfter": 11
+          },
+          {
+            "chapter": 2,
+            "readinessClears": 3,
+            "extraClears": 0,
+            "equippedCountAfter": 16,
+            "chapterEquippedCountAfter": 7
+          },
+          {
+            "chapter": 3,
+            "readinessClears": 3,
+            "extraClears": 1,
+            "equippedCountAfter": 25,
+            "chapterEquippedCountAfter": 17
+          }
+        ],
+        "currentSlots": [
+          "Weapon",
+          "Tome",
+          "Trinket",
+          "Head",
+          "Chest"
+        ],
+        "currentCount": 5,
+        "partyCurrentCount": 14,
+        "avgPartyIlvl": 8.673,
+        "stats": {
+          "maxHp": 570,
+          "maxMana": 755,
+          "manaRegen": 4,
+          "spellPower": 38,
+          "haste": 0,
+          "crit": 0,
+          "armor": 14,
+          "resistance": 7
+        },
+        "loadout": {
+          "rogue": {
+            "Sword": "ch4-petal-of-the-final-dance",
+            "Trinket": "ch3-smuggler-ember-locket",
+            "Chest": "ch4-moonpetal-chasuble",
+            "Head": "ch3-basalt-bloom-circlet",
+            "Legs": "ch1-dustwalker-strides"
+          },
+          "ranger": {
+            "Bow": "ch4-white-hart-greatbow",
+            "Trinket": "ch3-captured-flare",
+            "Chest": "ch4-silverwood-scalecoat",
+            "Head": "ch3-coalfeather-helm",
+            "Legs": "ch1-stoneward-sabatons"
+          },
+          "mage": {
+            "Staff": "ch3-crucible-helix",
+            "Trinket": "ch4-prism-of-the-waning-court",
+            "Chest": "ch3-furnacehide-coat",
+            "Head": "ch3-molten-halo",
+            "Legs": "ch1-sootwoven-hose"
+          },
+          "shaman": {
+            "Trinket": "ch4-pearl-of-the-elder-tide",
+            "Weapon": "ch4-moonstorm-scepter",
+            "Tome": "ch4-covenant-of-deep-waters",
+            "Chest": "ch4-velvet-thorn-corslet",
+            "Head": "ch4-briarflight-coif",
+            "Legs": "ch3-glassrunner-cuisses"
+          },
+          "tank": {
+            "Weapon": "ch2-ironbriar-cleaver",
+            "Shield": "ch3-furnace-bastion",
+            "Chest": "ch4-pale-court-panoply",
+            "Legs": "ch4-astral-briar-stockings",
+            "Head": "ch4-regent-warcrown",
+            "Trinket": "ch4-masquerade-spider-brooch"
+          }
+        }
+      }
+    }
+  ]
+}

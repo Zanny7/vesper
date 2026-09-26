@@ -6,7 +6,7 @@ import { itemIcon, equipmentSlot, setupEquipment, statLabels } from '../src/equi
 // Intentionally no storage adapter: this sandbox can never grant player gear.
 const gear = new Equipment();
 GEAR.forEach(item => gear.acquire(item.id));
-const names = { priest: 'Priest', druid: 'Druid', tank: 'Aldric', rogue: 'Nyx', mage: 'Sera', ranger: 'Theron' };
+const names = { priest: 'Priest', druid: 'Druid', shaman: 'Shaman', tank: 'Aldric', rogue: 'Nyx', mage: 'Sera', ranger: 'Theron' };
 const escape = value => String(value).replace(/[&<>"']/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch]));
 const statsText = stats => Object.entries(stats).map(([key, value]) => `${statLabels[key] || key}: +${value}`).join(' · ');
 let member = { id: 'priest' };

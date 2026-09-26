@@ -14,12 +14,12 @@ test('every encounter has a canonical multi-character normal loot table', () => 
   const byId = new Map(GEAR.map(item => [item.id, item]));
   for (const [chapterIndex, chapter] of CHAPTERS.entries()) for (const node of chapter.nodes) {
     const table = NORMAL_LOOT_TABLES[node.encounter];
-    assert.ok(table.length >= 6, node.encounter);
+    assert.equal(table.length, 7, node.encounter);
     assert.equal(new Set(table).size, table.length, node.encounter);
     const items = table.map(id => byId.get(id));
     assert.ok(items.every(Boolean), node.encounter);
     assert.ok(items.every(item => item.chapter === chapterIndex + 1), node.encounter);
-    assert.deepEqual(new Set(items.map(item => item.owner)), new Set(['priest', 'druid', 'tank', 'rogue', 'mage', 'ranger']));
+    assert.deepEqual(new Set(items.map(item => item.owner)), new Set(['priest', 'druid', 'shaman', 'tank', 'rogue', 'mage', 'ranger']));
   }
 });
 
@@ -63,24 +63,26 @@ test('owned items are excluded and exhausted pools return fewer rewards without 
   assert.deepEqual(rollNormalLoot(table, table, 'priest', sequence([0.85])), []);
 });
 
-test('every pre-boss route gives both healers matching slot opportunities', () => {
+test('every pre-boss route gives all healers matching slot opportunities', () => {
   for (const [chapterIndex, chapter] of CHAPTERS.entries()) for (const route of routes(chapter)) {
-    const slots = ['priest', 'druid'].map(healer => route.flatMap(node =>
+    const slots = ['priest', 'druid', 'shaman'].map(healer => route.flatMap(node =>
       eligibleLootPool(NORMAL_LOOT_TABLES[node.encounter], [], healer))
       .filter(item => item.chapter === chapterIndex + 1 && item.owner === healer)
       .map(item => item.slot));
     assert.deepEqual(slots[0], slots[1], `Chapter ${chapterIndex + 1}`);
+    assert.deepEqual(slots[0], slots[2], `Chapter ${chapterIndex + 1} Shaman`);
     assert.ok(slots[0].includes('Weapon'), `Chapter ${chapterIndex + 1} weapon`);
   }
 });
 
-test('chapter boss normal rewards offer the same healer slot to Priest and Druid', () => {
+test('chapter boss normal rewards offer the same slot to all healers', () => {
   for (const chapter of CHAPTERS) {
     const boss = chapter.nodes.find(node => node.kind === 'boss');
-    const slots = ['priest', 'druid'].map(healer =>
+    const slots = ['priest', 'druid', 'shaman'].map(healer =>
       eligibleLootPool(NORMAL_LOOT_TABLES[boss.encounter], [], healer)
         .filter(item => item.owner === healer).map(item => item.slot));
     assert.deepEqual(slots[0], slots[1], boss.encounter);
+    assert.deepEqual(slots[0], slots[2], boss.encounter);
   }
 });
 

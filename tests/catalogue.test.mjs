@@ -2,13 +2,13 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { GEAR, GEAR_CHAPTER_BANDS } from '../src/data.js';
-import { ITEM_OWNERS, slotsForOwner, validateCatalogue, averageItemLevel } from '../src/item-model.js';
+import { ITEM_OWNERS, isHealerOwner, slotsForOwner, validateCatalogue, averageItemLevel } from '../src/item-model.js';
 import { Equipment } from '../src/gear.js';
 import { itemIcon, equipmentSlot } from '../src/equipment.js';
 
 test('Chapters 1–4 cover every character slot with fixed, valid metadata', () => {
   assert.deepEqual(validateCatalogue(GEAR), []);
-  assert.equal(GEAR.length, 132);
+  assert.equal(GEAR.length, 156);
   assert.equal(new Set(GEAR.map(item => item.name)).size, GEAR.length);
   for (const chapter of [1, 2, 3, 4]) for (const owner of ITEM_OWNERS) {
     const items = GEAR.filter(item => item.chapter === chapter && item.owner === owner);
@@ -54,7 +54,7 @@ test('authored chapter upgrades increase main output and total survivability wit
   }
   for (const chapter of [2, 3, 4]) for (const owner of ITEM_OWNERS) {
     const lower = totals[chapter - 1][owner], upper = totals[chapter][owner];
-    const output = ['priest', 'druid'].includes(owner) ? 'spellPower' : 'damage';
+    const output = isHealerOwner(owner) ? 'spellPower' : 'damage';
     assert.ok(upper[output] > lower[output]);
     assert.ok(upper.maxHp > lower.maxHp);
     assert.ok(upper.armor + upper.resistance > lower.armor + lower.resistance);
