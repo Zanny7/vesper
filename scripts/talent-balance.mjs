@@ -78,21 +78,22 @@ export function equipmentFor(chapter, healer, seed) {
   return equipment;
 }
 
-function decide(game, healer) {
+function decide(game, healer, skill = 'veryGood') {
   if (game.cast || game.status !== 'running') return;
+  const threshold = value => value * ({ veryGood: 1, average: .85, weak: .75 }[skill] ?? 1);
   const living = game.party.filter(p => p.hp > 0);
   const byRatio = [...living].sort((a, b) => a.hp / a.maxHp - b.hp / b.maxHp);
   const lowest = byRatio[0], tank = game.party[0];
   const missing = p => p.maxHp - p.hp;
-  const hurt = living.filter(p => missing(p) >= 65);
+  const hurt = living.filter(p => missing(p) >= threshold(65));
   const can = id => game.spells.some(s => s.id === id) && game.begin(id, lowest.id).ok;
   if (healer === 'priest') {
     if (hurt.length >= 3 && can('sanctuary')) return;
     if (hurt.length >= 2 && can('divineFervor')) return;
-    if (missing(lowest) >= 95 && game.begin('penance', lowest.id).ok) return;
-    if (hurt.length >= 3 && hurt.reduce((s, p) => s + Math.min(115, missing(p)), 0) >= 250 && game.begin('prayer', lowest.id).ok) return;
-    if (missing(tank) >= 105 && tank.hp / tank.maxHp > .3 && game.begin('greater', tank.id).ok) return;
-    if (missing(lowest) >= 80 && game.begin('flash', lowest.id).ok) return;
+    if (missing(lowest) >= threshold(95) && game.begin('penance', lowest.id).ok) return;
+    if (hurt.length >= 3 && hurt.reduce((s, p) => s + Math.min(115, missing(p)), 0) >= threshold(250) && game.begin('prayer', lowest.id).ok) return;
+    if (missing(tank) >= threshold(105) && tank.hp / tank.maxHp > .3 && game.begin('greater', tank.id).ok) return;
+    if (missing(lowest) >= threshold(80) && game.begin('flash', lowest.id).ok) return;
   } else {
     const hots = p => game.activeHots(p, ['rejuvenation', 'regrowth', 'wildGrowth']);
     if (hurt.length >= 3 && can('tranquility')) return;
@@ -101,26 +102,26 @@ function decide(game, healer) {
     if (game.spells.some(s => s.id === 'cenarionWard') && (game.availableCharges('cenarionWard') || 0) > 0
       && lowest.hp / lowest.maxHp <= .65 && !lowest.ward && game.begin('cenarionWard', lowest.id).ok) return;
     const wildGrowthCooling = (game.cooldowns.wildGrowth || 0) > game.time + 1e-6;
-    if (hurt.length >= 3 && (!wildGrowthCooling || hurt.reduce((sum, p) => sum + missing(p), 0) >= 400)
+    if (hurt.length >= 3 && (!wildGrowthCooling || hurt.reduce((sum, p) => sum + missing(p), 0) >= threshold(400))
       && game.begin('wildGrowth', lowest.id).ok) return;
-    if (missing(lowest) >= 110 && hots(lowest).length && game.begin('swiftmend', lowest.id).ok) return;
+    if (missing(lowest) >= threshold(110) && hots(lowest).length && game.begin('swiftmend', lowest.id).ok) return;
     const regrowth = game.activeHots(lowest, ['regrowth']);
-    if (missing(lowest) >= 145 && (!regrowth.length || regrowth[0].expires - game.time < 4)
+    if (missing(lowest) >= threshold(145) && (!regrowth.length || regrowth[0].expires - game.time < 4)
       && game.begin('regrowth', lowest.id).ok) return;
     const rejuvs = p => game.activeHots(p, ['rejuvenation']).length;
     const cap = game.spells.find(s => s.id === 'rejuvenation')?.hot?.maxInstances || 1;
-    if (missing(tank) >= (rejuvs(tank) ? 180 : 65) && rejuvs(tank) < cap
+    if (missing(tank) >= threshold(rejuvs(tank) ? 180 : 65) && rejuvs(tank) < cap
       && game.begin('rejuvenation', tank.id).ok) return;
-    if (missing(lowest) >= 80 && rejuvs(lowest) < cap && game.begin('rejuvenation', lowest.id).ok) return;
+    if (missing(lowest) >= threshold(80) && rejuvs(lowest) < cap && game.begin('rejuvenation', lowest.id).ok) return;
     const incomingSoon = lowest.id === 'tank' ? game.encounter.strike.damage * 1.5 : 45;
     const pendingSoon = hots(lowest).concat(game.activeHots(lowest, ['nourish']))
       .reduce((sum, hot) => sum + hot.heal * Math.min(hot.ticks, Math.ceil(4 / hot.interval)), 0);
-    if (missing(lowest) >= 90 && missing(lowest) + incomingSoon - pendingSoon >= 95
+    if (missing(lowest) >= threshold(90) && missing(lowest) + incomingSoon - pendingSoon >= threshold(95)
       && game.begin('nourish', lowest.id).ok) return;
   }
 }
 
-export function fight(encounter, equipment, healer, build, seed, resources) {
+export function fight(encounter, equipment, healer, build, seed, resources, skill = 'veryGood') {
   const baseParty = equipment.party(healer);
   const loadout = (healer === 'priest' ? priestTalentLoadout : druidTalentLoadout)(baseParty, HEALERS[healer].combatSpells, build);
   if (process.env.BALANCE_VERSION === 'original' && healer === 'druid') {
@@ -142,7 +143,7 @@ export function fight(encounter, equipment, healer, build, seed, resources) {
   let previousMana = game.mana;
   let nextDecision = 0;
   while (game.status === 'running') {
-    if (game.time >= nextDecision) { decide(game, healer); nextDecision = game.time + .12; }
+    if (game.time >= nextDecision) { decide(game, healer, skill); nextDecision = game.time + ({ veryGood: .12, average: .2, weak: .3 }[skill] ?? .12); }
     game.step();
     for (const e of game.drainEvents()) {
       if (e.type === 'heal') { rawHealing += e.raw; bySpell[e.spell] = (bySpell[e.spell] || 0) + e.amount; windows[game.time < 20 ? 0 : 1] += e.amount; }

@@ -19,7 +19,7 @@ function heal(game) {
 test('Chapter 1 normal route pressure escalates through HP, strike cadence, and adds', () => {
   const encounters = CHAPTERS[0].nodes.filter(node => node.kind === 'normal')
     .map(node => CHAPTER_ENCOUNTERS[node.encounter]);
-  assert.deepEqual(encounters.map(encounter => encounter.maxHp), [1000, 1000, 1500]);
+  assert.deepEqual(encounters.map(encounter => encounter.maxHp), [1000, 1000, 1450]);
   const pressure = encounter => encounter.strike.damage / encounter.strike.every
     + encounter.adds.reduce((sum, add) => sum + add.damage / add.every, 0);
   assert.ok(pressure(encounters[0]) < pressure(encounters[1]));
@@ -30,8 +30,8 @@ test('Chapter 1 normal route pressure escalates through HP, strike cadence, and 
       assert.ok(add.every > 0);
     }
   }
-  assert.ok(CHAPTER_ENCOUNTERS.warden.strike.damage / CHAPTER_ENCOUNTERS.warden.strike.every
-    > encounters[2].strike.damage / encounters[2].strike.every * 1.05);
+  assert.ok(CHAPTER_ENCOUNTERS.warden.maxHp > encounters[2].maxHp);
+  assert.ok(CHAPTER_ENCOUNTERS.warden.strike.damage > encounters[2].strike.damage);
 });
 
 test('ranged adds select randomly among all living members, including tank and healer', () => {

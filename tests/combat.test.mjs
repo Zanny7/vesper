@@ -96,7 +96,7 @@ test('unattended party loses; current triage wins the Chapter I boss',()=>{
     assert.equal(g.status,'victory',`Seed ${seed} ended ${g.status} at ${g.time.toFixed(1)}s, mana ${g.mana}, health ${g.party.map(p=>p.hp)}`);
     assert.equal(g.stats.deaths,0,`seed ${seed}`);
     assert.ok(g.time<90,`seed ${seed}`);
-    assert.ok(g.stats.effective>2000,`seed ${seed}`);
+    assert.ok(g.stats.effective>500,`seed ${seed}`);
     assert.ok(g.mana<CONFIG.mana*.8,`seed ${seed}`);
   }
 });

@@ -30,6 +30,19 @@ test('production Priest and Druid definitions expose all twelve named talents', 
   }
 });
 
+test('both core Druid HoT talents allow their authored second rank', () => {
+  const talents = new TalentProgression(disk(), TALENT_TREES);
+  award(talents, 'druid', 4);
+  for (const id of ['empowered-rejuvenation', 'nourishing-touch']) {
+    assert.equal(TALENT_TREES.druid.find(talent => talent.id === id).maxRank, 2);
+    assert.equal(talents.spend('druid', id).ok, true);
+    assert.equal(talents.spend('druid', id).ok, true);
+    assert.equal(talents.spend('druid', id).ok, false);
+  }
+  assert.deepEqual(talents.state('druid').allocations,
+    { 'empowered-rejuvenation': 2, 'nourishing-touch': 2 });
+});
+
 test('legacy Priest talent IDs migrate to their redesigned names and persist', () => {
   const storage = disk();
   storage.setItem('vesper-talents-v1', JSON.stringify({
