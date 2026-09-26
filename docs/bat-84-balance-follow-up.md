@@ -47,3 +47,7 @@ The probe achieved outlier first-run Druid access but lost too much geared route
 On final 300 seeds, Chapters 1, 3, and 4 have exactly the same route and boss rates as BAT-83. Weak Priest Chapter 1 and 3 boss wins on reach remain 31% and 57%; Chapter 3 weak Druid remains 91%, a 34-point healer gap. Chapter 4 weak Druid first-run boss access remains 39%. These deviations are material and **not accepted as BAT-84 completion**. No broad gear, talent, loot, or global enemy tuning was retained to hide them.
 
 The full automated suite passes: 167/167. In the browser, the Chapter 2 Elder details show the revised 43-damage strike every 3.3 seconds and the updated encounter lesson. The selected boss was previewed without starting or resetting the saved chapter.
+
+## Continued Chapter 4 investigation
+
+The tested checkpoint is committed and pushed on `dev` as `3169e28`. A subsequent investigation tested encounter placement, a warned late burst, larger strikes with longer recovery windows, and branch-specific shifts from tank pressure to group damage. None provided substantial first-run suppression while preserving all intended geared route scenarios; no Chapter 4 tuning was retained. See `bat-84-ch4-progression-investigation.md` for paired results, resource and duration overlap, reproducible settings, and validation limits. BAT-84 remains open.

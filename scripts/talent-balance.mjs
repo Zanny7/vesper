@@ -121,7 +121,7 @@ function decide(game, healer, skill = 'veryGood') {
   }
 }
 
-export function fight(encounter, equipment, healer, build, seed, resources, skill = 'veryGood') {
+export function fight(encounter, equipment, healer, build, seed, resources, skill = 'veryGood', captureTimes = []) {
   const baseParty = equipment.party(healer);
   const loadout = (healer === 'priest' ? priestTalentLoadout : druidTalentLoadout)(baseParty, HEALERS[healer].combatSpells, build);
   if (process.env.BALANCE_VERSION === 'original' && healer === 'druid') {
@@ -137,14 +137,25 @@ export function fight(encounter, equipment, healer, build, seed, resources, skil
   }
   const game = new Combat(encounter, seeded(seed), loadout.party, loadout.spells);
   if (resources) game.reset(encounter, resources);
+  const entryResources = game.resources();
+  const entryPower = {
+    maxMana: game.maxMana, manaRegen: game.healer.manaRegen, spellPower: game.spellPower,
+    party: loadout.party.map(({ id, maxHp, armor, resistance, damage, interval, haste, crit }) =>
+      ({ id, maxHp, armor, resistance, damage, interval, haste, crit })),
+  };
   game.start();
   let rawHealing = 0, partyDamage = 0, manaSpent = 0, depletedAt = null;
   const casts = {}, bySpell = {}, windows = [0, 0];
+  const checkpoints = [];
   let previousMana = game.mana;
   let nextDecision = 0;
   while (game.status === 'running') {
     if (game.time >= nextDecision) { decide(game, healer, skill); nextDecision = game.time + ({ veryGood: .12, average: .2, weak: .3 }[skill] ?? .12); }
     game.step();
+    if (checkpoints.length < captureTimes.length && game.time >= captureTimes[checkpoints.length]) {
+      checkpoints.push({ at: captureTimes[checkpoints.length], seconds: game.time,
+        mana: game.mana, bossHp: game.boss.hp, resources: game.resources() });
+    }
     for (const e of game.drainEvents()) {
       if (e.type === 'heal') { rawHealing += e.raw; bySpell[e.spell] = (bySpell[e.spell] || 0) + e.amount; windows[game.time < 20 ? 0 : 1] += e.amount; }
       if (e.type === 'damage' && e.target !== 'boss') partyDamage += e.amount;
@@ -157,7 +168,7 @@ export function fight(encounter, equipment, healer, build, seed, resources, skil
   return { won: game.status === 'victory', seconds: game.time, effective: game.stats.effective,
     rawHealing, overheal: game.stats.overheal, partyDamage, manaSpent, remainingMana: game.mana,
     depletedAt, burstHps: windows[0] / Math.min(20, game.time), sustainedHps: windows[1] / Math.max(1, game.time - 20),
-    casts, bySpell, deaths: game.stats.deaths, resources: game.resources() };
+    casts, bySpell, deaths: game.stats.deaths, resources: game.resources(), entryResources, entryPower, checkpoints };
 }
 
 const mean = (rows, field) => rows.length ? rows.reduce((sum, row) => sum + (typeof field === 'function' ? field(row) : row[field]), 0) / rows.length : null;

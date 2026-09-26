@@ -4,6 +4,7 @@ import { CHAPTERS, CHAPTER_ENCOUNTERS } from '../src/data.js';
 import { NORMAL_LOOT_TABLES, rollNormalLoot } from '../src/loot.js';
 import { acquireRoute, recursiveInheritedEquipment, regeared, routes, seeded } from './boss-balance.mjs';
 import { builds, fight } from './talent-balance.mjs';
+import { pathToFileURL } from 'node:url';
 
 const samples = Number(process.argv[2] || 100);
 const chapters = (process.env.CHAPTERS || '1,2,3,4').split(',').map(Number);
@@ -12,9 +13,10 @@ const profiles = (process.env.PROFILES || 'veryGood,average,weak').split(',');
 const stages = (process.env.STAGES || 'first,one,ready').split(',');
 // Optional encounter overrides make paired, fixed-seed tuning probes reproducible.
 const encounterTuning = JSON.parse(process.env.ENCOUNTER_TUNING || '{}');
-function tunedEncounter(id) {
+const routeOrder = process.env.ROUTE_ORDER ? JSON.parse(process.env.ROUTE_ORDER) : null;
+function tunedEncounter(id, overrides = encounterTuning) {
   const encounter = structuredClone(CHAPTER_ENCOUNTERS[id]);
-  const tuning = encounterTuning[id] || {};
+  const tuning = overrides[id] || {};
   if (tuning.maxHp !== undefined) encounter.maxHp = tuning.maxHp;
   if (tuning.strikeDamage !== undefined) encounter.strike.damage = tuning.strikeDamage;
   if (tuning.strikeEvery !== undefined) encounter.strike.every = tuning.strikeEvery;
@@ -45,7 +47,7 @@ const rate = (rows, predicate) => mean(rows, row => Number(predicate(row)));
 const rounded = value => value === null ? null : Math.round(value * 100) / 100;
 const equippedItems = equipment => Object.values(equipment.equipped).flatMap(slots => Object.values(slots)).map(id => equipment.itemById(id));
 
-function trial(chapterNumber, healer, profile, stage, index) {
+export function trial(chapterNumber, healer, profile, stage, index, options = {}) {
   const seed = 183000 + chapterNumber * 100000 + index;
   const random = seeded(seed);
   const chapter = CHAPTERS[chapterNumber - 1];
@@ -58,7 +60,14 @@ function trial(chapterNumber, healer, profile, stage, index) {
     equipment = regeared(equipment, healer);
   }
   const items = equippedItems(equipment);
-  const path = paths[Math.floor(random() * paths.length)];
+  const selectedPath = paths[Math.floor(random() * paths.length)];
+  const order = options.order || routeOrder;
+  if (order && (order.length !== selectedPath.length || new Set(order).size !== selectedPath.length
+    || order.some(position => !Number.isInteger(position) || position < 0 || position >= selectedPath.length))) {
+    throw new Error('ROUTE_ORDER must be a permutation of this chapter’s normal-route positions.');
+  }
+  // Placement probes hold prior-clear gear fixed and move only the played fights.
+  const path = order ? order.map(position => selectedPath[position]) : selectedPath;
   const buildName = process.env[`${healer.toUpperCase()}_BUILD`] || buildNames[healer][chapterNumber - 1];
   const build = builds[healer][buildName];
   if (!build) throw new Error(`Unknown ${healer} build: ${buildName}`);
@@ -69,18 +78,20 @@ function trial(chapterNumber, healer, profile, stage, index) {
   for (const [position, node] of path.entries()) {
     // The first point in a new chapter is earned at its first normal encounter.
     const talentBuild = stage === 'first' && position === 0 ? beforeFirstPoint[healer][chapterNumber - 1] : build;
-    const combat = fight(tunedEncounter(node.encounter), equipment, healer, talentBuild,
-      Math.floor(random() * 2 ** 32), resources, profile);
+    const combat = fight(tunedEncounter(node.encounter, options.tuning), equipment, healer, talentBuild,
+      Math.floor(random() * 2 ** 32), resources, profile, options.captureTimes);
     result.stages.push({ encounter: node.encounter, won: combat.won, seconds: combat.seconds,
       mana: combat.remainingMana, hp: Object.values(combat.resources.health).reduce((sum, value) => sum + value.current, 0),
-      effective: combat.effective, overheal: combat.overheal, deaths: combat.deaths });
+      effective: combat.effective, overheal: combat.overheal, deaths: combat.deaths,
+      entryResources: combat.entryResources, entryPower: combat.entryPower,
+      resources: combat.resources, casts: combat.casts, checkpoints: combat.checkpoints });
     if (!combat.won) return result;
     resources = combat.resources;
     for (const item of rollNormalLoot(NORMAL_LOOT_TABLES[node.encounter], equipment.ownedIds, healer, random)) equipment.acquire(item.id);
     equipment = regeared(equipment, healer);
   }
   const bossNode = chapter.nodes.find(node => node.kind === 'boss');
-  const bossEncounter = tunedEncounter(bossNode.encounter);
+  const bossEncounter = tunedEncounter(bossNode.encounter, options.tuning);
   const strikeScale = Number(process.env.BOSS_STRIKE_SCALE || 1);
   const mechanicScale = Number(process.env.BOSS_MECHANIC_SCALE || 1);
   bossEncounter.strike.damage *= strikeScale;
@@ -99,7 +110,7 @@ function trial(chapterNumber, healer, profile, stage, index) {
   return result;
 }
 
-function summarize(rows, chapterNumber, healer, profile, stage) {
+export function summarize(rows, chapterNumber, healer, profile, stage) {
   const reached = rows.filter(row => row.boss);
   const winners = reached.filter(row => row.boss.won);
   const paths = [...new Set(rows.map(row => row.route.join('/')))];
@@ -133,7 +144,9 @@ function summarize(rows, chapterNumber, healer, profile, stage) {
     }) };
 }
 
-for (const chapter of chapters) for (const healer of healers) for (const profile of profiles) for (const stage of stages) {
-  const rows = Array.from({ length: samples }, (_, index) => trial(chapter, healer, profile, stage, index));
-  console.log(JSON.stringify(summarize(rows, chapter, healer, profile, stage)));
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+  for (const chapter of chapters) for (const healer of healers) for (const profile of profiles) for (const stage of stages) {
+    const rows = Array.from({ length: samples }, (_, index) => trial(chapter, healer, profile, stage, index));
+    console.log(JSON.stringify(summarize(rows, chapter, healer, profile, stage)));
+  }
 }
