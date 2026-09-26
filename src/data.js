@@ -19,6 +19,20 @@ export const DRUID_TALENT_VALUES = Object.freeze({
   naturalRegeneration: Object.freeze({ manaRegenPerRank: .2 }),
   abundantNourishment: Object.freeze({ healingPerHotPerRank: 20 }),
 });
+export const SHAMAN_TALENT_VALUES = Object.freeze({
+  tidalReserves: Object.freeze({ manaRegenPerRank: .10 }),
+  deepRiptide: Object.freeze({ periodicBonusPerRank: .10 }),
+  tidalMomentum: Object.freeze({ healingBonusPerRank: .10 }),
+  tidalWaves: Object.freeze({ charges: 2, castReduction: .20 }),
+  highTide: Object.freeze({ jumpLossByRank: Object.freeze([.20, .175, .15]) }),
+  restorativeStream: Object.freeze({ healingBonusPerRank: .15 }),
+  flowingRiptide: Object.freeze({ charges: 2, threshold: .90 }),
+  echoingSurge: Object.freeze({ effectiveRatio: .50 }),
+  doubleCurrent: Object.freeze({ empowerments: 2 }),
+  earthliving: Object.freeze({ waveDuration: 6, chainDuration: 2 }),
+  healingTide: Object.freeze({ heal: 14, duration: 8, interval: 1, mana: 80, cooldown: 60 }),
+  ancestralEcho: Object.freeze({ effectiveRatio: .40 }),
+});
 export const SLOTS = {
   healer: ['Weapon', 'Tome', 'Trinket', 'Head', 'Chest', 'Legs'],
   tank: ['Weapon', 'Shield', 'Trinket', 'Head', 'Chest', 'Legs'],
@@ -205,10 +219,20 @@ export const DRUID_SPELLS = [
   { id: 'wildGrowth', name: 'Wild Growth', key: '4', icon: 'grove', cast: 0, cost: 70 / CONFIG.baseMana, heal: 0, party: true, cooldown: 10, hot: { duration: 8, interval: 1, heal: 12 }, color: '#80c9a8', description: 'Heal every living ally for 12 every second for 8s (96 per ally). Each ally has their own HoT.' },
   { id: 'nourish', name: 'Nourish', key: '5', icon: 'seed', cast: 2, cost: 1, heal: 0, hot: { duration: 4, interval: 1, heal: 20, pool: true }, hotBonus: { sources: DRUID_HOTS, amount: 30, max: 3 }, color: '#c8df9b', description: 'A 4-second HoT ticking every second. Its 80 healing grows by 30 per active Rejuvenation, Regrowth, or Wild Growth type at completion. Recasting adds to the unspent pool and refreshes the duration.' },
 ];
+export const SHAMAN_EMPOWERMENT = Object.freeze({ healingBonus: .20, castReduction: .20 });
+export const SHAMAN_SPELLS = [
+  { id: 'recurringSurge', name: 'Recurring Surge', key: '1', icon: 'surge', cast: 1.5, cost: 24 / CONFIG.baseMana, heal: 0, empowerable: true, hot: { duration: 6, interval: 2, heal: 44, bankCap: 18 }, color: '#76d5d0', description: 'Heal for 44 every 2s. Each cast adds 6s of remaining duration, up to 18s, without resetting the next tick. One effect per ally.' },
+  { id: 'healingWave', name: 'Healing Wave', key: '2', icon: 'wave', cast: 2.5, cost: 28 / CONFIG.baseMana, heal: 110, empowerable: true, color: '#a1e2e4', description: 'Heal one living ally for 110 when the cast completes.' },
+  { id: 'riptide', name: 'Riptide', key: '3', icon: 'riptide', cast: 0, cost: 32 / CONFIG.baseMana, heal: 40, cooldown: 6, hot: { duration: 18, interval: 3, heal: 27 }, color: '#72badf', description: 'Heal for 40 immediately, then 27 every 3s for 18s (202 total). Refreshing replaces the HoT and restarts its tick timer.' },
+  { id: 'chainHeal', name: 'Chain Heal', key: '4', icon: 'chain', cast: 2.5, cost: 65 / CONFIG.baseMana, heal: 105, empowerable: true, chain: { targets: 5, jumpRatio: .8 }, color: '#ace4b9', description: 'Heal the selected ally for 105, then jump to the lowest-health-percentage unhit living ally, up to five targets. Each jump heals 20% less; all healing resolves at completion.' },
+  { id: 'unleashLife', name: 'Unleash Life', key: '5', icon: 'unleash', cast: 0, cost: 24 / CONFIG.baseMana, heal: 90, cooldown: 15, empowerment: SHAMAN_EMPOWERMENT, color: '#d0e9a0', description: 'Heal for 90 and store one empowerment: the next successful Surge, Wave, or Chain Heal heals 20% more and casts 20% faster. No expiration or stacking; Mana cost is unchanged.' },
+  { id: 'healingStream', name: 'Healing Stream Totem', key: '6', icon: 'totem', cast: 0, cost: 35 / CONFIG.baseMana, heal: 0, selfTarget: true, cooldown: 15, totem: { duration: 12, interval: 2, heal: 32 }, color: '#82cfc3', description: 'Summon one Totem for 12s. Every 2s it heals the lowest-health-percentage injured living ally for 32 (six ticks). A tick is wasted if nobody is injured.' },
+];
 // Healer identity and spell kits are separate from the companion roster.
 export const HEALERS = {
   priest: { id: 'priest', name: 'You', role: 'Priest', label: 'HEALER', maxHp: 400, color: '#e2cc94', damage: 0, interval: 2, x: 485, y: 484, spellBook: SPELLS, combatSpells: SPELLS, description: 'A disciplined keeper of the party’s light. Uses the current healing kit.' },
   druid: { id: 'druid', name: 'You', role: 'Druid', label: 'HEALER', maxHp: 400, color: '#9acb91', damage: 0, interval: 2, x: 485, y: 484, spellBook: DRUID_SPELLS, combatSpells: DRUID_SPELLS, description: 'Prepare allies with healing over time. Nourish rewards layered HoTs; Swiftmend converts preparation into an immediate burst.' },
+  shaman: { id: 'shaman', name: 'You', role: 'Shaman', label: 'HEALER', maxHp: 400, color: '#76cfc9', damage: 0, interval: 2, x: 485, y: 484, spellBook: SHAMAN_SPELLS, combatSpells: SHAMAN_SPELLS, description: 'Bank Recurring Surge on pressured allies, maintain Riptide, and recover the group with Chain Heal and a smart Healing Stream Totem. Unleash Life empowers your next cast-time heal.' },
 };
 export const partyForHealer = healerId => [...PARTY.filter(member => member.label !== 'HEALER'), HEALERS[healerId] || HEALERS.priest];
 // Neutral starting defenses/power: gear may supply bonuses without changing encounter tuning.

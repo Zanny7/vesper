@@ -4,6 +4,7 @@ import { TalentProgression } from './talents.js';
 import { TALENT_TREES } from './talent-trees.js';
 import { priestTalentLoadout } from './priest-talents.js';
 import { druidTalentLoadout } from './druid-talents.js';
+import { shamanTalentLoadout } from './shaman-talents.js';
 import { formatNumber, healingParts } from './stats.js';
 import { Combat } from './combat.js';
 import { Battlefield } from './renderer.js';
@@ -44,7 +45,9 @@ const loadout = healerId => {
     ? priestTalentLoadout(party, spells, talents?.state('priest').allocations)
     : healerId === 'druid'
       ? druidTalentLoadout(party, spells, talents?.state('druid').allocations)
-      : { party, spells };
+      : healerId === 'shaman'
+        ? shamanTalentLoadout(party, spells, talents?.state('shaman').allocations)
+        : { party, spells };
   return { ...adjusted, spells: abilitySettings.spells(healerId, adjusted.spells) };
 };
 const party = healerId => loadout(healerId).party;
@@ -60,7 +63,7 @@ let selected = 'tank', hovered = null, lastStatus = '', lastLog = '', last = per
 let lastLoot = [];
 const clock = t => `${String(Math.floor(t / 60)).padStart(2,'0')}:${String(Math.floor(t % 60)).padStart(2,'0')}`;
 const number = n => Math.round(n).toLocaleString('en-US');
-const roleIcons={tank:'♜',rogue:'⚔',mage:'✦',ranger:'⌁',priest:'✧',druid:'♣'};
+const roleIcons={tank:'♜',rogue:'⚔',mage:'✦',ranger:'⌁',priest:'✧',druid:'♣',shaman:'≋'};
 let frames = [], spellButtons = [], currentSpells = [];
 function buildHealerUI() {
   const healer = activeHealer(activeHealerId);
@@ -145,6 +148,15 @@ function renderUI(){
     frame.classList.toggle('threatened', game.mechanics.some(m => m.warned && m.targets?.includes(p.id)));
     const incoming=frame.querySelector('.incoming-fill');let amount=0;
     if(game.cast&&p.hp>0&&(game.cast.spell.party||game.cast.target===p.id))amount=game.cast.spell.channel?game.cast.spell.ticks.slice(game.cast.landed).reduce((n,t)=>n+t.heal,0)*healingParts(game.cast.spell,game.spellPower).factor:game.directHealing(game.cast.spell,p);
+    if (game.cast?.spell.empowerable) {
+      const pendingCast = game.cast;
+      if (pendingCast.spell.chain) {
+        const primary = game.party.find(member => member.id === pendingCast.target);
+        const jump = game.chainTargets(pendingCast.spell, primary).indexOf(p);
+        amount = jump < 0 ? 0 : game.directHealing(pendingCast.spell, p) * pendingCast.spell.chain.jumpRatio ** jump;
+      }
+      amount *= game.healingEmpowerment(pendingCast.spell, pendingCast.unleashLife);
+    }
     incoming.style.left=`${percentage}%`;incoming.style.width=`${Math.min(p.maxHp-p.hp,amount)/p.maxHp*100}%`;
   }
   const targetId=hovered||selected, target=game.party.find(p=>p.id===targetId);$('#target-label').textContent=`${hovered?'Mouseover':'Selected'}: ${target?.name || game.encounter.name}`;

@@ -1,4 +1,4 @@
-import { ATONEMENT_RATIO, CONFIG, PARTY, SPELLS, ENCOUNTER } from './data.js';
+import { ATONEMENT_RATIO, CONFIG, PARTY, SPELLS, ENCOUNTER, SHAMAN_EMPOWERMENT } from './data.js';
 import { adjustedResource, resourceKey, healingParts, mitigatedDamage, hasteMultiplier as hasteFactor, hastedTime, effectiveAttackInterval, criticalChance, ticksForDuration, CRIT_MULTIPLIER } from './stats.js';
 
 // Pure fixed-step simulation. Rendering and browser input only consume its state/events.
@@ -18,7 +18,7 @@ export class Combat {
       }
       this.mana = adjustedResource(resources.mana.current, resources.mana.max, this.maxMana);
     }
-    this.cooldowns = {};
+    this.cooldowns = {}; this.totem = null; this.tideTotem = null;
     this.charges = Object.fromEntries(this.spells.filter(spell => spell.charges).map(spell => [spell.id, { current: spell.charges, max: spell.charges, recharge: null, duration: spell.cooldown }]));
     this.cast = null; this.events = []; this.history = []; this.serial = 0;
     this.stats = { effective: 0, overheal: 0, casts: 0, deaths: 0 };
@@ -53,6 +53,7 @@ export class Combat {
     return chance >= 100 || (chance > 0 && this.random() * 100 < chance);
   }
   hotInterval(hot, target) {
+    if (hot.bankCap && hot.interval) return hot.interval;
     const livingHaste = hot.living && target.hp / target.maxHp < .5 ? hot.living.speed * 100 : 0;
     const genesisHaste = hot.genesisUntil > this.time + 1e-8 ? (hot.genesisSpeed || 0) * 100 : 0;
     return hastedTime(hot.baseInterval, this.haste() + livingHaste + genesisHaste);
@@ -67,10 +68,12 @@ export class Combat {
   resolveCast(spell) {
     const overgrowth = Boolean(spell.overgrowth && (this.cooldowns[spell.id] || 0) > this.time + 0.00001);
     const postHaste = Boolean(spell.postHaste && this.buffs.postHaste > 0 && ['greater', 'prayer'].includes(spell.id));
+    const unleashLife = Boolean(spell.empowerable && this.buffs.unleashLife);
+    const tidalWaves = Boolean(spell.tidalWavesEligible && this.buffs.tidalWaves);
     return {
-      cost: this.manaCost(spell), overgrowth, postHaste,
+      cost: this.manaCost(spell), overgrowth, postHaste, unleashLife, tidalWaves,
       hasteMultiplier: this.hasteMultiplier(),
-      duration: hastedTime(overgrowth ? 1 : spell.cast, this.haste()) * (postHaste ? 1 - spell.postHaste.reduction : 1),
+      duration: hastedTime(overgrowth ? 1 : spell.cast, this.haste()) * (postHaste ? 1 - spell.postHaste.reduction : 1) * (unleashLife ? 1 - SHAMAN_EMPOWERMENT.castReduction : 1) * (tidalWaves ? 1 - spell.tidalWavesEligible.castReduction : 1),
     };
   }
   enemyDotProfile(spell) {
@@ -85,6 +88,13 @@ export class Combat {
   }
   hotProfile(spell, target, carryPending = false) {
     if (!spell.hot) return null;
+    if (spell.hot.bankCap) {
+      const existing = this.activeHots(target, [spell.id])[0];
+      const interval = existing?.interval || hastedTime(spell.hot.interval, this.haste());
+      return { tick: healingParts(spell, this.spellPower).hotTick * this.healingEmpowerment(spell),
+        ticks: ticksForDuration(spell.hot.duration, interval), interval, duration: spell.hot.duration, pending: 0,
+        bankRemaining: existing ? Math.max(0, existing.expires - this.time) : 0 };
+    }
     const interval = this.hotInterval({ ...spell.hot, baseInterval: spell.hot.interval }, target || this.healer);
     const ticks = Math.max(1, ticksForDuration(spell.hot.duration, interval));
     const pending = (carryPending || spell.hot.pool) && target
@@ -109,11 +119,13 @@ export class Combat {
   resolveSpell(spell, target = null) {
     const cast = this.resolveCast(spell);
     const healing = healingParts(spell, this.spellPower);
-    const direct = spell.channel ? 0 : this.directHealing(spell, target);
+    const direct = spell.channel ? 0 : this.directHealing(spell, target) * this.healingEmpowerment(spell);
     const bolts = spell.channel ? spell.ticks.map(tick => ({ heal: tick.heal * healing.factor, damage: tick.damage || 0 })) : [];
     const smartBolt = spell.smartHealingBolt ? spell.smartHealingBolt.heal * healing.factor : 0;
     return {
       ...cast, direct, bolts, smartBolt,
+      chain: spell.chain ? Array.from({ length: spell.chain.targets }, (_, jump) => direct * spell.chain.jumpRatio ** jump) : null,
+      totem: spell.totem ? { ...spell.totem, tick: spell.totem.heal * healing.factor, ticks: ticksForDuration(spell.totem.duration, spell.totem.interval) } : null,
       hot: this.hotProfile(spell, target, cast.overgrowth),
       dot: this.enemyDotProfile(spell),
       lingering: this.lingeringPrayerProfile(spell, direct),
@@ -124,6 +136,7 @@ export class Combat {
   begin(id, targetId) {
     const spell = this.spells.find(s => s.id === id);
     if (this.status !== 'running') return { ok: false, reason: 'Begin or resume the encounter first.' };
+    if (this.healer?.id === 'shaman' && this.healer.hp <= 0) return { ok: false, reason: 'Your healer has fallen.' };
     if (this.cast) return { ok: false, reason: 'Already casting. Press Esc to cancel.' };
     if (!spell) return { ok: false, reason: 'Unknown spell.' };
     if (spell.selfTarget) targetId = this.healer?.id;
@@ -138,7 +151,7 @@ export class Combat {
     if (charge ? charge.current <= 0 : cooldownActive && !overgrowth) return { ok: false, reason: `${spell.name} is on cooldown.` };
     if (spell.consumesHot && !this.activeHots(target, spell.consumesHot).length) return { ok: false, reason: `${spell.name} requires Rejuvenation, Regrowth, or Wild Growth on this ally.` };
     const resolved = this.resolveCast(spell);
-    const { postHaste, cost, duration, hasteMultiplier: castHaste } = resolved;
+    const { postHaste, unleashLife, tidalWaves, cost, duration, hasteMultiplier: castHaste } = resolved;
     if (this.mana < cost) return { ok: false, reason: 'Not enough mana.' };
     const spendAtStart = duration === 0 || spell.channel || !!spell.earlyMercy;
     if (spendAtStart) this.mana -= cost;
@@ -153,7 +166,7 @@ export class Combat {
     } else if (spell.cooldown && !overgrowth) this.cooldowns[id] = this.time + spell.cooldown;
     this.cast = {
       spell, target: targetId, duration, elapsed: 0, launched: 0, landed: 0,
-      postHaste, hasteMultiplier: castHaste, overgrowth, manaCost: cost, manaSpent: spendAtStart,
+      postHaste, unleashLife, tidalWaves, hasteMultiplier: castHaste, overgrowth, manaCost: cost, manaSpent: spendAtStart,
     };
     this.emit('cast', { spell: id, target: targetId });
     this.stats.casts++;
@@ -166,9 +179,34 @@ export class Combat {
   directHealing(spell, target) {
     const bonus = spell.hotBonus;
     const hotTypes = bonus ? new Set(this.activeHots(target, bonus.sources).map(hot => hot.source)).size : 0;
-    return healingParts(spell, this.spellPower).direct + (bonus && !spell.hot?.pool ? Math.min(bonus.max, hotTypes) * bonus.amount : 0);
+    const amount = healingParts(spell, this.spellPower).direct + (bonus && !spell.hot?.pool ? Math.min(bonus.max, hotTypes) * bonus.amount : 0);
+    return amount * (spell.tidalMomentum && this.activeHots(target, ['recurringSurge']).length ? 1 + spell.tidalMomentum : 1);
   }
-  applyHot(target, spell, { carryPending = false } = {}) {
+  healingEmpowerment(spell, empowered = spell.empowerable && this.buffs.unleashLife) {
+    return empowered ? 1 + SHAMAN_EMPOWERMENT.healingBonus : 1;
+  }
+  chainTargets(spell, primary) {
+    if (!primary || primary.hp <= 0) return [];
+    return [primary, ...this.party.filter(member => member.hp > 0 && member.id !== primary.id)
+      .sort((a, b) => a.hp / a.maxHp - b.hp / b.maxHp)].slice(0, spell.chain.targets);
+  }
+  applySurge(target, spell, empowered, duration = spell.hot.duration) {
+    const existing = this.activeHots(target, [spell.id])[0];
+    const interval = existing?.interval || hastedTime(spell.hot.interval, this.haste());
+    const next = existing?.next ?? this.time + interval;
+    const expires = Math.min((existing?.expires ?? this.time) + duration, this.time + spell.hot.bankCap);
+    const ticks = next <= expires + 1e-8 ? ticksForDuration(expires - next, interval) + 1 : 0;
+    const newTick = healingParts(spell, this.spellPower).hotTick * this.healingEmpowerment(spell, empowered);
+    // Each queued tick owns its original healing. Extending never buffs or scales the old bank again.
+    const bankedHealing = [...(existing?.bankedHealing || []), ...Array(Math.max(0, ticks - (existing?.ticks || 0))).fill(newTick)].slice(0, ticks);
+    const hot = existing || { ...spell.hot, source: spell.id, name: spell.name, icon: spell.icon, color: spell.color,
+      applied: this.time, baseInterval: spell.hot.interval, interval, next, echoingSurge: spell.echoingSurge };
+    Object.assign(hot, { expires, ticks, bankedHealing, heal: bankedHealing[0] || 0 });
+    target.hots = target.hots.filter(effect => effect.source !== spell.id);
+    if (ticks) target.hots.push(hot);
+  }
+  applyHot(target, spell, { carryPending = false, empowered = false } = {}) {
+    if (spell.hot.bankCap) { this.applySurge(target, spell, empowered); return; }
     const existing = this.activeHots(target, [spell.id]);
     if (spell.passingBloom && existing.length) {
       const moving = existing.sort((a, b) => a.expires - b.expires)[0];
@@ -197,7 +235,8 @@ export class Combat {
       icon: spell.icon, color: spell.color, applied: this.time, expires: this.time + spell.hot.duration,
       next: this.time + profile.interval, interval: profile.interval, ticks: profile.ticks, baseInterval: spell.hot.interval,
       baseHeal: healingParts(spell, this.spellPower).hotTick, normalDuration: spell.hot.duration,
-      pooled: Boolean(spell.hot.pool || carryPending), overgrowthTransfer: spell.overgrowth?.transfer,
+      pooled: Boolean(spell.hot.pool || carryPending || spell.flowingRiptide), flowingRiptide: spell.flowingRiptide,
+      overgrowthTransfer: spell.overgrowth?.transfer,
       overgrowthThreshold: spell.overgrowth?.threshold,
     });
   }
@@ -259,6 +298,30 @@ export class Combat {
     return this.party
       .filter(member => member.hp > 0 && member.id !== excludeId && (!injuredOnly || member.hp < member.maxHp))
       .sort((a, b) => a.hp / a.maxHp - b.hp / b.maxHp)[0];
+  }
+  effectiveEcho(target, effective, ratio, source) {
+    if (!ratio || effective <= 0) return;
+    const destination = this.lowestHealthAlly(target.id);
+    // Effective input already includes the primary Crit; do not roll it twice.
+    if (destination) this.heal(destination, effective * ratio, source, { canCrit: false });
+  }
+  transferRiptide(target, hot) {
+    if (!hot.flowingRiptide || hot.ticks <= 0 || target.hp / target.maxHp <= hot.flowingRiptide.threshold) return false;
+    const destination = this.party
+      .filter(member => member.hp > 0 && member.hp < member.maxHp && member.id !== target.id && !this.activeHots(member, ['riptide']).length)
+      .sort((a, b) => a.hp / a.maxHp - b.hp / b.maxHp)[0];
+    if (!destination) return false;
+    target.hots = target.hots.filter(effect => effect !== hot);
+    destination.hots.push(hot);
+    this.emit('buff', { source: 'flowingRiptide', from: target.id, target: destination.id, amount: hot.heal * hot.ticks });
+    return true;
+  }
+  consumeStoredBuff(id) {
+    if (this.buffs[id] > 1) this.buffs[id]--;
+    else {
+      delete this.buffs[id];
+      this.healer.helpfulEffects = this.healer.helpfulEffects.filter(effect => effect.source !== id);
+    }
   }
   atonement(amount, spell) {
     const injured = this.lowestHealthAlly();
@@ -364,19 +427,38 @@ export class Combat {
         if (target.hp / target.maxHp <= spell.ward.threshold) this.triggerWard(target);
       }
       if (spell.genesis) this.applyGenesis(spell.genesis);
-      const targets = spell.party ? this.party : [this.party.find(p => p.id === cast.target)];
+      const primary = this.party.find(p => p.id === cast.target);
+      if (spell.totem) {
+        const profile = this.resolveSpell(spell).totem;
+        const slot = profile.party ? 'tideTotem' : 'totem';
+        this[slot] = { source: spell.id, heal: profile.tick, interval: profile.interval, ticks: profile.ticks, party: profile.party,
+          next: this.time + profile.interval, expires: this.time + profile.duration };
+        this.healer.helpfulEffects = this.healer.helpfulEffects.filter(effect => effect.source !== spell.id);
+        this.healer.helpfulEffects.push({ source: spell.id, name: spell.name, icon: spell.icon, color: spell.color, expires: this[slot].expires });
+        this.emit('buff', { source: spell.id, target: this.healer.id, duration: profile.duration });
+      }
+      const targets = spell.chain ? this.chainTargets(spell, primary) : spell.party ? this.party : [primary];
+      const empowerment = this.healingEmpowerment(spell, cast.unleashLife);
       const lingering = [];
       let directOverheal = 0;
-      for (const target of targets) {
+      for (const [jump, target] of targets.entries()) {
         if (!target || target.hp <= 0) continue;
         if (spell.consumesHot && !spell.preserveHot) {
           const consumed = this.activeHots(target, spell.consumesHot).sort((a, b) => a.expires - b.expires)[0];
           if (!consumed) continue;
           target.hots = target.hots.filter(hot => hot !== consumed);
         }
-        const amount = this.directHealing(spell, target);
+        if (spell.flowingRiptide) {
+          const previous = this.activeHots(target, ['riptide'])[0];
+          if (previous) {
+            target.hots = target.hots.filter(hot => hot !== previous);
+            this.heal(target, previous.heal * previous.ticks, 'flowing-riptide');
+          }
+        }
+        const amount = this.directHealing(spell, target) * empowerment * (spell.chain ? spell.chain.jumpRatio ** jump : 1);
         const earlyMercyRemainder = spell.earlyMercy ? 1 - spell.earlyMercy.ratio : 1;
         const result = amount > 0 ? this.heal(target, amount * earlyMercyRemainder, spell.id) : { effective: 0, overheal: 0 };
+        if (spell.ancestralEcho) this.effectiveEcho(target, result.effective, spell.ancestralEcho, 'ancestral-echo');
         if (spell.bindingLight && result.effective > 0) {
           const secondary = this.lowestHealthAlly(target.id);
           if (secondary) this.heal(secondary, result.effective * spell.bindingLight.ratio, 'binding-light');
@@ -391,7 +473,11 @@ export class Combat {
           if (echoTarget) this.heal(echoTarget, amount * earlyMercyRemainder * spell.echoOfGrace.ratio, 'echo-of-grace');
         }
         lingering.push({ target, amount });
-        if (spell.hot) this.applyHot(target, spell, { carryPending: cast.overgrowth });
+        if (spell.hot) this.applyHot(target, spell, { carryPending: cast.overgrowth, empowered: cast.unleashLife });
+        if (spell.earthlivingDuration) {
+          const surge = this.spells.find(candidate => candidate.id === 'recurringSurge');
+          if (surge) this.applySurge(target, surge, cast.unleashLife, spell.earthlivingDuration);
+        }
         if (spell.nourishingTouch) this.extendHots(target, spell.nourishingTouch.extraTicks);
       }
       if (spell.lightUnspent && directOverheal > 0) {
@@ -402,6 +488,22 @@ export class Combat {
         }
       }
       for (const entry of lingering) this.applyLingeringPrayer(entry.target, spell, entry.amount);
+      if (cast.unleashLife && targets.some(target => target?.hp > 0)) {
+        this.consumeStoredBuff('unleashLife');
+      }
+      if (cast.tidalWaves && targets.some(target => target?.hp > 0)) this.consumeStoredBuff('tidalWaves');
+      if (spell.tidalWaves && primary?.hp > 0) {
+        this.buffs.tidalWaves = spell.tidalWaves.charges;
+        this.healer.helpfulEffects = this.healer.helpfulEffects.filter(effect => effect.source !== 'tidalWaves');
+        this.healer.helpfulEffects.push({ source: 'tidalWaves', name: 'Tidal Waves', icon: 'wave', color: spell.color });
+        this.emit('buff', { source: 'tidalWaves', target: this.healer.id });
+      }
+      if (spell.empowerment && primary?.hp > 0) {
+        this.buffs.unleashLife = spell.empowerments || 1;
+        this.healer.helpfulEffects = this.healer.helpfulEffects.filter(effect => effect.source !== spell.id);
+        this.healer.helpfulEffects.push({ source: spell.id, name: 'Unleash Life Empowerment', icon: spell.icon, color: spell.color });
+        this.emit('buff', { source: spell.id, target: this.healer.id });
+      }
     }
     if (spell.id === 'flash' && spell.postHaste) this.buffs.postHaste = Math.min(spell.postHaste.maxStacks, (this.buffs.postHaste || 0) + 1);
     this.log(`${spell.name} → ${cast.target === 'boss' ? this.encounter.name : spell.party ? 'Party' : this.party.find(p => p.id === cast.target)?.name}`, 'heal');
@@ -426,7 +528,11 @@ export class Combat {
     target.hp = Math.max(0, target.hp - amount);
     this.emit('damage', { target: target.id, amount, raw, source, damageType });
     if (amount > 0 && target.hp > 0 && target.ward?.expires > this.time && target.hp / target.maxHp <= target.ward.threshold) this.triggerWard(target);
-    if (!target.hp) { target.dots = []; target.hots = []; target.helpfulEffects = []; delete target.ward; this.stats.deaths++; this.log(`${target.name} has fallen.`, 'danger'); this.emit('death', { target: target.id }); }
+    if (!target.hp) {
+      target.dots = []; target.hots = []; target.helpfulEffects = []; delete target.ward;
+      if (target.id === 'shaman') { this.cast = null; this.clearShamanEffects(); }
+      this.stats.deaths++; this.log(`${target.name} has fallen.`, 'danger'); this.emit('death', { target: target.id });
+    }
   }
   rotatingTarget() { const living = this.party.filter(p => p.hp > 0 && p.id !== 'tank'); return living[this.rotation++ % living.length]; }
   randomTargets(count = 1) {
@@ -485,9 +591,14 @@ export class Combat {
       if (member.healingReceived?.expires <= this.time) delete member.healingReceived;
     }
     // Resolve due ticks before a finishing cast can refresh/consume an effect.
+    const processedRiptides = new Set();
     for (const p of this.party) {
       if (p.hp <= 0) continue;
       for (const hot of [...p.hots]) {
+        if (hot.flowingRiptide) {
+          if (processedRiptides.has(hot)) continue;
+          processedRiptides.add(hot);
+        }
         while (hot.ticks > 0 && this.time + 1e-8 >= hot.next && hot.next <= hot.expires + 1e-8) {
           let target = p;
           if (hot.living && p.hp >= p.maxHp) {
@@ -501,7 +612,12 @@ export class Combat {
               target = destination;
             }
           }
-          this.heal(target, hot.heal, hot.source); hot.ticks--;
+          const tickResult = this.heal(target, hot.bankCap ? hot.bankedHealing.shift() : hot.heal, hot.source); hot.ticks--;
+          if (hot.bankCap) {
+            this.effectiveEcho(target, tickResult.effective, hot.echoingSurge, 'echoing-surge');
+            hot.next += hot.interval; hot.heal = hot.bankedHealing[0] || 0;
+            continue;
+          }
           if (target === p && hot.source === 'wildGrowth') this.transferWildGrowth(target, hot);
           const pending = hot.heal * hot.ticks;
           hot.interval = this.hotInterval(hot, target);
@@ -510,9 +626,23 @@ export class Combat {
             ? ticksForDuration(hot.expires - hot.next, hot.interval) + 1
             : 0;
           if (hot.pooled && hot.ticks > 0) hot.heal = pending / hot.ticks;
+          if (this.transferRiptide(target, hot)) break;
         }
       }
       p.hots = p.hots.filter(hot => hot.ticks > 0);
+    }
+    for (const slot of ['totem', 'tideTotem']) if (this[slot] && this.healer?.hp > 0) {
+      const totem = this[slot];
+      while (totem.ticks > 0 && this.time + 1e-8 >= totem.next && totem.next <= totem.expires + 1e-8) {
+        const targets = totem.party ? this.party.filter(member => member.hp > 0) : [this.lowestHealthAlly()].filter(Boolean);
+        for (const target of targets) this.heal(target, totem.heal, totem.source);
+        this.emit('totemTick', { spell: totem.source, target: totem.party ? null : targets[0]?.id || null, targets: targets.map(target => target.id) });
+        totem.ticks--; totem.next += totem.interval;
+      }
+      if (!totem.ticks) {
+        this.healer.helpfulEffects = this.healer.helpfulEffects.filter(effect => effect.source !== totem.source);
+        this[slot] = null;
+      }
     }
     const cast = this.cast;
     if (cast) {
@@ -606,6 +736,14 @@ export class Combat {
     if (this.party[0].hp <= 0 || healer?.hp <= 0 || this.party.filter(p => p.hp > 0).length < 3 || this.time >= CONFIG.enrage) {
       this.status = 'defeat'; this.cast = null; this.log(this.time >= CONFIG.enrage ? 'The sanctum is consumed. Enrage.' : 'The party has fallen.', 'danger'); this.emit('end');
     } else if (this.boss.hp <= 0) { this.status = 'victory'; this.cast = null; this.log(`${this.encounter.name} is defeated.${this.adds.length ? ' The remaining enemies flee.' : ''}`, 'heal'); this.emit('end'); }
+    if (['victory', 'defeat'].includes(this.status)) this.clearShamanEffects();
+  }
+  clearShamanEffects() {
+    this.totem = null; this.tideTotem = null; delete this.buffs.unleashLife; delete this.buffs.tidalWaves;
+    for (const member of this.party) {
+      member.hots = member.hots.filter(hot => !['recurringSurge', 'riptide'].includes(hot.source));
+      member.helpfulEffects = member.helpfulEffects.filter(effect => !['unleashLife', 'tidalWaves', 'healingStream', 'healingTide'].includes(effect.source));
+    }
   }
   drainEvents() { const events = this.events; this.events = []; return events; }
 }

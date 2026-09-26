@@ -22,7 +22,7 @@ export function effectDescription(effect, time) {
   const modifier = effect.defenseModifier
     ? ` (${effect.modifier > 0 ? '+' : ''}${formatNumber(effect.modifier)} ${effect.stat === 'armor' ? 'Armor' : 'Resistance'})`
     : '';
-  const pool = effect.pool ? ` (${formatNumber(effect.heal * effect.ticks)} healing in ${effect.ticks} remaining ticks)` : '';
+  const pool = effect.bankCap ? ` (${formatNumber(effect.bankedHealing.reduce((sum, healing) => sum + healing, 0))} banked healing in ${effect.ticks} remaining ticks)` : effect.pool || effect.flowingRiptide ? ` (${formatNumber(effect.heal * effect.ticks)} healing in ${effect.ticks} remaining ticks)` : '';
   return `${effect.name}${modifier}${pool}${effect.expires == null ? '' : `: ${Math.max(0, Math.ceil(effect.expires - time - 1e-8))}s remaining`}`;
 }
 export function effectMarkup(effects, time) {

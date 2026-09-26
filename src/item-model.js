@@ -1,12 +1,13 @@
-import { GEAR, SLOTS } from './data.js';
+import { GEAR, SLOTS, HEALERS } from './data.js';
 
 export const ITEM_STATS = {
   healer: ['maxHp', 'maxMana', 'manaRegen', 'spellPower', 'haste', 'crit', 'armor', 'resistance'],
   companion: ['maxHp', 'armor', 'resistance', 'damage'],
 };
-export const isHealerOwner = owner => owner === 'priest' || owner === 'druid';
+export const isHealerOwner = owner => Object.hasOwn(HEALERS, owner);
+// Authored catalogue owners; playable healers may also use universal gear.
 export const ITEM_OWNERS = ['priest', 'druid', 'tank', 'rogue', 'mage', 'ranger'];
-export const slotsForOwner = owner => ITEM_OWNERS.includes(owner) ? SLOTS[isHealerOwner(owner) ? 'healer' : owner] : [];
+export const slotsForOwner = owner => isHealerOwner(owner) ? SLOTS.healer : ITEM_OWNERS.includes(owner) ? SLOTS[owner] : [];
 // Pure validation is reusable for authoring tools and future loot tables.
 export function validateCatalogue(items) {
   const errors = [], ids = new Set();

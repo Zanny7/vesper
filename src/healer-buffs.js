@@ -1,7 +1,20 @@
 import { effectGlyph } from './ability-icons.js';
 import { formatNumber } from './stats.js';
+import { SHAMAN_EMPOWERMENT, SHAMAN_TALENT_VALUES } from './data.js';
 
 const DEFINITIONS = {
+  unleashLife: {
+    name: 'Unleash Life', icon: 'unleash', color: '#d0e9a0',
+    effect: `Each empowerment grants a successful Recurring Surge, Healing Wave, or Chain Heal ${SHAMAN_EMPOWERMENT.healingBonus * 100}% more new healing and ${SHAMAN_EMPOWERMENT.castReduction * 100}% shorter cast, with unchanged Mana cost. No timed expiration; cancellation preserves it.`,
+    reservedStacks: game => game.cast?.unleashLife ? 1 : 0,
+    present: (value, time, { reservedStacks }) => ({ stacks: Math.max(0, value - reservedStacks), reserved: reservedStacks, remaining: null }),
+  },
+  tidalWaves: {
+    name: 'Tidal Waves', icon: 'wave', color: '#72badf',
+    effect: `Each charge reduces a successful Healing Wave or Chain Heal cast time by ${SHAMAN_TALENT_VALUES.tidalWaves.castReduction * 100}%. No expiration or Mana reduction; cancellation preserves charges.`,
+    reservedStacks: game => game.cast?.tidalWaves ? 1 : 0,
+    present: (value, time, { reservedStacks }) => ({ stacks: Math.max(0, value - reservedStacks), reserved: reservedStacks, remaining: null }),
+  },
   postHaste: {
     name: 'Post-Haste', icon: 'bolts', color: '#f0cf82',
     effect: 'Each stack empowers one Greater Heal or Prayer of Healing cast, reducing its cast time and Mana cost by 20%.',

@@ -45,6 +45,7 @@ export function restoreAbilitySettings(spells, saved, additional = []) {
 export function createAbilitySettings(storage) {
   const cache = new Map(), prefix = 'vesper-abilities-v1-';
   const talentSpells = {
+    shaman: [{ id: 'healingTide', key: '7' }],
     priest: [
       { id: 'sanctuary', key: '7' }, { id: 'divineFervor', key: '8' },
     ],

@@ -64,7 +64,7 @@
 .team-heading-row .hub-heading { margin-bottom: 0; }
 .healer-selector { margin: 0; min-width: 260px; padding: 0; border: 0; }
 .healer-selector legend { margin-bottom: 8px; color: #a9bbb5; font-size: 10px; letter-spacing: 1.4px; text-transform: uppercase; }
-#healer-options { display: flex; gap: 8px; }
+#healer-options { display: flex; flex-wrap: wrap; gap: 8px; }
 .healer-option { display: flex; flex: 1; align-items: center; gap: 8px; padding: 10px 12px; border: 1px solid #3a4948; border-radius: 5px; background: #142127; text-align: left; }
 .healer-option:hover { border-color: #a8cab0; background: #1b2d30; }
 .healer-option[aria-checked="true"] { border-color: #9acb91; box-shadow: inset 0 2px #9acb91; }

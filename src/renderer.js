@@ -145,7 +145,7 @@ export class Battlefield {
     if(alive&&hit&&age<.6){this.ellipse(c,0,2,28+age*15,10+age*5,null,hit.heal?`rgba(215,226,153,${1-age/.6})`:`rgba(206,103,98,${1-age/.6})`,2);}
     if(!alive){c.rotate(-Math.PI/2);c.translate(20,0);c.globalAlpha=.42;}
     else {c.translate(age<.2&&!hit.heal?Math.sin(age*50)*4:0,Math.sin(t*2+(state.party?.indexOf(p) ?? PARTY.indexOf(p)))*1.4);if(attacking)c.rotate(Math.sin(attackAge/.45*Math.PI)*-.14);}
-    const colors={tank:['#394e5a','#81939b'],rogue:['#332d46','#978caa'],mage:['#2b3e60','#849fce'],ranger:['#34473f','#97a481'],priest:['#b6ad8e','#f2dfad'],druid:['#38513d','#a4d59b']};const [dark,light]=colors[p.id];
+    const colors={tank:['#394e5a','#81939b'],rogue:['#332d46','#978caa'],mage:['#2b3e60','#849fce'],ranger:['#34473f','#97a481'],priest:['#b6ad8e','#f2dfad'],druid:['#38513d','#a4d59b'],shaman:['#2b5359','#93dbd3']};const [dark,light]=colors[p.id];
     const caster=p.id==='mage'||p.label==='HEALER';
     // Articulated silhouette: boots, cloak, torso, pauldrons, hood, hands, weapon.
     this.poly(c,[[-10,-26],[-12,0],[-3,0],[0,-23],[3,0],[13,0],[10,-29]],'#16282d','#586661');
@@ -315,7 +315,7 @@ export class Battlefield {
     }
     if(e.type==='heal'){
       c.globalAlpha=Math.max(0,1-progress);c.globalCompositeOperation='lighter';
-      const color=this.healerId==='druid'?'#a8e5b9':e.spell==='prayer'?'#a4f4c0':'#ffe9aa';
+      const color=this.healerId==='shaman'?'#93dbd3':this.healerId==='druid'?'#a8e5b9':e.spell==='prayer'?'#a4f4c0':'#ffe9aa';
       this.glow(c,p.x,p.y+10,45,color+'33');this.ellipse(c,p.x,p.y+32,24+progress*25,9+progress*8,null,color,2);
       for(let i=0;i<8;i++){const a=i/8*TAU;this.ellipse(c,p.x+Math.cos(a)*(15+progress*18),p.y+25-Math.sin(a)*20-progress*60,1.5,3,color);}
       if(e.spell==='greater'){this.line(c,[[p.x,p.y-90],[p.x,p.y+32]],'#ffeabb33',22);this.line(c,[[p.x,p.y-70],[p.x,p.y+32]],'#fff5d966',3);}

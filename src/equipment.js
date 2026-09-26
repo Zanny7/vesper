@@ -1,5 +1,5 @@
 // Shared presentation surfaces; per-item artwork and loot progression belong to BAT-21.
-import { GEAR, partyForHealer } from './data.js';
+import { GEAR, partyForHealer, HEALERS } from './data.js';
 import { formatNumber } from './stats.js';
 export const statLabels = { maxHp: 'Health', maxMana: 'Mana', manaRegen: 'Mana regeneration', spellPower: 'Spell Power', haste: 'Haste', crit: 'Crit', armor: 'Armor', resistance: 'Resistance', damage: 'Damage' };
 const escape = value => String(value).replace(/[&<>"']/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch]));
@@ -18,7 +18,7 @@ const silhouettes = {
 export const itemLevel = item => item.itemLevel ?? 1;
 export function itemIcon(item, slot = item?.slot || 'Bag', owner = item?.owner) {
   if (item?.icon) return `<img src="${escape(item.icon)}" alt="" draggable="false">`;
-  const type = slot === 'Weapon' ? (['priest', 'druid'].includes(owner) ? 'Staff' : 'Sword') : slot;
+  const type = slot === 'Weapon' ? (Object.hasOwn(HEALERS, owner) ? 'Staff' : 'Sword') : slot;
   return `<svg viewBox="0 0 40 40" fill="currentColor" fill-opacity=".12" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" aria-hidden="true">${silhouettes[type] || silhouettes.Bag}</svg>`;
 }
 export function equipmentSlot(member, slot, item, locked) {
@@ -155,7 +155,7 @@ export function setupEquipment({ equipment, onChange, isLocked }) {
   document.addEventListener('click', event => {
     if (Date.now() < suppressClickUntil && event.target.closest('.gear-slot, .gear-choice')) { event.preventDefault(); event.stopImmediatePropagation(); }
   }, true);
-  function resolveMember(id) { return [...partyForHealer('priest'), ...partyForHealer('druid')].find(member => member.id === id) || null; }
+  function resolveMember(id) { return [...partyForHealer('priest'), ...Object.values(HEALERS)].find(member => member.id === id) || null; }
   document.addEventListener('pointerdown', event => { if (!popup.contains(event.target) && !anchor?.contains(event.target)) close(); });
   document.addEventListener('keydown', event => {
     if (event.key === 'Escape' && (!popup.hidden || !tooltip.hidden)) { event.preventDefault(); event.stopImmediatePropagation(); close(true); }

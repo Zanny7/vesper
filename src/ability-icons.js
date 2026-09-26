@@ -1,6 +1,13 @@
 import { compactKeybind } from './ability-presentation.js';
 
 const icons = {
+  tideTotem: '<path d="M14 5h12v29H14M9 8h22l-3 6H12M17 20h6M8 35h24M3 23c3-4 5-4 8 0m18 0c3-4 5-4 8 0M3 29c3-4 5-4 8 0m18 0c3-4 5-4 8 0"/>',
+  surge: '<path d="M4 12c5-7 11-7 16 0s11 7 16 0M4 21c5-7 11-7 16 0s11 7 16 0M4 30c5-7 11-7 16 0s11 7 16 0"/>',
+  wave: '<path d="M4 31h32M5 25c9 0 7-21 19-21 9 0 11 12 3 15 2-7-7-8-9-2-2 8 9 12 16 8M5 35h30"/>',
+  riptide: '<path d="M20 3c0 11-11 15-11 23a11 11 0 0 0 22 0c0-8-11-12-11-23ZM14 26c4-5 9-5 13 0M14 31c4-5 9-5 13 0"/>',
+  chain: '<circle cx="7" cy="9" r="4"/><circle cx="31" cy="12" r="4"/><circle cx="11" cy="31" r="4"/><path d="m11 9 16 3m1 4L14 28m-8-3 10-9"/>',
+  unleash: '<path d="m20 3 4 11 11 6-11 5-4 12-4-12L5 20l11-6ZM20 13v14M13 20h14"/>',
+  totem: '<path d="M13 6h14v28H13ZM8 8h24l-3 7H11ZM10 25h20M8 35h24M20 16v7m-4-3h8M16 29h8"/>',
   wound: '<path d="m25 3-15 17h11l-7 17L32 16H20ZM5 8l4 3M32 30l4 3"/>',
   shield: '<path d="m20 3 14 5v12c0 8-8 14-14 17C14 34 6 28 6 20V8ZM20 11v17M12 19h16"/>',
   wardBloom: '<path d="M20 4v29M20 18C11 5 6 8 7 19c1 5 7 6 13 6M20 18c9-13 14-10 13 1-1 5-7 6-13 6M11 34h18M15 30l5 4 5-4"/>',

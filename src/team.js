@@ -42,7 +42,7 @@ export function setupTeam({ paintPortrait, onHealerChange, settings, onAbilities
     });
   }
   const healerOptions = document.querySelector('#healer-options');
-  healerOptions.innerHTML = Object.values(HEALERS).map(healer => `<button type="button" class="healer-option" role="radio" data-healer="${healer.id}"><span class="healer-option-mark" aria-hidden="true">◇</span><span><strong>${healer.role}</strong><small>${healer.id === 'priest' ? 'Direct healing' : 'Healing over time'}</small></span></button>`).join('');
+  healerOptions.innerHTML = Object.values(HEALERS).map(healer => `<button type="button" class="healer-option" role="radio" data-healer="${healer.id}"><span class="healer-option-mark" aria-hidden="true">◇</span><span><strong>${healer.role}</strong><small>${healer.id === 'shaman' ? 'Tides and totems' : healer.id === 'priest' ? 'Direct healing' : 'Healing over time'}</small></span></button>`).join('');
   healerOptions.addEventListener('click', event => {
     const option = event.target.closest('[data-healer]');
     if (!option || equipmentLocked() || option.dataset.healer === healerId) return;
@@ -117,6 +117,10 @@ export function setupTeam({ paintPortrait, onHealerChange, settings, onAbilities
   }
   function renderTalents(message = '') {
     const tree = TALENT_TREES[healerId] || [];
+    if (!tree.length) {
+      talentPanel.innerHTML = '<div class="talent-heading"><div><span class="eyebrow">SHAMAN</span><h2 id="team-talents-title">Baseline spellbook</h2><p>Shaman talents are not available yet. All six baseline spells are ready to use.</p></div></div>';
+      return;
+    }
     const state = talents?.state(healerId);
     const locked = equipmentLocked();
     const row = index => tree.filter(talent => talent.row === index);

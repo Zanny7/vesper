@@ -8,7 +8,9 @@ export function healingParts(spell, power = 0) {
   const direct = spell.channel
     ? spell.ticks.reduce((n, t) => n + t.heal, 0) + (spell.smartHealingBolt?.heal || 0)
     : spell.heal;
-  const hot = ticks * (spell.hot?.heal || 0), total = direct + hot;
+  const chain = spell.chain ? Array.from({ length: spell.chain.targets }, (_, jump) => direct * spell.chain.jumpRatio ** jump).reduce((sum, heal) => sum + heal, 0) : direct;
+  const totem = spell.totem ? ticksForDuration(spell.totem.duration, spell.totem.interval) * spell.totem.heal : 0;
+  const hot = ticks * (spell.hot?.heal || 0), total = chain + hot + totem;
   const factor = total > 0 ? (total + Math.max(0, power)) / total : 1;
   return { direct: direct * factor, hotTick: ticks ? hot * factor / ticks : 0, factor };
 }
