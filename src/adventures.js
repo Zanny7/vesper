@@ -69,6 +69,25 @@ export function setupAdventures({ startEncounter, onProgress, onRunChange, runs,
     switchDialog.close();
   });
   const mechanicsList = $('#detail-mechanics');
+  const detailLoot = $('#detail-loot');
+  detailLoot.addEventListener('click', event => {
+    const button = event.target.closest('.boss-bonus-reward');
+    if (!button) return;
+    const open = button.getAttribute('aria-expanded') !== 'true';
+    button.setAttribute('aria-expanded', String(open));
+  });
+  document.addEventListener('pointerdown', event => {
+    if (detailLoot.contains(event.target)) return;
+    detailLoot.querySelectorAll('.boss-bonus-reward[aria-expanded="true"]').forEach(button => {
+      button.setAttribute('aria-expanded', 'false');
+    });
+  });
+  detailLoot.addEventListener('keydown', event => {
+    if (event.key !== 'Escape') return;
+    const button = event.target.closest('.boss-bonus-reward[aria-expanded="true"]');
+    if (!button) return;
+    button.setAttribute('aria-expanded', 'false');
+  });
   mechanicsList.addEventListener('click', event => {
     const button = event.target.closest('.mechanic-row');
     if (!button || !mechanicsList.contains(button)) return;
