@@ -4,9 +4,6 @@ import { CONFIG, SHAMAN_TALENT_VALUES as values } from './data.js';
 export function shamanTalentLoadout(party, spells, allocations = {}) {
   const rank = id => allocations[id] || 0;
   const adjustedSpells = spells.map(spell => {
-    if (spell.id === 'recurringSurge') return {
-      ...spell, ...(rank('echoing-surge') ? { echoingSurge: values.echoingSurge.effectiveRatio } : {}),
-    };
     if (spell.id === 'riptide') return {
       ...spell, hot: { ...spell.hot, heal: spell.hot.heal * (1 + rank('deep-riptide') * values.deepRiptide.periodicBonusPerRank) },
       ...(rank('tidal-waves') ? { tidalWaves: values.tidalWaves } : {}),
@@ -17,7 +14,7 @@ export function shamanTalentLoadout(party, spells, allocations = {}) {
       ...(rank('tidal-waves') ? { tidalWavesEligible: values.tidalWaves } : {}),
       ...(rank('earthliving') ? {
         earthlivingDuration: spell.id === 'healingWave' ? values.earthliving.waveDuration : values.earthliving.chainDuration,
-        earthlivingHealingRatio: values.earthliving.healingRatio,
+        ...(spell.id === 'chainHeal' ? { earthlivingTargets: values.earthliving.chainTargets } : {}),
       } : {}),
       ...(spell.id === 'healingWave' ? {
         ...(rank('tidal-momentum') ? { tidalMomentum: rank('tidal-momentum') * values.tidalMomentum.healingBonusPerRank } : {}),
@@ -27,6 +24,10 @@ export function shamanTalentLoadout(party, spells, allocations = {}) {
     if (spell.id === 'unleashLife') return { ...spell, empowerments: rank('double-current') ? values.doubleCurrent.empowerments : 1 };
     if (spell.id === 'healingStream') return {
       ...spell, totem: { ...spell.totem, heal: spell.totem.heal * (1 + rank('restorative-stream') * values.restorativeStream.healingBonusPerRank) },
+      ...(rank('cascading-stream') ? { cascadingStream: {
+        ...values.cascadingStream, heal: spells.find(s => s.id === 'chainHeal').heal,
+        chain: { ...spells.find(s => s.id === 'chainHeal').chain },
+      } } : {}),
     };
     return { ...spell };
   });

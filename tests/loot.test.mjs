@@ -1,105 +1,56 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { CHAPTERS, GEAR } from '../src/data.js';
-import { BOSS_BONUS_LOOT_TABLES, NORMAL_LOOT_TABLES, eligibleLootPool, normalDropCount, rollBossBonusLoot, rollNormalLoot } from '../src/loot.js';
-import { routes } from '../scripts/boss-balance.mjs';
-import { auditGearParity } from '../scripts/gear-parity.mjs';
-
-const sequence = values => {
-  let index = 0;
-  return () => values[index++] ?? 0;
-};
-
-test('every encounter has a canonical multi-character normal loot table', () => {
-  const byId = new Map(GEAR.map(item => [item.id, item]));
-  for (const [chapterIndex, chapter] of CHAPTERS.entries()) for (const node of chapter.nodes) {
-    const table = NORMAL_LOOT_TABLES[node.encounter];
-    assert.equal(table.length, 7, node.encounter);
-    assert.equal(new Set(table).size, table.length, node.encounter);
-    const items = table.map(id => byId.get(id));
-    assert.ok(items.every(Boolean), node.encounter);
-    assert.ok(items.every(item => item.chapter === chapterIndex + 1), node.encounter);
-    assert.deepEqual(new Set(items.map(item => item.owner)), new Set(['priest', 'druid', 'shaman', 'tank', 'rogue', 'mage', 'ranger']));
+import { NORMAL_LOOT_TABLES, BOSS_BONUS_LOOT_TABLES, eligibleLootPool, normalDropCount, rollNormalLoot, rollBossBonusLoot } from '../src/loot.js';
+import { routes, seeded } from '../scripts/boss-balance.mjs';
+const sequence=values=>{let i=0;return ()=>values[i++]??0;};
+test('every normal encounter offers all four roles without duplicates',()=>{
+  for(const [c,chapter] of CHAPTERS.entries()) for(const node of chapter.nodes) {
+    const table=NORMAL_LOOT_TABLES[node.encounter]; assert.equal(new Set(table).size,table.length);
+    const pool=eligibleLootPool(table,[],'priest');assert.equal(pool.length,table.length);
+    assert.ok(pool.every(i=>i.chapter===c+1));assert.deepEqual(new Set(pool.map(i=>i.role)),new Set(['healer','all','tank','damage']));
+    assert.equal(pool.filter(i=>i.role==='healer').length,1);
+    assert.equal(pool.filter(i=>i.role==='all').length,3);
   }
 });
-
-test('normal drop count follows the 50 / 35 / 15 boundaries', () => {
-  assert.equal(normalDropCount(() => 0), 0);
-  assert.equal(normalDropCount(() => 0.499999), 0);
-  assert.equal(normalDropCount(() => 0.5), 1);
-  assert.equal(normalDropCount(() => 0.849999), 1);
-  assert.equal(normalDropCount(() => 0.85), 2);
-  assert.equal(normalDropCount(() => 0.999999), 2);
+test('normal counts preserve 50/35/15 boundaries',()=>{
+  for(const [roll,count] of [[0,0],[.499999,0],[.5,1],[.849999,1],[.85,2],[.999999,2]]) assert.equal(normalDropCount(()=>roll),count);
 });
-
-test('drop weighting targets only the active healer and preserves companion bands', () => {
-  const table = NORMAL_LOOT_TABLES.sentinel;
-  const boundaryTable = ['priest', 'tank', 'rogue', 'mage', 'ranger'].map(owner => GEAR.find(item => item.owner === owner &&
-    (owner === 'priest' || !['Trinket', 'Head', 'Chest', 'Legs'].includes(item.slot))).id);
-  const ownerAt = roll => rollNormalLoot(boundaryTable, [], 'priest', sequence([0.5, roll, 0]))[0].owner;
-  assert.equal(ownerAt(0.299999), 'priest');
-  assert.equal(rollNormalLoot(table, [], 'druid', sequence([0.5, 0.299999, 0]))[0].owner, 'druid');
-
-  for (const [boundary, below, at, above] of [
-    [0.3, 'priest', 'tank', 'tank'],
-    [0.475, 'tank', 'rogue', 'rogue'],
-    [0.65, 'rogue', 'mage', 'mage'],
-    [0.825, 'mage', 'ranger', 'ranger'],
-  ]) {
-    assert.equal(ownerAt(boundary - 0.000001), below, `just below ${boundary}`);
-    assert.equal(ownerAt(boundary), at, `at ${boundary}`);
-    assert.equal(ownerAt(boundary + 0.000001), above, `just above ${boundary}`);
+test('normal and boss category boundaries are intentional and independent of item count',()=>{
+  const table=['healer','all','tank','damage'].map(role=>GEAR.find(i=>i.role===role).id);
+  const roleAt=roll=>rollNormalLoot(table,[],'shaman',sequence([.5,roll,0]))[0].role;
+  for(const [boundary,below,at] of [[.3,'healer','all'],[.6,'all','tank'],[.775,'tank','damage']]) {
+    assert.equal(roleAt(boundary-.000001),below);assert.equal(roleAt(boundary),at);assert.equal(roleAt(boundary+.000001),at);
+    assert.equal(rollBossBonusLoot(table,[],'druid',sequence([boundary,0]))[0].role,at);
   }
-  assert.equal(ownerAt(0.999999), 'ranger');
-  assert.equal(ownerAt(1), 'ranger');
+  assert.equal(roleAt(1),'damage');
 });
-
-test('owned items are excluded and exhausted pools return fewer rewards without duplicates', () => {
-  const table = NORMAL_LOOT_TABLES.sentinel;
-  const priest = GEAR.find(item => table.includes(item.id) && item.owner === 'priest');
-  const owned = table.filter(id => id !== priest.id);
-  const rewards = rollNormalLoot(table, owned, 'priest', sequence([0.85, 0, 0, 0, 0]));
-  assert.deepEqual(rewards.map(item => item.id), [priest.id]);
-  assert.deepEqual(rollNormalLoot(table, table, 'priest', sequence([0.85])), []);
+test('owned and repeated ids are filtered and two-drop rolls cannot duplicate',()=>{
+  const table=NORMAL_LOOT_TABLES.sentinel;
+  const keep=table[0], owned=table.slice(1);
+  assert.deepEqual(rollNormalLoot([...table,keep],owned,'priest',sequence([.85,0,0,0,0])).map(i=>i.id),[keep]);
+  assert.deepEqual(rollNormalLoot(table,table,'priest',sequence([.85])),[]);
 });
-
-test('every pre-boss route gives all healers matching slot opportunities', () => {
-  for (const [chapterIndex, chapter] of CHAPTERS.entries()) for (const route of routes(chapter)) {
-    const slots = ['priest', 'druid', 'shaman'].map(healer => route.flatMap(node =>
-      eligibleLootPool(NORMAL_LOOT_TABLES[node.encounter], [], healer))
-      .filter(item => item.chapter === chapterIndex + 1 && item.owner === healer)
-      .map(item => item.slot));
-    assert.deepEqual(slots[0], slots[1], `Chapter ${chapterIndex + 1}`);
-    assert.deepEqual(slots[0], slots[2], `Chapter ${chapterIndex + 1} Shaman`);
-    assert.ok(slots[0].includes('Weapon'), `Chapter ${chapterIndex + 1} weapon`);
+test('every route offers each healer throughput slot identically',()=>{
+  for(const chapter of CHAPTERS) for(const route of routes(chapter)) {
+    const pools=['priest','druid','shaman'].map(healer=>route.flatMap(node=>eligibleLootPool(NORMAL_LOOT_TABLES[node.encounter],[],healer)).map(i=>i.id));
+    assert.deepEqual(pools[0],pools[1]);assert.deepEqual(pools[0],pools[2]);
+    for(const slot of ['Weapon','Tome','Trinket']) assert.ok(pools[0].some(id=>GEAR.find(i=>i.id===id && i.role==='healer' && i.slot===slot)));
   }
 });
-
-test('chapter boss normal rewards offer the same slot to all healers', () => {
-  for (const chapter of CHAPTERS) {
-    const boss = chapter.nodes.find(node => node.kind === 'boss');
-    const slots = ['priest', 'druid', 'shaman'].map(healer =>
-      eligibleLootPool(NORMAL_LOOT_TABLES[boss.encounter], [], healer)
-        .filter(item => item.owner === healer).map(item => item.slot));
-    assert.deepEqual(slots[0], slots[1], boss.encounter);
-    assert.deepEqual(slots[0], slots[2], boss.encounter);
+test('boss bonus remains chapter-local, outside boss normal pool, one guaranteed unowned reward',()=>{
+  for(const [c,chapter] of CHAPTERS.entries()) {
+    const boss=chapter.nodes.find(n=>n.kind==='boss'), table=BOSS_BONUS_LOOT_TABLES[boss.encounter];
+    assert.ok(table.length);assert.ok(table.every(id=>GEAR.find(i=>i.id===id).chapter===c+1));
+    assert.ok(table.every(id=>!NORMAL_LOOT_TABLES[boss.encounter].includes(id)));
+    assert.equal(rollBossBonusLoot(table,[],'shaman',()=>0).length,1);
+    assert.deepEqual(rollBossBonusLoot(table,table,'shaman'),[]);
+    const available=new Set([...chapter.nodes.flatMap(n=>NORMAL_LOOT_TABLES[n.encounter]),...table]);
+    for(const item of GEAR.filter(i=>i.chapter===c+1)) assert.ok(available.has(item.id),item.id);
   }
 });
-
-test('companion reward opportunities are invariant to healer choice', () => {
-  for (const chapter of auditGearParity()) assert.deepEqual(chapter.companionDifferences, [], `Chapter ${chapter.chapter}`);
-});
-
-test('chapter bosses have a hidden, chapter-local bonus pool with one eligible reward', () => {
-  const byId = new Map(GEAR.map(item => [item.id, item]));
-  for (const [chapterIndex, chapter] of CHAPTERS.entries()) for (const node of chapter.nodes.filter(node => node.kind === 'boss')) {
-    const table = BOSS_BONUS_LOOT_TABLES[node.encounter];
-    assert.ok(table.length > 0, node.encounter);
-    assert.ok(table.every(id => byId.get(id)?.chapter === chapterIndex + 1));
-    assert.ok(table.every(id => !NORMAL_LOOT_TABLES[node.encounter].includes(id)));
-    const reward = rollBossBonusLoot(table, [], 'priest', sequence([0, 0]));
-    assert.equal(reward.length, 1);
-    assert.equal(reward[0].owner, 'priest');
-    assert.deepEqual(rollBossBonusLoot(table, table, 'priest'), []);
-  }
+test('seeded rolls match declared category weights within one percentage point',()=>{
+  const table=GEAR.filter(i=>i.chapter===4).map(i=>i.id),random=seeded(92000),counts={healer:0,all:0,tank:0,damage:0};
+  for(let i=0;i<20000;i++) counts[rollBossBonusLoot(table,[],'shaman',random)[0].role]++;
+  for(const [role,weight] of Object.entries({healer:.3,all:.3,tank:.175,damage:.225})) assert.ok(Math.abs(counts[role]/20000-weight)<.01);
 });

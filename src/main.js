@@ -5,7 +5,7 @@ import { TALENT_TREES } from './talent-trees.js';
 import { priestTalentLoadout } from './priest-talents.js';
 import { druidTalentLoadout } from './druid-talents.js';
 import { shamanTalentLoadout } from './shaman-talents.js';
-import { formatNumber, healingParts } from './stats.js';
+import { formatNumber, formatCombatNumber, healingParts } from './stats.js';
 import { Combat } from './combat.js';
 import { Battlefield } from './renderer.js';
 import { setupView } from './view.js';
@@ -14,10 +14,11 @@ import { setupAdventures } from './adventures.js';
 import { setupChapters } from './chapters.js';
 import { setupTeam } from './team.js';
 import { Equipment } from './gear.js';
+import { roleLabel } from './item-model.js';
 import { setupEquipment, itemIcon } from './equipment.js';
-import { BOSS_BONUS_LOOT_TABLES, NORMAL_LOOT_TABLES, eligibleNormalLootForEncounter, rollBossBonusLoot, rollNormalLoot } from './loot.js';
+import { BOSS_BONUS_LOOT_TABLES, NORMAL_LOOT_TABLES, eligibleNormalLootForEncounter, eligibleBossBonusLootForEncounter, rollBossBonusLoot, rollNormalLoot } from './loot.js';
 import { activeHealer, loadActiveHealer, healerHint } from './healers.js';
-import { abilityTooltip, formatCooldown } from './ability-presentation.js';
+import { abilityTooltip, renderAbilityCooldown } from './ability-presentation.js';
 import { abilityIcon } from './ability-icons.js';
 import { renderHealerBuffs } from './healer-buffs.js';
 import { createAbilitySettings, bindingFromEvent } from './ability-settings.js';
@@ -69,8 +70,8 @@ function buildHealerUI() {
   const healer = activeHealer(activeHealerId);
   currentSpells = loadout(activeHealerId).spells;
   game.spells = currentSpells;
-  $('#party-frames').innerHTML=game.party.map(p=>`<button class="party-frame ${p.id===selected?'selected':''}" data-target="${p.id}" style="--class-color:${p.color}" aria-label="${p.name}, ${p.role}"><div class="health-fill"></div><div class="incoming-fill"></div><div class="frame-top"><strong><i>${roleIcons[p.id]}</i>${p.name}</strong></div><div class="frame-bottom"><span>${p.role}</span></div><div class="frame-health"><span class="hp-percent">100%</span><span class="hp-values">${p.maxHp} / ${p.maxHp}</span></div><div class="frame-effects frame-effects-negative" aria-hidden="true"></div><div class="frame-effects frame-effects-helpful" aria-hidden="true"></div></button>`).join('');
-  $('#spellbook').innerHTML=currentSpells.map(s=>`<button class="spell" data-spell="${s.id}" data-icon="${s.icon}" aria-label="${s.name}, key ${s.key}. ${s.description}">${abilityIcon(s)}<span class="spell-charge-count" ${s.charges ? '' : 'hidden'}></span><div class="cooldown-mask" aria-hidden="true" hidden></div></button>`).join('');
+  $('#party-frames').innerHTML=game.party.map(p=>`<button class="party-frame ${p.id===selected?'selected':''}" data-target="${p.id}" style="--class-color:${p.color}" aria-label="${p.name}, ${p.role}"><div class="health-fill"></div><div class="incoming-fill"></div><div class="frame-top"><strong><i>${roleIcons[p.id]}</i>${p.name}</strong></div><div class="frame-bottom"><span>${p.role}</span></div><div class="frame-health"><span class="hp-percent">100%</span><span class="hp-values">${number(p.maxHp)} / ${number(p.maxHp)}</span></div><div class="frame-effects frame-effects-negative" aria-hidden="true"></div><div class="frame-effects frame-effects-helpful" aria-hidden="true"></div></button>`).join('');
+  $('#spellbook').innerHTML=currentSpells.map(s=>`<button class="spell" data-spell="${s.id}" data-icon="${s.icon}" aria-label="${s.name}, key ${s.key}. ${s.description}">${abilityIcon(s)}<span class="spell-charge-count" ${s.charges ? '' : 'hidden'}></span><div class="cooldown-mask" aria-hidden="true" hidden><span></span></div></button>`).join('');
   $('#healer-buffs').replaceChildren(); $('#healer-buffs').dataset.buffKey = ''; $('#healer-buffs').hidden = true;
   $('.help-spells').innerHTML=currentSpells.map(s=>{
     const [, timing, ...effects] = abilityTooltip(game, s).split('\n');
@@ -101,7 +102,7 @@ function prepareEncounterUI() {
   $('#battlefield').setAttribute('aria-label', `Party fighting ${game.encounter.name} with ${game.adds.length} supporting enemies`);
   $('.scene-caption').innerHTML = `<span class="scene-dot"></span> ${node.name.toUpperCase()} <span>${chapter.nodes.indexOf(node) + 1} / ${chapter.nodes.length}</span>`;
   $('#enemy-roster').textContent = (node.kind === 'boss' ? 'Chapter Boss · ' : '') + (game.adds.length ? `${game.adds.map(add => add.name).join(' · ')} · Flee when leader falls` : 'One enemy');
-  $('#timeline').innerHTML = `<div class="baseline-attack">Tank strike <b id="strike-countdown"></b><small>${formatNumber(game.encounter.strike.damage)} damage to Aldric every ${formatNumber(game.encounter.strike.every)}s</small></div>${game.adds.map(add => `<div class="baseline-attack">${add.name} <b data-add-countdown="${add.id}"></b><small>${formatNumber(add.damage)} damage · ${add.target === 'tank' ? 'Aldric' : 'Random living ally'}</small></div>`).join('')}`;
+  $('#timeline').innerHTML = `<div class="baseline-attack">Tank strike <b id="strike-countdown"></b><small>${formatCombatNumber(game.encounter.strike.damage)} damage to Aldric every ${formatNumber(game.encounter.strike.every)}s</small></div>${game.adds.map(add => `<div class="baseline-attack">${add.name} <b data-add-countdown="${add.id}"></b><small>${formatCombatNumber(add.damage)} damage · ${add.target === 'tank' ? 'Aldric' : 'Random living ally'}</small></div>`).join('')}`;
   $('#timeline').insertAdjacentHTML('beforeend', game.mechanics.map(m => `<div class="baseline-attack mechanic-countdown" data-mechanic="${m.id}" tabindex="0" data-tooltip="${m.name}: ${healerHint(m.hint, activeHealerId)}">${m.name} <b></b><small>${m.target === 'party' ? 'Party-wide damage' : m.dot ? 'Persistent wound' : `${m.count || 1} targets`}</small></div>`).join(''));
 }
 prepareEncounterUI();
@@ -141,10 +142,10 @@ function renderUI(){
     const p=game.party.find(p=>p.id===frame.dataset.target),percentage=p.hp/p.maxHp*100;
     frame.querySelector('.health-fill').style.width=`${percentage}%`;
     frame.querySelector('.hp-percent').textContent=p.hp>0?`${Math.ceil(percentage)}%`:'DEAD';
-    frame.querySelector('.hp-values').textContent=`${number(p.hp)} / ${p.maxHp}`;
+    frame.querySelector('.hp-values').textContent=`${number(p.hp)} / ${number(p.maxHp)}`;
     frame.classList.toggle('selected',selected===p.id);frame.classList.toggle('critical',percentage>0&&percentage<30);frame.classList.toggle('dead',p.hp<=0);
     const effectLabel = renderPartyEffects(frame, p, game.time);
-    frame.setAttribute('aria-pressed',String(selected===p.id));frame.setAttribute('aria-label',`${p.name}, ${p.role}, ${number(p.hp)} of ${p.maxHp} health${effectLabel ? ', ' + effectLabel : ''}`);
+    frame.setAttribute('aria-pressed',String(selected===p.id));frame.setAttribute('aria-label',`${p.name}, ${p.role}, ${number(p.hp)} of ${number(p.maxHp)} health${effectLabel ? ', ' + effectLabel : ''}`);
     frame.classList.toggle('threatened', game.mechanics.some(m => m.warned && m.targets?.includes(p.id)));
     const incoming=frame.querySelector('.incoming-fill');let amount=0;
     if(game.cast&&p.hp>0&&(game.cast.spell.party||game.cast.target===p.id))amount=game.cast.spell.channel?game.cast.spell.ticks.slice(game.cast.landed).reduce((n,t)=>n+t.heal,0)*healingParts(game.cast.spell,game.spellPower).factor:game.directHealing(game.cast.spell,p);
@@ -174,18 +175,9 @@ function renderUI(){
   $('#cast-time').textContent=cast?`${formatNumber(Math.max(0,cast.duration-cast.elapsed))}s`:'';
   $('#cast-fill').style.width=cast?`${Math.min(100,Math.max(0,(cast.spell.channel?1-cast.elapsed/cast.duration:cast.elapsed/cast.duration)*100))}%`:'0%';$('.cast-track').classList.toggle('channel',!!cast?.spell.channel);
   for(const button of spellButtons){
-    const spell=currentSpells.find(s=>s.id===button.dataset.spell),cooldown=Math.max(0,(game.cooldowns[spell.id]||0)-game.time),charges=game.availableCharges(spell.id);
+    const spell=currentSpells.find(s=>s.id===button.dataset.spell);
     const manaCost=game.manaCost(spell);
-    const unavailable = charges === undefined ? cooldown > 0 && !spell.overgrowth : charges <= 0;
-    const mask=button.querySelector('.cooldown-mask');
-    if (mask.hidden !== !unavailable) mask.hidden = !unavailable;
-    const cooldownText = formatCooldown(cooldown);
-    if (mask.textContent !== cooldownText) mask.textContent = cooldownText;
-    button.classList.toggle('on-cooldown', unavailable);
-    if (charges !== undefined) {
-      const chargeLabel = button.querySelector('.spell-charge-count');
-      if (chargeLabel.textContent !== String(charges)) chargeLabel.textContent = charges;
-    }
+    const { unavailable } = renderAbilityCooldown(button, game, spell);
     const disabled = String(game.status!=='running'||unavailable||game.mana<manaCost||(spell.consumesHot&&!game.activeHots(target,spell.consumesHot).length));
     if (button.getAttribute('aria-disabled') !== disabled) button.setAttribute('aria-disabled', disabled);
     const tooltip = abilityTooltip(game, spell, target);
@@ -221,7 +213,7 @@ function renderUI(){
     }[game.status];
     if (game.status === 'victory') {
       data[3] = 'Continue to chapter map';
-      data[2] += lastLoot.length ? `<div class="loot-awarded"><small>LOOT ACQUIRED</small>${lastLoot.map(item => `<div class="loot-item"><span class="gear-slot is-equipped">${itemIcon(item)}</span><span><strong>${item.name}</strong><small>Item level ${item.itemLevel}</small></span></div>`).join('')}</div>` : '<div class="loot-awarded"><small>NO GEAR FOUND</small></div>';
+      data[2] += lastLoot.length ? `<div class="loot-awarded"><small>LOOT ACQUIRED</small>${lastLoot.map(item => `<div class="loot-item"><span class="gear-slot is-equipped">${itemIcon(item)}</span><span><strong>${item.name}</strong><small>Item level ${item.itemLevel} · ${roleLabel(item)}</small></span></div>`).join('')}</div>` : '<div class="loot-awarded"><small>NO GEAR FOUND</small></div>';
     }
     if (game.status === 'defeat') { data[2] += '<br>A fresh chapter run is ready at the first encounter. Permanent unlocks are safe.'; data[3] = 'Return to chapter map'; }
     if(data){$('#overlay-eyebrow').textContent=data[0];$('#overlay-title').textContent=data[1];$('#overlay-text').innerHTML=data[2];$('#begin').innerHTML=`${data[3]} <span>→</span>`;}
@@ -261,6 +253,7 @@ const adventures = setupAdventures({
   runs,
   getParty: () => party(activeHealerId),
   getNormalLoot: node => eligibleNormalLootForEncounter(node.encounter, equipment.ownedIds, activeHealerId),
+  getBossBonusLoot: node => eligibleBossBonusLootForEncounter(node.encounter, equipment.ownedIds, activeHealerId),
   startEncounter: (node, resources) => { shell.enterEncounter(CHAPTER_ENCOUNTERS[node.encounter], resources, soundtrack.select(node)); renderUI(); },
   onProgress: completed => { talents.migrateLegacyCampaign(activeHealerId, completed); chapters.refresh(completed); },
   onRunChange: completed => chapters.refresh(completed),

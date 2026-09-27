@@ -40,7 +40,7 @@ test('Shaman has 12 nodes, 17 ranks, 6/5/3/3 row ranks and eight independently e
   assert.equal(talents.state('shaman').earnedPoints, 8);
   assert.equal(talents.state('priest').earnedPoints, 0);
   assert.equal(talents.spend('shaman', 'tidal-waves').ok, false);
-  for (const id of ['tidal-reserves', 'tidal-reserves', 'tidal-waves', 'high-tide', 'flowing-riptide', 'echoing-surge', 'earthliving', 'healing-tide-totem']) assert.equal(talents.spend('shaman', id).ok, true);
+  for (const id of ['tidal-reserves', 'tidal-reserves', 'tidal-waves', 'high-tide', 'flowing-riptide', 'cascading-stream', 'earthliving', 'healing-tide-totem']) assert.equal(talents.spend('shaman', id).ok, true);
   assert.equal(talents.state('shaman').spentPoints, 8);
   assert.equal(talents.spend('shaman', 'ancestral-echo').ok, false);
   assert.equal(talents.refund('shaman', 'tidal-waves').ok, true);
@@ -83,7 +83,7 @@ test('Tidal Momentum checks own Surge at completion, scales direct once and does
   for (const rank of [1, 2]) {
     const game = setup({ 'tidal-momentum': rank, earthliving: 1 }, { spellPower: 30 });
     cast(game, 'healingWave'); near(heals(game, 'healingWave')[0].raw, 155);
-    near(hot(game, 'recurringSurge').heal, 46 * values.earthliving.healingRatio);
+    near(hot(game, 'recurringSurge').heal, 46);
     cast(game, 'healingWave'); near(heals(game, 'healingWave')[1].raw, 155 * (1 + rank * .1));
     const another = setup({ 'tidal-momentum': rank });
     cast(another, 'recurringSurge'); advance(another, 4);
@@ -188,40 +188,86 @@ test('Flowing conservation survives a Haste change and no destination without hi
   assert.equal(game.party.flatMap(member => member.hots).length, 0);
 });
 
-test('Echoing Surge uses effective healing, includes the healer, excludes primary/dead/full allies and cannot echo/Crit again', () => {
-  const game = setup({ 'echoing-surge': 1 }, { crit: 100 });
-  cast(game, 'recurringSurge');
-  game.party[0].hp = 9970; game.party[1].hp = 0; game.party[2].hp = 10000; game.party[3].hp = 10000;
-  advance(game, 2);
-  const echoes = heals(game, 'echoing-surge'); assert.equal(echoes.length, 1);
-  assert.equal(echoes[0].target, 'shaman'); near(echoes[0].raw, 9); assert.equal(echoes[0].critical, false);
-  advance(game, 4); assert.equal(heals(game, 'echoing-surge').length, 1); // Primary full, no more echo.
+test('Cascading Stream heals up to three injured allies immediately, including healer, once per summon', () => {
+  for (const count of [0, 1, 2, 3, 4]) {
+    const game = setup({ 'cascading-stream': 1 });
+    game.party.forEach(p => { p.hp = p.maxHp; });
+    [game.healer, ...game.party.filter(p => p !== game.healer)].slice(0, count)
+      .forEach((p, i) => { p.hp = 100 + i * 100; });
+    game.party[3].hp = 0;
+    const before = game.mana;
+    cast(game, 'healingStream');
+    const events = heals(game, 'cascading-stream');
+    assert.equal(events.length, Math.min(3, count));
+    if (count) assert.equal(events[0].target, 'shaman');
+    assert.equal(new Set(events.map(e => e.target)).size, events.length);
+    events.forEach((event, jump) => near(event.raw, 52.5 * .8 ** jump));
+    near(before - game.mana, 35);
+    advance(game, 12); assert.equal(heals(game, 'cascading-stream').length, events.length);
+  }
+});
+
+test('Cascading Stream uses baseline Chain scaling and ignores High Tide, Unleash, Waves and Earthliving', () => {
+  const game = setup({ 'cascading-stream': 1, 'high-tide': 2, 'tidal-waves': 1, earthliving: 1 }, { spellPower: 30 });
+  cast(game, 'riptide'); cast(game, 'unleashLife');
+  cast(game, 'healingStream');
+  const events = heals(game, 'cascading-stream');
+  for (const [jump, event] of events.entries()) near(event.raw, (105 + 30 / 3.3616) * .5 * .8 ** jump);
+  assert.equal(game.buffs.unleashLife, 1); assert.equal(game.buffs.tidalWaves, 2);
+  assert.equal(game.party.flatMap(p => p.hots).filter(h => h.source === 'recurringSurge').length, 0);
+  assert.equal(game.events.filter(e => e.type === 'cast' && e.spell === 'chainHeal').length, 0);
+  assert.equal(game.resolveSpell(spell(game, 'healingStream')).cascadingStream.length, 3);
+});
+
+test('Cascading Stream follows a changed baseline Chain curve and reordered ability input', () => {
+  for (const jumpRatio of [.75, .70]) {
+    const baseline = [...SHAMAN_SPELLS].reverse().map(s => s.id === 'chainHeal'
+      ? { ...s, chain: { ...s.chain, jumpRatio } } : s);
+    const loadout = shamanTalentLoadout(partyForHealer('shaman'), baseline,
+      { 'cascading-stream': 1, 'high-tide': 2 });
+    const game = new Combat(training, () => .99, loadout.party, loadout.spells);
+    const curve = game.resolveSpell(spell(game, 'healingStream')).cascadingStream;
+    curve.forEach((amount, jump) => near(amount, 52.5 * jumpRatio ** jump));
+    assert.equal(spell(game, 'chainHeal').chain.jumpRatio, .95);
+  }
+});
+
+test('legacy Echoing Surge allocations migrate to Cascading Stream without losing milestones or points', () => {
+  const disk = storage();
+  const allocations = { 'tidal-reserves': 2, 'deep-riptide': 1, 'tidal-waves': 1, 'restorative-stream': 1, 'echoing-surge': 1, earthliving: 1 };
+  disk.setItem('vesper-talents-v1', JSON.stringify({ healers: { shaman: { milestones: Array.from({ length: 8 }, (_, i) => `earned-${i}`), allocations } } }));
+  const talents = new TalentProgression(disk, TALENT_TREES), state = talents.state('shaman');
+  assert.equal(state.spentPoints, 7); assert.equal(state.unspentPoints, 1);
+  assert.equal(state.allocations['cascading-stream'], 1); assert.equal(state.allocations['echoing-surge'], undefined);
+  assert.deepEqual(new TalentProgression(disk, TALENT_TREES).state('shaman'), state);
 });
 
 test('Ancestral Echo uses only Wave effective healing with Momentum/Unleash and cannot echo Earthliving or Crit twice', () => {
   const game = setup({ 'ancestral-echo': 1, 'tidal-momentum': 2, earthliving: 1 }, { crit: 100 });
   cast(game, 'recurringSurge'); cast(game, 'unleashLife'); cast(game, 'healingWave');
   near(heals(game, 'healingWave')[0].raw, 125 * 1.2 * 1.2 * 1.5);
-  near(heals(game, 'ancestral-echo')[0].raw, 125 * 1.2 * 1.2 * 1.5);
+  near(heals(game, 'ancestral-echo')[0].raw, 125 * 1.2 * 1.2 * 1.5 * .5);
   assert.equal(heals(game, 'ancestral-echo')[0].critical, false);
   advance(game, 4); assert.equal(heals(game, 'ancestral-echo').length, 1);
   const clipped = setup({ 'ancestral-echo': 1 }, { crit: 100 });
-  clipped.party[0].hp = 9990; cast(clipped, 'healingWave'); near(heals(clipped, 'ancestral-echo')[0].raw, 10);
+  clipped.party[0].hp = 9990; cast(clipped, 'healingWave'); near(heals(clipped, 'ancestral-echo')[0].raw, 5);
   cast(clipped, 'healingWave'); assert.equal(heals(clipped, 'ancestral-echo').length, 1);
 });
 
-test('Earthliving Wave adds three reduced ticks; Chain creates one per hit with Spell Power once', () => {
+test('Earthliving Wave adds normal Surge duration; Chain chooses two injured recipients after all healing', () => {
   const game = setup({ earthliving: 1 }, { spellPower: 30 });
   cast(game, 'healingWave');
-  const bank = hot(game, 'recurringSurge'); near(bank.expires - game.time, 6);
-  assert.deepEqual(bank.bankedHealing, Array(3).fill(46 * values.earthliving.healingRatio));
+  const bank = hot(game, 'recurringSurge'); near(bank.expires - game.time, values.earthliving.waveDuration);
+  assert.deepEqual(bank.bankedHealing, Array(values.earthliving.waveDuration / 2).fill(46));
   const chain = setup({ earthliving: 1 }, { spellPower: 30 });
   cast(chain, 'chainHeal');
-  for (const member of chain.party) {
+  const chosen = [...chain.party].sort((a, b) => a.hp / a.maxHp - b.hp / b.maxHp).slice(0, 2);
+  for (const member of chosen) {
     const bank = hot(chain, 'recurringSurge', member);
-    near(bank.expires - chain.time, 2); assert.deepEqual(bank.bankedHealing, [46 * values.earthliving.healingRatio]);
+    near(bank.expires - chain.time, 2); assert.deepEqual(bank.bankedHealing, [46]);
   }
-  advance(chain, 2); assert.equal(heals(chain, 'recurringSurge').length, 5);
+  assert.equal(chain.party.flatMap(p => p.hots).length, 2);
+  advance(chain, 2); assert.equal(heals(chain, 'recurringSurge').length, 2);
   assert.equal(chain.party.flatMap(member => member.hots).length, 0);
 });
 
@@ -230,7 +276,7 @@ test('Earthliving preserves next ticks, clips at 18s, and empowered extensions n
   cast(game, 'recurringSurge'); const bank = hot(game, 'recurringSurge'), next = bank.next;
   cast(game, 'unleashLife'); cast(game, 'healingWave');
   near(bank.next, next + 2);
-  assert.deepEqual(bank.bankedHealing, [46, 46, ...Array(3).fill(46 * 1.2 * values.earthliving.healingRatio)]);
+  assert.deepEqual(bank.bankedHealing, [46, 46, ...Array(values.earthliving.waveDuration / 2).fill(46 * 1.2)]);
   for (let i = 0; i < 12; i++) cast(game, 'healingWave');
   assert.ok(bank.expires <= game.time + 18 + 1e-7);
   assert.equal(bank.ticks, bank.bankedHealing.length);
@@ -242,10 +288,11 @@ test('Earthliving preserves next ticks, clips at 18s, and empowered extensions n
 test('Earthliving Chain extends each existing Surge by only 2s and respects its phase and cap', () => {
   const game = setup({ earthliving: 1 });
   cast(game, 'recurringSurge'); const bank = hot(game, 'recurringSurge');
+  game.party[0].hp = 1; // Remain among the two lowest recipients after the primary heal.
   const expires = bank.expires, next = bank.next;
   cast(game, 'chainHeal'); near(bank.expires, expires + 2); near(bank.next, next + 2);
   assert.equal(bank.bankedHealing.length, 3); // One old tick landed, only one new tick added.
-  assert.deepEqual(bank.bankedHealing, [36, 36, 36 * values.earthliving.healingRatio]);
+  assert.deepEqual(bank.bankedHealing, [36, 36, 36]);
   const capped = setup({ earthliving: 1 });
   for (let i = 0; i < 7; i++) cast(capped, 'recurringSurge');
   const existing = hot(capped, 'recurringSurge'); cast(capped, 'chainHeal');
@@ -253,32 +300,41 @@ test('Earthliving Chain extends each existing Surge by only 2s and respects its 
   assert.equal(existing.ticks, existing.bankedHealing.length);
 });
 
-test('Earthliving-created Surge triggers exactly one effective Echo per tick, including Unleash bonus once', () => {
-  const game = setup({ earthliving: 1, 'echoing-surge': 1 });
-  cast(game, 'unleashLife'); cast(game, 'chainHeal'); advance(game, 2);
-  assert.equal(heals(game, 'recurringSurge').length, 5);
-  assert.equal(heals(game, 'echoing-surge').length, 5);
-  for (const event of heals(game, 'recurringSurge')) near(event.raw, 43.2 * values.earthliving.healingRatio);
-  for (const event of heals(game, 'echoing-surge')) near(event.raw, 12.96 * values.earthliving.healingRatio);
+test('Earthliving Chain skips full and dead recipients, honors actual hit list, and empowers only new healing', () => {
+  const game = setup({ earthliving: 1, 'cascading-stream': 1 });
+  game.party.forEach(p => { p.hp = p.maxHp; });
+  game.party[1].hp = 9000; game.party[2].hp = 0;
+  cast(game, 'unleashLife'); cast(game, 'chainHeal');
+  assert.equal(game.party.flatMap(p => p.hots).length, 1);
+  assert.ok(hot(game, 'recurringSurge', game.party[1]));
+  advance(game, 2);
+  assert.equal(heals(game, 'recurringSurge').length, 1);
+  near(heals(game, 'recurringSurge')[0].raw, 43.2);
+  assert.equal(heals(game, 'cascading-stream').length, 0);
+  const limited = setup({ earthliving: 1 });
+  spell(limited, 'chainHeal').chain.targets = 1;
+  cast(limited, 'chainHeal');
+  assert.equal(limited.party.flatMap(p => p.hots).length, 1);
+  assert.ok(hot(limited, 'recurringSurge'));
 });
 
-test('paid Surge appended to an Earthliving bank keeps full strength without changing its reduced ticks', () => {
+test('paid and generated Surge share normal strength and preserve bank ordering', () => {
   const game = setup({ earthliving: 1 }, { spellPower: 30 });
   cast(game, 'healingWave'); const bank = hot(game, 'recurringSurge'), next = bank.next;
   cast(game, 'recurringSurge'); near(bank.next, next);
-  assert.deepEqual(bank.bankedHealing, [...Array(3).fill(46 * values.earthliving.healingRatio), 46, 46, 46]);
+  assert.deepEqual(bank.bankedHealing, Array(values.earthliving.waveDuration / 2 + 3).fill(46));
 });
 
 test('Tide matches reviewed values, scales shared stats and ticks every living ally twelve times while casting', () => {
   const game = setup({ 'healing-tide-totem': 1 }, { spellPower: 40, haste: 25, crit: 100 });
   const tide = spell(game, 'healingTide'), resolved = game.resolveSpell(tide);
-  near(resolved.cost, 50); near(resolved.duration, 0); near(tide.cooldown, 60);
-  near(resolved.totem.tick, 36 + 40 / 12); assert.equal(resolved.totem.ticks, 12);
+  near(resolved.cost, 60); near(resolved.duration, 0); near(tide.cooldown, 60);
+  near(resolved.totem.tick, 10 + 40 / 12); assert.equal(resolved.totem.ticks, 12);
   game.party[2].hp = 0;
   cast(game, 'healingTide'); game.begin('healingWave', 'tank');
   advance(game, 1); assert.ok(game.cast);
   assert.equal(heals(game, 'healingTide').length, 4);
-  near(heals(game, 'healingTide')[0].raw, 59);
+  near(heals(game, 'healingTide')[0].raw, 20);
   advance(game, 11); assert.equal(heals(game, 'healingTide').length, 48);
   assert.equal(game.tideTotem, null);
   assert.equal(game.healer.helpfulEffects.some(effect => effect.source === 'healingTide'), false);
@@ -295,7 +351,7 @@ test('Tide and rank-2 Stream coexist independently, waste full-health ticks, and
   assert.equal(heals(game, 'healingStream').length, 0);
   game.party[0].hp = 100; advance(game, 2);
   near(heals(game, 'healingStream')[0].raw, 41.6);
-  for (const event of heals(game, 'healingTide')) near(event.raw, 36);
+  for (const event of heals(game, 'healingTide')) near(event.raw, 10);
   game.cooldowns.healingTide = game.time; cast(game, 'healingTide');
   advance(game, 12); assert.equal(game.events.filter(event => event.type === 'totemTick' && event.spell === 'healingTide').length, 16);
   assert.equal(game.totem, null); assert.equal(game.tideTotem, null);
@@ -337,22 +393,24 @@ test('configured tooltips and effect UI expose charges, budgets, thresholds, Tot
   const game = setup(Object.fromEntries(TALENT_TREES.shaman.map(talent => [talent.id, talent.maxRank || 1])));
   cast(game, 'riptide'); cast(game, 'unleashLife'); cast(game, 'healingStream'); cast(game, 'healingTide');
   const tooltip = id => abilityTooltip(game, spell(game, id), game.party[0]);
-  assert.match(tooltip('healingTide'), /36 healing per living ally every 1s for 12s/);
-  assert.match(tooltip('healingTide'), /50 Mana/);
+  assert.match(tooltip('healingTide'), /10 healing per living ally every 1s for 12s/);
+  assert.match(tooltip('healingTide'), /60 Mana/);
   assert.match(tooltip('riptide'), /1\/2 charges; one recharges every 6s/);
   assert.match(tooltip('riptide'), /above 90%/);
-  assert.match(tooltip('riptide'), /194.4 remaining periodic healing/);
+  assert.match(tooltip('riptide'), /194 remaining periodic healing/);
   assert.match(tooltip('unleashLife'), /Store 2 empowerments/);
   assert.match(tooltip('chainHeal'), /Earthliving.*2s/);
-  assert.match(tooltip('chainHeal'), /1 tick at 50% strength/);
-  assert.match(tooltip('healingWave'), /3 ticks at 50% strength/);
-  assert.match(tooltip('healingWave'), /Paid Surge ticks keep full strength/);
+  assert.match(tooltip('chainHeal'), /2 lowest-Health-percentage injured recipients/);
+  assert.match(tooltip('healingWave'), /normal-strength Recurring Surge/);
+  assert.match(tooltip('healingStream'), /Cascading Stream.*50% of baseline Chain Heal/);
   assert.match(tooltip('healingWave'), /Tidal Momentum: 20%/);
-  assert.match(tooltip('healingWave'), /Ancestral Echo.*100%/);
+  assert.match(tooltip('healingWave'), /Ancestral Echo.*50%/);
   game.begin('healingWave', 'tank');
   const buffs = healerBuffs(game);
   assert.equal(buffs.find(buff => buff.id === 'unleashLife').reserved, 1);
   assert.equal(buffs.find(buff => buff.id === 'tidalWaves').reserved, 1);
-  assert.ok(partyEffects(game.healer, game.time).helpful.some(effect => effect.source === 'healingTide'));
-  assert.match(effectDescription(hot(game, 'riptide'), game.time), /194.4 healing in 6 remaining ticks/);
+  assert.ok(!partyEffects(game.healer, game.time).helpful.some(effect => effect.source === 'healingTide'));
+  assert.ok(buffs.some(buff => buff.id === 'healingTide'));
+  assert.ok(buffs.some(buff => buff.id === 'healingStream'));
+  assert.match(effectDescription(hot(game, 'riptide'), game.time), /194 healing in 6 remaining ticks/);
 });

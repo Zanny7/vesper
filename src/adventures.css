@@ -39,7 +39,7 @@
 .map-legend { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px 22px; padding: 20px; border-top: 1px solid #778a662b; color: #b4c4bd; font-size: 10px; }
 .map-legend .legend-current { color: #d8bd72; }
 .map-legend .legend-boss { color: #c77c7c; }
-.encounter-detail { display: flex; flex-direction: column; border: 1px solid #46616180; border-radius: 8px; background: #111f25; padding: 25px; min-width: 0; }
+.encounter-detail { display: flex; flex-direction: column; overflow-y: auto; overscroll-behavior: contain; scrollbar-color: #897b55 #142329; scrollbar-width: thin; border: 1px solid #46616180; border-radius: 8px; background: #111f25; padding: 25px; min-width: 0; }
 .encounter-detail h2 { font: 26px/1.2 Georgia, serif; margin: 12px 0; color: #e0e7dd; }
 .encounter-detail p { color: #a9bdb7; font-size: 12px; line-height: 1.8; }
 #detail-description { font-style: italic; margin-top: 0; }
@@ -118,3 +118,14 @@
   .adventure-node { left: var(--y); top: var(--x); width: 138px; }
   .node-kind { font-size: 8px; }
 }
+.encounter-loot { display: block; }
+.loot-section h4 { margin: 0 0 10px; font-size: .8rem; color: var(--muted); }
+.loot-rewards { display: flex; flex-wrap: wrap; gap: 8px; }
+.loot-reward { display: flex; flex-direction: column; align-items: center; gap: 5px; background: transparent; padding: 5px; border: 1px solid transparent; border-radius: 8px; cursor: pointer; color: inherit; }
+.loot-reward .gear-slot { pointer-events: none; }
+.boss-bonus-section { margin-top: 20px; border-top: 1px solid #8f744858; padding-top: 16px; }
+.boss-bonus-section h4 { color: #d1b87e; }
+.boss-bonus-section > p { font-size: .75rem; line-height: 1.5; color: var(--muted); margin: 0 0 12px; }
+.boss-bonus-reward { border-color: #a58b555e; background: #aa8b4210; }
+.boss-bonus-badge { font-size: .6rem; color: #dac58f; white-space: nowrap; }
+.loot-reward:focus-visible { outline: 2px solid #dac58f; outline-offset: 2px; }

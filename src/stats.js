@@ -20,6 +20,10 @@ export function formatNumber(value) {
   const number = Number(value);
   return Number.isFinite(number) ? numberFormat.format(number) : String(value);
 }
+// Combat quantities are rounded only at the final presentation boundary.
+export function formatCombatNumber(value) {
+  return formatNumber(Math.round(value));
+}
 export function hasteMultiplier(hastePercent = 0) {
   const haste = Number(hastePercent);
   return 1 + (Number.isFinite(haste) ? haste : 0) / 100;

@@ -38,6 +38,7 @@ Vesper is being developed through collaboration with OpenAI Codex. It is a pract
 - **Mana and haste management** — Balance a finite mana pool with passive regeneration and Post-Haste charges.
 - **Distinct healing kit** — Use Flash Heal, Greater Heal, Prayer of Healing, and multi-bolt Penance.
 - **Party and healer views** — Review the team, select a healer, and inspect character attributes.
+- **Shared role gear** — Universal defensive armor, shared healer throughput gear, role restrictions, and visible Chapter Boss bonus rewards. See [the itemization report](docs/bat-92-itemization.md) for budgets and validation.
 - **Chapter journey** — Enter the Forsaken Catacombs and follow its encounter path.
 - **Immersive combat** — Switch between a detailed control panel and a full-window battlefield without losing encounter state.
 - **Keyboard-first controls** — Select targets with the mouse or arrow keys, cast with 1–4, pause with Space, and cancel with Esc.

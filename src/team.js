@@ -46,6 +46,7 @@ export function setupTeam({ paintPortrait, onHealerChange, settings, onAbilities
   healerOptions.addEventListener('click', event => {
     const option = event.target.closest('[data-healer]');
     if (!option || equipmentLocked() || option.dataset.healer === healerId) return;
+    equipment.switchHealer(healerId, option.dataset.healer);
     healerId = saveActiveHealer(option.dataset.healer); selected = healerId;
     buildCards(); render(); onHealerChange(healerId);
   });

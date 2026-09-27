@@ -28,6 +28,7 @@ const PRIEST_TALENT_ID_MIGRATIONS = Object.freeze({
   'threefold-penance': 'fourfold-penance',
 });
 const DRUID_TALENT_ID_MIGRATIONS = Object.freeze({ 'preserved-growth': 'natural-regeneration' });
+const SHAMAN_TALENT_ID_MIGRATIONS = Object.freeze({ 'echoing-surge': 'cascading-stream' });
 
 function cleanHealerState(saved, tree, healerId) {
   const milestones = Array.isArray(saved?.milestones)
@@ -38,7 +39,8 @@ function cleanHealerState(saved, tree, healerId) {
   if (isRecord(saved?.allocations)) {
     const entries = Object.entries(saved.allocations);
     for (const [oldId, rank] of entries) {
-      const migrations = healerId === 'priest' ? PRIEST_TALENT_ID_MIGRATIONS : healerId === 'druid' ? DRUID_TALENT_ID_MIGRATIONS : {};
+      const migrations = healerId === 'priest' ? PRIEST_TALENT_ID_MIGRATIONS : healerId === 'druid' ? DRUID_TALENT_ID_MIGRATIONS
+        : healerId === 'shaman' ? SHAMAN_TALENT_ID_MIGRATIONS : {};
       const id = migrations[oldId] || oldId;
       // A save already using the new identifier takes precedence over its legacy alias.
       if (migrations[oldId] && Object.hasOwn(saved.allocations, id)) continue;

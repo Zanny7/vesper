@@ -50,7 +50,7 @@ test('temporary defense modifiers appear as helpful or negative status effects w
   assert.match(effectMarkup(effects.helpful, g.time), /Ward \(\+20 Resistance\): 12s remaining/);
 });
 
-test('Priest HoTs and active talent buffs appear in the party effect strip', () => {
+test('Priest HoTs stay on frames and player cooldown buffs stay off frames', () => {
   const loadout = priestTalentLoadout(partyForHealer('priest'), SPELLS, {
     'lingering-prayer': 1, sanctuary: 1, 'divine-fervor': 1,
   });
@@ -64,8 +64,8 @@ test('Priest HoTs and active talent buffs appear in the party effect strip', () 
   assert.match(effectMarkup([lingering], g.time), /Lingering Prayer: 6s remaining/);
 
   g.begin('sanctuary', 'tank');
-  assert.ok(partyEffects(g.party[0], g.time).helpful.some(effect => effect.source === 'sanctuary'));
-  assert.ok(partyEffects(g.party[1], g.time).helpful.some(effect => effect.source === 'sanctuary'));
+  assert.ok(!partyEffects(g.party[0], g.time).helpful.some(effect => effect.source === 'sanctuary'));
+  assert.ok(!partyEffects(g.party[1], g.time).helpful.some(effect => effect.source === 'sanctuary'));
   g.begin('divineFervor', 'tank');
-  assert.ok(partyEffects(g.healer, g.time).helpful.some(effect => effect.source === 'divineFervor'));
+  assert.ok(!partyEffects(g.healer, g.time).helpful.some(effect => effect.source === 'divineFervor'));
 });

@@ -48,7 +48,7 @@ export function sampleGearProgression(samples = 256) {
       }
     }
   }
-  return { model: 'Live normal/hidden boss loot, shared compatibility, no duplicates, shared weighted equipment sampler. Previous chapters use average-profile recursive inheritance (3 farming routes, boss approach, normal and bonus boss rewards, then 0–1 extra routes). Current chapter snapshots are before its boss. Victories assumed; no talents or combat simulation.', rows };
+  return { model: 'Live normal/boss bonus loot, shared role eligibility, no duplicates, shared weighted equipment sampler. Previous chapters use average-profile recursive inheritance (3 farming routes, boss approach, normal and bonus boss rewards, then 0–1 extra routes). Current chapter snapshots are before its boss. Victories assumed; no talents or combat simulation.', rows };
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href)

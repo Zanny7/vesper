@@ -1,21 +1,20 @@
-import { CHAPTERS, GEAR } from './data.js';
-import { canEquipItem, isHealerOwner } from './item-model.js';
+import { CHAPTERS, GEAR, GEAR_LOOT_WEIGHTS } from './data.js';
+import { canEquipItem } from './item-model.js';
 
-export const NORMAL_DROP_WEIGHTS = Object.freeze({ healer: 0.3, tank: 0.175, rogue: 0.175, mage: 0.175, ranger: 0.175 });
+// Armor is its own category. Item count cannot dilute shared throughput rewards.
+export const NORMAL_DROP_WEIGHTS = GEAR_LOOT_WEIGHTS;
 // Hundredth-percent units represent the documented percentages exactly and
 // keep exact cumulative boundaries out of floating-point weight summation.
-const NORMAL_DROP_WEIGHT_UNITS = Object.freeze({ healer: 3000, tank: 1750, rogue: 1750, mage: 1750, ranger: 1750 });
-const OWNERS = ['priest', 'druid', 'shaman', 'tank', 'rogue', 'mage', 'ranger'];
-// Keep companion rotations fixed when the healer roster grows.
-const COMPANION_ROTATION_OFFSETS = Object.freeze({ tank: 2, rogue: 3, mage: 4, ranger: 5 });
+const NORMAL_DROP_WEIGHT_UNITS = Object.freeze(Object.fromEntries(Object.entries(NORMAL_DROP_WEIGHTS).map(([role, weight]) => [role, Math.round(weight * 10000)])));
+const ROLES = Object.keys(NORMAL_DROP_WEIGHTS);
 
-// Healer drops rotate through matching slots at matching encounter depths.
-// Companion rotations remain independent of the active healer.
+// Every normal encounter offers each role. Depth rotates healer slots, so both
+// branches at a fork offer the same slot; armor rotates independent of healers.
 export function buildNormalLootTables(chapters = CHAPTERS, catalogue = GEAR) {
   const tables = {};
   for (const [chapterIndex, chapter] of chapters.entries()) {
     const chapterNumber = chapterIndex + 1;
-    const byOwner = Object.fromEntries(OWNERS.map(owner => [owner, catalogue.filter(item => item.chapter === chapterNumber && item.owner === owner)]));
+    const items = catalogue.filter(item => item.chapter === chapterNumber);
     const depthById = new Map();
     const depth = node => {
       if (depthById.has(node.id)) return depthById.get(node.id);
@@ -24,12 +23,14 @@ export function buildNormalLootTables(chapters = CHAPTERS, catalogue = GEAR) {
       return value;
     };
     chapter.nodes.forEach((node, encounterIndex) => {
-      tables[node.encounter] = OWNERS.flatMap(owner => {
-        const items = byOwner[owner];
-        if (isHealerOwner(owner))
-          return items.length ? [items[depth(node) % items.length].id] : [];
-        return items.length ? [items[(encounterIndex + COMPANION_ROTATION_OFFSETS[owner]) % items.length].id] : [];
-      });
+      const choose = (pool, index) => pool.length ? [pool[index % pool.length].id] : [];
+      const healerSlot = ['Weapon', 'Tome', 'Trinket'][depth(node) % 3];
+      tables[node.encounter] = [
+        ...choose(items.filter(item => item.role === 'healer' && item.slot === healerSlot), encounterIndex),
+        ...['Head', 'Chest', 'Legs'].flatMap((slot, offset) => choose(items.filter(item => item.role === 'all' && item.slot === slot), encounterIndex + offset * 2)),
+        ...choose(items.filter(item => item.role === 'tank'), encounterIndex + 2),
+        ...['rogue', 'mage', 'ranger'].flatMap((owner, offset) => choose(items.filter(item => item.role === 'damage' && (item.owner === owner || item.slot === 'Trinket')), encounterIndex + offset)),
+      ].filter((id, index, ids) => ids.indexOf(id) === index);
     });
   }
   return tables;
@@ -38,26 +39,22 @@ export function buildNormalLootTables(chapters = CHAPTERS, catalogue = GEAR) {
 export const NORMAL_LOOT_TABLES = Object.freeze(buildNormalLootTables());
 export const normalLootForEncounter = (encounterId, catalogue = GEAR) => (NORMAL_LOOT_TABLES[encounterId] || []).map(id => catalogue.find(item => item.id === id)).filter(Boolean);
 
-const categoryFor = (item, healerId) => {
-  if (canEquipItem(healerId, item.slot, item)) return 'healer';
-  return ['tank', 'rogue', 'mage', 'ranger'].includes(item.owner) && canEquipItem(item.owner, item.slot, item) ? item.owner : null;
-};
+const categoryFor = (item, healerId) => ROLES.includes(item.role) && [healerId, 'tank', 'rogue', 'mage', 'ranger'].some(owner => canEquipItem(owner, item.slot, item)) ? item.role : null;
 
 // Keep the preview and both normal and bonus reward rolls on the same rules.
 // A preview shows all items that can be selected, regardless of drop count.
 export function eligibleLootPool(table, ownedIds, healerId, catalogue = GEAR) {
   const byId = new Map(catalogue.map(item => [item.id, item]));
   const owned = new Set(ownedIds || []);
-  return (table || []).map(id => byId.get(id)).filter(item => item && !owned.has(item.id) && categoryFor(item, healerId));
+  return [...new Set(table || [])].map(id => byId.get(id)).filter(item => item && !owned.has(item.id) && categoryFor(item, healerId));
 }
 
 export function eligibleNormalLootForEncounter(encounterId, ownedIds, healerId, catalogue = GEAR) {
   return eligibleLootPool(NORMAL_LOOT_TABLES[encounterId], ownedIds, healerId, catalogue);
 }
 
-// Boss rewards are intentionally absent from the encounter preview.  They draw
-// from the chapter's remaining catalogue, so beating a boss can uncover gear
-// that was not advertised by the ordinary route reward list.
+// Bonus rewards draw from the chapter catalogue outside this boss's normal
+// table. They may also appear on other route nodes: label Boss Bonus, not Exclusive.
 export function buildBossBonusLootTables(chapters = CHAPTERS, catalogue = GEAR, normalTables = buildNormalLootTables(chapters, catalogue)) {
   return Object.fromEntries(chapters.flatMap((chapter, chapterIndex) => chapter.nodes
     .filter(node => node.kind === 'boss')
@@ -67,6 +64,7 @@ export function buildBossBonusLootTables(chapters = CHAPTERS, catalogue = GEAR, 
 }
 
 export const BOSS_BONUS_LOOT_TABLES = Object.freeze(buildBossBonusLootTables());
+export const eligibleBossBonusLootForEncounter = (encounterId, ownedIds, healerId, catalogue = GEAR) => eligibleLootPool(BOSS_BONUS_LOOT_TABLES[encounterId], ownedIds, healerId, catalogue);
 
 export function normalDropCount(rng = Math.random) {
   const roll = rng();

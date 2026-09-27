@@ -46,7 +46,7 @@ test('Nourish is a finite four-tick pool that adds unspent healing on recast', (
   cast(game, 'nourish');
   near(hot(game, 'nourish').heal * hot(game, 'nourish').ticks, remaining - 2 * 27.5 + 110);
   near(hot(game, 'nourish').expires, game.time + 4);
-  assert.match(effectMarkup(partyEffects(game.party[0], game.time).helpful, game.time), /Nourish \(137.5 healing in 4 remaining ticks\): 4s remaining/);
+  assert.match(effectMarkup(partyEffects(game.party[0], game.time).helpful, game.time), /Nourish \(138 healing in 4 remaining ticks\): 4s remaining/);
   advance(game, 4);
   assert.equal(hot(game, 'nourish'), undefined);
   near(game.events.filter(event => event.type === 'heal' && event.spell === 'nourish').reduce((sum, event) => sum + event.raw, 0), 220);

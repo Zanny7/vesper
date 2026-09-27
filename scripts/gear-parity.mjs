@@ -22,7 +22,7 @@ export function auditGearParity() {
     const bossId = chapter.nodes.find(node => node.kind === 'boss').encounter;
     const healer = Object.fromEntries(healerIds.map(owner => [owner,
       Object.fromEntries(SLOTS.healer.map(slot => {
-        const authored = GEAR.filter(item => item.chapter === index + 1 && item.owner === owner && item.slot === slot);
+        const authored = GEAR.filter(item => item.chapter === index + 1 && canEquipItem(owner, slot, item));
         const eligible = preBossIds.flatMap(encounter => eligibleLootPool(NORMAL_LOOT_TABLES[encounter], [], owner))
           .filter(item => authored.some(candidate => candidate.id === item.id));
         const routesWithUpgrade = routeIds.filter(route => route.some(encounter =>
@@ -34,13 +34,13 @@ export function auditGearParity() {
         const availableFrom = item => preBossIds.filter(encounter => NORMAL_LOOT_TABLES[encounter].includes(item.id));
         return [slot, { authored: authored.map(itemSummary),
           // Universal armor/trinkets also contribute to practical access.
-          eligible: compatible.map(item => ({ ...itemSummary(item), owner: item.owner,
+          eligible: compatible.map(item => ({ ...itemSummary(item), role: item.role,
             encounters: availableFrom(item), normalBoss: NORMAL_LOOT_TABLES[bossId].includes(item.id),
-            hiddenBoss: BOSS_BONUS_LOOT_TABLES[bossId].includes(item.id) })),
+            bossBonus: BOSS_BONUS_LOOT_TABLES[bossId].includes(item.id) })),
           preBoss: [...new Set(eligible.map(item => item.id))],
           encounters: Object.fromEntries(authored.map(item => [item.id, availableFrom(item)])),
           normalBoss: authored.filter(item => NORMAL_LOOT_TABLES[bossId].includes(item.id)).map(item => item.id),
-          hiddenBoss: authored.filter(item => BOSS_BONUS_LOOT_TABLES[bossId].includes(item.id)).map(item => item.id),
+          bossBonus: authored.filter(item => BOSS_BONUS_LOOT_TABLES[bossId].includes(item.id)).map(item => item.id),
           routeCoverage: `${routesWithUpgrade}/${routeIds.length}`,
           bonusOnly: bonusOnly.map(item => item.id) }];
       }))]));

@@ -1,6 +1,7 @@
 // Shared presentation surfaces; per-item artwork and loot progression belong to BAT-21.
 import { GEAR, partyForHealer, HEALERS } from './data.js';
 import { formatNumber } from './stats.js';
+import { roleLabel } from './item-model.js';
 export const statLabels = { maxHp: 'Health', maxMana: 'Mana', manaRegen: 'Mana regeneration', spellPower: 'Spell Power', haste: 'Haste', crit: 'Crit', armor: 'Armor', resistance: 'Resistance', damage: 'Damage' };
 const escape = value => String(value).replace(/[&<>"']/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch]));
 const silhouettes = {
@@ -16,9 +17,20 @@ const silhouettes = {
   Bag: '<path d="M14 6h12l-3 7q12 7 10 17-1 6-13 6T7 30q-2-10 10-17Z"/><path d="M14 13h12M16 6l4 7 4-7"/>',
 };
 export const itemLevel = item => item.itemLevel ?? 1;
+const regenFormat = new Intl.NumberFormat('en-US', { maximumFractionDigits: 2 });
+const itemStatNumber = (stat, value) => stat === 'manaRegen' ? regenFormat.format(value) : formatNumber(value);
+export function itemDetails(item) {
+  return `<strong>${escape(item.name)}</strong><small>Item level ${itemLevel(item)} · ${escape(item.slot)}</small><small class="item-role">${roleLabel(item)}</small><dl>${Object.entries(item.stats).map(([stat, value]) => `<div><dt>${escape(statLabels[stat] || stat)}</dt><dd>+${itemStatNumber(stat, value)}${['haste', 'crit'].includes(stat) ? '%' : ''}</dd></div>`).join('')}</dl>${item.flavor ? `<p>${escape(item.flavor)}</p>` : ''}`;
+}
+export function itemComparison(item, current) {
+  return [...new Set([...Object.keys(item.stats), ...Object.keys(current?.stats || {})])].map(stat => {
+    const delta = (item.stats[stat] || 0) - (current?.stats[stat] || 0);
+    return delta ? `${delta > 0 ? '+' : ''}${itemStatNumber(stat, delta)}${['haste', 'crit'].includes(stat) ? '%' : ''} ${statLabels[stat] || stat}` : '';
+  }).filter(Boolean).join(' · ') || 'Same stats';
+}
 export function itemIcon(item, slot = item?.slot || 'Bag', owner = item?.owner) {
   if (item?.icon) return `<img src="${escape(item.icon)}" alt="" draggable="false">`;
-  const type = slot === 'Weapon' ? (Object.hasOwn(HEALERS, owner) ? 'Staff' : 'Sword') : slot;
+  const type = slot === 'Weapon' ? (item?.role === 'healer' || Object.hasOwn(HEALERS, owner) ? 'Staff' : 'Sword') : slot;
   return `<svg viewBox="0 0 40 40" fill="currentColor" fill-opacity=".12" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" aria-hidden="true">${silhouettes[type] || silhouettes.Bag}</svg>`;
 }
 export function equipmentSlot(member, slot, item, locked) {
@@ -42,7 +54,7 @@ export function setupEquipment({ equipment, onChange, isLocked }) {
     const item = find(target.dataset.itemId);
     if (!item && !target.dataset.slotTip) return;
     hideTip(); tipAnchor = target;
-    tooltip.innerHTML = item ? `<strong>${escape(item.name)}</strong><small>Item level ${itemLevel(item)} · ${escape(item.slot)}</small><dl>${Object.entries(item.stats).map(([stat, value]) => `<div><dt>${escape(statLabels[stat] || stat)}</dt><dd>+${formatNumber(value)}${['haste', 'crit'].includes(stat) ? '%' : ''}</dd></div>`).join('')}</dl>${item.flavor ? `<p>${escape(item.flavor)}</p>` : ''}` : `<strong>${escape(target.dataset.slotTip)}</strong>`;
+    tooltip.innerHTML = item ? itemDetails(item) : `<strong>${escape(target.dataset.slotTip)}</strong>`;
     tooltip.hidden = false; target.setAttribute('aria-describedby', tooltip.id); place(tooltip, target);
   }
   function close(focus = false) {
@@ -54,7 +66,7 @@ export function setupEquipment({ equipment, onChange, isLocked }) {
     const same = anchor === target; close(); if (same) return;
     anchor = target; target.setAttribute('aria-expanded', 'true');
     const current = equipment.item(member, slot), items = equipment.owned(member, slot);
-    popup.innerHTML = `<div class="gear-picker-heading"><strong>${escape(slot)}</strong><button type="button" aria-label="Close equipment picker">✕</button></div><p>Choose owned equipment</p><div class="gear-choices">${items.map(item => `<button type="button" class="gear-choice" data-item-id="${escape(item.id)}" aria-pressed="${current?.id === item.id}"><span class="gear-slot is-equipped">${itemIcon(item)}</span><span><strong>${escape(item.name)}</strong><small>Item level ${itemLevel(item)}${current?.id === item.id ? ' · Equipped' : ''}</small></span></button>`).join('') || '<p>No compatible items owned.</p>'}</div>${current ? '<button type="button" class="quiet gear-unequip">Unequip</button>' : ''}`;
+    popup.innerHTML = `<div class="gear-picker-heading"><strong>${escape(slot)}</strong><button type="button" aria-label="Close equipment picker">✕</button></div><p>Choose owned equipment</p><div class="gear-choices">${items.map(item => `<button type="button" class="gear-choice" data-item-id="${escape(item.id)}" aria-pressed="${current?.id === item.id}"><span class="gear-slot is-equipped">${itemIcon(item)}</span><span><strong>${escape(item.name)}</strong><small>Item level ${itemLevel(item)} · ${roleLabel(item)}${current?.id === item.id ? ' · Equipped' : ''}</small><small class="gear-comparison">${itemComparison(item, current)}</small></span></button>`).join('') || '<p>No compatible items owned.</p>'}</div>${current ? '<button type="button" class="quiet gear-unequip">Unequip</button>' : ''}`;
     popup.hidden = false; place(popup, target);
     popup.querySelector('.gear-picker-heading button').onclick = () => close(true);
     const choose = id => {
@@ -91,7 +103,7 @@ export function setupEquipment({ equipment, onChange, isLocked }) {
     if (!item || isLocked()) return;
     hideTip();
     anchor = target;
-    popup.innerHTML = `<div class="gear-picker-heading"><strong>Discard item?</strong><button type="button" aria-label="Cancel discard">✕</button></div><p class="discard-summary"><span class="gear-slot is-equipped">${itemIcon(item)}</span><span><b>${escape(item.name)}</b><small>Item level ${itemLevel(item)} · ${escape(item.slot)}</small></span></p><div class="discard-actions"><button type="button" class="discard-confirm">Discard item</button><button type="button" class="quiet discard-cancel">Cancel</button></div>`;
+    popup.innerHTML = `<div class="gear-picker-heading"><strong>Discard item?</strong><button type="button" aria-label="Cancel discard">✕</button></div><p class="discard-summary"><span class="gear-slot is-equipped">${itemIcon(item)}</span><span><b>${escape(item.name)}</b><small>Item level ${itemLevel(item)} · ${escape(item.slot)} · ${roleLabel(item)}</small></span></p><div class="discard-actions"><button type="button" class="discard-confirm">Discard item</button><button type="button" class="quiet discard-cancel">Cancel</button></div>`;
     popup.hidden = false; place(popup, target);
     const cancel = () => close(true);
     popup.querySelector('.gear-picker-heading button').onclick = cancel;

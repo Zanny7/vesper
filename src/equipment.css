@@ -72,3 +72,5 @@ button.gear-slot:hover, button.gear-slot[aria-expanded="true"], button.gear-slot
   .healer-selector { margin-top: 20px; min-width: 0; }
   .utility-surface { max-height: calc(100dvh - 90px); overflow-y: auto; }
 }
+.gear-tooltip .item-role { color: #d1b87e; }
+.gear-choice .gear-comparison { white-space: normal; line-height: 1.4; margin-top: 4px; }

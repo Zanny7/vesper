@@ -125,6 +125,8 @@ export class Combat {
     return {
       ...cast, direct, bolts, smartBolt,
       chain: spell.chain ? Array.from({ length: spell.chain.targets }, (_, jump) => direct * spell.chain.jumpRatio ** jump) : null,
+      cascadingStream: spell.cascadingStream ? Array.from({ length: spell.cascadingStream.targets }, (_, jump) =>
+        healingParts(spell.cascadingStream, this.spellPower).direct * spell.cascadingStream.ratio * spell.cascadingStream.chain.jumpRatio ** jump) : null,
       totem: spell.totem ? { ...spell.totem, tick: spell.totem.heal * healing.factor, ticks: ticksForDuration(spell.totem.duration, spell.totem.interval) } : null,
       hot: this.hotProfile(spell, target, cast.overgrowth),
       dot: this.enemyDotProfile(spell),
@@ -190,17 +192,17 @@ export class Combat {
     return [primary, ...this.party.filter(member => member.hp > 0 && member.id !== primary.id)
       .sort((a, b) => a.hp / a.maxHp - b.hp / b.maxHp)].slice(0, spell.chain.targets);
   }
-  applySurge(target, spell, empowered, duration = spell.hot.duration, healingRatio = 1) {
+  applySurge(target, spell, empowered, duration = spell.hot.duration) {
     const existing = this.activeHots(target, [spell.id])[0];
     const interval = existing?.interval || hastedTime(spell.hot.interval, this.haste());
     const next = existing?.next ?? this.time + interval;
     const expires = Math.min((existing?.expires ?? this.time) + duration, this.time + spell.hot.bankCap);
     const ticks = next <= expires + 1e-8 ? ticksForDuration(expires - next, interval) + 1 : 0;
-    const newTick = healingParts(spell, this.spellPower).hotTick * this.healingEmpowerment(spell, empowered) * healingRatio;
+    const newTick = healingParts(spell, this.spellPower).hotTick * this.healingEmpowerment(spell, empowered);
     // Each queued tick owns its original healing. Extending never buffs or scales the old bank again.
     const bankedHealing = [...(existing?.bankedHealing || []), ...Array(Math.max(0, ticks - (existing?.ticks || 0))).fill(newTick)].slice(0, ticks);
     const hot = existing || { ...spell.hot, source: spell.id, name: spell.name, icon: spell.icon, color: spell.color,
-      applied: this.time, baseInterval: spell.hot.interval, interval, next, echoingSurge: spell.echoingSurge };
+      applied: this.time, baseInterval: spell.hot.interval, interval, next };
     Object.assign(hot, { expires, ticks, bankedHealing, heal: bankedHealing[0] || 0 });
     target.hots = target.hots.filter(effect => effect.source !== spell.id);
     if (ticks) target.hots.push(hot);
@@ -436,6 +438,12 @@ export class Combat {
         this.healer.helpfulEffects = this.healer.helpfulEffects.filter(effect => effect.source !== spell.id);
         this.healer.helpfulEffects.push({ source: spell.id, name: spell.name, icon: spell.icon, color: spell.color, expires: this[slot].expires });
         this.emit('buff', { source: spell.id, target: this.healer.id, duration: profile.duration });
+        if (spell.cascadingStream) {
+          const curve = this.resolveSpell(spell).cascadingStream;
+          const recipients = this.party.filter(p => p.hp > 0 && p.hp < p.maxHp)
+            .sort((a, b) => a.hp / a.maxHp - b.hp / b.maxHp).slice(0, curve.length);
+          for (const [jump, target] of recipients.entries()) this.heal(target, curve[jump], 'cascading-stream');
+        }
       }
       const targets = spell.chain ? this.chainTargets(spell, primary) : spell.party ? this.party : [primary];
       const empowerment = this.healingEmpowerment(spell, cast.unleashLife);
@@ -474,11 +482,18 @@ export class Combat {
         }
         lingering.push({ target, amount });
         if (spell.hot) this.applyHot(target, spell, { carryPending: cast.overgrowth, empowered: cast.unleashLife });
-        if (spell.earthlivingDuration) {
+        if (spell.earthlivingDuration && !spell.earthlivingTargets) {
           const surge = this.spells.find(candidate => candidate.id === 'recurringSurge');
-          if (surge) this.applySurge(target, surge, cast.unleashLife, spell.earthlivingDuration, spell.earthlivingHealingRatio ?? 1);
+          if (surge) this.applySurge(target, surge, cast.unleashLife, spell.earthlivingDuration);
         }
         if (spell.nourishingTouch) this.extendHots(target, spell.nourishingTouch.extraTicks);
+      }
+      if (spell.earthlivingTargets) {
+        const surge = this.spells.find(s => s.id === 'recurringSurge');
+        if (surge) for (const target of targets.filter(p => p?.hp > 0 && p.hp < p.maxHp)
+          .sort((a, b) => a.hp / a.maxHp - b.hp / b.maxHp).slice(0, spell.earthlivingTargets)) {
+          this.applySurge(target, surge, cast.unleashLife, spell.earthlivingDuration);
+        }
       }
       if (spell.lightUnspent && directOverheal > 0) {
         const injured = this.party.filter(member => member.hp > 0 && member.hp < member.maxHp);
@@ -614,7 +629,6 @@ export class Combat {
           }
           const tickResult = this.heal(target, hot.bankCap ? hot.bankedHealing.shift() : hot.heal, hot.source); hot.ticks--;
           if (hot.bankCap) {
-            this.effectiveEcho(target, tickResult.effective, hot.echoingSurge, 'echoing-surge');
             hot.next += hot.interval; hot.heal = hot.bankedHealing[0] || 0;
             continue;
           }

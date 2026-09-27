@@ -45,8 +45,8 @@ test('Spell Power, Haste, ranks and Post-Haste update tooltip values from the ac
   assert.match(abilityTooltip(game, spell(game, 'greater')), /deliver 50% of Greater Heal halfway through this cast/);
   const penance = abilityTooltip(game, spell(game, 'penance'));
   assert.match(penance, /1.7s channel · 30 Mana/);
-  assert.match(penance, /3 healing bolts: 67.5 each \(202.5 total\)/);
-  assert.match(penance, /additional smart bolt .* 67.5/);
+  assert.match(penance, /3 healing bolts: 68 each \(203 total\)/);
+  assert.match(penance, /additional smart bolt .* 68/);
   assert.equal(healingParts(spell(game, 'penance'), 30).direct, 270);
   game.buffs.postHaste = 1;
   assert.match(abilityTooltip(game, spell(game, 'greater')), /2s cast · 36 Mana/);
@@ -92,7 +92,7 @@ test('active DoT rollover appears in the tooltip and matches the next applicatio
   const profile = game.resolveSpell(holyFire).dot;
   assert.equal(profile.pending, 5.6);
   assert.ok(Math.abs(profile.tick - 2.52) < 1e-8);
-  assert.match(abilityTooltip(game, holyFire), /2.5 damage every 2s for 10s \(5 ticks, 12.6 total including 5.6 carried damage\)/);
+  assert.match(abilityTooltip(game, holyFire), /3 damage every 2s for 10s \(5 ticks, 13 total including 6 carried damage\)/);
   assert.equal(game.begin('holyFire', 'boss').ok, true);
   assert.equal(game.boss.dots[0].damage, profile.tick);
 });

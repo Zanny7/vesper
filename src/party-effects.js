@@ -1,12 +1,13 @@
 import { DRUID_HOTS } from './data.js';
 import { effectGlyph } from './ability-icons.js';
-import { formatNumber } from './stats.js';
+import { formatNumber, formatCombatNumber } from './stats.js';
+import { isPlayerEffect } from './healer-buffs.js';
 
 // Adapt combat-owned effects to one presentation model. Future buffs/shields can
 // supply id/source, name, icon, color, expires (optional), and displayOrder.
 export function partyEffects(member, time) {
   const live = effect => effect.expires == null || effect.expires > time + 1e-8;
-  const helpful = [...member.hots || [], ...member.helpfulEffects || []].filter(live)
+  const helpful = [...member.hots || [], ...member.helpfulEffects || []].filter(effect => live(effect) && !isPlayerEffect(effect))
     .sort((a, b) => order(a) - order(b) || key(a).localeCompare(key(b)));
   const negative = [...(member.dots || []).map(dot => ({ ...dot, icon: dot.icon || 'wound', color: dot.color || '#f2a1af', expires: dot.next + (dot.ticks - 1) * dot.interval })), ...member.debuffs || []].filter(live)
     // Dispellable first, then explicit priority, then damage per second; stable ID breaks ties.
@@ -22,7 +23,7 @@ export function effectDescription(effect, time) {
   const modifier = effect.defenseModifier
     ? ` (${effect.modifier > 0 ? '+' : ''}${formatNumber(effect.modifier)} ${effect.stat === 'armor' ? 'Armor' : 'Resistance'})`
     : '';
-  const pool = effect.bankCap ? ` (${formatNumber(effect.bankedHealing.reduce((sum, healing) => sum + healing, 0))} banked healing in ${effect.ticks} remaining ticks)` : effect.pool || effect.flowingRiptide ? ` (${formatNumber(effect.heal * effect.ticks)} healing in ${effect.ticks} remaining ticks)` : '';
+  const pool = effect.bankCap ? ` (${formatCombatNumber(effect.bankedHealing.reduce((sum, healing) => sum + healing, 0))} banked healing in ${effect.ticks} remaining ticks)` : effect.pool || effect.flowingRiptide ? ` (${formatCombatNumber(effect.heal * effect.ticks)} healing in ${effect.ticks} remaining ticks)` : '';
   return `${effect.name}${modifier}${pool}${effect.expires == null ? '' : `: ${Math.max(0, Math.ceil(effect.expires - time - 1e-8))}s remaining`}`;
 }
 export function effectMarkup(effects, time) {

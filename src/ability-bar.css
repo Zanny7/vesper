@@ -108,7 +108,7 @@
 :is(#spellbook, .team-ability-bar) .spell:hover .spell-icon,
 :is(#spellbook, .team-ability-bar) .spell:focus-visible .spell-icon,
 :is(#spellbook, .team-ability-bar) .spell.active .spell-icon { border-color: #ead2a0; }
-:is(#spellbook, .team-ability-bar) .spell.on-cooldown .spell-icon { filter: grayscale(1) brightness(.48); }
+:is(#spellbook, .team-ability-bar) .spell.on-cooldown .spell-icon { filter: grayscale(1); }
 :is(#spellbook, .team-ability-bar) .spell kbd {
   position: absolute;
   top: 0;
@@ -144,6 +144,14 @@
   pointer-events: none;
 }
 :is(#spellbook, .team-ability-bar) .cooldown-mask[hidden] { display: none; }
+:is(#spellbook, .team-ability-bar) .cooldown-mask::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 4px;
+  background: conic-gradient(from 0deg, transparent 0deg var(--cooldown-cleared, 0deg), rgba(0, 0, 0, .52) var(--cooldown-cleared, 0deg) 360deg);
+}
+:is(#spellbook, .team-ability-bar) .cooldown-mask > span { position: relative; }
 @media (max-width: 600px), (max-height: 600px) {
   .healer-buffs { gap: 5px; }
   .healer-buff { width: 42px; height: 42px; }

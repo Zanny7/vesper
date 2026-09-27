@@ -43,8 +43,8 @@ test('Shaman registers a separate six-spell baseline loadout, bindings and share
   assert.deepEqual(gear.slots(shaman), slotsForOwner('priest'));
   gear.acquire('ch3-coalglass-hourglass');
   assert.equal(gear.equip(shaman, 'Trinket', 'ch3-coalglass-hourglass'), true);
-  near(gear.healer('shaman').spellPower, 4);
-  near(gear.healer('shaman').manaRegen, CONFIG.manaRegen + 1.6);
+  near(gear.healer('shaman').spellPower, 9);
+  near(gear.healer('shaman').manaRegen, CONFIG.manaRegen + 1.5);
   assert.match(healerHint('Prepare Prayer of Healing.', 'shaman'), /Chain Heal/);
 });
 
@@ -293,11 +293,11 @@ test('Shaman tooltips and effect indicators expose resolved healing, bank durati
   const game = setup(); cast(game, 'recurringSurge'); cast(game, 'unleashLife');
   const tooltip = id => abilityTooltip(game, game.spells.find(spell => spell.id === id), game.party[0]);
   assert.match(tooltip('recurringSurge'), /1.2s cast · 24 Mana/);
-  assert.match(tooltip('recurringSurge'), /43.2 healing every 2s/);
+  assert.match(tooltip('recurringSurge'), /43 healing every 2s/);
   assert.match(tooltip('recurringSurge'), /6s banked remaining/);
   assert.match(tooltip('healingWave'), /2s cast · 32 Mana/);
   assert.match(tooltip('healingWave'), /Heal one ally for 150/);
-  assert.match(tooltip('chainHeal'), /126 → 100.8 → 80.6 → 64.5 → 51.6/);
+  assert.match(tooltip('chainHeal'), /126 → 101 → 81 → 65 → 52/);
   assert.match(tooltip('healingStream'), /6 ticks, 192 total/);
   assert.match(tooltip('riptide'), /27 healing every 3s/);
   assert.match(effectDescription(partyEffects(game.party[0], game.time).helpful[0], game.time), /108 banked healing in 3 remaining ticks.*6s remaining/);

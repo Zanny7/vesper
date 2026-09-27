@@ -2,6 +2,7 @@
 // node scripts/shaman-balance.mjs [samples=30] [controlled|routes|marginal]
 import { pathToFileURL } from 'node:url';
 import { Combat } from '../src/combat.js';
+import { Combat as Bat87Combat } from './fixtures/bat87-combat.mjs';
 import { CONFIG, CHAPTERS, CHAPTER_ENCOUNTERS, HEALERS, partyForHealer } from '../src/data.js';
 import { TALENT_TREES } from '../src/talent-trees.js';
 import { TALENT_ROW_REQUIREMENTS } from '../src/talents.js';
@@ -86,7 +87,25 @@ export function controlledEncounter(chapter, profile, scale = 1) {
 // data.js. Filled with original values for every shipped numerical change.
 export function balanceLoadout(party, healer, build, version = 'current') {
   const loadout = loadouts[healer](party, HEALERS[healer].combatSpells, build);
-  if (!['current', 'original'].includes(version)) throw new Error(`Unknown version ${version}`);
+  if (!['current', 'original', 'bat87'].includes(version)) throw new Error(`Unknown version ${version}`);
+  if (version !== 'current' && healer === 'shaman') loadout.spells = loadout.spells.map(spell => {
+    if (spell.id === 'recurringSurge') return { ...spell, hot: { ...spell.hot, heal: 36 },
+      ...(build['cascading-stream'] ? { echoingSurge: .30 } : {}) };
+    if (spell.id === 'healingWave') return { ...spell, heal: 125, cost: 32 / CONFIG.baseMana,
+      ...(spell.ancestralEcho ? { ancestralEcho: 1 } : {}), ...(spell.earthlivingDuration ? { earthlivingDuration: 6, earthlivingHealingRatio: .5 } : {}) };
+    if (spell.id === 'chainHeal') {
+      const { earthlivingTargets, ...baseline } = spell;
+      return { ...baseline, heal: 105, cost: 65 / CONFIG.baseMana,
+        chain: { ...spell.chain, jumpRatio: 1 - [.20, .125, .05][build['high-tide'] || 0] },
+        ...(spell.earthlivingDuration ? { earthlivingDuration: 2, earthlivingHealingRatio: .5 } : {}) };
+    }
+    if (spell.id === 'healingStream') {
+      const { cascadingStream, ...baseline } = spell;
+      return { ...baseline, totem: { ...spell.totem, heal: 32 * (1 + (build['restorative-stream'] || 0) * .15) } };
+    }
+    if (spell.id === 'healingTide') return { ...spell, cost: 50 / CONFIG.baseMana, totem: { ...spell.totem, heal: 36, duration: 12, interval: 1 } };
+    return spell;
+  });
   if (version === 'original' && healer === 'shaman') loadout.spells = loadout.spells.map(spell => {
     if (spell.id === 'recurringSurge') return { ...spell, hot: { ...spell.hot, heal: 44 }, ...(spell.echoingSurge ? { echoingSurge: .50 } : {}) };
     if (spell.id === 'healingWave') return { ...spell, heal: 110, cost: 28 / CONFIG.baseMana, ...(spell.ancestralEcho ? { ancestralEcho: .40 } : {}), ...(spell.earthlivingDuration ? { earthlivingHealingRatio: 1 } : {}) };
@@ -95,7 +114,7 @@ export function balanceLoadout(party, healer, build, version = 'current') {
     if (spell.id === 'healingTide') return { ...spell, cost: 80 / CONFIG.baseMana, totem: { ...spell.totem, heal: 14, duration: 8 } };
     return spell;
   });
-  if (healer === 'shaman') {
+  if (healer === 'shaman' && version !== 'bat87') {
     const tuning = JSON.parse(process.env.SHAMAN_TUNING || '{}');
     loadout.spells = loadout.spells.map(spell => {
       const changes = tuning[spell.id];
@@ -116,7 +135,8 @@ export function simulate(encounter, party, healer, build, seed, resources = null
   validateBuild(healer, build);
   const { version = 'current', skill = 'veryGood', seconds = Infinity, omit = [], policy = null } = options;
   const loadout = balanceLoadout(party, healer, build, version);
-  const game = new Combat(encounter, seeded(seed), loadout.party, loadout.spells.filter(s => !omit.includes(s.id)));
+  const CombatModel = healer === 'shaman' && version !== 'current' ? Bat87Combat : Combat;
+  const game = new CombatModel(encounter, seeded(seed), loadout.party, loadout.spells.filter(s => !omit.includes(s.id)));
   if (resources) game.reset(encounter, resources);
   const entryResources = game.resources();
   // Track real debits (including instant casts before step, and channel costs).
@@ -178,7 +198,7 @@ export function summary(rows) {
 
 const defaults = { priest: ['1-binding', '3-binding', '5-penance', '7-fourfold'], druid: ['1-rejuvenation', '3-rejuvenation', '5-nourishment', '7-blooming'],
   shaman: ['1-reserves', '3-waves', '5-flow', '7-earth'] };
-export function routeTrial(chapter, healer, skill, stage, index, buildName = defaults[healer][chapter - 1], version = 'current') {
+export function routeTrial(chapter, healer, skill, stage, index, buildName = defaults[healer][chapter - 1], version = 'current', options = {}) {
   const seed = 187000 + chapter * 100000 + index, random = seeded(seed), chapterData = CHAPTERS[chapter - 1];
   const paths = routes(chapterData), clears = stage === 'first' ? 0 : stage === 'one' ? 1 : skill === 'veryGood' ? 2 : skill === 'average' ? 3 : 4 + index % 2;
   let equipment = recursiveInheritedEquipment(chapter - 1, healer, skill, seed, random).equipment;
@@ -193,7 +213,7 @@ export function routeTrial(chapter, healer, skill, stage, index, buildName = def
   let resources = null, bossEntryMana = null;
   for (const [position, node] of [...path, boss].entries()) {
     const result = simulate(CHAPTER_ENCOUNTERS[node.encounter], equipment.party(healer), healer,
-      stage === 'first' && position === 0 ? prior : build, Math.floor(random() * 2 ** 32), resources, { skill, version });
+      stage === 'first' && position === 0 ? prior : build, Math.floor(random() * 2 ** 32), resources, { ...options, skill, version });
     if (node === boss) bossEntryMana = result.entryResources.mana.current;
     encounters.push({ encounter: node.encounter, boss: node === boss, ...result });
     if (!result.won) break;

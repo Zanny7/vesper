@@ -1,0 +1,1069 @@
+{
+  "baseline": "c33440f (BAT-87 combat fixture; imports redirected only)",
+  "step": "1/60 s",
+  "seeds": {
+    "controlled": "87000 + chapter*10000 + index; combat seed +999",
+    "routes": "187000 + chapter*100000 + index; unchanged loot/route RNG"
+  },
+  "assumptions": "Controlled: identical real Priest-loot-derived stats, infinite boss Health, all five alive at 90s / long 140s. Routes: actual healer loot, live Health/Mana carry; first starts before first point. Before=BAT87/legacy; policy=BAT87/refined; adaptive/efficiency/reserve=current/refined. Build echo labels retain historical names but allocate Cascading Stream in current.",
+  "allocations": {
+    "priest": {
+      "0-base": {},
+      "1-binding": {
+        "binding-light": 1
+      },
+      "1-mercy": {
+        "early-mercy": 1
+      },
+      "3-binding": {
+        "binding-light": 2,
+        "conservation-of-faith": 1
+      },
+      "3-mercy": {
+        "early-mercy": 2,
+        "conservation-of-faith": 1
+      },
+      "5-penance": {
+        "binding-light": 2,
+        "conservation-of-faith": 2,
+        "focused-penance": 1
+      },
+      "5-prayer": {
+        "binding-light": 2,
+        "conservation-of-faith": 2,
+        "lingering-prayer": 1
+      },
+      "5-haste": {
+        "binding-light": 2,
+        "conservation-of-faith": 2,
+        "post-haste": 1
+      },
+      "7-fourfold": {
+        "binding-light": 2,
+        "conservation-of-faith": 2,
+        "focused-penance": 2,
+        "fourfold-penance": 1
+      },
+      "7-echo": {
+        "binding-light": 2,
+        "conservation-of-faith": 2,
+        "focused-penance": 2,
+        "echo-of-grace": 1
+      },
+      "7-unspent": {
+        "binding-light": 2,
+        "conservation-of-faith": 2,
+        "focused-penance": 2,
+        "light-unspent": 1
+      },
+      "8-twin": {
+        "binding-light": 2,
+        "conservation-of-faith": 2,
+        "focused-penance": 2,
+        "fourfold-penance": 1,
+        "twin-penance": 1
+      },
+      "8-sanctuary": {
+        "binding-light": 2,
+        "conservation-of-faith": 2,
+        "focused-penance": 2,
+        "fourfold-penance": 1,
+        "sanctuary": 1
+      },
+      "8-fervor": {
+        "binding-light": 2,
+        "conservation-of-faith": 2,
+        "focused-penance": 2,
+        "fourfold-penance": 1,
+        "divine-fervor": 1
+      },
+      "7-sanctuary": {
+        "binding-light": 2,
+        "conservation-of-faith": 2,
+        "focused-penance": 2,
+        "sanctuary": 1
+      },
+      "7-fervor": {
+        "binding-light": 2,
+        "conservation-of-faith": 2,
+        "focused-penance": 2,
+        "divine-fervor": 1
+      },
+      "7-twin": {
+        "binding-light": 2,
+        "conservation-of-faith": 2,
+        "focused-penance": 2,
+        "twin-penance": 1
+      }
+    },
+    "druid": {
+      "0-base": {},
+      "1-rejuvenation": {
+        "empowered-rejuvenation": 1
+      },
+      "1-touch": {
+        "nourishing-touch": 1
+      },
+      "3-rejuvenation": {
+        "empowered-rejuvenation": 2,
+        "natural-regeneration": 1
+      },
+      "3-touch": {
+        "nourishing-touch": 2,
+        "natural-regeneration": 1
+      },
+      "5-nourishment": {
+        "empowered-rejuvenation": 2,
+        "natural-regeneration": 2,
+        "abundant-nourishment": 1
+      },
+      "5-ward": {
+        "empowered-rejuvenation": 2,
+        "natural-regeneration": 2,
+        "cenarion-ward": 1
+      },
+      "5-bloom": {
+        "empowered-rejuvenation": 2,
+        "natural-regeneration": 2,
+        "passing-bloom": 1
+      },
+      "7-blooming": {
+        "empowered-rejuvenation": 2,
+        "natural-regeneration": 2,
+        "abundant-nourishment": 2,
+        "blooming-swiftmend": 1
+      },
+      "7-overgrowth": {
+        "empowered-rejuvenation": 2,
+        "natural-regeneration": 2,
+        "abundant-nourishment": 2,
+        "overgrowth": 1
+      },
+      "7-living": {
+        "empowered-rejuvenation": 2,
+        "natural-regeneration": 2,
+        "abundant-nourishment": 2,
+        "living-rejuvenation": 1
+      },
+      "7-ward": {
+        "empowered-rejuvenation": 2,
+        "natural-regeneration": 2,
+        "cenarion-ward": 2,
+        "blooming-swiftmend": 1
+      },
+      "8-twin": {
+        "empowered-rejuvenation": 2,
+        "natural-regeneration": 2,
+        "abundant-nourishment": 2,
+        "blooming-swiftmend": 1,
+        "twin-rejuvenation": 1
+      },
+      "8-genesis": {
+        "empowered-rejuvenation": 2,
+        "natural-regeneration": 2,
+        "abundant-nourishment": 2,
+        "blooming-swiftmend": 1,
+        "genesis": 1
+      },
+      "8-tranquility": {
+        "empowered-rejuvenation": 2,
+        "natural-regeneration": 2,
+        "abundant-nourishment": 2,
+        "blooming-swiftmend": 1,
+        "tranquility": 1
+      },
+      "8-ward-genesis": {
+        "empowered-rejuvenation": 2,
+        "natural-regeneration": 2,
+        "cenarion-ward": 2,
+        "blooming-swiftmend": 1,
+        "genesis": 1
+      },
+      "7-genesis": {
+        "empowered-rejuvenation": 2,
+        "natural-regeneration": 2,
+        "abundant-nourishment": 2,
+        "genesis": 1
+      },
+      "7-tranquility": {
+        "empowered-rejuvenation": 2,
+        "natural-regeneration": 2,
+        "abundant-nourishment": 2,
+        "tranquility": 1
+      },
+      "7-twin-rejuvenation": {
+        "empowered-rejuvenation": 2,
+        "natural-regeneration": 2,
+        "abundant-nourishment": 2,
+        "twin-rejuvenation": 1
+      }
+    },
+    "shaman": {
+      "0-base": {},
+      "1-reserves": {
+        "tidal-reserves": 1
+      },
+      "1-deep": {
+        "deep-riptide": 1
+      },
+      "1-momentum": {
+        "tidal-momentum": 1
+      },
+      "3-deep": {
+        "tidal-reserves": 2,
+        "deep-riptide": 1
+      },
+      "3-momentum": {
+        "tidal-reserves": 2,
+        "tidal-momentum": 1
+      },
+      "3-waves": {
+        "tidal-reserves": 2,
+        "tidal-waves": 1
+      },
+      "3-tide": {
+        "tidal-reserves": 2,
+        "high-tide": 1
+      },
+      "3-stream": {
+        "tidal-reserves": 2,
+        "restorative-stream": 1
+      },
+      "5-waves": {
+        "tidal-reserves": 2,
+        "deep-riptide": 2,
+        "tidal-waves": 1
+      },
+      "5-tide": {
+        "tidal-reserves": 2,
+        "deep-riptide": 2,
+        "high-tide": 1
+      },
+      "5-stream": {
+        "tidal-reserves": 2,
+        "deep-riptide": 2,
+        "restorative-stream": 1
+      },
+      "5-flow": {
+        "tidal-reserves": 2,
+        "deep-riptide": 1,
+        "tidal-waves": 1,
+        "flowing-riptide": 1
+      },
+      "5-echo": {
+        "tidal-reserves": 2,
+        "tidal-momentum": 1,
+        "tidal-waves": 1,
+        "cascading-stream": 1
+      },
+      "5-double": {
+        "tidal-reserves": 2,
+        "tidal-momentum": 1,
+        "tidal-waves": 1,
+        "double-current": 1
+      },
+      "7-flow": {
+        "tidal-reserves": 2,
+        "deep-riptide": 2,
+        "tidal-waves": 1,
+        "restorative-stream": 1,
+        "flowing-riptide": 1
+      },
+      "7-echo": {
+        "tidal-reserves": 2,
+        "deep-riptide": 2,
+        "tidal-waves": 1,
+        "restorative-stream": 1,
+        "cascading-stream": 1
+      },
+      "7-double": {
+        "tidal-reserves": 2,
+        "deep-riptide": 2,
+        "tidal-waves": 1,
+        "restorative-stream": 1,
+        "double-current": 1
+      },
+      "7-earth": {
+        "tidal-reserves": 2,
+        "deep-riptide": 2,
+        "tidal-waves": 1,
+        "restorative-stream": 1,
+        "earthliving": 1
+      },
+      "7-tide": {
+        "tidal-reserves": 2,
+        "deep-riptide": 2,
+        "tidal-waves": 1,
+        "restorative-stream": 1,
+        "healing-tide-totem": 1
+      },
+      "7-ancestral": {
+        "tidal-reserves": 2,
+        "deep-riptide": 2,
+        "tidal-waves": 1,
+        "restorative-stream": 1,
+        "ancestral-echo": 1
+      },
+      "7-ancestral-wave": {
+        "tidal-reserves": 2,
+        "tidal-momentum": 2,
+        "tidal-waves": 1,
+        "high-tide": 1,
+        "ancestral-echo": 1
+      },
+      "7-earth-echo": {
+        "tidal-reserves": 2,
+        "deep-riptide": 1,
+        "tidal-waves": 1,
+        "restorative-stream": 1,
+        "cascading-stream": 1,
+        "earthliving": 1
+      },
+      "7-tide-echo": {
+        "tidal-reserves": 2,
+        "deep-riptide": 1,
+        "tidal-waves": 1,
+        "restorative-stream": 1,
+        "cascading-stream": 1,
+        "healing-tide-totem": 1
+      },
+      "7-ancestral-echo": {
+        "tidal-reserves": 2,
+        "deep-riptide": 1,
+        "tidal-waves": 1,
+        "restorative-stream": 1,
+        "cascading-stream": 1,
+        "ancestral-echo": 1
+      },
+      "7-high-tide": {
+        "tidal-reserves": 2,
+        "deep-riptide": 2,
+        "high-tide": 2,
+        "flowing-riptide": 1
+      },
+      "7-stream": {
+        "tidal-reserves": 2,
+        "deep-riptide": 2,
+        "restorative-stream": 2,
+        "flowing-riptide": 1
+      },
+      "7-momentum": {
+        "tidal-reserves": 2,
+        "tidal-momentum": 2,
+        "tidal-waves": 1,
+        "restorative-stream": 1,
+        "earthliving": 1
+      },
+      "8-earth": {
+        "tidal-reserves": 2,
+        "deep-riptide": 2,
+        "tidal-waves": 1,
+        "restorative-stream": 1,
+        "flowing-riptide": 1,
+        "earthliving": 1
+      },
+      "8-tide": {
+        "tidal-reserves": 2,
+        "deep-riptide": 2,
+        "tidal-waves": 1,
+        "restorative-stream": 1,
+        "flowing-riptide": 1,
+        "healing-tide-totem": 1
+      },
+      "8-ancestral": {
+        "tidal-reserves": 2,
+        "deep-riptide": 2,
+        "tidal-waves": 1,
+        "restorative-stream": 1,
+        "flowing-riptide": 1,
+        "ancestral-echo": 1
+      },
+      "8-ancestral-double": {
+        "tidal-reserves": 2,
+        "tidal-momentum": 2,
+        "tidal-waves": 1,
+        "high-tide": 1,
+        "double-current": 1,
+        "ancestral-echo": 1
+      },
+      "8-earth-echo": {
+        "tidal-reserves": 2,
+        "deep-riptide": 2,
+        "tidal-waves": 1,
+        "restorative-stream": 1,
+        "cascading-stream": 1,
+        "earthliving": 1
+      },
+      "8-earth-double": {
+        "tidal-reserves": 2,
+        "deep-riptide": 2,
+        "tidal-waves": 1,
+        "restorative-stream": 1,
+        "double-current": 1,
+        "earthliving": 1
+      },
+      "8-earth-tide": {
+        "tidal-reserves": 2,
+        "deep-riptide": 2,
+        "tidal-waves": 1,
+        "restorative-stream": 1,
+        "earthliving": 1,
+        "healing-tide-totem": 1
+      },
+      "8-earth-ancestral": {
+        "tidal-reserves": 2,
+        "deep-riptide": 2,
+        "tidal-waves": 1,
+        "restorative-stream": 1,
+        "earthliving": 1,
+        "ancestral-echo": 1
+      }
+    }
+  },
+  "jobs": {
+    "progression": {
+      "samples": 30,
+      "mode": "controlled",
+      "env": {
+        "SCENARIOS": "adaptive",
+        "CHAPTERS": "1,2,3",
+        "BUILD_FILTER": "1-reserves,1-binding,1-rejuvenation,3-waves,3-binding,3-rejuvenation,5-flow,5-penance,5-nourishment,0-base",
+        "PROFILES": "focused,split,three,aoe,burst,long",
+        "PRESSURE_SCALE": "1.6"
+      },
+      "output": "docs/bat-89-progression.jsonl",
+      "rows": 216,
+      "durationSeconds": 123.243,
+      "sources": {
+        "src/combat.js": "a76d8a852cf5281113573dbbba6ec53459e2071de07fdb0d0892bad19554787c",
+        "src/data.js": "62a503dc7aac9a609ec528c00eea0029f78ee705fc994afb402ed5b37fc9a543",
+        "src/stats.js": "8ba5ecc9c30e8ee51afca4ae9432d9703b006bdac374c79f786709bd9cdb602b",
+        "src/shaman-talents.js": "fcb4146cc8896f3a18be9a4462f3484de5549b59c6eb7c10bb09e2e385d1d193",
+        "src/talent-trees.js": "21992ed8f3ec1676478ee85faf124df0521a54073179164944df35a55c25818e",
+        "src/talents.js": "5f6d8052f34f1c29f50663875a686b6ceada76fc9be3c497947d34fea69db56e",
+        "src/priest-talents.js": "c9f8c33d891a46f830babb6bef9fc34fdfc5fa06024ebfa87afc22a0eafc689c",
+        "src/druid-talents.js": "725b5100432db0d661d603577e269c25deb3cd1d8e775440589241033ea759ff",
+        "src/loot.js": "cc79f8e583ff050c6e605579a1ccc3a9fef552531178d590fd961b08bcdaaf52",
+        "scripts/talent-balance.mjs": "0b29f45beb74cab0be393ae18f37f141b4ec6be3f4875ae64a426462010e960a",
+        "scripts/boss-balance.mjs": "107dc2bf90835af81b549979ccdfb31054ea36fd6700f6aca70989c6a2af954b",
+        "scripts/shaman-balance.mjs": "9e859f9301e2b5f73b86e78ffcafef0060262f2679551df645cd033aff4f3f8b",
+        "scripts/shaman-policy.mjs": "fd8c47ddc44e5cd9fba6e7b0be328864f8e2844ef0f2e0d18b62de5b0dbbf43e",
+        "scripts/shaman-priority.mjs": "a88813f61ea98fdbb6ba005fd186666cb0b5149d3bef742e6ec83f512b492da5",
+        "scripts/shaman-revalidation.mjs": "dc771a5bc0f039b2e74c3d00cbdf15eed053214899313a84a1a5f95cec174028",
+        "scripts/fixtures/bat87-combat.mjs": "479a20f8bf1755d4b87dbb4b77343e70a0ded3db79fd180596fac70da03f5378",
+        "scripts/shaman-revalidation-evidence.mjs": "1203f8471e80ad33b536091633224fb1d40686fba72317ef64970ecca962d119"
+      },
+      "sha256": "236ac4e94c88b65a77f919351d14ae3f5b14537db402ad4b448235c57e856935",
+      "orchestratorAtExecution": {
+        "path": "scripts/shaman-evidence.mjs",
+        "sha256": "e3fcb624836cdc02b3d40590c9f943741c100f0d0f8467436939f4a776db4572"
+      },
+      "sourceNote": "Orchestrator renamed and extra jobs added after execution to preserve BAT-87 runner; all simulation-source hashes verified unchanged. sources records the reproducible runner; original execution hash retained separately."
+    },
+    "builds": {
+      "samples": 30,
+      "mode": "controlled",
+      "env": {
+        "SCENARIOS": "adaptive",
+        "BUILD_FILTER": "7-fourfold,7-blooming,7-earth,7-tide,7-ancestral,7-earth-echo,7-tide-echo,7-ancestral-echo,7-high-tide,7-momentum,8-earth,8-tide,8-ancestral,8-earth-echo,8-earth-double,8-earth-tide,8-earth-ancestral,8-ancestral-double",
+        "PROFILES": "focused,split,three,aoe,burst,long,groupBurst",
+        "PRESSURE_SCALE": "1.6"
+      },
+      "output": "docs/bat-89-builds.jsonl",
+      "rows": 126,
+      "durationSeconds": 179.963,
+      "sources": {
+        "src/combat.js": "a76d8a852cf5281113573dbbba6ec53459e2071de07fdb0d0892bad19554787c",
+        "src/data.js": "62a503dc7aac9a609ec528c00eea0029f78ee705fc994afb402ed5b37fc9a543",
+        "src/stats.js": "8ba5ecc9c30e8ee51afca4ae9432d9703b006bdac374c79f786709bd9cdb602b",
+        "src/shaman-talents.js": "fcb4146cc8896f3a18be9a4462f3484de5549b59c6eb7c10bb09e2e385d1d193",
+        "src/talent-trees.js": "21992ed8f3ec1676478ee85faf124df0521a54073179164944df35a55c25818e",
+        "src/talents.js": "5f6d8052f34f1c29f50663875a686b6ceada76fc9be3c497947d34fea69db56e",
+        "src/priest-talents.js": "c9f8c33d891a46f830babb6bef9fc34fdfc5fa06024ebfa87afc22a0eafc689c",
+        "src/druid-talents.js": "725b5100432db0d661d603577e269c25deb3cd1d8e775440589241033ea759ff",
+        "src/loot.js": "cc79f8e583ff050c6e605579a1ccc3a9fef552531178d590fd961b08bcdaaf52",
+        "scripts/talent-balance.mjs": "0b29f45beb74cab0be393ae18f37f141b4ec6be3f4875ae64a426462010e960a",
+        "scripts/boss-balance.mjs": "107dc2bf90835af81b549979ccdfb31054ea36fd6700f6aca70989c6a2af954b",
+        "scripts/shaman-balance.mjs": "9e859f9301e2b5f73b86e78ffcafef0060262f2679551df645cd033aff4f3f8b",
+        "scripts/shaman-policy.mjs": "fd8c47ddc44e5cd9fba6e7b0be328864f8e2844ef0f2e0d18b62de5b0dbbf43e",
+        "scripts/shaman-priority.mjs": "a88813f61ea98fdbb6ba005fd186666cb0b5149d3bef742e6ec83f512b492da5",
+        "scripts/shaman-revalidation.mjs": "dc771a5bc0f039b2e74c3d00cbdf15eed053214899313a84a1a5f95cec174028",
+        "scripts/fixtures/bat87-combat.mjs": "479a20f8bf1755d4b87dbb4b77343e70a0ded3db79fd180596fac70da03f5378",
+        "scripts/shaman-revalidation-evidence.mjs": "1203f8471e80ad33b536091633224fb1d40686fba72317ef64970ecca962d119"
+      },
+      "sha256": "8a5b67737a5645d9ddb03fd212e1f2803719e7a3c994f886890e12abfeec84c0",
+      "orchestratorAtExecution": {
+        "path": "scripts/shaman-evidence.mjs",
+        "sha256": "e3fcb624836cdc02b3d40590c9f943741c100f0d0f8467436939f4a776db4572"
+      },
+      "sourceNote": "Orchestrator renamed and extra jobs added after execution to preserve BAT-87 runner; all simulation-source hashes verified unchanged. sources records the reproducible runner; original execution hash retained separately."
+    },
+    "routes": {
+      "samples": 30,
+      "mode": "routes",
+      "env": {
+        "SCENARIOS": "before,policy,adaptive",
+        "CHAPTERS": "1,2,3,4",
+        "BUILD_FILTER": "1-reserves,1-binding,1-rejuvenation,3-waves,3-binding,3-rejuvenation,5-flow,5-penance,5-nourishment,7-fourfold,7-blooming,7-earth,7-tide,7-ancestral,7-earth-echo,7-tide-echo,7-ancestral-echo",
+        "SKILLS": "veryGood,average,weak",
+        "STAGES": "first,ready"
+      },
+      "output": "docs/bat-89-routes.jsonl",
+      "rows": 210,
+      "durationSeconds": 341.986,
+      "sources": {
+        "src/combat.js": "a76d8a852cf5281113573dbbba6ec53459e2071de07fdb0d0892bad19554787c",
+        "src/data.js": "62a503dc7aac9a609ec528c00eea0029f78ee705fc994afb402ed5b37fc9a543",
+        "src/stats.js": "8ba5ecc9c30e8ee51afca4ae9432d9703b006bdac374c79f786709bd9cdb602b",
+        "src/shaman-talents.js": "fcb4146cc8896f3a18be9a4462f3484de5549b59c6eb7c10bb09e2e385d1d193",
+        "src/talent-trees.js": "21992ed8f3ec1676478ee85faf124df0521a54073179164944df35a55c25818e",
+        "src/talents.js": "5f6d8052f34f1c29f50663875a686b6ceada76fc9be3c497947d34fea69db56e",
+        "src/priest-talents.js": "c9f8c33d891a46f830babb6bef9fc34fdfc5fa06024ebfa87afc22a0eafc689c",
+        "src/druid-talents.js": "725b5100432db0d661d603577e269c25deb3cd1d8e775440589241033ea759ff",
+        "src/loot.js": "cc79f8e583ff050c6e605579a1ccc3a9fef552531178d590fd961b08bcdaaf52",
+        "scripts/talent-balance.mjs": "0b29f45beb74cab0be393ae18f37f141b4ec6be3f4875ae64a426462010e960a",
+        "scripts/boss-balance.mjs": "107dc2bf90835af81b549979ccdfb31054ea36fd6700f6aca70989c6a2af954b",
+        "scripts/shaman-balance.mjs": "9e859f9301e2b5f73b86e78ffcafef0060262f2679551df645cd033aff4f3f8b",
+        "scripts/shaman-policy.mjs": "fd8c47ddc44e5cd9fba6e7b0be328864f8e2844ef0f2e0d18b62de5b0dbbf43e",
+        "scripts/shaman-priority.mjs": "a88813f61ea98fdbb6ba005fd186666cb0b5149d3bef742e6ec83f512b492da5",
+        "scripts/shaman-revalidation.mjs": "dc771a5bc0f039b2e74c3d00cbdf15eed053214899313a84a1a5f95cec174028",
+        "scripts/fixtures/bat87-combat.mjs": "479a20f8bf1755d4b87dbb4b77343e70a0ded3db79fd180596fac70da03f5378",
+        "scripts/shaman-revalidation-evidence.mjs": "1203f8471e80ad33b536091633224fb1d40686fba72317ef64970ecca962d119"
+      },
+      "sha256": "cf0eec69d88d474938b84874b04b432e0655af8ed27b84874d0b7f5b63ca7295",
+      "orchestratorAtExecution": {
+        "path": "scripts/shaman-evidence.mjs",
+        "sha256": "e3fcb624836cdc02b3d40590c9f943741c100f0d0f8467436939f4a776db4572"
+      },
+      "sourceNote": "Orchestrator renamed and extra jobs added after execution to preserve BAT-87 runner; all simulation-source hashes verified unchanged. sources records the reproducible runner; original execution hash retained separately."
+    },
+    "early": {
+      "samples": 300,
+      "mode": "controlled",
+      "env": {
+        "SCENARIOS": "before,policy,adaptive",
+        "CHAPTERS": "1",
+        "BUILD_FILTER": "0-base,1-reserves,1-deep,1-momentum,1-binding,1-rejuvenation",
+        "PROFILES": "focused,split,three,aoe,burst,long",
+        "PRESSURE_SCALE": "2"
+      },
+      "output": "docs/bat-89-early.jsonl",
+      "rows": 96,
+      "durationSeconds": 447.582,
+      "sources": {
+        "src/combat.js": "a76d8a852cf5281113573dbbba6ec53459e2071de07fdb0d0892bad19554787c",
+        "src/data.js": "62a503dc7aac9a609ec528c00eea0029f78ee705fc994afb402ed5b37fc9a543",
+        "src/stats.js": "8ba5ecc9c30e8ee51afca4ae9432d9703b006bdac374c79f786709bd9cdb602b",
+        "src/shaman-talents.js": "fcb4146cc8896f3a18be9a4462f3484de5549b59c6eb7c10bb09e2e385d1d193",
+        "src/talent-trees.js": "21992ed8f3ec1676478ee85faf124df0521a54073179164944df35a55c25818e",
+        "src/talents.js": "5f6d8052f34f1c29f50663875a686b6ceada76fc9be3c497947d34fea69db56e",
+        "src/priest-talents.js": "c9f8c33d891a46f830babb6bef9fc34fdfc5fa06024ebfa87afc22a0eafc689c",
+        "src/druid-talents.js": "725b5100432db0d661d603577e269c25deb3cd1d8e775440589241033ea759ff",
+        "src/loot.js": "cc79f8e583ff050c6e605579a1ccc3a9fef552531178d590fd961b08bcdaaf52",
+        "scripts/talent-balance.mjs": "0b29f45beb74cab0be393ae18f37f141b4ec6be3f4875ae64a426462010e960a",
+        "scripts/boss-balance.mjs": "107dc2bf90835af81b549979ccdfb31054ea36fd6700f6aca70989c6a2af954b",
+        "scripts/shaman-balance.mjs": "9e859f9301e2b5f73b86e78ffcafef0060262f2679551df645cd033aff4f3f8b",
+        "scripts/shaman-policy.mjs": "fd8c47ddc44e5cd9fba6e7b0be328864f8e2844ef0f2e0d18b62de5b0dbbf43e",
+        "scripts/shaman-priority.mjs": "a88813f61ea98fdbb6ba005fd186666cb0b5149d3bef742e6ec83f512b492da5",
+        "scripts/shaman-revalidation.mjs": "dc771a5bc0f039b2e74c3d00cbdf15eed053214899313a84a1a5f95cec174028",
+        "scripts/fixtures/bat87-combat.mjs": "479a20f8bf1755d4b87dbb4b77343e70a0ded3db79fd180596fac70da03f5378",
+        "scripts/shaman-revalidation-evidence.mjs": "1203f8471e80ad33b536091633224fb1d40686fba72317ef64970ecca962d119"
+      },
+      "sha256": "a4cc273565a61ef91ac0c164d20f67ba403fb2edb9bed410e2875b5d8057220a",
+      "orchestratorAtExecution": {
+        "path": "scripts/shaman-evidence.mjs",
+        "sha256": "e3fcb624836cdc02b3d40590c9f943741c100f0d0f8467436939f4a776db4572"
+      },
+      "sourceNote": "Orchestrator renamed and extra jobs added after execution to preserve BAT-87 runner; all simulation-source hashes verified unchanged. sources records the reproducible runner; original execution hash retained separately."
+    },
+    "earlyRoutes": {
+      "samples": 300,
+      "mode": "routes",
+      "env": {
+        "SCENARIOS": "before,policy,adaptive",
+        "CHAPTERS": "1",
+        "BUILD_FILTER": "0-base,1-reserves,1-deep,1-momentum,1-binding,1-rejuvenation",
+        "SKILLS": "veryGood,average,weak",
+        "STAGES": "first,ready"
+      },
+      "output": "docs/bat-89-earlyRoutes.jsonl",
+      "rows": 66,
+      "durationSeconds": 694.396,
+      "sources": {
+        "src/combat.js": "a76d8a852cf5281113573dbbba6ec53459e2071de07fdb0d0892bad19554787c",
+        "src/data.js": "62a503dc7aac9a609ec528c00eea0029f78ee705fc994afb402ed5b37fc9a543",
+        "src/stats.js": "8ba5ecc9c30e8ee51afca4ae9432d9703b006bdac374c79f786709bd9cdb602b",
+        "src/shaman-talents.js": "fcb4146cc8896f3a18be9a4462f3484de5549b59c6eb7c10bb09e2e385d1d193",
+        "src/talent-trees.js": "21992ed8f3ec1676478ee85faf124df0521a54073179164944df35a55c25818e",
+        "src/talents.js": "5f6d8052f34f1c29f50663875a686b6ceada76fc9be3c497947d34fea69db56e",
+        "src/priest-talents.js": "c9f8c33d891a46f830babb6bef9fc34fdfc5fa06024ebfa87afc22a0eafc689c",
+        "src/druid-talents.js": "725b5100432db0d661d603577e269c25deb3cd1d8e775440589241033ea759ff",
+        "src/loot.js": "cc79f8e583ff050c6e605579a1ccc3a9fef552531178d590fd961b08bcdaaf52",
+        "scripts/talent-balance.mjs": "0b29f45beb74cab0be393ae18f37f141b4ec6be3f4875ae64a426462010e960a",
+        "scripts/boss-balance.mjs": "107dc2bf90835af81b549979ccdfb31054ea36fd6700f6aca70989c6a2af954b",
+        "scripts/shaman-balance.mjs": "9e859f9301e2b5f73b86e78ffcafef0060262f2679551df645cd033aff4f3f8b",
+        "scripts/shaman-policy.mjs": "fd8c47ddc44e5cd9fba6e7b0be328864f8e2844ef0f2e0d18b62de5b0dbbf43e",
+        "scripts/shaman-priority.mjs": "a88813f61ea98fdbb6ba005fd186666cb0b5149d3bef742e6ec83f512b492da5",
+        "scripts/shaman-revalidation.mjs": "dc771a5bc0f039b2e74c3d00cbdf15eed053214899313a84a1a5f95cec174028",
+        "scripts/fixtures/bat87-combat.mjs": "479a20f8bf1755d4b87dbb4b77343e70a0ded3db79fd180596fac70da03f5378",
+        "scripts/shaman-revalidation-evidence.mjs": "1203f8471e80ad33b536091633224fb1d40686fba72317ef64970ecca962d119"
+      },
+      "sha256": "e7d0422454a85e57b61d53ca2384feb2b7978257e95fe996d13e7f0f5484f365",
+      "orchestratorAtExecution": {
+        "path": "scripts/shaman-evidence.mjs",
+        "sha256": "e3fcb624836cdc02b3d40590c9f943741c100f0d0f8467436939f4a776db4572"
+      },
+      "sourceNote": "Orchestrator renamed and extra jobs added after execution to preserve BAT-87 runner; all simulation-source hashes verified unchanged. sources records the reproducible runner; original execution hash retained separately."
+    },
+    "niches": {
+      "samples": 300,
+      "mode": "controlled",
+      "env": {
+        "SCENARIOS": "before,policy,adaptive",
+        "BUILD_FILTER": "7-fourfold,7-blooming,7-earth-echo,7-tide-echo,7-ancestral-echo,8-earth-tide,8-earth-ancestral,8-ancestral-double",
+        "PROFILES": "split,three,aoe",
+        "PRESSURE_SCALE": "2.8"
+      },
+      "output": "docs/bat-89-niches.jsonl",
+      "rows": 60,
+      "durationSeconds": 561.056,
+      "sources": {
+        "src/combat.js": "a76d8a852cf5281113573dbbba6ec53459e2071de07fdb0d0892bad19554787c",
+        "src/data.js": "62a503dc7aac9a609ec528c00eea0029f78ee705fc994afb402ed5b37fc9a543",
+        "src/stats.js": "8ba5ecc9c30e8ee51afca4ae9432d9703b006bdac374c79f786709bd9cdb602b",
+        "src/shaman-talents.js": "fcb4146cc8896f3a18be9a4462f3484de5549b59c6eb7c10bb09e2e385d1d193",
+        "src/talent-trees.js": "21992ed8f3ec1676478ee85faf124df0521a54073179164944df35a55c25818e",
+        "src/talents.js": "5f6d8052f34f1c29f50663875a686b6ceada76fc9be3c497947d34fea69db56e",
+        "src/priest-talents.js": "c9f8c33d891a46f830babb6bef9fc34fdfc5fa06024ebfa87afc22a0eafc689c",
+        "src/druid-talents.js": "725b5100432db0d661d603577e269c25deb3cd1d8e775440589241033ea759ff",
+        "src/loot.js": "cc79f8e583ff050c6e605579a1ccc3a9fef552531178d590fd961b08bcdaaf52",
+        "scripts/talent-balance.mjs": "0b29f45beb74cab0be393ae18f37f141b4ec6be3f4875ae64a426462010e960a",
+        "scripts/boss-balance.mjs": "107dc2bf90835af81b549979ccdfb31054ea36fd6700f6aca70989c6a2af954b",
+        "scripts/shaman-balance.mjs": "9e859f9301e2b5f73b86e78ffcafef0060262f2679551df645cd033aff4f3f8b",
+        "scripts/shaman-policy.mjs": "fd8c47ddc44e5cd9fba6e7b0be328864f8e2844ef0f2e0d18b62de5b0dbbf43e",
+        "scripts/shaman-priority.mjs": "a88813f61ea98fdbb6ba005fd186666cb0b5149d3bef742e6ec83f512b492da5",
+        "scripts/shaman-revalidation.mjs": "dc771a5bc0f039b2e74c3d00cbdf15eed053214899313a84a1a5f95cec174028",
+        "scripts/fixtures/bat87-combat.mjs": "479a20f8bf1755d4b87dbb4b77343e70a0ded3db79fd180596fac70da03f5378",
+        "scripts/shaman-revalidation-evidence.mjs": "1203f8471e80ad33b536091633224fb1d40686fba72317ef64970ecca962d119"
+      },
+      "sha256": "fcb2bf0fb5acf8f9666d9f61388888b6dce995b51da0cd409d73207e786447ff",
+      "orchestratorAtExecution": {
+        "path": "scripts/shaman-evidence.mjs",
+        "sha256": "e3fcb624836cdc02b3d40590c9f943741c100f0d0f8467436939f4a776db4572"
+      },
+      "sourceNote": "Orchestrator renamed and extra jobs added after execution to preserve BAT-87 runner; all simulation-source hashes verified unchanged. sources records the reproducible runner; original execution hash retained separately."
+    },
+    "stress": {
+      "samples": 300,
+      "mode": "controlled",
+      "env": {
+        "SCENARIOS": "before,policy,adaptive",
+        "BUILD_FILTER": "7-fourfold,7-blooming,7-earth-echo,7-tide-echo,7-ancestral-echo,8-earth-tide,8-earth-ancestral,8-ancestral-double",
+        "PROFILES": "burst,long",
+        "PRESSURE_SCALE": "2"
+      },
+      "output": "docs/bat-89-stress.jsonl",
+      "rows": 40,
+      "durationSeconds": 457.785,
+      "sources": {
+        "src/combat.js": "a76d8a852cf5281113573dbbba6ec53459e2071de07fdb0d0892bad19554787c",
+        "src/data.js": "62a503dc7aac9a609ec528c00eea0029f78ee705fc994afb402ed5b37fc9a543",
+        "src/stats.js": "8ba5ecc9c30e8ee51afca4ae9432d9703b006bdac374c79f786709bd9cdb602b",
+        "src/shaman-talents.js": "fcb4146cc8896f3a18be9a4462f3484de5549b59c6eb7c10bb09e2e385d1d193",
+        "src/talent-trees.js": "21992ed8f3ec1676478ee85faf124df0521a54073179164944df35a55c25818e",
+        "src/talents.js": "5f6d8052f34f1c29f50663875a686b6ceada76fc9be3c497947d34fea69db56e",
+        "src/priest-talents.js": "c9f8c33d891a46f830babb6bef9fc34fdfc5fa06024ebfa87afc22a0eafc689c",
+        "src/druid-talents.js": "725b5100432db0d661d603577e269c25deb3cd1d8e775440589241033ea759ff",
+        "src/loot.js": "cc79f8e583ff050c6e605579a1ccc3a9fef552531178d590fd961b08bcdaaf52",
+        "scripts/talent-balance.mjs": "0b29f45beb74cab0be393ae18f37f141b4ec6be3f4875ae64a426462010e960a",
+        "scripts/boss-balance.mjs": "107dc2bf90835af81b549979ccdfb31054ea36fd6700f6aca70989c6a2af954b",
+        "scripts/shaman-balance.mjs": "9e859f9301e2b5f73b86e78ffcafef0060262f2679551df645cd033aff4f3f8b",
+        "scripts/shaman-policy.mjs": "fd8c47ddc44e5cd9fba6e7b0be328864f8e2844ef0f2e0d18b62de5b0dbbf43e",
+        "scripts/shaman-priority.mjs": "a88813f61ea98fdbb6ba005fd186666cb0b5149d3bef742e6ec83f512b492da5",
+        "scripts/shaman-revalidation.mjs": "dc771a5bc0f039b2e74c3d00cbdf15eed053214899313a84a1a5f95cec174028",
+        "scripts/fixtures/bat87-combat.mjs": "479a20f8bf1755d4b87dbb4b77343e70a0ded3db79fd180596fac70da03f5378",
+        "scripts/shaman-revalidation-evidence.mjs": "1203f8471e80ad33b536091633224fb1d40686fba72317ef64970ecca962d119"
+      },
+      "sha256": "8d218c4604631fa850e54ba122ea5c6c27f34577941d7299bdd006b82fe2f62b",
+      "orchestratorAtExecution": {
+        "path": "scripts/shaman-evidence.mjs",
+        "sha256": "e3fcb624836cdc02b3d40590c9f943741c100f0d0f8467436939f4a776db4572"
+      },
+      "sourceNote": "Orchestrator renamed and extra jobs added after execution to preserve BAT-87 runner; all simulation-source hashes verified unchanged. sources records the reproducible runner; original execution hash retained separately."
+    },
+    "unleash": {
+      "samples": 300,
+      "mode": "controlled",
+      "env": {
+        "SCENARIOS": "adaptive,efficiency,reserve",
+        "HEALERS": "shaman",
+        "BUILD_FILTER": "7-earth-echo,7-ancestral-echo,8-earth-double,8-ancestral-double",
+        "PROFILES": "burst,long",
+        "PRESSURE_SCALE": "2"
+      },
+      "output": "docs/bat-89-unleash.jsonl",
+      "rows": 24,
+      "durationSeconds": 375.543,
+      "sources": {
+        "src/combat.js": "a76d8a852cf5281113573dbbba6ec53459e2071de07fdb0d0892bad19554787c",
+        "src/data.js": "62a503dc7aac9a609ec528c00eea0029f78ee705fc994afb402ed5b37fc9a543",
+        "src/stats.js": "8ba5ecc9c30e8ee51afca4ae9432d9703b006bdac374c79f786709bd9cdb602b",
+        "src/shaman-talents.js": "fcb4146cc8896f3a18be9a4462f3484de5549b59c6eb7c10bb09e2e385d1d193",
+        "src/talent-trees.js": "21992ed8f3ec1676478ee85faf124df0521a54073179164944df35a55c25818e",
+        "src/talents.js": "5f6d8052f34f1c29f50663875a686b6ceada76fc9be3c497947d34fea69db56e",
+        "src/priest-talents.js": "c9f8c33d891a46f830babb6bef9fc34fdfc5fa06024ebfa87afc22a0eafc689c",
+        "src/druid-talents.js": "725b5100432db0d661d603577e269c25deb3cd1d8e775440589241033ea759ff",
+        "src/loot.js": "cc79f8e583ff050c6e605579a1ccc3a9fef552531178d590fd961b08bcdaaf52",
+        "scripts/talent-balance.mjs": "0b29f45beb74cab0be393ae18f37f141b4ec6be3f4875ae64a426462010e960a",
+        "scripts/boss-balance.mjs": "107dc2bf90835af81b549979ccdfb31054ea36fd6700f6aca70989c6a2af954b",
+        "scripts/shaman-balance.mjs": "9e859f9301e2b5f73b86e78ffcafef0060262f2679551df645cd033aff4f3f8b",
+        "scripts/shaman-policy.mjs": "fd8c47ddc44e5cd9fba6e7b0be328864f8e2844ef0f2e0d18b62de5b0dbbf43e",
+        "scripts/shaman-priority.mjs": "a88813f61ea98fdbb6ba005fd186666cb0b5149d3bef742e6ec83f512b492da5",
+        "scripts/shaman-revalidation.mjs": "dc771a5bc0f039b2e74c3d00cbdf15eed053214899313a84a1a5f95cec174028",
+        "scripts/fixtures/bat87-combat.mjs": "479a20f8bf1755d4b87dbb4b77343e70a0ded3db79fd180596fac70da03f5378",
+        "scripts/shaman-revalidation-evidence.mjs": "1203f8471e80ad33b536091633224fb1d40686fba72317ef64970ecca962d119"
+      },
+      "sha256": "5d5350664d61844024d3efcba4a74fc5e04ff3be4b63b5ea169aaf120d71a4fc",
+      "orchestratorAtExecution": {
+        "path": "scripts/shaman-evidence.mjs",
+        "sha256": "e3fcb624836cdc02b3d40590c9f943741c100f0d0f8467436939f4a776db4572"
+      },
+      "sourceNote": "Orchestrator renamed and extra jobs added after execution to preserve BAT-87 runner; all simulation-source hashes verified unchanged. sources records the reproducible runner; original execution hash retained separately."
+    },
+    "closeRoutes": {
+      "samples": 300,
+      "mode": "routes",
+      "env": {
+        "SCENARIOS": "before,policy,adaptive",
+        "BUILD_FILTER": "7-fourfold,7-blooming,7-earth,7-tide,7-ancestral,7-earth-echo,7-tide-echo,7-ancestral-echo",
+        "SKILLS": "veryGood",
+        "STAGES": "ready"
+      },
+      "output": "docs/bat-89-closeRoutes.jsonl",
+      "rows": 20,
+      "durationSeconds": 550.597,
+      "sources": {
+        "src/combat.js": "a76d8a852cf5281113573dbbba6ec53459e2071de07fdb0d0892bad19554787c",
+        "src/data.js": "62a503dc7aac9a609ec528c00eea0029f78ee705fc994afb402ed5b37fc9a543",
+        "src/stats.js": "8ba5ecc9c30e8ee51afca4ae9432d9703b006bdac374c79f786709bd9cdb602b",
+        "src/shaman-talents.js": "fcb4146cc8896f3a18be9a4462f3484de5549b59c6eb7c10bb09e2e385d1d193",
+        "src/talent-trees.js": "21992ed8f3ec1676478ee85faf124df0521a54073179164944df35a55c25818e",
+        "src/talents.js": "5f6d8052f34f1c29f50663875a686b6ceada76fc9be3c497947d34fea69db56e",
+        "src/priest-talents.js": "c9f8c33d891a46f830babb6bef9fc34fdfc5fa06024ebfa87afc22a0eafc689c",
+        "src/druid-talents.js": "725b5100432db0d661d603577e269c25deb3cd1d8e775440589241033ea759ff",
+        "src/loot.js": "cc79f8e583ff050c6e605579a1ccc3a9fef552531178d590fd961b08bcdaaf52",
+        "scripts/talent-balance.mjs": "0b29f45beb74cab0be393ae18f37f141b4ec6be3f4875ae64a426462010e960a",
+        "scripts/boss-balance.mjs": "107dc2bf90835af81b549979ccdfb31054ea36fd6700f6aca70989c6a2af954b",
+        "scripts/shaman-balance.mjs": "9e859f9301e2b5f73b86e78ffcafef0060262f2679551df645cd033aff4f3f8b",
+        "scripts/shaman-policy.mjs": "fd8c47ddc44e5cd9fba6e7b0be328864f8e2844ef0f2e0d18b62de5b0dbbf43e",
+        "scripts/shaman-priority.mjs": "a88813f61ea98fdbb6ba005fd186666cb0b5149d3bef742e6ec83f512b492da5",
+        "scripts/shaman-revalidation.mjs": "dc771a5bc0f039b2e74c3d00cbdf15eed053214899313a84a1a5f95cec174028",
+        "scripts/fixtures/bat87-combat.mjs": "479a20f8bf1755d4b87dbb4b77343e70a0ded3db79fd180596fac70da03f5378",
+        "scripts/shaman-revalidation-evidence.mjs": "1203f8471e80ad33b536091633224fb1d40686fba72317ef64970ecca962d119"
+      },
+      "sha256": "0fb7dce9d3aaa01e83b30c7f51497e89daa218ebaff7866bbd97e384b4493530",
+      "orchestratorAtExecution": {
+        "path": "scripts/shaman-evidence.mjs",
+        "sha256": "e3fcb624836cdc02b3d40590c9f943741c100f0d0f8467436939f4a776db4572"
+      },
+      "sourceNote": "Orchestrator renamed and extra jobs added after execution to preserve BAT-87 runner; all simulation-source hashes verified unchanged. sources records the reproducible runner; original execution hash retained separately."
+    },
+    "focused": {
+      "samples": 300,
+      "mode": "controlled",
+      "env": {
+        "SCENARIOS": "adaptive",
+        "CHAPTERS": "4",
+        "HEALERS": "priest,druid,shaman",
+        "BUILD_FILTER": "7-fourfold,7-blooming,7-earth-echo,7-tide-echo,7-ancestral-echo",
+        "PROFILES": "focused",
+        "PRESSURE_SCALE": "2.8",
+        "SHAMAN_TUNING": "{}"
+      },
+      "output": "docs/bat-89-focused.jsonl",
+      "rows": 5,
+      "sources": {
+        "src/combat.js": "a76d8a852cf5281113573dbbba6ec53459e2071de07fdb0d0892bad19554787c",
+        "src/data.js": "62a503dc7aac9a609ec528c00eea0029f78ee705fc994afb402ed5b37fc9a543",
+        "src/stats.js": "8ba5ecc9c30e8ee51afca4ae9432d9703b006bdac374c79f786709bd9cdb602b",
+        "src/shaman-talents.js": "fcb4146cc8896f3a18be9a4462f3484de5549b59c6eb7c10bb09e2e385d1d193",
+        "src/talent-trees.js": "21992ed8f3ec1676478ee85faf124df0521a54073179164944df35a55c25818e",
+        "src/talents.js": "5f6d8052f34f1c29f50663875a686b6ceada76fc9be3c497947d34fea69db56e",
+        "src/priest-talents.js": "c9f8c33d891a46f830babb6bef9fc34fdfc5fa06024ebfa87afc22a0eafc689c",
+        "src/druid-talents.js": "725b5100432db0d661d603577e269c25deb3cd1d8e775440589241033ea759ff",
+        "src/loot.js": "cc79f8e583ff050c6e605579a1ccc3a9fef552531178d590fd961b08bcdaaf52",
+        "scripts/talent-balance.mjs": "0b29f45beb74cab0be393ae18f37f141b4ec6be3f4875ae64a426462010e960a",
+        "scripts/boss-balance.mjs": "107dc2bf90835af81b549979ccdfb31054ea36fd6700f6aca70989c6a2af954b",
+        "scripts/shaman-balance.mjs": "9e859f9301e2b5f73b86e78ffcafef0060262f2679551df645cd033aff4f3f8b",
+        "scripts/shaman-policy.mjs": "fd8c47ddc44e5cd9fba6e7b0be328864f8e2844ef0f2e0d18b62de5b0dbbf43e",
+        "scripts/shaman-priority.mjs": "a88813f61ea98fdbb6ba005fd186666cb0b5149d3bef742e6ec83f512b492da5",
+        "scripts/shaman-revalidation.mjs": "dc771a5bc0f039b2e74c3d00cbdf15eed053214899313a84a1a5f95cec174028",
+        "scripts/fixtures/bat87-combat.mjs": "479a20f8bf1755d4b87dbb4b77343e70a0ded3db79fd180596fac70da03f5378",
+        "scripts/shaman-revalidation-evidence.mjs": "1203f8471e80ad33b536091633224fb1d40686fba72317ef64970ecca962d119"
+      },
+      "sha256": "73e01b845a0fcea0770491e56e28c79c5da7825fb77db3bbfa2f361a67b78a60"
+    },
+    "earth-four-niches": {
+      "samples": 300,
+      "mode": "controlled",
+      "env": {
+        "SCENARIOS": "adaptive",
+        "CHAPTERS": "4",
+        "HEALERS": "priest,druid,shaman",
+        "BUILD_FILTER": "7-fourfold,7-blooming,7-earth-echo",
+        "SHAMAN_TUNING": "{\"healingWave\":{\"earthlivingDuration\":4}}",
+        "PROFILES": "focused,split,three,aoe",
+        "PRESSURE_SCALE": "2.8"
+      },
+      "output": "docs/bat-89-earth-four-niches.jsonl",
+      "rows": 12,
+      "sources": {
+        "src/combat.js": "a76d8a852cf5281113573dbbba6ec53459e2071de07fdb0d0892bad19554787c",
+        "src/data.js": "62a503dc7aac9a609ec528c00eea0029f78ee705fc994afb402ed5b37fc9a543",
+        "src/stats.js": "8ba5ecc9c30e8ee51afca4ae9432d9703b006bdac374c79f786709bd9cdb602b",
+        "src/shaman-talents.js": "fcb4146cc8896f3a18be9a4462f3484de5549b59c6eb7c10bb09e2e385d1d193",
+        "src/talent-trees.js": "21992ed8f3ec1676478ee85faf124df0521a54073179164944df35a55c25818e",
+        "src/talents.js": "5f6d8052f34f1c29f50663875a686b6ceada76fc9be3c497947d34fea69db56e",
+        "src/priest-talents.js": "c9f8c33d891a46f830babb6bef9fc34fdfc5fa06024ebfa87afc22a0eafc689c",
+        "src/druid-talents.js": "725b5100432db0d661d603577e269c25deb3cd1d8e775440589241033ea759ff",
+        "src/loot.js": "cc79f8e583ff050c6e605579a1ccc3a9fef552531178d590fd961b08bcdaaf52",
+        "scripts/talent-balance.mjs": "0b29f45beb74cab0be393ae18f37f141b4ec6be3f4875ae64a426462010e960a",
+        "scripts/boss-balance.mjs": "107dc2bf90835af81b549979ccdfb31054ea36fd6700f6aca70989c6a2af954b",
+        "scripts/shaman-balance.mjs": "9e859f9301e2b5f73b86e78ffcafef0060262f2679551df645cd033aff4f3f8b",
+        "scripts/shaman-policy.mjs": "fd8c47ddc44e5cd9fba6e7b0be328864f8e2844ef0f2e0d18b62de5b0dbbf43e",
+        "scripts/shaman-priority.mjs": "a88813f61ea98fdbb6ba005fd186666cb0b5149d3bef742e6ec83f512b492da5",
+        "scripts/shaman-revalidation.mjs": "dc771a5bc0f039b2e74c3d00cbdf15eed053214899313a84a1a5f95cec174028",
+        "scripts/fixtures/bat87-combat.mjs": "479a20f8bf1755d4b87dbb4b77343e70a0ded3db79fd180596fac70da03f5378",
+        "scripts/shaman-revalidation-evidence.mjs": "1203f8471e80ad33b536091633224fb1d40686fba72317ef64970ecca962d119"
+      },
+      "sha256": "45b6e5d0571b6c99481c5af45f77226ac05e8d6a4ddcecdd94d8080a8166796c"
+    },
+    "earth-four-stress": {
+      "samples": 300,
+      "mode": "controlled",
+      "env": {
+        "SCENARIOS": "adaptive",
+        "CHAPTERS": "4",
+        "HEALERS": "priest,druid,shaman",
+        "BUILD_FILTER": "7-fourfold,7-blooming,7-earth-echo",
+        "SHAMAN_TUNING": "{\"healingWave\":{\"earthlivingDuration\":4}}",
+        "PROFILES": "burst,long",
+        "PRESSURE_SCALE": "2"
+      },
+      "output": "docs/bat-89-earth-four-stress.jsonl",
+      "rows": 6,
+      "sources": {
+        "src/combat.js": "a76d8a852cf5281113573dbbba6ec53459e2071de07fdb0d0892bad19554787c",
+        "src/data.js": "62a503dc7aac9a609ec528c00eea0029f78ee705fc994afb402ed5b37fc9a543",
+        "src/stats.js": "8ba5ecc9c30e8ee51afca4ae9432d9703b006bdac374c79f786709bd9cdb602b",
+        "src/shaman-talents.js": "fcb4146cc8896f3a18be9a4462f3484de5549b59c6eb7c10bb09e2e385d1d193",
+        "src/talent-trees.js": "21992ed8f3ec1676478ee85faf124df0521a54073179164944df35a55c25818e",
+        "src/talents.js": "5f6d8052f34f1c29f50663875a686b6ceada76fc9be3c497947d34fea69db56e",
+        "src/priest-talents.js": "c9f8c33d891a46f830babb6bef9fc34fdfc5fa06024ebfa87afc22a0eafc689c",
+        "src/druid-talents.js": "725b5100432db0d661d603577e269c25deb3cd1d8e775440589241033ea759ff",
+        "src/loot.js": "cc79f8e583ff050c6e605579a1ccc3a9fef552531178d590fd961b08bcdaaf52",
+        "scripts/talent-balance.mjs": "0b29f45beb74cab0be393ae18f37f141b4ec6be3f4875ae64a426462010e960a",
+        "scripts/boss-balance.mjs": "107dc2bf90835af81b549979ccdfb31054ea36fd6700f6aca70989c6a2af954b",
+        "scripts/shaman-balance.mjs": "9e859f9301e2b5f73b86e78ffcafef0060262f2679551df645cd033aff4f3f8b",
+        "scripts/shaman-policy.mjs": "fd8c47ddc44e5cd9fba6e7b0be328864f8e2844ef0f2e0d18b62de5b0dbbf43e",
+        "scripts/shaman-priority.mjs": "a88813f61ea98fdbb6ba005fd186666cb0b5149d3bef742e6ec83f512b492da5",
+        "scripts/shaman-revalidation.mjs": "dc771a5bc0f039b2e74c3d00cbdf15eed053214899313a84a1a5f95cec174028",
+        "scripts/fixtures/bat87-combat.mjs": "479a20f8bf1755d4b87dbb4b77343e70a0ded3db79fd180596fac70da03f5378",
+        "scripts/shaman-revalidation-evidence.mjs": "1203f8471e80ad33b536091633224fb1d40686fba72317ef64970ecca962d119"
+      },
+      "sha256": "d55af0372a3a18c67467f4755c28e70e7b6a66bdcb4b3503728ddd22bcf52667"
+    },
+    "earth-four-routes": {
+      "samples": 300,
+      "mode": "routes",
+      "env": {
+        "SCENARIOS": "adaptive",
+        "CHAPTERS": "4",
+        "HEALERS": "priest,druid,shaman",
+        "BUILD_FILTER": "7-fourfold,7-blooming,7-earth-echo",
+        "SHAMAN_TUNING": "{\"healingWave\":{\"earthlivingDuration\":4}}",
+        "SKILLS": "veryGood",
+        "STAGES": "ready"
+      },
+      "output": "docs/bat-89-earth-four-routes.jsonl",
+      "rows": 3,
+      "sources": {
+        "src/combat.js": "a76d8a852cf5281113573dbbba6ec53459e2071de07fdb0d0892bad19554787c",
+        "src/data.js": "62a503dc7aac9a609ec528c00eea0029f78ee705fc994afb402ed5b37fc9a543",
+        "src/stats.js": "8ba5ecc9c30e8ee51afca4ae9432d9703b006bdac374c79f786709bd9cdb602b",
+        "src/shaman-talents.js": "fcb4146cc8896f3a18be9a4462f3484de5549b59c6eb7c10bb09e2e385d1d193",
+        "src/talent-trees.js": "21992ed8f3ec1676478ee85faf124df0521a54073179164944df35a55c25818e",
+        "src/talents.js": "5f6d8052f34f1c29f50663875a686b6ceada76fc9be3c497947d34fea69db56e",
+        "src/priest-talents.js": "c9f8c33d891a46f830babb6bef9fc34fdfc5fa06024ebfa87afc22a0eafc689c",
+        "src/druid-talents.js": "725b5100432db0d661d603577e269c25deb3cd1d8e775440589241033ea759ff",
+        "src/loot.js": "cc79f8e583ff050c6e605579a1ccc3a9fef552531178d590fd961b08bcdaaf52",
+        "scripts/talent-balance.mjs": "0b29f45beb74cab0be393ae18f37f141b4ec6be3f4875ae64a426462010e960a",
+        "scripts/boss-balance.mjs": "107dc2bf90835af81b549979ccdfb31054ea36fd6700f6aca70989c6a2af954b",
+        "scripts/shaman-balance.mjs": "9e859f9301e2b5f73b86e78ffcafef0060262f2679551df645cd033aff4f3f8b",
+        "scripts/shaman-policy.mjs": "fd8c47ddc44e5cd9fba6e7b0be328864f8e2844ef0f2e0d18b62de5b0dbbf43e",
+        "scripts/shaman-priority.mjs": "a88813f61ea98fdbb6ba005fd186666cb0b5149d3bef742e6ec83f512b492da5",
+        "scripts/shaman-revalidation.mjs": "dc771a5bc0f039b2e74c3d00cbdf15eed053214899313a84a1a5f95cec174028",
+        "scripts/fixtures/bat87-combat.mjs": "479a20f8bf1755d4b87dbb4b77343e70a0ded3db79fd180596fac70da03f5378",
+        "scripts/shaman-revalidation-evidence.mjs": "1203f8471e80ad33b536091633224fb1d40686fba72317ef64970ecca962d119"
+      },
+      "sha256": "9aff7c30baf3d33b832957cfad1603c3e4f17c114aead0f12bb0905f9a621ffb"
+    },
+    "packages": {
+      "samples": null,
+      "mode": "deterministic",
+      "script": "shaman-package-probes.mjs",
+      "args": [],
+      "output": "docs/bat-89-packages.jsonl",
+      "rows": 228,
+      "durationSeconds": 0.194,
+      "sources": {
+        "src/combat.js": "a76d8a852cf5281113573dbbba6ec53459e2071de07fdb0d0892bad19554787c",
+        "src/data.js": "62a503dc7aac9a609ec528c00eea0029f78ee705fc994afb402ed5b37fc9a543",
+        "src/stats.js": "8ba5ecc9c30e8ee51afca4ae9432d9703b006bdac374c79f786709bd9cdb602b",
+        "src/shaman-talents.js": "fcb4146cc8896f3a18be9a4462f3484de5549b59c6eb7c10bb09e2e385d1d193",
+        "src/talent-trees.js": "21992ed8f3ec1676478ee85faf124df0521a54073179164944df35a55c25818e",
+        "src/talents.js": "5f6d8052f34f1c29f50663875a686b6ceada76fc9be3c497947d34fea69db56e",
+        "src/priest-talents.js": "c9f8c33d891a46f830babb6bef9fc34fdfc5fa06024ebfa87afc22a0eafc689c",
+        "src/druid-talents.js": "725b5100432db0d661d603577e269c25deb3cd1d8e775440589241033ea759ff",
+        "src/loot.js": "cc79f8e583ff050c6e605579a1ccc3a9fef552531178d590fd961b08bcdaaf52",
+        "scripts/talent-balance.mjs": "0b29f45beb74cab0be393ae18f37f141b4ec6be3f4875ae64a426462010e960a",
+        "scripts/boss-balance.mjs": "107dc2bf90835af81b549979ccdfb31054ea36fd6700f6aca70989c6a2af954b",
+        "scripts/shaman-balance.mjs": "9e859f9301e2b5f73b86e78ffcafef0060262f2679551df645cd033aff4f3f8b",
+        "scripts/shaman-policy.mjs": "fd8c47ddc44e5cd9fba6e7b0be328864f8e2844ef0f2e0d18b62de5b0dbbf43e",
+        "scripts/shaman-priority.mjs": "a88813f61ea98fdbb6ba005fd186666cb0b5149d3bef742e6ec83f512b492da5",
+        "scripts/shaman-revalidation.mjs": "dc771a5bc0f039b2e74c3d00cbdf15eed053214899313a84a1a5f95cec174028",
+        "scripts/shaman-revalidation-evidence.mjs": "1203f8471e80ad33b536091633224fb1d40686fba72317ef64970ecca962d119",
+        "scripts/fixtures/bat87-combat.mjs": "479a20f8bf1755d4b87dbb4b77343e70a0ded3db79fd180596fac70da03f5378",
+        "scripts/shaman-package-probes.mjs": "6d62264df4c6fe38b8537b9e7a8f04c8ef19449cb4f6dd9d7ccc64b16b265e14",
+        "scripts/shaman-interactions.mjs": "6af7636aa8c545f671217159ab196174413963006427f71004e64f7df29b9320",
+        "scripts/shaman-reference-probes.mjs": "b885dcf0983ffe52dc75a8822a06b1320dd90a39ddb1bac1a840999cf2725e0b",
+        "scripts/shaman-capstone-probes.mjs": "57c48dcfd82c876d1c1691335d2385a11b18c6170522d52c894b050bc14aecdd"
+      },
+      "sha256": "899195cef7f152db0af99b21ce98673f72cf6603ff3d64372823538572c2a426"
+    },
+    "interactions": {
+      "samples": null,
+      "mode": "deterministic",
+      "script": "shaman-interactions.mjs",
+      "args": [],
+      "output": "docs/bat-89-interactions.jsonl",
+      "rows": 31,
+      "sources": {
+        "src/combat.js": "a76d8a852cf5281113573dbbba6ec53459e2071de07fdb0d0892bad19554787c",
+        "src/data.js": "62a503dc7aac9a609ec528c00eea0029f78ee705fc994afb402ed5b37fc9a543",
+        "src/stats.js": "8ba5ecc9c30e8ee51afca4ae9432d9703b006bdac374c79f786709bd9cdb602b",
+        "src/shaman-talents.js": "fcb4146cc8896f3a18be9a4462f3484de5549b59c6eb7c10bb09e2e385d1d193",
+        "src/talent-trees.js": "21992ed8f3ec1676478ee85faf124df0521a54073179164944df35a55c25818e",
+        "src/talents.js": "5f6d8052f34f1c29f50663875a686b6ceada76fc9be3c497947d34fea69db56e",
+        "src/priest-talents.js": "c9f8c33d891a46f830babb6bef9fc34fdfc5fa06024ebfa87afc22a0eafc689c",
+        "src/druid-talents.js": "725b5100432db0d661d603577e269c25deb3cd1d8e775440589241033ea759ff",
+        "src/loot.js": "cc79f8e583ff050c6e605579a1ccc3a9fef552531178d590fd961b08bcdaaf52",
+        "scripts/talent-balance.mjs": "0b29f45beb74cab0be393ae18f37f141b4ec6be3f4875ae64a426462010e960a",
+        "scripts/boss-balance.mjs": "107dc2bf90835af81b549979ccdfb31054ea36fd6700f6aca70989c6a2af954b",
+        "scripts/shaman-balance.mjs": "9e859f9301e2b5f73b86e78ffcafef0060262f2679551df645cd033aff4f3f8b",
+        "scripts/shaman-policy.mjs": "fd8c47ddc44e5cd9fba6e7b0be328864f8e2844ef0f2e0d18b62de5b0dbbf43e",
+        "scripts/shaman-priority.mjs": "a88813f61ea98fdbb6ba005fd186666cb0b5149d3bef742e6ec83f512b492da5",
+        "scripts/shaman-revalidation.mjs": "dc771a5bc0f039b2e74c3d00cbdf15eed053214899313a84a1a5f95cec174028",
+        "scripts/fixtures/bat87-combat.mjs": "479a20f8bf1755d4b87dbb4b77343e70a0ded3db79fd180596fac70da03f5378",
+        "scripts/shaman-revalidation-evidence.mjs": "1203f8471e80ad33b536091633224fb1d40686fba72317ef64970ecca962d119",
+        "scripts/shaman-interactions.mjs": "6af7636aa8c545f671217159ab196174413963006427f71004e64f7df29b9320"
+      },
+      "sha256": "75d9e66162748adf077f85047da34bc5756b0b8f2650657d42354c1d7386b23a"
+    },
+    "reference": {
+      "samples": 300,
+      "mode": "reference",
+      "script": "shaman-reference-probes.mjs",
+      "args": [
+        "30",
+        "300"
+      ],
+      "output": "docs/bat-89-reference.jsonl",
+      "rows": 24,
+      "sources": {
+        "src/combat.js": "a76d8a852cf5281113573dbbba6ec53459e2071de07fdb0d0892bad19554787c",
+        "src/data.js": "62a503dc7aac9a609ec528c00eea0029f78ee705fc994afb402ed5b37fc9a543",
+        "src/stats.js": "8ba5ecc9c30e8ee51afca4ae9432d9703b006bdac374c79f786709bd9cdb602b",
+        "src/shaman-talents.js": "fcb4146cc8896f3a18be9a4462f3484de5549b59c6eb7c10bb09e2e385d1d193",
+        "src/talent-trees.js": "21992ed8f3ec1676478ee85faf124df0521a54073179164944df35a55c25818e",
+        "src/talents.js": "5f6d8052f34f1c29f50663875a686b6ceada76fc9be3c497947d34fea69db56e",
+        "src/priest-talents.js": "c9f8c33d891a46f830babb6bef9fc34fdfc5fa06024ebfa87afc22a0eafc689c",
+        "src/druid-talents.js": "725b5100432db0d661d603577e269c25deb3cd1d8e775440589241033ea759ff",
+        "src/loot.js": "cc79f8e583ff050c6e605579a1ccc3a9fef552531178d590fd961b08bcdaaf52",
+        "scripts/talent-balance.mjs": "0b29f45beb74cab0be393ae18f37f141b4ec6be3f4875ae64a426462010e960a",
+        "scripts/boss-balance.mjs": "107dc2bf90835af81b549979ccdfb31054ea36fd6700f6aca70989c6a2af954b",
+        "scripts/shaman-balance.mjs": "9e859f9301e2b5f73b86e78ffcafef0060262f2679551df645cd033aff4f3f8b",
+        "scripts/shaman-policy.mjs": "fd8c47ddc44e5cd9fba6e7b0be328864f8e2844ef0f2e0d18b62de5b0dbbf43e",
+        "scripts/shaman-priority.mjs": "a88813f61ea98fdbb6ba005fd186666cb0b5149d3bef742e6ec83f512b492da5",
+        "scripts/shaman-revalidation.mjs": "dc771a5bc0f039b2e74c3d00cbdf15eed053214899313a84a1a5f95cec174028",
+        "scripts/fixtures/bat87-combat.mjs": "479a20f8bf1755d4b87dbb4b77343e70a0ded3db79fd180596fac70da03f5378",
+        "scripts/shaman-revalidation-evidence.mjs": "1203f8471e80ad33b536091633224fb1d40686fba72317ef64970ecca962d119",
+        "scripts/shaman-reference-probes.mjs": "b885dcf0983ffe52dc75a8822a06b1320dd90a39ddb1bac1a840999cf2725e0b"
+      },
+      "sha256": "b8fa95c3accd267e461de64c5726c1725a2e58057bdae7ed3106ecc845323b28"
+    },
+    "reference-grid": {
+      "samples": 30,
+      "mode": "reference-training",
+      "script": "shaman-reference-probes.mjs",
+      "args": [
+        "30",
+        "300"
+      ],
+      "output": "docs/bat-89-reference-grid.jsonl",
+      "rows": 90,
+      "sources": {
+        "src/combat.js": "a76d8a852cf5281113573dbbba6ec53459e2071de07fdb0d0892bad19554787c",
+        "src/data.js": "62a503dc7aac9a609ec528c00eea0029f78ee705fc994afb402ed5b37fc9a543",
+        "src/stats.js": "8ba5ecc9c30e8ee51afca4ae9432d9703b006bdac374c79f786709bd9cdb602b",
+        "src/shaman-talents.js": "fcb4146cc8896f3a18be9a4462f3484de5549b59c6eb7c10bb09e2e385d1d193",
+        "src/talent-trees.js": "21992ed8f3ec1676478ee85faf124df0521a54073179164944df35a55c25818e",
+        "src/talents.js": "5f6d8052f34f1c29f50663875a686b6ceada76fc9be3c497947d34fea69db56e",
+        "src/priest-talents.js": "c9f8c33d891a46f830babb6bef9fc34fdfc5fa06024ebfa87afc22a0eafc689c",
+        "src/druid-talents.js": "725b5100432db0d661d603577e269c25deb3cd1d8e775440589241033ea759ff",
+        "src/loot.js": "cc79f8e583ff050c6e605579a1ccc3a9fef552531178d590fd961b08bcdaaf52",
+        "scripts/talent-balance.mjs": "0b29f45beb74cab0be393ae18f37f141b4ec6be3f4875ae64a426462010e960a",
+        "scripts/boss-balance.mjs": "107dc2bf90835af81b549979ccdfb31054ea36fd6700f6aca70989c6a2af954b",
+        "scripts/shaman-balance.mjs": "9e859f9301e2b5f73b86e78ffcafef0060262f2679551df645cd033aff4f3f8b",
+        "scripts/shaman-policy.mjs": "fd8c47ddc44e5cd9fba6e7b0be328864f8e2844ef0f2e0d18b62de5b0dbbf43e",
+        "scripts/shaman-priority.mjs": "a88813f61ea98fdbb6ba005fd186666cb0b5149d3bef742e6ec83f512b492da5",
+        "scripts/shaman-revalidation.mjs": "dc771a5bc0f039b2e74c3d00cbdf15eed053214899313a84a1a5f95cec174028",
+        "scripts/fixtures/bat87-combat.mjs": "479a20f8bf1755d4b87dbb4b77343e70a0ded3db79fd180596fac70da03f5378",
+        "scripts/shaman-revalidation-evidence.mjs": "1203f8471e80ad33b536091633224fb1d40686fba72317ef64970ecca962d119",
+        "scripts/shaman-reference-probes.mjs": "b885dcf0983ffe52dc75a8822a06b1320dd90a39ddb1bac1a840999cf2725e0b"
+      },
+      "sha256": "b840f2fd0613d27907743eebaca5d5fbd513b60b0c5a11c802bb8e2c34c37e97"
+    },
+    "capstones": {
+      "samples": 300,
+      "mode": "ablation",
+      "script": "shaman-capstone-probes.mjs",
+      "args": [
+        "300"
+      ],
+      "output": "docs/bat-89-capstones.jsonl",
+      "rows": 16,
+      "sources": {
+        "src/combat.js": "a76d8a852cf5281113573dbbba6ec53459e2071de07fdb0d0892bad19554787c",
+        "src/data.js": "62a503dc7aac9a609ec528c00eea0029f78ee705fc994afb402ed5b37fc9a543",
+        "src/stats.js": "8ba5ecc9c30e8ee51afca4ae9432d9703b006bdac374c79f786709bd9cdb602b",
+        "src/shaman-talents.js": "fcb4146cc8896f3a18be9a4462f3484de5549b59c6eb7c10bb09e2e385d1d193",
+        "src/talent-trees.js": "21992ed8f3ec1676478ee85faf124df0521a54073179164944df35a55c25818e",
+        "src/talents.js": "5f6d8052f34f1c29f50663875a686b6ceada76fc9be3c497947d34fea69db56e",
+        "src/priest-talents.js": "c9f8c33d891a46f830babb6bef9fc34fdfc5fa06024ebfa87afc22a0eafc689c",
+        "src/druid-talents.js": "725b5100432db0d661d603577e269c25deb3cd1d8e775440589241033ea759ff",
+        "src/loot.js": "cc79f8e583ff050c6e605579a1ccc3a9fef552531178d590fd961b08bcdaaf52",
+        "scripts/talent-balance.mjs": "0b29f45beb74cab0be393ae18f37f141b4ec6be3f4875ae64a426462010e960a",
+        "scripts/boss-balance.mjs": "107dc2bf90835af81b549979ccdfb31054ea36fd6700f6aca70989c6a2af954b",
+        "scripts/shaman-balance.mjs": "9e859f9301e2b5f73b86e78ffcafef0060262f2679551df645cd033aff4f3f8b",
+        "scripts/shaman-policy.mjs": "fd8c47ddc44e5cd9fba6e7b0be328864f8e2844ef0f2e0d18b62de5b0dbbf43e",
+        "scripts/shaman-priority.mjs": "a88813f61ea98fdbb6ba005fd186666cb0b5149d3bef742e6ec83f512b492da5",
+        "scripts/shaman-revalidation.mjs": "dc771a5bc0f039b2e74c3d00cbdf15eed053214899313a84a1a5f95cec174028",
+        "scripts/fixtures/bat87-combat.mjs": "479a20f8bf1755d4b87dbb4b77343e70a0ded3db79fd180596fac70da03f5378",
+        "scripts/shaman-revalidation-evidence.mjs": "1203f8471e80ad33b536091633224fb1d40686fba72317ef64970ecca962d119",
+        "scripts/shaman-capstone-probes.mjs": "57c48dcfd82c876d1c1691335d2385a11b18c6170522d52c894b050bc14aecdd"
+      },
+      "sha256": "ca2a4b3f72fe547f170dbe6068f52ade3636066d5622778b70891838540b4856"
+    }
+  }
+}

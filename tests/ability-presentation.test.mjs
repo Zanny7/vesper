@@ -9,7 +9,7 @@ test('key labels abbreviate modifiers and preserve the base key', () => {
 });
 
 test('cooldown labels use compact seconds, a padded minute format, and no suffixes', () => {
-  for (const [input, expected] of [[0,''], [-1,''], [0.01,'0.1'], [1.5,'1.5'], [10,'10'], [59.9,'59.9'], [59.96,'59.9'], [60,'1.00'], [60.6,'1.01'], [65,'1.05'], [95,'1.35'], [119.9,'2.00'], [600,'10.00']]) {
+  for (const [input, expected] of [[0,''], [-1,''], [NaN,''], [Infinity,''], [0.01,'1'], [0.2,'1'], [1.5,'2'], [5,'5'], [4.99,'5'], [4.01,'5'], [4,'4'], [3.25,'4'], [10,'10'], [59.9,'60'], [60,'1:00'], [60.6,'1:01'], [65,'1:05'], [90,'1:30'], [125,'2:05'], [119.9,'2:00'], [600,'10:00']]) {
     assert.equal(formatCooldown(input), expected);
   }
 });

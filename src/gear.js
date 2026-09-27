@@ -1,4 +1,4 @@
-import { HEALERS, partyForHealer, GEAR, SLOTS } from './data.js';
+import { HEALERS, partyForHealer, GEAR, SLOTS, GEAR_ID_MIGRATIONS } from './data.js';
 import { slotsForOwner, eligibleItems, canEquipItem } from './item-model.js';
 export { GEAR, SLOTS } from './data.js';
 
@@ -6,9 +6,17 @@ const storageKey = 'vesper-equipment-v2';
 
 const ownerFor = member => member.id;
 const isRecord = value => value && typeof value === 'object' && !Array.isArray(value);
+const migratedId = (id, catalogue) => catalogue.some(item => item.id === id) ? id : Object.hasOwn(GEAR_ID_MIGRATIONS, id) ? GEAR_ID_MIGRATIONS[id] : id;
+function migratedAssignments(saved, catalogue, activeHealer) {
+  const entries = Object.entries(isRecord(saved) ? saved : {});
+  // Save iteration order breaks ties after the active healer's assignments.
+  entries.sort(([a], [b]) => Number(b === activeHealer) - Number(a === activeHealer));
+  return Object.fromEntries(entries.map(([owner, slots]) => [owner,
+    Object.fromEntries(Object.entries(isRecord(slots) ? slots : {}).map(([slot, id]) => [slot, migratedId(id, catalogue)]))]));
+}
 export function validEquipment(saved = {}, catalogue = GEAR) {
   const out = {};
-  for (const [owner, slots] of Object.entries(saved)) for (const [slot, id] of Object.entries(slots || {})) {
+  for (const [owner, slots] of Object.entries(saved)) for (const [slot, id] of Object.entries(isRecord(slots) ? slots : {})) {
     const item = catalogue.find(candidate => candidate.id === id);
     if (item && canEquipItem(owner, slot, item) && !Object.values(out).some(equipped => Object.values(equipped).includes(id))) (out[owner] ||= {})[slot] = id;
   }
@@ -24,24 +32,44 @@ export class Equipment {
       const raw = storage?.getItem(storageKey);
       if (raw != null) {
         const saved = JSON.parse(raw);
-        if ((saved?.version === 2 || saved?.version === 3) && isRecord(saved)) {
-          this.ownedIds = new Set((Array.isArray(saved.owned) ? saved.owned : []).filter(id => this.itemById(id)));
-          this.equipped = validEquipment(isRecord(saved.equipped) ? saved.equipped : {}, catalogue);
+        if ([2, 3, 4].includes(saved?.version) && isRecord(saved)) {
+          const migrate = id => migratedId(id, catalogue);
+          this.ownedIds = new Set((Array.isArray(saved.owned) ? saved.owned : []).map(migrate).filter(id => this.itemById(id)));
+          const assignments = migratedAssignments(saved.equipped, catalogue, storage?.getItem('vesper-active-healer-v1'));
+          this.equipped = validEquipment(assignments, catalogue);
           for (const slots of Object.values(this.equipped)) for (const [slot, id] of Object.entries(slots)) if (!this.owns(id)) delete slots[slot];
           const equipped = new Set(Object.values(this.equipped).flatMap(slots => Object.values(slots)));
           const savedBag = Array.isArray(saved.bag) ? saved.bag : [];
-          this.bagSlots = savedBag.map(id => id && this.owns(id) && !equipped.has(id) ? id : null);
+          const bagged = new Set();
+          this.bagSlots = savedBag.map(migrate).map(id => {
+            if (!id || !this.owns(id) || equipped.has(id) || bagged.has(id)) return null;
+            bagged.add(id); return id;
+          });
           for (const id of this.ownedIds) if (!equipped.has(id) && !this.bagSlots.includes(id)) this.placeInBag(id);
+          this.save();
         }
       } else {
         const legacy = JSON.parse(storage?.getItem('vesper-equipment-v1') || 'null');
-        this.equipped = validEquipment(isRecord(legacy) ? legacy : {}, catalogue);
+        const migrated = migratedAssignments(legacy, catalogue, storage?.getItem('vesper-active-healer-v1'));
+        this.equipped = validEquipment(migrated, catalogue);
         this.ownedIds = new Set(Object.values(this.equipped).flatMap(slots => Object.values(slots)));
         if (legacy != null) this.save();
       }
     } catch { /* Malformed storage starts an empty session. */ }
   }
-  save() { try { this.storage?.setItem(storageKey, JSON.stringify({ version: 2, owned: [...this.ownedIds], equipped: this.equipped, bag: this.bagSlots })); } catch { /* Keep the session selection. */ } }
+  save() { try { this.storage?.setItem(storageKey, JSON.stringify({ version: 4, owned: [...this.ownedIds], equipped: this.equipped, bag: this.bagSlots })); } catch { /* Keep the session selection. */ } }
+  switchHealer(from, to) {
+    if (this.isLocked() || from === to || !Object.hasOwn(HEALERS, from) || !Object.hasOwn(HEALERS, to)) return false;
+    for (const [slot, id] of Object.entries(this.equipped[from] || {})) {
+      if (!canEquipItem(to, slot, this.itemById(id))) continue;
+      const displaced = this.equipped[to]?.[slot];
+      delete this.equipped[from][slot];
+      (this.equipped[to] ||= {})[slot] = id;
+      if (displaced && displaced !== id) this.placeInBag(displaced);
+    }
+    if (this.equipped[from] && !Object.keys(this.equipped[from]).length) delete this.equipped[from];
+    this.save(); return true;
+  }
   ensureBagCapacity(index) { const capacity = Math.max(20, Math.ceil((index + 1) / 20) * 20); while (this.bagSlots.length < capacity) this.bagSlots.push(null); }
   placeInBag(id, preferredIndex = null) {
     if (this.bagSlots.includes(id)) return this.bagSlots.indexOf(id);
@@ -76,7 +104,7 @@ export class Equipment {
   isEquipped(item) { return Object.values(this.equipped).some(slots => Object.values(slots).includes(item.id)); }
   equippedAt(id) { for (const [owner, slots] of Object.entries(this.equipped)) for (const [slot, itemId] of Object.entries(slots)) if (itemId === id) return { owner, slot }; return null; }
   unequipToBag(member, slot, index) {
-    if (this.isLocked() || !this.slots(member).includes(slot) || !Number.isInteger(index) || this.bagSlots[index]) return false;
+    if (this.isLocked() || !this.slots(member).includes(slot) || !Number.isInteger(index) || index < 0 || this.bagSlots[index]) return false;
     const owner = ownerFor(member), id = this.equipped[owner]?.[slot];
     if (!id) return false;
     delete this.equipped[owner][slot]; if (!Object.keys(this.equipped[owner]).length) delete this.equipped[owner];

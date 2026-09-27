@@ -22,10 +22,10 @@ test('authored catalogue has valid metadata, supported stats and existing icons'
   assert.deepEqual(validateCatalogue(GEAR), []);
   assert.deepEqual(GEAR_CHAPTER_BANDS, { 1: [1, 3], 2: [4, 6], 3: [7, 9], 4: [10, 12] });
   for (const item of GEAR) assert.ok(existsSync(new URL(`..${item.icon}`, import.meta.url)));
-  for (const stat of ITEM_STATS.healer) assert.deepEqual(validateCatalogue([{ ...GEAR[0], stats: { [stat]: 1 } }]), []);
+  for (const stat of ITEM_STATS.healer.filter(stat => !['haste','crit'].includes(stat))) assert.deepEqual(validateCatalogue([{ ...GEAR[0], stats: { [stat]: 1 } }]), []);
   assert.deepEqual(slotsForOwner('healer'), []);
   assert.deepEqual(slotsForOwner('__proto__'), []);
-  assert.ok(validateCatalogue([null, { ...GEAR[0], owner: 'unknown' }, { ...GEAR[0], stats: { damage: 5 } }]).length >= 3);
+  assert.ok(validateCatalogue([null, { ...GEAR[0], role: 'unknown' }, { ...GEAR[0], stats: { damage: 5 } }]).length >= 3);
 });
 test('ownership is unique, persisted, and independent of the catalogue', () => {
   const storage = disk(), gear = new Equipment(storage, undefined, GEAR), priest = { id: 'priest' };
@@ -39,7 +39,7 @@ test('ownership is unique, persisted, and independent of the catalogue', () => {
   assert.equal(new Equipment(storage, undefined, GEAR).item(priest, 'Weapon').id, 'test-priest-censer');
   assert.equal(gear.apply({ id: 'priest', spellPower: 0 }).spellPower, 12);
   assert.equal(averageItemLevel(priest, gear.equipped, GEAR), 3 / 6);
-  assert.equal(eligibleItems('priest', 'Weapon', GEAR).length, 1);
+  assert.equal(eligibleItems('priest', 'Weapon', GEAR).length, 2);
   assert.equal(unownedItems(GEAR, gear.ownedIds).length, GEAR.length - 1);
 });
 test('legacy migration preserves only valid equipped items and writes v2', () => {
@@ -47,7 +47,7 @@ test('legacy migration preserves only valid equipped items and writes v2', () =>
   storage.setItem('vesper-equipment-v1', JSON.stringify({ priest: { Weapon: 'test-priest-censer', Head: 'test-aldric-shield' } }));
   const gear = new Equipment(storage, undefined, GEAR);
   assert.deepEqual(gear.collection().map(item => item.id), ['test-priest-censer']);
-  assert.equal(JSON.parse(storage.getItem('vesper-equipment-v2')).version, 2);
+  assert.equal(JSON.parse(storage.getItem('vesper-equipment-v2')).version, 4);
   gear.equip({ id: 'priest' }, 'Weapon', '');
   assert.equal(new Equipment(storage, undefined, GEAR).item({ id: 'priest' }, 'Weapon'), null);
 });

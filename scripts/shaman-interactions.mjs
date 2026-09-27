@@ -39,19 +39,21 @@ for (const empowered of [false, true]) {
   cast(g, 'healingWave');
   output('Ancestral Echo', { empowered, wave: healing(g, 'healingWave'), echo: healing(g, 'ancestral-echo') });
   for (const id of ['healingWave', 'chainHeal']) {
-    const earth = setup({ earthliving: 1, 'echoing-surge': 1 });
+    const earth = setup({ earthliving: 1, 'cascading-stream': 1 });
     if (empowered) cast(earth, 'unleashLife');
     cast(earth, id);
     output('Earthliving contribution', { spell: id, empowered,
       banks: earth.party.map(p => ({ target: p.id, duration: (hot(earth, p, 'recurringSurge')?.expires || earth.time) - earth.time,
         healing: hot(earth, p, 'recurringSurge')?.bankedHealing || [] })) });
     advance(earth, 6);
-    output('Earthliving + Echo', { spell: id, empowered, surge: healing(earth, 'recurringSurge'), echo: healing(earth, 'echoing-surge') });
+    output('Earthliving normal Surge', { spell: id, empowered, surge: healing(earth, 'recurringSurge') });
   }
 }
-const clipped = setup({ 'echoing-surge': 1 }); cast(clipped, 'recurringSurge'); clipped.party[0].hp = 9970;
-advance(clipped, 6);
-output('Echo effective input', { surge: healing(clipped, 'recurringSurge'), echo: healing(clipped, 'echoing-surge') });
+const cascade = setup({ 'cascading-stream': 1, 'high-tide': 2, 'tidal-waves': 1, earthliving: 1 });
+cast(cascade, 'riptide'); cast(cascade, 'unleashLife'); cast(cascade, 'healingStream');
+output('Cascade baseline curve with High Tide', { burst: healing(cascade, 'cascading-stream'),
+  unleashPreserved: cascade.buffs.unleashLife, wavesPreserved: cascade.buffs.tidalWaves,
+  earthlivingBanks: cascade.party.flatMap(p => p.hots).filter(h => h.source === 'recurringSurge').length });
 
 for (const deepRank of [0, 1, 2]) {
   const g = setup({ 'deep-riptide': deepRank, 'flowing-riptide': 1, 'tidal-waves': 1 });

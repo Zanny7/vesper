@@ -70,7 +70,7 @@ test('combat lock rejects equipping and unequipping without modifying persisted 
 test('equipped weapons and defenses change real combat events without retuning enemies', () => {
   const equipment = stocked(disk()), tank = member('tank');
   equipment.equip(tank, 'Shield', 'test-aldric-shield'); equipment.equip(tank, 'Weapon', 'test-aldric-blade');
-  equipment.equip(member('mage'), 'Trinket', 'test-sera-token');
+  equipment.equip(member('mage'), 'Head', 'test-sera-token');
   const baseline = new Combat(), geared = new Combat(undefined, () => .5, equipment.party('priest'));
   for (const game of [baseline, geared]) {
     game.start(); game.step(1.01);

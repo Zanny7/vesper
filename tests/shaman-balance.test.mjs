@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { CONFIG, partyForHealer } from '../src/data.js';
 import { builds, validateBuild, equivalentParty, balanceLoadout, simulate, controlledEncounter, routeTrial } from '../scripts/shaman-balance.mjs';
 import { Combat } from '../src/combat.js';
+import { Combat as Bat87Combat } from '../scripts/fixtures/bat87-combat.mjs';
 import { decideShaman } from '../scripts/shaman-policy.mjs';
 import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
@@ -57,10 +58,10 @@ test('original balance loadout restores all changed numbers without mutating pro
   assert.equal(balanceLoadout(party, 'shaman', builds.shaman['7-ancestral'], 'original').spells.find(s => s.id === 'healingWave').ancestralEcho, .4);
 });
 
-test('Tide is used for two wounded allies and prevents paying again for covered wounds', () => {
-  const loadout = balanceLoadout(partyForHealer('shaman'), 'shaman', builds.shaman['7-tide-echo']);
+test('historical BAT-87 Tide policy prevents paying again for covered wounds', () => {
+  const loadout = balanceLoadout(partyForHealer('shaman'), 'shaman', builds.shaman['7-tide-echo'], 'bat87');
   const encounter = { name: 'Split policy regression', maxHp: 1e8, strike: { first: Infinity, every: Infinity, damage: 0 }, mechanics: [] };
-  const game = new Combat(encounter, () => .99, loadout.party, loadout.spells);
+  const game = new Bat87Combat(encounter, () => .99, loadout.party, loadout.spells);
   game.start();
   game.party[0].hp -= 100; game.party[1].hp -= 100;
   decideShaman(game);

@@ -3,7 +3,7 @@ import { CHAPTERS, CHAPTER_ENCOUNTERS } from './data.js';
 import { chapterComplete, chapterUnlocked, restoreCampaign } from './progression.js';
 import { encounterState } from './chapter-runs.js';
 import { chapterSwitchCopy, createChapterSwitch } from './chapter-switch.js';
-import { itemIcon } from './equipment.js';
+import { encounterLootMarkup } from './loot-presentation.js';
 import { mechanicCategory, mechanicIcon } from './mechanic-icons.js';
 export { nodeState, chapterComplete, restoreProgress, awardVictory } from './progression.js';
 
@@ -29,7 +29,7 @@ function minimumMapExtent(nodes, axis, nodeSize, spacing) {
   return Math.ceil(extent);
 }
 
-export function setupAdventures({ startEncounter, onProgress, onRunChange, runs, getParty, getNormalLoot, awardLoot, onLoot, onVictory }) {
+export function setupAdventures({ startEncounter, onProgress, onRunChange, runs, getParty, getNormalLoot, getBossBonusLoot, awardLoot, onLoot, onVictory }) {
   const $ = selector => document.querySelector(selector);
   const map = $('#adventure-map'), dialog = $('#encounter-preview'), switchDialog = $('#switch-chapter-run');
   // Preserve Chapter I progress when upgrading to the multi-chapter campaign.
@@ -162,9 +162,7 @@ export function setupAdventures({ startEncounter, onProgress, onRunChange, runs,
     mechanicsList.innerHTML = mechanicRows.map(mechanicRow).join('');
     $('#detail-lesson').textContent = healerHint(encounter.lesson, loadActiveHealer());
     const loot = getNormalLoot?.(node) || [];
-    $('#detail-loot').innerHTML = loot.length
-      ? loot.map(item => `<button type="button" class="loot-item gear-slot is-equipped" data-item-id="${item.id}" aria-label="${item.name}, item level ${item.itemLevel}">${itemIcon(item)}</button>`).join('')
-      : '<p class="empty-loot">No eligible normal loot remains.</p>';
+    $('#detail-loot').innerHTML = encounterLootMarkup(loot, getBossBonusLoot?.(node) || [], node.kind === 'boss');
     $('#preview-encounter').disabled = state !== 'available';
     $('#preview-encounter').textContent = run.status === 'complete' ? 'Replay Chapter to begin' : run.status === 'pending' ? 'Start Chapter to begin' : state === 'locked' ? 'Encounter locked' : state === 'completed' ? 'Cleared this run' : 'Prepare encounter →';
     $('#detail-state').textContent = run.status === 'complete' ? 'Chapter complete. Choose Replay Chapter to begin a new run from the start.' : run.status === 'pending' ? 'Choose Start Chapter to begin a fresh run from this chapter’s first encounter.' : state === 'locked'
