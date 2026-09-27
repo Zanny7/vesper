@@ -383,15 +383,152 @@ export const ERAS = [
   { id: 'era-1', name: 'Era I', chapters: ['catacombs', 'wilds', 'citadel', 'thorns'], itemBorder: '#aab2b9' },
   { id: 'era-2', name: 'Era II', chapters: ['reach', 'tides', 'spire', 'eclipse'], itemBorder: '#78be87' },
 ];
-// Content shells use existing combat primitives with provisional pressure.
-// Separate IDs keep old encounter tuning and reward ownership intact.
-const ERA_II_SHELLS = [
+// BAT-97: authored content; numerical acceptance awaits actual Era II gear.
+// All encounter/utility tuning stays here. No healer or resource multipliers.
+const windowed = (mechanic, end) => ({ ...mechanic, end });
+const phase = (at, name, hint) => ({ at, name, hint });
+const eraFight = (name, hp, strike, every, appearance, color, mechanics, lesson, phases = []) => ({
+  name, maxHp: hp, strike: { first: every, every, damage: strike }, appearance, color,
+  mechanics, adds: [], lesson, phases, enrageSeconds: 210,
+  contentStatus: 'authored', balanceStatus: 'awaiting-gear',
+});
+const ERA_II_CONTENT = {
+  reach: [
+    eraFight('The Verdant Gatekeeper', 3000, 108, 3.2, 'treant', '#89b39a',
+      [split('bough', 'Falling Bough', 10, 22, 175, 2)], 'Two bough wounds compete with steady tank strikes. Raise the marked allies before returning to Aldric.'),
+    eraFight('Mossback Forager', 3100, 100, 3.2, 'beast', '#91ad79',
+      [bleed('burr', 'Clinging Burr', 8, 18, 1, 52, 5, 2, 'rotating')], 'Follow the moving burr wound. This longer, efficient path favors steady single-target healing.'),
+    eraFight('The Emerald Sentinel', 4200, 138, 3, 'knight', '#7fc396',
+      [split('lance', 'Emerald Lances', 10, 22, 210, 2), pulse('shatter', 'Shattered Ward', 16, 33, 120)], 'Optional elite: lances can meet a ward explosion. Heal the marked pair promptly and reserve group recovery.'),
+    null,
+    eraFight('The Root Ferryman', 3500, 112, 3.3, 'treant', '#7dab95',
+      [pulse('undertow', 'Root Undertow', 12, 25, 130), bleed('root', 'Binding Root', 17, 25, 1, 46, 4, 2, 'tank')], 'Recover the party after undertow, then maintain Aldric through the binding root.'),
+    eraFight('Fernveil Moth', 3500, 103, 3.2, 'moth', '#a3bd98',
+      [pulse('pollen', 'Pollen Veil', 9, 22, 150)], 'Repeated pollen clouds favor group healing. Do not leave a low ally for the next cloud.'),
+    eraFight('The Lost Watcher', 3600, 126, 3.1, 'wraith', '#8faea0',
+      [split('arrows', 'Watchfire Arrows', 10, 20, 195, 2)], 'The watch route favors focused recovery of two marked allies while the tank takes heavier strikes.'),
+    eraFight('Briarstep Widow', 4000, 115, 3.2, 'spider', '#a0b58a',
+      [bleed('barbs', 'Briar Barbs', 8, 20, 2, 42, 5, 2), split('fangs', 'Crossing Fangs', 14, 26, 150, 2)], 'Barbs are still ticking when fangs land. Prioritize any marked ally who also carries a bleed.'),
+    eraFight('The Greenward Keeper', 4100, 120, 3.3, 'treant', '#80b897',
+      [pulse('fall', 'Canopy Fall', 10, 26, 155), bleed('seed', 'Splinter Seed', 16, 26, 1, 57, 4, 2, 'rotating')], 'Raise the party after the canopy falls, then follow the splinter seed to its next victim.'),
+    eraFight('Heartwood Sovereign', 6500, 124, 3.2, 'treant', '#98d095',
+      [windowed(bleed('roots', 'Sovereign Roots', 9, 20, 1, 65, 5, 2, 'tank'), 48),
+        windowed(split('boughs', 'Sovereign Boughs', 14, 24, 200, 2), 48),
+        pulse('bloom', 'Emerald Bloom', 53, 24, 160), bleed('seeds', 'Scattered Seeds', 59, 24, 2, 44, 5, 2)],
+      'First stabilize Aldric and the marked pair. At 48s the canopy opens: prepare group recovery for blooms and bleeding seeds.',
+      [phase(0, 'Rootbound', 'Tank roots and paired bough strikes.'), phase(48, 'Open Canopy', 'Party blooms followed by two seed wounds.')]),
+  ],
+  tides: [
+    eraFight('Saltwake Bulwark', 3600, 119, 3.2, 'knight', '#83b6c2',
+      [split('salt', 'Salt Spears', 10, 22, 190, 2)], 'Two spear wounds need recovery before the next tank strike. The entrance can be farmed independently.'),
+    eraFight('Reedstalker', 3900, 118, 3.3, 'beast', '#8eb8a8',
+      [bleed('reed', 'Reed Cuts', 8, 16, 1, 62, 5, 2, 'rotating'), split('snap', 'Reed Snap', 15, 30, 160, 2)], 'Moving cuts meet occasional split wounds. Use efficient healing between snaps.'),
+    eraFight('The Drowned Pilgrim', 4000, 108, 3.1, 'wraith', '#8badc5',
+      [pulse('wash', 'Cold Wash', 10, 23, 160), bleed('chill', 'Salt Wound', 16, 23, 1, 44, 4, 2, 'tank')], 'Cold wash spreads wounds; the following salt wound draws attention back to Aldric.'),
+    eraFight('Keeper of the Crossing', 4300, 125, 3.1, 'treant', '#7faeb9',
+      [split('currents', 'Crosscurrents', 11, 24, 195, 3), pulse('surge', 'Rising Surge', 18, 36, 110)], 'Recover three current victims before the surge. Later cycles bring the two warnings closer together.'),
+    eraFight('Shallows Warden', 4200, 114, 3.3, 'knight', '#8bbdc1',
+      [bleed('barnacle', 'Barnacle Wound', 9, 18, 1, 59, 5, 2, 'rotating'), pulse('ripple', 'Shallow Ripple', 15, 30, 110)], 'The normal route favors efficient wound maintenance. Heal the bleeding ally before a ripple.'),
+    eraFight('Tideguard Colossus', 5700, 147, 3, 'knight', '#72bbcd',
+      [bleed('harpoon', 'Twin Harpoons', 10, 24, 2, 65, 5, 2), pulse('breaker', 'Sanctuary Breaker', 17, 30, 155), split('anchor', 'Anchor Fragments', 26, 36, 175, 2)],
+      'Optional elite: harpoons tick through the breaker. Reserve a cooldown for overlap, then recover anchor victims.'),
+    null,
+    eraFight('The Sunken Cantor', 4700, 123, 3.3, 'wraith', '#86b2d0',
+      [pulse('hymn', 'Drowned Hymn', 10, 24, 160), split('echo', 'Sundered Echo', 16, 24, 185, 2)], 'The hymn always precedes the echo by six seconds. Recover the group without leaving its marked pair exposed.'),
+    eraFight('Pearlbound Widow', 4600, 130, 3.2, 'spider', '#acbfd0',
+      [bleed('pearl', 'Pearl Shards', 8, 18, 2, 54, 5, 2), split('shell', 'Shell Crack', 15, 27, 165, 2)], 'Two shard wounds favor focused maintenance; a shell crack may change which target needs the next heal.'),
+    eraFight('Waveborne Harrier', 5000, 128, 3.1, 'beast', '#85acc5',
+      [split('sweep', 'Wave Sweep', 9, 22, 200, 3), pulse('wake', 'Breaking Wake', 16, 33, 125)], 'Three sweep targets need recovery before a wake. Prepare the tank before committing to group healing.'),
+    eraFight('The Flood Watcher', 5100, 135, 3.2, 'wraith', '#7aafbd',
+      [bleed('flood', 'Flood Scars', 9, 16, 1, 68, 5, 2, 'rotating'), pulse('crest', 'Flood Crest', 15, 24, 155)], 'Moving scars and crests alternate urgency between the group and one wounded ally.'),
+    eraFight('The Drowned Regent', 7800, 134, 3.2, 'vampire', '#80bfd0',
+      [windowed(split('spears', 'Regent Spears', 10, 22, 205, 2), 40), windowed(bleed('salt', 'Regent Salt', 16, 22, 1, 64, 4, 2, 'tank'), 40),
+        windowed(pulse('tide', 'Throne Tide', 45, 24, 170), 82), windowed(bleed('undertow', 'Royal Undertow', 51, 24, 2, 53, 5, 2), 82),
+        split('ruin', 'Sanctuary Ruin', 87, 24, 205, 3), pulse('last', 'Last High Tide', 94, 36, 135)],
+      'Plan for spears, then group tides at 40s. At 82s the throne breaks: triage three ruin victims before the high tide.',
+      [phase(0, 'Low Water', 'Spears and a tank wound.'), phase(40, 'Rising Water', 'Group tides followed by undertow wounds.'), phase(82, 'Broken Throne', 'Three split wounds and staggered high tides.')]),
+  ],
+  spire: [
+    eraFight('The Glass Gatekeeper', 4300, 128, 3.2, 'knight', '#a3b7dc',
+      [bleed('glass', 'Glass Splinters', 8, 18, 1, 68, 5, 2, 'rotating'), split('prism', 'Prism Strike', 15, 27, 175, 2)], 'Follow sequential splinters while watching the marked pair. The gate offers the first farming foothold.'),
+    eraFight('Prismwing', 4500, 124, 3.1, 'moth', '#b1b5df',
+      [pulse('spectrum', 'Broken Spectrum', 10, 24, 170), bleed('dust', 'Prism Dust', 16, 24, 2, 46, 4, 2)], 'Group recovery competes with two prism wounds. Do not waste a group heal into the opening full-health party.'),
+    eraFight('The Lower Custodian', 4500, 140, 3.2, 'knight', '#9bbac8',
+      [split('facets', 'Crossed Facets', 10, 23, 210, 2), bleed('edge', 'Glass Edge', 16, 23, 1, 60, 4, 2, 'tank')], 'This route emphasizes the tank and a marked pair. Restore the pair before glass edge steals attention.'),
+    eraFight('The Mirror Bearer', 4800, 130, 3.2, 'wraith', '#bac1d9',
+      [bleed('images', 'Fractured Images', 8, 7, 1, 42, 5, 2, 'rotating'), split('mirror', 'Mirror Break', 17, 26, 185, 2)], 'Sequential wounds build across several frames. Mirror break can make a maintained ally suddenly urgent.'),
+    eraFight('Crystal Watcher', 4900, 137, 3.2, 'treant', '#9abacb',
+      [pulse('crystal', 'Crystal Fall', 11, 24, 175), split('needles', 'Crystal Needles', 17, 30, 190, 2)], 'Needles follow party damage. Raise low marked allies first rather than topping every frame.'),
+    eraFight('The Spire Ferryman', 5100, 142, 3.3, 'wraith', '#a0b6d5',
+      [bleed('bridge', 'Fractured Bridge', 9, 21, 2, 58, 5, 2), pulse('resonance', 'Bridge Resonance', 15, 28, 145)], 'Two wounds persist into resonance while tank strikes continue. Efficiency now matters over several cycles.'),
+    eraFight('Clearway Custodian', 5000, 130, 3.4, 'knight', '#adcbcf',
+      [split('clear', 'Clearway Cuts', 11, 26, 205, 2), bleed('trace', 'Luminous Trace', 17, 26, 1, 55, 4, 2, 'rotating')], 'A longer normal route offers combat recovery and a reward chance, at the cost of more healing.'),
+    eraFight('Prism Warden', 6500, 158, 3, 'knight', '#a9a9e0',
+      [bleed('prison', 'Prism Prison', 9, 24, 2, 70, 5, 2), pulse('refraction', 'Violent Refraction', 16, 30, 180), split('shards', 'Warden Shards', 25, 36, 200, 3)],
+      'Optional elite: wounded prisoners need healing before refraction. Save burst recovery for the later three-target shards.'),
+    null,
+    eraFight('The Shard Cantor', 5500, 141, 3.2, 'wraith', '#b6b2d6',
+      [bleed('song', 'Shard Song', 8, 6, 1, 44, 5, 2, 'rotating'), pulse('chorus', 'Shattered Chorus', 16, 24, 160)], 'Sequential shard wounds remain active through the chorus. The next heal belongs to the least safe bleeding ally.'),
+    eraFight('The Hollow Lens', 5500, 146, 3.3, 'spider', '#a9bdd4',
+      [split('focus', 'Divided Focus', 10, 24, 215, 3), bleed('lens', 'Lens Burn', 16, 24, 1, 72, 4, 2, 'tank')], 'Three focus wounds pull healing away from Aldric just before his lens wound. Prepare him before the split.'),
+    eraFight('Crownstep Harrier', 6000, 146, 3.2, 'beast', '#9baed3',
+      [split('talons', 'Crown Talons', 9, 22, 215, 2), pulse('flight', 'Shattering Flight', 16, 33, 165), bleed('feather', 'Glass Feather', 23, 33, 1, 60, 4, 2, 'rotating')], 'Talons, flight and a moving feather cycle through different priorities. Use the gap after each flight to rebuild Health.'),
+    eraFight('The High Watch', 6100, 150, 3.3, 'knight', '#9bb4ca',
+      [bleed('watch', 'Watch Scars', 9, 22, 2, 64, 5, 2), pulse('bell', 'Crystal Bell', 16, 22, 155)], 'Two watch scars meet every bell. Maintain both wounded allies while answering heavier tank pressure.'),
+    eraFight('The Glass Sovereign', 9000, 145, 3.2, 'wraith', '#b8b7e5',
+      [windowed(bleed('facets', 'Sovereign Facets', 9, 7, 1, 48, 5, 2, 'rotating'), 44), windowed(split('mirror', 'Crown Mirrors', 17, 26, 210, 2), 44),
+        windowed(pulse('fracture', 'Crown Fracture', 49, 24, 185), 90), windowed(bleed('prisms', 'Falling Prisms', 55, 24, 2, 57, 5, 2), 90),
+        split('crown', 'Crown Collapse', 95, 24, 220, 3), bleed('last', 'Last Facet', 102, 24, 1, 76, 5, 2, 'tank')],
+      'Moving wounds give way to fracture recovery at 44s. At 90s preserve tank maintenance while triaging three collapse victims.',
+      [phase(0, 'Mirrored Crown', 'Sequential facet wounds and paired mirrors.'), phase(44, 'Fractured Crown', 'Group fractures with falling prism wounds.'), phase(90, 'Falling Crown', 'Three collapse victims compete with a heavy tank wound.')]),
+  ],
+  eclipse: [
+    eraFight('Duskbound Gatekeeper', 5000, 139, 3.2, 'knight', '#a193be',
+      [split('dusk', 'Dusk Blades', 10, 24, 210, 2), bleed('shadow', 'Shadow Scar', 17, 24, 1, 64, 5, 2, 'rotating')], 'Dusk blades and a moving scar make a demanding but readable entrance for farming.'),
+    eraFight('The Umbral Pilgrim', 5200, 142, 3.3, 'vampire', '#a18caf',
+      [bleed('umbra', 'Umbral Thread', 8, 7, 1, 46, 5, 2, 'rotating'), split('walk', 'Nightfall Cuts', 17, 26, 205, 2)], 'Sequential wounds reward maintenance, but cuts can require immediate focused healing.'),
+    eraFight('The Fading Keeper', 5200, 130, 3.1, 'wraith', '#a7a2ca',
+      [pulse('fade', 'Fading Light', 10, 24, 180), bleed('embers', 'Last Embers', 16, 24, 2, 50, 4, 2)], 'Group damage and two ember wounds favor carefully timed party recovery.'),
+    eraFight('Nightglass Widow', 5500, 145, 3.2, 'spider', '#ab92b5',
+      [bleed('web', 'Nightglass Web', 9, 22, 2, 65, 5, 2), split('fangs', 'Nightglass Fangs', 16, 30, 195, 2)], 'Webs keep two allies wounded while fangs change the urgent pair. Heal overlap victims first.'),
+    eraFight('The Twilight Watcher', 5500, 150, 3.3, 'knight', '#969fbd',
+      [split('watch', 'Twilight Spears', 10, 24, 215, 3), pulse('toll', 'Twilight Toll', 17, 36, 150)], 'Three spear victims must recover before a toll. Keep Aldric healthy ahead of the group commitment.'),
+    eraFight('The Eclipse Ferryman', 5800, 150, 3.2, 'wraith', '#9b94c3',
+      [pulse('crossing', 'Eclipse Wave', 11, 24, 180), bleed('wake', 'Shadow Wake', 17, 24, 2, 60, 5, 2)], 'Every wave leaves two wake wounds. Recover the group, then shift to those two frames before the next wave.'),
+    eraFight('Quietway Guardian', 5600, 140, 3.4, 'treant', '#9baaaf',
+      [bleed('quiet', 'Quiet Thorns', 9, 22, 1, 76, 5, 2, 'rotating'), split('bough', 'Dark Boughs', 16, 28, 205, 2)], 'The quieter path still demands healing; it offers combat recovery and a reward chance instead of shrine shelter.'),
+    eraFight('The Umbral Knight', 7400, 165, 3, 'knight', '#a58ac5',
+      [split('lances', 'Umbral Lances', 10, 24, 230, 3), pulse('armor', 'Shattered Night Armor', 17, 30, 180), bleed('oath', 'Bleeding Oath', 25, 36, 1, 88, 5, 2, 'tank')],
+      'Optional elite: three lances precede the armor burst. Do not spend all cooldowns before the following tank oath.'),
+    null,
+    eraFight('The Shadow Choir', 6200, 148, 3.2, 'wraith', '#b294c4',
+      [bleed('voices', 'Shadow Voices', 8, 6, 1, 49, 5, 2, 'rotating'), pulse('choir', 'Choir of Night', 16, 24, 175)], 'Moving voice wounds overlap each choir. Choose the most vulnerable bleeding ally before the next group hit.'),
+    eraFight('The Hollow Moon', 6200, 154, 3.3, 'moth', '#afb0d3',
+      [split('moon', 'Moon Fragments', 10, 24, 225, 3), bleed('moonfall', 'Moonfall', 17, 24, 1, 80, 5, 2, 'tank')], 'Three moon fragments compete with a sustained tank wound. Prepare Aldric before fragments land.'),
+    eraFight('Crownwalker', 6700, 155, 3.2, 'vampire', '#b39bbc',
+      [split('crown', 'Crown Cuts', 9, 22, 225, 2), pulse('veil', 'Royal Veil', 16, 33, 180), bleed('sigil', 'Fading Sigil', 23, 33, 1, 67, 4, 2, 'rotating')], 'Cuts, a veil burst and a moving sigil reward flexible triage instead of a fixed healing rotation.'),
+    eraFight('The Black Watch', 6800, 160, 3.3, 'knight', '#9694b1',
+      [bleed('watch', 'Blackwatch Wounds', 9, 22, 2, 70, 5, 2), pulse('alarm', 'Blackwatch Alarm', 16, 22, 175)], 'Every alarm overlaps two wounds. Use efficient maintenance without leaving either victim vulnerable.'),
+    eraFight('The Lastlight Executioner', 7300, 160, 3.2, 'knight', '#b19aba',
+      [split('sentence', 'Final Sentence', 10, 24, 230, 3), pulse('lastlight', 'Lastlight Fall', 17, 36, 165), bleed('sever', 'Severing Night', 25, 36, 1, 74, 4, 2, 'rotating')],
+      'The final approach is no respite: recover sentence victims before lastlight, then maintain the severed ally.'),
+    eraFight('The Eclipsed Sovereign', 11000, 156, 3.2, 'vampire', '#baa0d6',
+      [windowed(split('decree', 'Lastlight Decree', 10, 24, 220, 2), 36), windowed(bleed('vigil', 'Sovereign Vigil', 17, 24, 1, 78, 5, 2, 'tank'), 36),
+        windowed(bleed('procession', 'Procession of Shadows', 41, 6, 1, 50, 5, 2, 'rotating'), 76), windowed(pulse('moon', 'Hollow Moonrise', 48, 24, 165), 76),
+        windowed(pulse('eclipse', 'Total Eclipse', 81, 26, 195), 116), windowed(split('stars', 'Falling Stars', 88, 26, 215, 3), 116),
+        bleed('crown', 'Bleeding Crown', 121, 24, 1, 88, 5, 2, 'tank'), split('dawn', 'Sundered Dawn', 128, 24, 235, 3), pulse('light', 'Last Light', 137, 36, 155)],
+      'Plan resources across four states: tank and split recovery, sequential wounds, eclipse bursts, then the bleeding crown. Save a cooldown for the final dawn.',
+      [phase(0, 'Lastlight Court', 'Paired decrees and a focused tank vigil.'), phase(36, 'Procession of Shadows', 'Sequential wounds and staggered moonrise bursts.'),
+        phase(76, 'Total Eclipse', 'Recover the party before three falling stars.'), phase(116, 'Sundered Dawn', 'A heavy tank crown competes with split wounds and the last light.')]),
+  ],
+};
+const ERA_II_MAPS = [
   { id: 'reach', name: 'The Emerald Reach', stages: [1, 3, 1, 2, 2, 1], description: 'Cross the broken frontier. Choose shelter, a guarded trail, or an optional elite challenge.', places: ['Verdant Gate', 'Mossway', 'Emerald Sentinel', 'Dawn Shrine', 'Root Crossing', 'Fern Hollow', 'Lost Watch', 'Briar Steps', 'Greenward', 'Heart of the Reach'] },
   { id: 'tides', name: 'The Drowned Sanctuaries', stages: [1, 2, 1, 3, 2, 2, 1], description: 'Follow the receding tide through sunken sanctuaries. Weigh safer paths against deeper danger.', places: ['Salt Gate', 'Reed Passage', 'Drowned Walk', 'Tide Crossing', 'Shallow Way', 'Tideguard', 'Moonwell Shrine', 'Sunken Choir', 'Pearl Vault', 'Wave Steps', 'Flood Watch', 'Throne Below'] },
   { id: 'spire', name: 'The Glassbound Spire', stages: [1, 2, 2, 1, 3, 2, 2, 1], description: 'Climb a fractured spire. Longer routes make each wound and each decision matter.', places: ['Glass Gate', 'Prism Walk', 'Lower Ascent', 'Mirror Hall', 'Crystal Watch', 'Spire Crossing', 'Clear Passage', 'Prism Warden', 'Starlight Shrine', 'Shard Gallery', 'Hollow Lens', 'Crown Steps', 'High Watch', 'The Glass Crown'] },
   { id: 'eclipse', name: 'The Eclipsed Dominion', stages: [1, 2, 2, 1, 3, 2, 2, 1, 1], description: 'Enter the last light of a fallen dominion. Carry your party through the longest vigil yet.', places: ['Dusk Gate', 'Umbral Walk', 'Fading Path', 'Night Gallery', 'Twilight Watch', 'Eclipse Crossing', 'Quiet Passage', 'Umbral Knight', 'Lastlight Shrine', 'Shadow Choir', 'Hollow Moon', 'Crown Walk', 'Black Watch', 'Final Approach', 'The Eclipsed Throne'] },
 ];
-for (const [index, shell] of ERA_II_SHELLS.entries()) {
+for (const [index, shell] of ERA_II_MAPS.entries()) {
   let offset = 0, previous = [];
   const nodes = shell.stages.flatMap((size, stage) => {
     const group = Array.from({ length: size }, (_, lane) => {
@@ -405,17 +542,22 @@ for (const [index, shell] of ERA_II_SHELLS.entries()) {
         6 + stage * 88 / (shell.stages.length - 1), size === 1 ? 50 : size === 2 ? 25 + lane * 50 : 16 + lane * 34,
         kind === 'shrine' ? 'A quiet light marks a sanctuary along this route. Pass through to continue your journey.'
           : kind === 'elite' ? 'An optional guardian holds the dangerous path. Prepare for heavier pressure.' : `The path leads through ${name.toLowerCase()}.`, kind);
-      if (kind === 'shrine') result.utility = { type: 'shrine' };
+      result.routeStage = stage;
+      if (kind === 'shrine') {
+        result.utility = { type: 'health', fraction: [0.15, 0.20, 0.25, 0.25][index] };
+        result.description = `Restore ${Math.round(result.utility.fraction * 100)}% of maximum Health to each living ally, once per run. No resurrection, Mana recovery or gear reward. Choose shelter instead of combat rewards.`;
+      }
       else {
-        const template = CHAPTER_ENCOUNTERS[kind === 'boss' ? 'duchess' : kind === 'elite' ? 'chapel' : lane === 0 ? 'huntsman' : 'roses'];
-        CHAPTER_ENCOUNTERS[id] = { ...structuredClone(template), id, name, contentStatus: 'shell' };
+        const content = structuredClone(ERA_II_CONTENT[shell.id][offset + lane]);
+        CHAPTER_ENCOUNTERS[id] = { ...content, id };
+        result.description = content.lesson + (kind === 'elite' ? ' One guaranteed additional eligible chapter item when rewards are available.' : '');
       }
       return result;
     });
     offset += size; previous = group; return group;
   });
   CHAPTERS.push({ id: shell.id, number: `Chapter ${index + 5}`, name: shell.name, description: shell.description, nodes,
-    routeLength: shell.stages.length, contentStatus: 'shell', talentMilestones: false,
+    routeLength: shell.stages.length, routeChoices: 'exclusive', contentStatus: 'authored', balanceStatus: 'awaiting-gear', rewardsStatus: 'pending', talentMilestones: false,
     // Affix definitions can be layered onto these chapters by later content BATs.
     modifiers: [], encounterDurationTarget: [90, 180] });
 }
@@ -435,6 +577,7 @@ for (const encounter of [ENCOUNTER, ...Object.values(CHAPTER_ENCOUNTERS)]) {
   if (encounter.shard) encounter.shard.damageType = 'Magic';
   for (const add of encounter.adds || []) add.damageType = add.appearance === 'wisp' ? 'Magic' : 'Physical';
   for (const mechanic of encounter.mechanics) {
+    if (encounter.phases?.length) mechanic.startsAt = encounter.phases.filter(phase => phase.at <= mechanic.first - mechanic.warning).at(-1)?.at ?? 0;
     if (mechanic.damage) mechanic.damageType = mechanic.target === 'party' ? 'Magic' : 'Physical';
     if (mechanic.dot) mechanic.dot.damageType = 'Bleed';
   }

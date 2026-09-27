@@ -48,8 +48,8 @@ function snapshot(equipment, healerId, chapter) {
   };
 }
 
-// Era II placeholders have no authored rewards or balance presets yet.
-const chapters = CHAPTERS.filter(chapter => chapter.contentStatus !== 'shell').map((chapter, chapterIndex) => {
+// Gear readiness cannot be claimed for chapters still awaiting real rewards.
+const chapters = CHAPTERS.filter(chapter => chapter.contentStatus !== 'shell' && chapter.balanceStatus !== 'awaiting-gear').map((chapter, chapterIndex) => {
   const paths = routes(chapter);
   const routeLengths = [...new Set(paths.map(path => path.length))];
   const byTier = Object.fromEntries(tiers.map((tier, tierIndex) => {

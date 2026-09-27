@@ -187,11 +187,11 @@ export function setupAdventures({ startEncounter, onProgress, onRunChange, runs,
       button.setAttribute('aria-pressed', String(selected === node.id));
       button.querySelector('.node-symbol').textContent = state === 'locked' ? '⊘' : nodeSymbol(node);
       const stateDescription = state === 'completed' ? 'Cleared this run' : state === 'available' ? chapter.id === 'catacombs' ? 'Current encounter' : 'Available route' : 'Locked';
-      button.setAttribute('aria-label', `${node.kind === 'boss' ? 'Chapter boss' : 'Encounter'}: ${node.name}. ${stateDescription}`);
+      button.setAttribute('aria-label', `${nodeLabel(node)}: ${node.name}. ${stateDescription}`);
     }
     for (const path of map.querySelectorAll('[data-route]')) path.classList.toggle('cleared', runCompleted.has(path.dataset.route));
     const node = nodes.find(node => node.id === selected), encounter = CHAPTER_ENCOUNTERS[node.encounter] || {
-      name: 'Quiet sanctuary', adds: [], mechanics: [], lesson: 'Visit this sanctuary to follow its path. Health and Mana carry forward unchanged.',
+      name: 'Quiet sanctuary', adds: [], mechanics: [], lesson: 'Choose shelter before the next encounter. This route forgoes combat rewards.',
     };
     const state = encounterState(chapter, run, node), count = encounter.adds.length;
     $('#restart-chapter').textContent = run.status === 'complete' ? 'Replay Chapter' : run.status === 'pending' ? 'Start Chapter' : 'Restart chapter';
@@ -202,22 +202,26 @@ export function setupAdventures({ startEncounter, onProgress, onRunChange, runs,
     $('#detail-enemies').textContent = !node.encounter ? 'Sanctuary · No combat' : `${encounter.name}${count ? ` + ${encounter.adds.map((add, i) => add.name || `Pale Archer ${i + 1}`).join(', ')}` : ' · Alone'}`;
     const mechanicRows = [
       ...(encounter.strike ? [{ id: 'tank-strikes', name: 'Tank strikes', category: 'physical', description: `${encounter.strike.damage} damage to Aldric every ${encounter.strike.every}s.` }] : []),
-      ...encounter.mechanics.map(mechanic => ({ id: mechanic.id, name: mechanic.name, category: mechanicCategory(mechanic), description: healerHint(mechanic.hint, loadActiveHealer()) })),
+      ...encounter.mechanics.map(mechanic => ({ id: mechanic.id, name: mechanic.name, category: mechanicCategory(mechanic), description: healerHint(mechanic.hint, loadActiveHealer())
+        + (mechanic.startsAt != null ? ` First at ${mechanic.first}s; repeats every ${mechanic.every}s${mechanic.end != null ? ` until ${mechanic.end}s` : ''}.` : '') })),
+      ...(encounter.phases || []).map((phase, index) => ({ id: `phase-${index}`, name: `${phase.name} · ${phase.at}s`, category: 'aoe', description: phase.hint })),
       ...(count ? [{ id: 'supporting-enemies', name: 'Supporting enemies', category: 'adds', description: `${encounter.adds.map(add => `${add.name || 'Pale Archer'} attacks ${add.target === 'tank' ? 'Aldric' : 'random living allies'}.`).join(' ')} Your party focuses the main enemy; the others flee when it falls.` }] : []),
     ];
     mechanicsList.innerHTML = mechanicRows.map(mechanicRow).join('');
     $('#detail-lesson').textContent = healerHint(encounter.lesson, loadActiveHealer());
     const loot = getNormalLoot?.(node) || [];
     $('#detail-loot').innerHTML = !node.encounter ? '<p class="empty-loot">No gear rewards at this sanctuary.</p>'
-      : chapter.contentStatus === 'shell' && !loot.length ? '<p class="empty-loot">Rewards for this journey are yet to be discovered.</p>'
-      : encounterLootMarkup(loot, getBossBonusLoot?.(node) || [], node.kind === 'boss');
+      : chapter.rewardsStatus === 'pending' && !loot.length ? '<p class="empty-loot">Era II gear rewards are not available yet.</p>'
+      : encounterLootMarkup(loot, getBossBonusLoot?.(node) || [], node.kind === 'boss', node.kind === 'elite');
     $('#preview-encounter').disabled = state !== 'available';
     $('#preview-encounter').textContent = run.status === 'complete' ? 'Replay Chapter to begin' : run.status === 'pending' ? 'Start Chapter to begin' : state === 'locked' ? 'Route locked' : state === 'completed' ? 'Cleared this run' : !node.encounter ? 'Visit shrine →' : 'Prepare encounter →';
     $('#detail-state').textContent = run.status === 'complete' ? 'Chapter complete. Choose Replay Chapter to begin a new run from the start.' : run.status === 'pending' ? 'Choose Start Chapter to begin a fresh run from this chapter’s first encounter.' : state === 'locked'
-      ? `Complete ${node.from.map(id => nodes.find(item => item.id === id).name).join(' or ')} in this run first.`
+      ? chapter.routeChoices === 'exclusive' && nodes.some(other => other.routeStage === node.routeStage && runCompleted.has(other.id))
+        ? 'Another path was chosen at this fork. Replay the chapter to try this route.'
+        : `Complete ${node.from.map(id => nodes.find(item => item.id === id).name).join(' or ')} in this run first.`
       : state === 'completed'
-        ? node.kind === 'boss' ? 'Chapter complete. Your party can start the next chapter.' : `Health and Mana carry forward; victory restores ${Math.round(CONFIG.encounterManaRecovery * 100)}% of maximum Mana. Choose your path.`
-        : !node.encounter ? 'A peaceful stop along your route. Health and Mana carry forward unchanged.'
+        ? node.kind === 'boss' ? 'Chapter complete. Your party can start the next chapter.' : !node.encounter ? 'Shrine used this run. Mana is unchanged; choose the next encounter.' : `Health and Mana carry forward; victory restores ${Math.round(CONFIG.encounterManaRecovery * 100)}% of maximum Mana. Choose your path.`
+        : !node.encounter ? 'Visit once this run. Health recovery only; Mana stays unchanged.'
         : `Surviving Health and Mana carry forward. Successful non-final encounters restore ${Math.round(CONFIG.encounterManaRecovery * 100)}% of maximum Mana.`;
   }
   function persistProgress(node) {

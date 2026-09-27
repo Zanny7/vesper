@@ -17,7 +17,7 @@ import { Equipment } from './gear.js';
 import { roleLabel } from './item-model.js';
 import { itemBorderAttributes, itemEraLabel } from './eras.js';
 import { setupEquipment, itemIcon } from './equipment.js';
-import { BOSS_BONUS_LOOT_TABLES, NORMAL_LOOT_TABLES, eligibleNormalLootForEncounter, eligibleBossBonusLootForEncounter, rollBossBonusLoot, rollNormalLoot } from './loot.js';
+import { BOSS_BONUS_LOOT_TABLES, ELITE_BONUS_LOOT_TABLES, NORMAL_LOOT_TABLES, eligibleNormalLootForEncounter, eligibleBossBonusLootForEncounter, eligibleEliteBonusLootForEncounter, rollBossBonusLoot, rollNormalLoot } from './loot.js';
 import { activeHealer, loadActiveHealer, healerHint } from './healers.js';
 import { abilityTooltip, renderAbilityCooldown } from './ability-presentation.js';
 import { abilityIcon } from './ability-icons.js';
@@ -167,6 +167,8 @@ function renderUI(){
   renderHealerBuffs($('#healer-buffs'), game);
   $('#boss-fill').style.width=`${game.boss.hp/game.boss.maxHp*100}%`;$('#boss-percent').textContent=`${Math.ceil(game.boss.hp/game.boss.maxHp*100)}%`;$('#boss-hp').textContent=`${number(game.boss.hp)} / ${number(game.boss.maxHp)}`;
   $('#timer').textContent=clock(game.time);$('#enrage').textContent=clock(Math.max(0,game.enrageSeconds-game.time));
+  $('#encounter-phase').hidden = !game.phase;
+  $('#encounter-phase').textContent = game.phase ? `${game.phase.name} · ${game.phase.hint}` : '';
   $('#alive-count').textContent=`${game.party.filter(p=>p.hp>0).length} / 5`;
   $('#healing-stat').innerHTML=`EFFECTIVE HEALING <b>${number(game.stats.effective)}</b>`;
   const cast=game.cast;
@@ -192,12 +194,13 @@ function renderUI(){
   for (const add of game.adds) $('[data-add-countdown="'+add.id+'"]').textContent = `· ${Math.max(0, Math.ceil(add.next-game.time))}s`;
   for (const m of game.mechanics) {
     const row = $('#timeline [data-mechanic="'+m.id+'"]');
+    row.hidden = !Number.isFinite(m.next) || game.time < (m.startsAt || 0);
     row.querySelector('b').textContent = `· ${Math.max(0, Math.ceil(m.next-game.time))}s`;
     row.classList.toggle('warning', m.warned);
   }
   view.refreshTooltip();
   const warning=game.mechanics.filter(m=>m.warned).sort((a,b)=>a.next-b.next)[0];$('#mechanic-alert').hidden=!warning||game.status!=='running';
-  if(warning){$('#mechanic-alert').textContent=`${warning.name.toUpperCase()} · ${formatNumber(warning.next-game.time)}s · ${warning.target === 'party' ? 'Everyone' : (warning.targets || []).map(id=>game.party.find(p=>p.id===id)?.name).join(', ')}`;$('#tactical-tip').textContent=healerHint(warning.hint,activeHealerId);}else{$('#tactical-tip').textContent=healerHint(game.encounter.lesson,activeHealerId);}
+  if(warning){$('#mechanic-alert').textContent=`${warning.name.toUpperCase()} · ${formatNumber(warning.next-game.time)}s · ${warning.target === 'party' ? 'Everyone' : (warning.targets || []).map(id=>game.party.find(p=>p.id===id)?.name).join(', ')}`;$('#tactical-tip').textContent=healerHint(warning.hint,activeHealerId);}else{$('#tactical-tip').textContent=healerHint(game.phase?.hint || game.encounter.lesson,activeHealerId);}
   const logKey=game.history.map(l=>l.time+l.text).join('|');
   if(logKey!==lastLog){$('#combat-log').innerHTML=game.history.slice(0,6).map(l=>`<div class="log-entry ${l.kind}"><time>${clock(l.time)}</time><span>${l.text}</span></div>`).join('')||'<p class="empty-log">The sanctum is still.<br>For now.</p>';lastLog=logKey;}
   if(game.status!==lastStatus){
@@ -254,7 +257,7 @@ const adventures = setupAdventures({
   runs,
   getParty: () => party(activeHealerId),
   getNormalLoot: node => eligibleNormalLootForEncounter(node.encounter, equipment.ownedIds, activeHealerId),
-  getBossBonusLoot: node => eligibleBossBonusLootForEncounter(node.encounter, equipment.ownedIds, activeHealerId),
+  getBossBonusLoot: node => node.kind === 'elite' ? eligibleEliteBonusLootForEncounter(node.encounter, equipment.ownedIds, activeHealerId) : eligibleBossBonusLootForEncounter(node.encounter, equipment.ownedIds, activeHealerId),
   startEncounter: (node, resources) => { shell.enterEncounter(CHAPTER_ENCOUNTERS[node.encounter], resources, soundtrack.select(node)); renderUI(); },
   onProgress: completed => { talents.migrateLegacyCampaign(activeHealerId, completed); chapters.refresh(completed); },
   onRunChange: completed => chapters.refresh(completed),
@@ -262,6 +265,7 @@ const adventures = setupAdventures({
   awardLoot: node => {
     const rewards = rollNormalLoot(NORMAL_LOOT_TABLES[node.encounter], equipment.ownedIds, activeHealerId);
     if (node.kind === 'boss') rewards.push(...rollBossBonusLoot(BOSS_BONUS_LOOT_TABLES[node.encounter], [...equipment.ownedIds, ...rewards.map(item => item.id)], activeHealerId));
+    if (node.kind === 'elite') rewards.push(...rollBossBonusLoot(ELITE_BONUS_LOOT_TABLES[node.encounter], [...equipment.ownedIds, ...rewards.map(item => item.id)], activeHealerId));
     for (const item of rewards) equipment.acquire(item.id);
     return rewards;
   },

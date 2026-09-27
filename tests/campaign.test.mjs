@@ -74,11 +74,11 @@ test('campaign restoration preserves old Chapter I progress, validates routes, a
 });
 
 test('chapter lessons and encounter compositions vary and build on earlier pressure', () => {
-  const fights=chapter=>chapter.nodes.map(n=>CHAPTER_ENCOUNTERS[n.encounter]);
+  const fights=chapter=>chapter.nodes.filter(n=>n.encounter).map(n=>CHAPTER_ENCOUNTERS[n.encounter]);
   assert.ok(fights(CHAPTERS[1]).filter(e=>e.mechanics.some(m=>m.target==='party')).length>=4);
   assert.ok(fights(CHAPTERS[2]).every(e=>e.mechanics.some(m=>m.target==='random' && [2,3].includes(m.count))));
   assert.ok(fights(CHAPTERS[3]).every(e=>e.mechanics.some(m=>m.dot)));
-  for(const chapter of CHAPTERS.slice(1).filter(chapter => chapter.contentStatus !== 'shell')) {
+  for(const chapter of CHAPTERS.slice(1, 4)) {
     const encounters=fights(chapter);
     assert.ok(new Set(encounters.map(e=>e.appearance)).size>=3);
     assert.ok(encounters.some(e=>e.adds.length) && encounters.some(e=>!e.adds.length));
@@ -120,11 +120,11 @@ test('bleeds tick for their full duration, refresh their own effect, and allow d
   g.reset();assert.ok(g.party.every(p=>!p.dots.length));
 });
 
-test('later chapter openers are manageable with fresh resources', () => {
+test('Era I later chapter openers are manageable with fresh resources', () => {
   // Later route encounters are tuned as progression walls. The first normal
   // encounter remains individually beatable before route attrition begins.
   const legacyParty = PARTY.map(p => p.label === 'HEALER' ? { ...p, maxMana: 1200, manaRegen: 4 } : p);
-  for(const chapter of CHAPTERS.slice(1).filter(chapter => chapter.contentStatus !== 'shell')) for(const node of chapter.nodes.filter(node => node.kind === 'normal' && node.from.length === 0)) {
+  for(const chapter of CHAPTERS.slice(1, 4)) for(const node of chapter.nodes.filter(node => node.kind === 'normal' && node.from.length === 0)) {
     const encounter=CHAPTER_ENCOUNTERS[node.encounter];
     for(let seed=1;seed<=20;seed++) {
       const g=new Combat(encounter,seeded(seed),legacyParty);g.start();

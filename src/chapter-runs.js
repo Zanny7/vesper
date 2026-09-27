@@ -11,10 +11,20 @@ export function recoverEncounterMana(resources, fraction = CONFIG.encounterManaR
   next.mana.current = Math.min(next.mana.max, next.mana.current + next.mana.max * fraction);
   return next;
 }
+// Authored shrines restore living allies only and never grant combat Mana recovery.
+export function applyNodeUtility(resources, utility) {
+  const next = structuredClone(resources);
+  if (utility?.type === 'health') for (const health of Object.values(next.health)) {
+    if (health.current > 0) health.current = Math.min(health.max, health.current + health.max * utility.fraction);
+  }
+  return next;
+}
 export function encounterState(chapter, run, node) {
   if (!chapter.nodes.includes(node) || !run) return 'locked';
   if (run.status === 'complete') return run.completed.includes(node.id) ? 'completed' : 'locked';
   if (run.status !== 'active' || run.inEncounter) return 'locked';
+  if (!run.completed.includes(node.id) && chapter.routeChoices === 'exclusive'
+    && chapter.nodes.some(other => other.routeStage === node.routeStage && run.completed.includes(other.id))) return 'locked';
   return nodeState(node, new Set(run.completed));
 }
 export function fullResources(party) {
@@ -84,8 +94,7 @@ export class ChapterRuns {
     const run = this.get(chapter, party, historicallyComplete);
     const completed = new Set(run.completed);
     if (encounterState(chapter, run, node) !== 'available' || !awardVisit(completed, node, chapter.nodes)) return false;
-    // Utility visits are distinct from victories: no combat recovery, loot or
-    // talent awards. Future authored utility effects belong in a dedicated rule.
+    run.resources = applyNodeUtility(run.resources, node.utility);
     run.completed = [...completed];
     this.save(); return true;
   }

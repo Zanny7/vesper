@@ -67,6 +67,16 @@ export function buildBossBonusLootTables(chapters = CHAPTERS, catalogue = GEAR, 
 export const BOSS_BONUS_LOOT_TABLES = Object.freeze(buildBossBonusLootTables());
 export const eligibleBossBonusLootForEncounter = (encounterId, ownedIds, healerId, catalogue = GEAR) => eligibleLootPool(BOSS_BONUS_LOOT_TABLES[encounterId], ownedIds, healerId, catalogue);
 
+// Optional elite victories use the same guaranteed-extra-item roll as bosses.
+// The pool fills from real chapter gear; empty catalogues award nothing.
+export function buildEliteBonusLootTables(chapters = CHAPTERS, catalogue = GEAR, normalTables = buildNormalLootTables(chapters, catalogue)) {
+  return Object.fromEntries(chapters.flatMap((chapter, index) => chapter.nodes.filter(node => node.kind === 'elite')
+    .map(node => [node.encounter, catalogue.filter(item => item.chapter === (chapter.ordinal ?? index + 1)
+      && !normalTables[node.encounter]?.includes(item.id)).map(item => item.id)])));
+}
+export const ELITE_BONUS_LOOT_TABLES = Object.freeze(buildEliteBonusLootTables());
+export const eligibleEliteBonusLootForEncounter = (encounterId, ownedIds, healerId, catalogue = GEAR) => eligibleLootPool(ELITE_BONUS_LOOT_TABLES[encounterId], ownedIds, healerId, catalogue);
+
 export function normalDropCount(rng = Math.random) {
   const roll = rng();
   return roll < 0.5 ? 0 : roll < 0.85 ? 1 : 2;

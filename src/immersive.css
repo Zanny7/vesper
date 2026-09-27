@@ -1,6 +1,8 @@
 /* Both layouts use the same controls and combat state. Only their presentation changes. */
 #view-toggle { border-color: #8c7b56; color: #decca5; white-space: nowrap; }
 #timeline { display: flex; flex-direction: column; }
+#timeline [hidden] { display: none; }
+.encounter-phase { color: var(--gold); font-size: 12px; line-height: 1.5; margin: 0 0 12px; max-width: 65ch; }
 @media (min-width: 601px) and (max-width: 1150px) {
   #timeline { flex-direction: row; }
 }

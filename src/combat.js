@@ -23,8 +23,10 @@ export class Combat {
     this.cast = null; this.events = []; this.history = []; this.serial = 0;
     this.stats = { effective: 0, overheal: 0, casts: 0, deaths: 0 };
     this.nextStrike = encounter.strike.first; this.nextShard = encounter.shard?.first ?? Infinity; this.rotation = 0;
-    this.mechanics = encounter.mechanics.map(m => ({ ...m, next: m.first, warned: false }));
+    this.mechanics = encounter.mechanics.map(m => ({ ...m, next: m.first < (m.end ?? Infinity) ? m.first : Infinity, warned: false }));
+    this.phaseIndex = -1;
   }
+  get phase() { return (this.encounter.phases || []).filter(phase => phase.at <= this.time).at(-1) || null; }
   get healer() { return this.party.find(p => p.label === 'HEALER'); }
   get enrageSeconds() { return this.encounter.enrageSeconds ?? CONFIG.enrage; }
   get maxMana() { return this.healer?.maxMana ?? CONFIG.mana; }
@@ -580,6 +582,13 @@ export class Combat {
   step(dt = CONFIG.step) {
     if (this.status !== 'running') return;
     this.time += dt; this.mana = Math.min(this.maxMana, this.mana + (this.healer?.manaRegen ?? CONFIG.manaRegen) * dt);
+    const phases = this.encounter.phases || [];
+    const phaseIndex = phases.findLastIndex(phase => phase.at <= this.time);
+    if (phaseIndex !== this.phaseIndex) {
+      this.phaseIndex = phaseIndex;
+      const phase = phases[phaseIndex];
+      if (phase) { this.log(`${phase.name}: ${phase.hint}`, 'warning'); this.emit('phase', { name: phase.name, index: phaseIndex }); }
+    }
     for (const [id, charge] of Object.entries(this.charges)) {
       while (charge.recharge !== null && this.time + 1e-8 >= charge.recharge) {
         charge.current++;
@@ -745,7 +754,11 @@ export class Combat {
         m.targets = this.mechanicTargets(m).filter(Boolean).map(p => p.id);
         this.emit('warning', { mechanic: m.id, targets: m.targets }); m.warned = true;
       }
-      if (this.time >= m.next) { this.resolveMechanic(m); m.next += m.every; m.warned = false; delete m.targets; }
+      if (this.time >= m.next) {
+        this.resolveMechanic(m); m.next += m.every;
+        if (m.next >= (m.end ?? Infinity)) m.next = Infinity;
+        m.warned = false; delete m.targets;
+      }
     }
     const healer = this.party.find(p => p.label === 'HEALER');
     const enrage = this.enrageSeconds;

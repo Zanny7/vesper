@@ -50,7 +50,7 @@
 #detail-enemies { color: #90d6c7; font-size: 11px; }
 .encounter-detail section { border-top: 1px solid #41605a55; padding-top: 18px; margin-top: 12px; }
 .encounter-detail h3 { font: 10px/1.5 sans-serif; text-transform: uppercase; letter-spacing: 1px; color: #a9bbb5; margin: 0 0 14px; }
-#detail-mechanics { flex: 1 1 auto; min-height: 0; overflow-y: auto; overscroll-behavior: contain; scrollbar-color: #897b55 #142329; scrollbar-width: thin; list-style: none; margin: 0; padding: 0 5px 0 0; }
+#detail-mechanics { flex: 1 1 auto; min-height: 90px; overflow-y: auto; overscroll-behavior: contain; scrollbar-color: #897b55 #142329; scrollbar-width: thin; list-style: none; margin: 0; padding: 0 5px 0 0; }
 #detail-mechanics::-webkit-scrollbar { width: 8px; }
 #detail-mechanics::-webkit-scrollbar-track { background: #142329; border-radius: 4px; }
 #detail-mechanics::-webkit-scrollbar-thumb { background: #776c4e; border: 2px solid #142329; border-radius: 4px; }
@@ -72,7 +72,7 @@
 .mechanic-chevron { width: 14px; height: 14px; flex: 0 0 14px; color: #91a79c; fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; transition: transform .15s ease; }
 .mechanic-row[aria-expanded="true"] .mechanic-chevron { transform: rotate(180deg); }
 .mechanic-description { margin: 0; padding: 2px 12px 10px 38px; font-size: 10px !important; line-height: 1.55 !important; }
-#detail-lesson { color: #c2c8ab; }
+#detail-lesson { flex-shrink: 0; color: #c2c8ab; }
 .encounter-loot { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 7px; }
 .encounter-loot .loot-item { justify-self: center; width: min(100%, 52px); aspect-ratio: 1; padding: 6px; cursor: help; }
 .empty-loot { grid-column: 1 / -1; margin: 0; color: #aebdb3; font-size: 11px; text-align: center; }
@@ -110,7 +110,7 @@
   .journey { min-height: 700px; }
   .encounter-detail { min-height: 0; overflow: visible; }
   .encounter-detail .mechanics-section { flex: none; min-height: 0; }
-  .encounter-detail #detail-mechanics { overflow: visible; }
+  .encounter-detail #detail-mechanics { min-height: 0; overflow: visible; }
   .adventure-node { width: 132px; }
   #adventure-map { height: 370px; min-height: 370px; }
 }

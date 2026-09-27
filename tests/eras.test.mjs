@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { CHAPTERS, ERAS, CHAPTER_ENCOUNTERS, GEAR, CONFIG, partyForHealer } from '../src/data.js';
 import { eraUnlocked, eraForChapter, chaptersForEra, itemEraLabel, itemBorderAttributes } from '../src/eras.js';
 import { restoreCampaign, chapterUnlocked, nodeState, awardVictory } from '../src/progression.js';
-import { ChapterRuns, encounterState } from '../src/chapter-runs.js';
+import { ChapterRuns, encounterState, applyNodeUtility } from '../src/chapter-runs.js';
 import { Combat } from '../src/combat.js';
 import { validateCatalogue } from '../src/item-model.js';
 import { equipmentSlot, itemDetails } from '../src/equipment.js';
@@ -59,20 +59,23 @@ test('Era II maps mix two and three choices with optional elites and non-combat 
   }
 });
 
-test('utility visits persist once per run and preserve wounded resources without combat recovery', () => {
+test('utility visits heal once per run and preserve Mana and fallen allies without combat recovery', () => {
   for (const chapter of CHAPTERS.slice(4)) {
     const storage = disk(), runs = new ChapterRuns(storage), shrine = chapter.nodes.find(node => node.kind === 'shrine');
     const run = runs.restart(chapter, party);
     run.completed = chapter.nodes.filter(node => node.x < shrine.x).map(node => node.id);
-    run.resources.mana.current = 123; run.resources.health.tank.current = 200; runs.save();
+    run.resources.mana.current = 123; run.resources.health.tank.current = 200; run.resources.health.rogue.current = 0; runs.save();
     const resources = structuredClone(run.resources);
     assert.equal(encounterState(chapter, run, shrine), 'available');
     assert.equal(runs.begin(chapter, shrine, party), null, 'utility never starts Combat');
     assert.equal(runs.visit(chapter, shrine, party), true);
-    assert.deepEqual(run.resources, resources); assert.equal(run.inEncounter, null);
+    const expected = applyNodeUtility(resources, shrine.utility);
+    assert.deepEqual(run.resources, expected); assert.equal(run.inEncounter, null);
+    assert.equal(run.resources.mana.current, 123); assert.equal(run.resources.health.rogue.current, 0);
+    assert.equal(run.resources.health.tank.current, 200 + party[0].maxHp * shrine.utility.fraction);
     assert.equal(runs.visit(chapter, shrine, party), false);
     const loaded = new ChapterRuns(storage).get(chapter, party);
-    assert.ok(loaded.completed.includes(shrine.id)); assert.deepEqual(loaded.resources, resources);
+    assert.ok(loaded.completed.includes(shrine.id)); assert.deepEqual(loaded.resources, expected);
     assert.ok(chapter.nodes.some(node => node.from.includes(shrine.id) && encounterState(chapter, loaded, node) === 'available'));
     assert.equal(runs.visit(CHAPTERS[0], shrine, party), false);
   }
@@ -100,12 +103,14 @@ test('all existing gear is silver Era I and future Era II gear uses the same gre
   }
 });
 
-test('shell fights copy existing profiles without tuning, and later fights may override enrage', () => {
+test('Era II has independent authored profiles with an explicit gear blocker and encounter enrage overrides', () => {
   const profile = encounter => ({ maxHp: encounter.maxHp, strike: encounter.strike, mechanics: encounter.mechanics, adds: encounter.adds });
   for (const chapter of CHAPTERS.slice(4)) for (const node of chapter.nodes.filter(node => node.encounter)) {
     const encounter = CHAPTER_ENCOUNTERS[node.encounter];
-    assert.ok(['huntsman', 'roses', 'chapel', 'duchess'].some(id => JSON.stringify(profile(encounter)) === JSON.stringify(profile(CHAPTER_ENCOUNTERS[id]))));
-    assert.equal(encounter.enrageSeconds, undefined);
+    assert.ok(['huntsman', 'roses', 'chapel', 'duchess'].every(id => JSON.stringify(profile(encounter)) !== JSON.stringify(profile(CHAPTER_ENCOUNTERS[id]))));
+    assert.equal(encounter.contentStatus, 'authored');
+    assert.equal(encounter.balanceStatus, 'awaiting-gear');
+    assert.ok(encounter.enrageSeconds >= 180);
   }
   for (const seconds of [undefined, 180]) {
     const encounter = { ...structuredClone(CHAPTER_ENCOUNTERS.sentinel), maxHp: 1e9, enrageSeconds: seconds };
