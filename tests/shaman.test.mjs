@@ -44,7 +44,7 @@ test('Shaman registers a separate six-spell baseline loadout, bindings and share
   gear.acquire('ch3-coalglass-hourglass');
   assert.equal(gear.equip(shaman, 'Trinket', 'ch3-coalglass-hourglass'), true);
   near(gear.healer('shaman').spellPower, 9);
-  near(gear.healer('shaman').manaRegen, CONFIG.manaRegen + 1.5);
+  near(gear.healer('shaman').manaRegen, CONFIG.manaRegen + 2.25);
   assert.match(healerHint('Prepare Prayer of Healing.', 'shaman'), /Chain Heal/);
 });
 

@@ -1,0 +1,2145 @@
+{
+  "healer": "shaman",
+  "gear": "post-BAT-92",
+  "maintenance": "periodic healing only; excludes Riptide initial heal, Crit, Unleash, Totems and direct healing",
+  "rows": [
+    {
+      "stage": "first",
+      "seed": 950000,
+      "build": "7-earth",
+      "spellPower": 35,
+      "maxMana": 830,
+      "riptideHps": 12.536754266211602,
+      "surgeHps": 24.071666666666665,
+      "combinedHps": 36.60842093287827,
+      "nonTankHealth": [
+        470,
+        440,
+        445,
+        460
+      ]
+    },
+    {
+      "stage": "first",
+      "seed": 950000,
+      "build": "7-tide",
+      "spellPower": 35,
+      "maxMana": 830,
+      "riptideHps": 12.536754266211602,
+      "surgeHps": 24.071666666666665,
+      "combinedHps": 36.60842093287827,
+      "nonTankHealth": [
+        470,
+        440,
+        445,
+        460
+      ]
+    },
+    {
+      "stage": "first",
+      "seed": 950000,
+      "build": "7-ancestral-wave",
+      "spellPower": 35,
+      "maxMana": 830,
+      "riptideHps": 10.665,
+      "surgeHps": 24.071666666666665,
+      "combinedHps": 34.736666666666665,
+      "nonTankHealth": [
+        470,
+        440,
+        445,
+        460
+      ]
+    },
+    {
+      "stage": "first",
+      "seed": 950000,
+      "build": "7-earth-echo",
+      "spellPower": 35,
+      "maxMana": 830,
+      "riptideHps": 11.602872593950504,
+      "surgeHps": 24.071666666666665,
+      "combinedHps": 35.674539260617166,
+      "nonTankHealth": [
+        470,
+        440,
+        445,
+        460
+      ]
+    },
+    {
+      "stage": "first",
+      "seed": 950001,
+      "build": "7-earth",
+      "spellPower": 37,
+      "maxMana": 820,
+      "riptideHps": 12.75487372013652,
+      "surgeHps": 24.650000000000002,
+      "combinedHps": 37.40487372013652,
+      "nonTankHealth": [
+        420,
+        425,
+        420,
+        440
+      ]
+    },
+    {
+      "stage": "first",
+      "seed": 950001,
+      "build": "7-tide",
+      "spellPower": 37,
+      "maxMana": 820,
+      "riptideHps": 12.75487372013652,
+      "surgeHps": 24.650000000000002,
+      "combinedHps": 37.40487372013652,
+      "nonTankHealth": [
+        420,
+        425,
+        420,
+        440
+      ]
+    },
+    {
+      "stage": "first",
+      "seed": 950001,
+      "build": "7-ancestral-wave",
+      "spellPower": 37,
+      "maxMana": 820,
+      "riptideHps": 10.86148514851485,
+      "surgeHps": 24.650000000000002,
+      "combinedHps": 35.51148514851485,
+      "nonTankHealth": [
+        420,
+        425,
+        420,
+        440
+      ]
+    },
+    {
+      "stage": "first",
+      "seed": 950001,
+      "build": "7-earth-echo",
+      "spellPower": 37,
+      "maxMana": 820,
+      "riptideHps": 11.810309807516044,
+      "surgeHps": 24.650000000000002,
+      "combinedHps": 36.46030980751605,
+      "nonTankHealth": [
+        420,
+        425,
+        420,
+        440
+      ]
+    },
+    {
+      "stage": "first",
+      "seed": 950002,
+      "build": "7-earth",
+      "spellPower": 19,
+      "maxMana": 730,
+      "riptideHps": 11.67542662116041,
+      "surgeHps": 21.166666666666664,
+      "combinedHps": 32.842093287827076,
+      "nonTankHealth": [
+        420,
+        420,
+        440,
+        475
+      ]
+    },
+    {
+      "stage": "first",
+      "seed": 950002,
+      "build": "7-tide",
+      "spellPower": 19,
+      "maxMana": 730,
+      "riptideHps": 11.67542662116041,
+      "surgeHps": 21.166666666666664,
+      "combinedHps": 32.842093287827076,
+      "nonTankHealth": [
+        420,
+        420,
+        440,
+        475
+      ]
+    },
+    {
+      "stage": "first",
+      "seed": 950002,
+      "build": "7-ancestral-wave",
+      "spellPower": 19,
+      "maxMana": 730,
+      "riptideHps": 9.846534653465346,
+      "surgeHps": 21.166666666666664,
+      "combinedHps": 31.013201320132012,
+      "nonTankHealth": [
+        420,
+        420,
+        440,
+        475
+      ]
+    },
+    {
+      "stage": "first",
+      "seed": 950002,
+      "build": "7-earth-echo",
+      "spellPower": 19,
+      "maxMana": 730,
+      "riptideHps": 10.762053162236482,
+      "surgeHps": 21.166666666666664,
+      "combinedHps": 31.928719828903148,
+      "nonTankHealth": [
+        420,
+        420,
+        440,
+        475
+      ]
+    },
+    {
+      "stage": "first",
+      "seed": 950003,
+      "build": "7-earth",
+      "spellPower": 30,
+      "maxMana": 805,
+      "riptideHps": 12.182252559726962,
+      "surgeHps": 23,
+      "combinedHps": 35.18225255972696,
+      "nonTankHealth": [
+        410,
+        425,
+        410,
+        490
+      ]
+    },
+    {
+      "stage": "first",
+      "seed": 950003,
+      "build": "7-tide",
+      "spellPower": 30,
+      "maxMana": 805,
+      "riptideHps": 12.182252559726962,
+      "surgeHps": 23,
+      "combinedHps": 35.18225255972696,
+      "nonTankHealth": [
+        410,
+        425,
+        410,
+        490
+      ]
+    },
+    {
+      "stage": "first",
+      "seed": 950003,
+      "build": "7-ancestral-wave",
+      "spellPower": 30,
+      "maxMana": 805,
+      "riptideHps": 10.336633663366337,
+      "surgeHps": 23,
+      "combinedHps": 33.336633663366335,
+      "nonTankHealth": [
+        410,
+        425,
+        410,
+        490
+      ]
+    },
+    {
+      "stage": "first",
+      "seed": 950003,
+      "build": "7-earth-echo",
+      "spellPower": 30,
+      "maxMana": 805,
+      "riptideHps": 11.26113657195234,
+      "surgeHps": 23,
+      "combinedHps": 34.26113657195234,
+      "nonTankHealth": [
+        410,
+        425,
+        410,
+        490
+      ]
+    },
+    {
+      "stage": "first",
+      "seed": 950004,
+      "build": "7-earth",
+      "spellPower": 31,
+      "maxMana": 805,
+      "riptideHps": 12.350610921501705,
+      "surgeHps": 23.398333333333333,
+      "combinedHps": 35.74894425483504,
+      "nonTankHealth": [
+        455,
+        475,
+        435,
+        510
+      ]
+    },
+    {
+      "stage": "first",
+      "seed": 950004,
+      "build": "7-tide",
+      "spellPower": 31,
+      "maxMana": 805,
+      "riptideHps": 12.350610921501705,
+      "surgeHps": 23.398333333333333,
+      "combinedHps": 35.74894425483504,
+      "nonTankHealth": [
+        455,
+        475,
+        435,
+        510
+      ]
+    },
+    {
+      "stage": "first",
+      "seed": 950004,
+      "build": "7-ancestral-wave",
+      "spellPower": 31,
+      "maxMana": 805,
+      "riptideHps": 10.485,
+      "surgeHps": 23.398333333333333,
+      "combinedHps": 33.88333333333333,
+      "nonTankHealth": [
+        455,
+        475,
+        435,
+        510
+      ]
+    },
+    {
+      "stage": "first",
+      "seed": 950004,
+      "build": "7-earth-echo",
+      "spellPower": 31,
+      "maxMana": 805,
+      "riptideHps": 11.419572868927592,
+      "surgeHps": 23.398333333333333,
+      "combinedHps": 34.81790620226093,
+      "nonTankHealth": [
+        455,
+        475,
+        435,
+        510
+      ]
+    },
+    {
+      "stage": "first",
+      "seed": 950005,
+      "build": "7-earth",
+      "spellPower": 35,
+      "maxMana": 830,
+      "riptideHps": 12.536754266211602,
+      "surgeHps": 24.071666666666665,
+      "combinedHps": 36.60842093287827,
+      "nonTankHealth": [
+        450,
+        400,
+        400,
+        515
+      ]
+    },
+    {
+      "stage": "first",
+      "seed": 950005,
+      "build": "7-tide",
+      "spellPower": 35,
+      "maxMana": 830,
+      "riptideHps": 12.536754266211602,
+      "surgeHps": 24.071666666666665,
+      "combinedHps": 36.60842093287827,
+      "nonTankHealth": [
+        450,
+        400,
+        400,
+        515
+      ]
+    },
+    {
+      "stage": "first",
+      "seed": 950005,
+      "build": "7-ancestral-wave",
+      "spellPower": 35,
+      "maxMana": 830,
+      "riptideHps": 10.665,
+      "surgeHps": 24.071666666666665,
+      "combinedHps": 34.736666666666665,
+      "nonTankHealth": [
+        450,
+        400,
+        400,
+        515
+      ]
+    },
+    {
+      "stage": "first",
+      "seed": 950005,
+      "build": "7-earth-echo",
+      "spellPower": 35,
+      "maxMana": 830,
+      "riptideHps": 11.602872593950504,
+      "surgeHps": 24.071666666666665,
+      "combinedHps": 35.674539260617166,
+      "nonTankHealth": [
+        450,
+        400,
+        400,
+        515
+      ]
+    },
+    {
+      "stage": "first",
+      "seed": 950006,
+      "build": "7-earth",
+      "spellPower": 18,
+      "maxMana": 745,
+      "riptideHps": 11.629351535836177,
+      "surgeHps": 21.000000000000004,
+      "combinedHps": 32.62935153583618,
+      "nonTankHealth": [
+        515,
+        490,
+        420,
+        510
+      ]
+    },
+    {
+      "stage": "first",
+      "seed": 950006,
+      "build": "7-tide",
+      "spellPower": 18,
+      "maxMana": 745,
+      "riptideHps": 11.629351535836177,
+      "surgeHps": 21.000000000000004,
+      "combinedHps": 32.62935153583618,
+      "nonTankHealth": [
+        515,
+        490,
+        420,
+        510
+      ]
+    },
+    {
+      "stage": "first",
+      "seed": 950006,
+      "build": "7-ancestral-wave",
+      "spellPower": 18,
+      "maxMana": 745,
+      "riptideHps": 9.801980198019802,
+      "surgeHps": 21.000000000000004,
+      "combinedHps": 30.801980198019805,
+      "nonTankHealth": [
+        515,
+        490,
+        420,
+        510
+      ]
+    },
+    {
+      "stage": "first",
+      "seed": 950006,
+      "build": "7-earth-echo",
+      "spellPower": 18,
+      "maxMana": 745,
+      "riptideHps": 10.716681943171402,
+      "surgeHps": 21.000000000000004,
+      "combinedHps": 31.716681943171405,
+      "nonTankHealth": [
+        515,
+        490,
+        420,
+        510
+      ]
+    },
+    {
+      "stage": "first",
+      "seed": 950007,
+      "build": "7-earth",
+      "spellPower": 27,
+      "maxMana": 750,
+      "riptideHps": 12.164467576791807,
+      "surgeHps": 22.725,
+      "combinedHps": 34.88946757679181,
+      "nonTankHealth": [
+        410,
+        400,
+        400,
+        545
+      ]
+    },
+    {
+      "stage": "first",
+      "seed": 950007,
+      "build": "7-tide",
+      "spellPower": 27,
+      "maxMana": 750,
+      "riptideHps": 12.164467576791807,
+      "surgeHps": 22.725,
+      "combinedHps": 34.88946757679181,
+      "nonTankHealth": [
+        410,
+        400,
+        400,
+        545
+      ]
+    },
+    {
+      "stage": "first",
+      "seed": 950007,
+      "build": "7-ancestral-wave",
+      "spellPower": 27,
+      "maxMana": 750,
+      "riptideHps": 10.305,
+      "surgeHps": 22.725,
+      "combinedHps": 33.03,
+      "nonTankHealth": [
+        410,
+        400,
+        400,
+        545
+      ]
+    },
+    {
+      "stage": "first",
+      "seed": 950007,
+      "build": "7-earth-echo",
+      "spellPower": 27,
+      "maxMana": 750,
+      "riptideHps": 11.236273143904674,
+      "surgeHps": 22.725,
+      "combinedHps": 33.96127314390468,
+      "nonTankHealth": [
+        410,
+        400,
+        400,
+        545
+      ]
+    },
+    {
+      "stage": "first",
+      "seed": 950008,
+      "build": "7-earth",
+      "spellPower": 25,
+      "maxMana": 705,
+      "riptideHps": 12.190914675767917,
+      "surgeHps": 22.610000000000003,
+      "combinedHps": 34.80091467576792,
+      "nonTankHealth": [
+        465,
+        400,
+        400,
+        480
+      ]
+    },
+    {
+      "stage": "first",
+      "seed": 950008,
+      "build": "7-tide",
+      "spellPower": 25,
+      "maxMana": 705,
+      "riptideHps": 12.190914675767917,
+      "surgeHps": 22.610000000000003,
+      "combinedHps": 34.80091467576792,
+      "nonTankHealth": [
+        465,
+        400,
+        400,
+        480
+      ]
+    },
+    {
+      "stage": "first",
+      "seed": 950008,
+      "build": "7-ancestral-wave",
+      "spellPower": 25,
+      "maxMana": 705,
+      "riptideHps": 10.316138613861389,
+      "surgeHps": 22.610000000000003,
+      "combinedHps": 32.92613861386139,
+      "nonTankHealth": [
+        465,
+        400,
+        400,
+        480
+      ]
+    },
+    {
+      "stage": "first",
+      "seed": 950008,
+      "build": "7-earth-echo",
+      "spellPower": 25,
+      "maxMana": 705,
+      "riptideHps": 11.25496608615949,
+      "surgeHps": 22.610000000000003,
+      "combinedHps": 33.86496608615949,
+      "nonTankHealth": [
+        465,
+        400,
+        400,
+        480
+      ]
+    },
+    {
+      "stage": "first",
+      "seed": 950009,
+      "build": "7-earth",
+      "spellPower": 35,
+      "maxMana": 830,
+      "riptideHps": 12.536754266211602,
+      "surgeHps": 24.071666666666665,
+      "combinedHps": 36.60842093287827,
+      "nonTankHealth": [
+        480,
+        445,
+        400,
+        460
+      ]
+    },
+    {
+      "stage": "first",
+      "seed": 950009,
+      "build": "7-tide",
+      "spellPower": 35,
+      "maxMana": 830,
+      "riptideHps": 12.536754266211602,
+      "surgeHps": 24.071666666666665,
+      "combinedHps": 36.60842093287827,
+      "nonTankHealth": [
+        480,
+        445,
+        400,
+        460
+      ]
+    },
+    {
+      "stage": "first",
+      "seed": 950009,
+      "build": "7-ancestral-wave",
+      "spellPower": 35,
+      "maxMana": 830,
+      "riptideHps": 10.665,
+      "surgeHps": 24.071666666666665,
+      "combinedHps": 34.736666666666665,
+      "nonTankHealth": [
+        480,
+        445,
+        400,
+        460
+      ]
+    },
+    {
+      "stage": "first",
+      "seed": 950009,
+      "build": "7-earth-echo",
+      "spellPower": 35,
+      "maxMana": 830,
+      "riptideHps": 11.602872593950504,
+      "surgeHps": 24.071666666666665,
+      "combinedHps": 35.674539260617166,
+      "nonTankHealth": [
+        480,
+        445,
+        400,
+        460
+      ]
+    },
+    {
+      "stage": "first",
+      "seed": 950010,
+      "build": "7-earth",
+      "spellPower": 24,
+      "maxMana": 740,
+      "riptideHps": 12.024860068259384,
+      "surgeHps": 22.22,
+      "combinedHps": 34.244860068259385,
+      "nonTankHealth": [
+        465,
+        435,
+        420,
+        515
+      ]
+    },
+    {
+      "stage": "first",
+      "seed": 950010,
+      "build": "7-tide",
+      "spellPower": 24,
+      "maxMana": 740,
+      "riptideHps": 12.024860068259384,
+      "surgeHps": 22.22,
+      "combinedHps": 34.244860068259385,
+      "nonTankHealth": [
+        465,
+        435,
+        420,
+        515
+      ]
+    },
+    {
+      "stage": "first",
+      "seed": 950010,
+      "build": "7-ancestral-wave",
+      "spellPower": 24,
+      "maxMana": 740,
+      "riptideHps": 10.170000000000002,
+      "surgeHps": 22.22,
+      "combinedHps": 32.39,
+      "nonTankHealth": [
+        465,
+        435,
+        420,
+        515
+      ]
+    },
+    {
+      "stage": "first",
+      "seed": 950010,
+      "build": "7-earth-echo",
+      "spellPower": 24,
+      "maxMana": 740,
+      "riptideHps": 11.09879835013749,
+      "surgeHps": 22.22,
+      "combinedHps": 33.318798350137484,
+      "nonTankHealth": [
+        465,
+        435,
+        420,
+        515
+      ]
+    },
+    {
+      "stage": "first",
+      "seed": 950011,
+      "build": "7-earth",
+      "spellPower": 29,
+      "maxMana": 775,
+      "riptideHps": 12.257539249146758,
+      "surgeHps": 23.061666666666667,
+      "combinedHps": 35.31920591581343,
+      "nonTankHealth": [
+        410,
+        400,
+        400,
+        475
+      ]
+    },
+    {
+      "stage": "first",
+      "seed": 950011,
+      "build": "7-tide",
+      "spellPower": 29,
+      "maxMana": 775,
+      "riptideHps": 12.257539249146758,
+      "surgeHps": 23.061666666666667,
+      "combinedHps": 35.31920591581343,
+      "nonTankHealth": [
+        410,
+        400,
+        400,
+        475
+      ]
+    },
+    {
+      "stage": "first",
+      "seed": 950011,
+      "build": "7-ancestral-wave",
+      "spellPower": 29,
+      "maxMana": 775,
+      "riptideHps": 10.395,
+      "surgeHps": 23.061666666666667,
+      "combinedHps": 33.45666666666666,
+      "nonTankHealth": [
+        410,
+        400,
+        400,
+        475
+      ]
+    },
+    {
+      "stage": "first",
+      "seed": 950011,
+      "build": "7-earth-echo",
+      "spellPower": 29,
+      "maxMana": 775,
+      "riptideHps": 11.327923006416134,
+      "surgeHps": 23.061666666666667,
+      "combinedHps": 34.3895896730828,
+      "nonTankHealth": [
+        410,
+        400,
+        400,
+        475
+      ]
+    },
+    {
+      "stage": "first",
+      "seed": 950012,
+      "build": "7-earth",
+      "spellPower": 35,
+      "maxMana": 830,
+      "riptideHps": 12.536754266211602,
+      "surgeHps": 24.071666666666665,
+      "combinedHps": 36.60842093287827,
+      "nonTankHealth": [
+        435,
+        400,
+        400,
+        470
+      ]
+    },
+    {
+      "stage": "first",
+      "seed": 950012,
+      "build": "7-tide",
+      "spellPower": 35,
+      "maxMana": 830,
+      "riptideHps": 12.536754266211602,
+      "surgeHps": 24.071666666666665,
+      "combinedHps": 36.60842093287827,
+      "nonTankHealth": [
+        435,
+        400,
+        400,
+        470
+      ]
+    },
+    {
+      "stage": "first",
+      "seed": 950012,
+      "build": "7-ancestral-wave",
+      "spellPower": 35,
+      "maxMana": 830,
+      "riptideHps": 10.665,
+      "surgeHps": 24.071666666666665,
+      "combinedHps": 34.736666666666665,
+      "nonTankHealth": [
+        435,
+        400,
+        400,
+        470
+      ]
+    },
+    {
+      "stage": "first",
+      "seed": 950012,
+      "build": "7-earth-echo",
+      "spellPower": 35,
+      "maxMana": 830,
+      "riptideHps": 11.602872593950504,
+      "surgeHps": 24.071666666666665,
+      "combinedHps": 35.674539260617166,
+      "nonTankHealth": [
+        435,
+        400,
+        400,
+        470
+      ]
+    },
+    {
+      "stage": "first",
+      "seed": 950013,
+      "build": "7-earth",
+      "spellPower": 29,
+      "maxMana": 810,
+      "riptideHps": 12.257539249146758,
+      "surgeHps": 23.061666666666667,
+      "combinedHps": 35.31920591581343,
+      "nonTankHealth": [
+        430,
+        400,
+        400,
+        435
+      ]
+    },
+    {
+      "stage": "first",
+      "seed": 950013,
+      "build": "7-tide",
+      "spellPower": 29,
+      "maxMana": 810,
+      "riptideHps": 12.257539249146758,
+      "surgeHps": 23.061666666666667,
+      "combinedHps": 35.31920591581343,
+      "nonTankHealth": [
+        430,
+        400,
+        400,
+        435
+      ]
+    },
+    {
+      "stage": "first",
+      "seed": 950013,
+      "build": "7-ancestral-wave",
+      "spellPower": 29,
+      "maxMana": 810,
+      "riptideHps": 10.395,
+      "surgeHps": 23.061666666666667,
+      "combinedHps": 33.45666666666666,
+      "nonTankHealth": [
+        430,
+        400,
+        400,
+        435
+      ]
+    },
+    {
+      "stage": "first",
+      "seed": 950013,
+      "build": "7-earth-echo",
+      "spellPower": 29,
+      "maxMana": 810,
+      "riptideHps": 11.327923006416134,
+      "surgeHps": 23.061666666666667,
+      "combinedHps": 34.3895896730828,
+      "nonTankHealth": [
+        430,
+        400,
+        400,
+        435
+      ]
+    },
+    {
+      "stage": "first",
+      "seed": 950014,
+      "build": "7-earth",
+      "spellPower": 33,
+      "maxMana": 790,
+      "riptideHps": 12.56688737201365,
+      "surgeHps": 23.970000000000002,
+      "combinedHps": 36.53688737201365,
+      "nonTankHealth": [
+        475,
+        490,
+        430,
+        505
+      ]
+    },
+    {
+      "stage": "first",
+      "seed": 950014,
+      "build": "7-tide",
+      "spellPower": 33,
+      "maxMana": 790,
+      "riptideHps": 12.56688737201365,
+      "surgeHps": 23.970000000000002,
+      "combinedHps": 36.53688737201365,
+      "nonTankHealth": [
+        475,
+        490,
+        430,
+        505
+      ]
+    },
+    {
+      "stage": "first",
+      "seed": 950014,
+      "build": "7-ancestral-wave",
+      "spellPower": 33,
+      "maxMana": 790,
+      "riptideHps": 10.679702970297031,
+      "surgeHps": 23.970000000000002,
+      "combinedHps": 34.649702970297035,
+      "nonTankHealth": [
+        475,
+        490,
+        430,
+        505
+      ]
+    },
+    {
+      "stage": "first",
+      "seed": 950014,
+      "build": "7-earth-echo",
+      "spellPower": 33,
+      "maxMana": 790,
+      "riptideHps": 11.625195233730523,
+      "surgeHps": 23.970000000000002,
+      "combinedHps": 35.59519523373052,
+      "nonTankHealth": [
+        475,
+        490,
+        430,
+        505
+      ]
+    },
+    {
+      "stage": "first",
+      "seed": 950015,
+      "build": "7-earth",
+      "spellPower": 36,
+      "maxMana": 825,
+      "riptideHps": 12.832464163822523,
+      "surgeHps": 24.72,
+      "combinedHps": 37.55246416382252,
+      "nonTankHealth": [
+        435,
+        415,
+        400,
+        500
+      ]
+    },
+    {
+      "stage": "first",
+      "seed": 950015,
+      "build": "7-tide",
+      "spellPower": 36,
+      "maxMana": 825,
+      "riptideHps": 12.832464163822523,
+      "surgeHps": 24.72,
+      "combinedHps": 37.55246416382252,
+      "nonTankHealth": [
+        435,
+        415,
+        400,
+        500
+      ]
+    },
+    {
+      "stage": "first",
+      "seed": 950015,
+      "build": "7-ancestral-wave",
+      "spellPower": 36,
+      "maxMana": 825,
+      "riptideHps": 10.92207920792079,
+      "surgeHps": 24.72,
+      "combinedHps": 35.64207920792079,
+      "nonTankHealth": [
+        435,
+        415,
+        400,
+        500
+      ]
+    },
+    {
+      "stage": "first",
+      "seed": 950015,
+      "build": "7-earth-echo",
+      "spellPower": 36,
+      "maxMana": 825,
+      "riptideHps": 11.87936480293309,
+      "surgeHps": 24.72,
+      "combinedHps": 36.59936480293309,
+      "nonTankHealth": [
+        435,
+        415,
+        400,
+        500
+      ]
+    },
+    {
+      "stage": "ready",
+      "seed": 950000,
+      "build": "7-earth",
+      "spellPower": 35,
+      "maxMana": 830,
+      "riptideHps": 12.536754266211602,
+      "surgeHps": 24.071666666666665,
+      "combinedHps": 36.60842093287827,
+      "nonTankHealth": [
+        470,
+        440,
+        445,
+        460
+      ]
+    },
+    {
+      "stage": "ready",
+      "seed": 950000,
+      "build": "7-tide",
+      "spellPower": 35,
+      "maxMana": 830,
+      "riptideHps": 12.536754266211602,
+      "surgeHps": 24.071666666666665,
+      "combinedHps": 36.60842093287827,
+      "nonTankHealth": [
+        470,
+        440,
+        445,
+        460
+      ]
+    },
+    {
+      "stage": "ready",
+      "seed": 950000,
+      "build": "7-ancestral-wave",
+      "spellPower": 35,
+      "maxMana": 830,
+      "riptideHps": 10.665,
+      "surgeHps": 24.071666666666665,
+      "combinedHps": 34.736666666666665,
+      "nonTankHealth": [
+        470,
+        440,
+        445,
+        460
+      ]
+    },
+    {
+      "stage": "ready",
+      "seed": 950000,
+      "build": "7-earth-echo",
+      "spellPower": 35,
+      "maxMana": 830,
+      "riptideHps": 11.602872593950504,
+      "surgeHps": 24.071666666666665,
+      "combinedHps": 35.674539260617166,
+      "nonTankHealth": [
+        470,
+        440,
+        445,
+        460
+      ]
+    },
+    {
+      "stage": "ready",
+      "seed": 950001,
+      "build": "7-earth",
+      "spellPower": 48,
+      "maxMana": 875,
+      "riptideHps": 13.40195221843003,
+      "surgeHps": 26.78,
+      "combinedHps": 40.18195221843003,
+      "nonTankHealth": [
+        430,
+        425,
+        410,
+        465
+      ]
+    },
+    {
+      "stage": "ready",
+      "seed": 950001,
+      "build": "7-tide",
+      "spellPower": 48,
+      "maxMana": 875,
+      "riptideHps": 13.40195221843003,
+      "surgeHps": 26.78,
+      "combinedHps": 40.18195221843003,
+      "nonTankHealth": [
+        430,
+        425,
+        410,
+        465
+      ]
+    },
+    {
+      "stage": "ready",
+      "seed": 950001,
+      "build": "7-ancestral-wave",
+      "spellPower": 48,
+      "maxMana": 875,
+      "riptideHps": 11.472772277227723,
+      "surgeHps": 26.78,
+      "combinedHps": 38.25277227722772,
+      "nonTankHealth": [
+        430,
+        425,
+        410,
+        465
+      ]
+    },
+    {
+      "stage": "ready",
+      "seed": 950001,
+      "build": "7-earth-echo",
+      "spellPower": 48,
+      "maxMana": 875,
+      "riptideHps": 12.440153070577452,
+      "surgeHps": 26.78,
+      "combinedHps": 39.22015307057745,
+      "nonTankHealth": [
+        430,
+        425,
+        410,
+        465
+      ]
+    },
+    {
+      "stage": "ready",
+      "seed": 950002,
+      "build": "7-earth",
+      "spellPower": 31,
+      "maxMana": 765,
+      "riptideHps": 12.472894197952217,
+      "surgeHps": 23.630000000000003,
+      "combinedHps": 36.10289419795222,
+      "nonTankHealth": [
+        550,
+        475,
+        420,
+        520
+      ]
+    },
+    {
+      "stage": "ready",
+      "seed": 950002,
+      "build": "7-tide",
+      "spellPower": 31,
+      "maxMana": 765,
+      "riptideHps": 12.472894197952217,
+      "surgeHps": 23.630000000000003,
+      "combinedHps": 36.10289419795222,
+      "nonTankHealth": [
+        550,
+        475,
+        420,
+        520
+      ]
+    },
+    {
+      "stage": "ready",
+      "seed": 950002,
+      "build": "7-ancestral-wave",
+      "spellPower": 31,
+      "maxMana": 765,
+      "riptideHps": 10.58881188118812,
+      "surgeHps": 23.630000000000003,
+      "combinedHps": 34.218811881188124,
+      "nonTankHealth": [
+        550,
+        475,
+        420,
+        520
+      ]
+    },
+    {
+      "stage": "ready",
+      "seed": 950002,
+      "build": "7-earth-echo",
+      "spellPower": 31,
+      "maxMana": 765,
+      "riptideHps": 11.532637946837767,
+      "surgeHps": 23.630000000000003,
+      "combinedHps": 35.16263794683777,
+      "nonTankHealth": [
+        550,
+        475,
+        420,
+        520
+      ]
+    },
+    {
+      "stage": "ready",
+      "seed": 950003,
+      "build": "7-earth",
+      "spellPower": 51,
+      "maxMana": 905,
+      "riptideHps": 13.938819112627987,
+      "surgeHps": 28.090000000000003,
+      "combinedHps": 42.02881911262799,
+      "nonTankHealth": [
+        475,
+        410,
+        425,
+        490
+      ]
+    },
+    {
+      "stage": "ready",
+      "seed": 950003,
+      "build": "7-tide",
+      "spellPower": 51,
+      "maxMana": 905,
+      "riptideHps": 13.938819112627987,
+      "surgeHps": 28.090000000000003,
+      "combinedHps": 42.02881911262799,
+      "nonTankHealth": [
+        475,
+        410,
+        425,
+        490
+      ]
+    },
+    {
+      "stage": "ready",
+      "seed": 950003,
+      "build": "7-ancestral-wave",
+      "spellPower": 51,
+      "maxMana": 905,
+      "riptideHps": 11.94861386138614,
+      "surgeHps": 28.090000000000003,
+      "combinedHps": 40.03861386138614,
+      "nonTankHealth": [
+        475,
+        410,
+        425,
+        490
+      ]
+    },
+    {
+      "stage": "ready",
+      "seed": 950003,
+      "build": "7-earth-echo",
+      "spellPower": 51,
+      "maxMana": 905,
+      "riptideHps": 12.946768102658114,
+      "surgeHps": 28.090000000000003,
+      "combinedHps": 41.036768102658115,
+      "nonTankHealth": [
+        475,
+        410,
+        425,
+        490
+      ]
+    },
+    {
+      "stage": "ready",
+      "seed": 950004,
+      "build": "7-earth",
+      "spellPower": 48,
+      "maxMana": 875,
+      "riptideHps": 13.40195221843003,
+      "surgeHps": 26.78,
+      "combinedHps": 40.18195221843003,
+      "nonTankHealth": [
+        525,
+        450,
+        475,
+        530
+      ]
+    },
+    {
+      "stage": "ready",
+      "seed": 950004,
+      "build": "7-tide",
+      "spellPower": 48,
+      "maxMana": 875,
+      "riptideHps": 13.40195221843003,
+      "surgeHps": 26.78,
+      "combinedHps": 40.18195221843003,
+      "nonTankHealth": [
+        525,
+        450,
+        475,
+        530
+      ]
+    },
+    {
+      "stage": "ready",
+      "seed": 950004,
+      "build": "7-ancestral-wave",
+      "spellPower": 48,
+      "maxMana": 875,
+      "riptideHps": 11.472772277227723,
+      "surgeHps": 26.78,
+      "combinedHps": 38.25277227722772,
+      "nonTankHealth": [
+        525,
+        450,
+        475,
+        530
+      ]
+    },
+    {
+      "stage": "ready",
+      "seed": 950004,
+      "build": "7-earth-echo",
+      "spellPower": 48,
+      "maxMana": 875,
+      "riptideHps": 12.440153070577452,
+      "surgeHps": 26.78,
+      "combinedHps": 39.22015307057745,
+      "nonTankHealth": [
+        525,
+        450,
+        475,
+        530
+      ]
+    },
+    {
+      "stage": "ready",
+      "seed": 950005,
+      "build": "7-earth",
+      "spellPower": 48,
+      "maxMana": 875,
+      "riptideHps": 13.40195221843003,
+      "surgeHps": 26.78,
+      "combinedHps": 40.18195221843003,
+      "nonTankHealth": [
+        485,
+        470,
+        425,
+        545
+      ]
+    },
+    {
+      "stage": "ready",
+      "seed": 950005,
+      "build": "7-tide",
+      "spellPower": 48,
+      "maxMana": 875,
+      "riptideHps": 13.40195221843003,
+      "surgeHps": 26.78,
+      "combinedHps": 40.18195221843003,
+      "nonTankHealth": [
+        485,
+        470,
+        425,
+        545
+      ]
+    },
+    {
+      "stage": "ready",
+      "seed": 950005,
+      "build": "7-ancestral-wave",
+      "spellPower": 48,
+      "maxMana": 875,
+      "riptideHps": 11.472772277227723,
+      "surgeHps": 26.78,
+      "combinedHps": 38.25277227722772,
+      "nonTankHealth": [
+        485,
+        470,
+        425,
+        545
+      ]
+    },
+    {
+      "stage": "ready",
+      "seed": 950005,
+      "build": "7-earth-echo",
+      "spellPower": 48,
+      "maxMana": 875,
+      "riptideHps": 12.440153070577452,
+      "surgeHps": 26.78,
+      "combinedHps": 39.22015307057745,
+      "nonTankHealth": [
+        485,
+        470,
+        425,
+        545
+      ]
+    },
+    {
+      "stage": "ready",
+      "seed": 950006,
+      "build": "7-earth",
+      "spellPower": 34,
+      "maxMana": 855,
+      "riptideHps": 12.861215017064845,
+      "surgeHps": 24.613333333333337,
+      "combinedHps": 37.47454835039818,
+      "nonTankHealth": [
+        480,
+        505,
+        520,
+        560
+      ]
+    },
+    {
+      "stage": "ready",
+      "seed": 950006,
+      "build": "7-tide",
+      "spellPower": 34,
+      "maxMana": 855,
+      "riptideHps": 12.861215017064845,
+      "surgeHps": 24.613333333333337,
+      "combinedHps": 37.47454835039818,
+      "nonTankHealth": [
+        480,
+        505,
+        520,
+        560
+      ]
+    },
+    {
+      "stage": "ready",
+      "seed": 950006,
+      "build": "7-ancestral-wave",
+      "spellPower": 34,
+      "maxMana": 855,
+      "riptideHps": 10.935445544554456,
+      "surgeHps": 24.613333333333337,
+      "combinedHps": 35.54877887788779,
+      "nonTankHealth": [
+        480,
+        505,
+        520,
+        560
+      ]
+    },
+    {
+      "stage": "ready",
+      "seed": 950006,
+      "build": "7-earth-echo",
+      "spellPower": 34,
+      "maxMana": 855,
+      "riptideHps": 11.900326306141157,
+      "surgeHps": 24.613333333333337,
+      "combinedHps": 36.5136596394745,
+      "nonTankHealth": [
+        480,
+        505,
+        520,
+        560
+      ]
+    },
+    {
+      "stage": "ready",
+      "seed": 950007,
+      "build": "7-earth",
+      "spellPower": 43,
+      "maxMana": 885,
+      "riptideHps": 13.036853242320818,
+      "surgeHps": 25.67,
+      "combinedHps": 38.70685324232082,
+      "nonTankHealth": [
+        420,
+        490,
+        420,
+        525
+      ]
+    },
+    {
+      "stage": "ready",
+      "seed": 950007,
+      "build": "7-tide",
+      "spellPower": 43,
+      "maxMana": 885,
+      "riptideHps": 13.036853242320818,
+      "surgeHps": 25.67,
+      "combinedHps": 38.70685324232082,
+      "nonTankHealth": [
+        420,
+        490,
+        420,
+        525
+      ]
+    },
+    {
+      "stage": "ready",
+      "seed": 950007,
+      "build": "7-ancestral-wave",
+      "spellPower": 43,
+      "maxMana": 885,
+      "riptideHps": 11.134158415841586,
+      "surgeHps": 25.67,
+      "combinedHps": 36.804158415841584,
+      "nonTankHealth": [
+        420,
+        490,
+        420,
+        525
+      ]
+    },
+    {
+      "stage": "ready",
+      "seed": 950007,
+      "build": "7-earth-echo",
+      "spellPower": 43,
+      "maxMana": 885,
+      "riptideHps": 12.08798166819432,
+      "surgeHps": 25.67,
+      "combinedHps": 37.75798166819432,
+      "nonTankHealth": [
+        420,
+        490,
+        420,
+        525
+      ]
+    },
+    {
+      "stage": "ready",
+      "seed": 950008,
+      "build": "7-earth",
+      "spellPower": 45,
+      "maxMana": 885,
+      "riptideHps": 13.517047781569964,
+      "surgeHps": 26.775000000000002,
+      "combinedHps": 40.29204778156996,
+      "nonTankHealth": [
+        470,
+        415,
+        400,
+        510
+      ]
+    },
+    {
+      "stage": "ready",
+      "seed": 950008,
+      "build": "7-tide",
+      "spellPower": 45,
+      "maxMana": 885,
+      "riptideHps": 13.517047781569964,
+      "surgeHps": 26.775000000000002,
+      "combinedHps": 40.29204778156996,
+      "nonTankHealth": [
+        470,
+        415,
+        400,
+        510
+      ]
+    },
+    {
+      "stage": "ready",
+      "seed": 950008,
+      "build": "7-ancestral-wave",
+      "spellPower": 45,
+      "maxMana": 885,
+      "riptideHps": 11.555198019801981,
+      "surgeHps": 26.775000000000002,
+      "combinedHps": 38.33019801980198,
+      "nonTankHealth": [
+        470,
+        415,
+        400,
+        510
+      ]
+    },
+    {
+      "stage": "ready",
+      "seed": 950008,
+      "build": "7-earth-echo",
+      "spellPower": 45,
+      "maxMana": 885,
+      "riptideHps": 12.538790100824935,
+      "surgeHps": 26.775000000000002,
+      "combinedHps": 39.31379010082494,
+      "nonTankHealth": [
+        470,
+        415,
+        400,
+        510
+      ]
+    },
+    {
+      "stage": "ready",
+      "seed": 950009,
+      "build": "7-earth",
+      "spellPower": 49,
+      "maxMana": 920,
+      "riptideHps": 13.579986348122867,
+      "surgeHps": 27.21333333333334,
+      "combinedHps": 40.793319681456204,
+      "nonTankHealth": [
+        490,
+        490,
+        445,
+        525
+      ]
+    },
+    {
+      "stage": "ready",
+      "seed": 950009,
+      "build": "7-tide",
+      "spellPower": 49,
+      "maxMana": 920,
+      "riptideHps": 13.579986348122867,
+      "surgeHps": 27.21333333333334,
+      "combinedHps": 40.793319681456204,
+      "nonTankHealth": [
+        490,
+        490,
+        445,
+        525
+      ]
+    },
+    {
+      "stage": "ready",
+      "seed": 950009,
+      "build": "7-ancestral-wave",
+      "spellPower": 49,
+      "maxMana": 920,
+      "riptideHps": 11.630495049504951,
+      "surgeHps": 27.21333333333334,
+      "combinedHps": 38.84382838283829,
+      "nonTankHealth": [
+        490,
+        490,
+        445,
+        525
+      ]
+    },
+    {
+      "stage": "ready",
+      "seed": 950009,
+      "build": "7-earth-echo",
+      "spellPower": 49,
+      "maxMana": 920,
+      "riptideHps": 12.608117323556373,
+      "surgeHps": 27.21333333333334,
+      "combinedHps": 39.82145065688971,
+      "nonTankHealth": [
+        490,
+        490,
+        445,
+        525
+      ]
+    },
+    {
+      "stage": "ready",
+      "seed": 950010,
+      "build": "7-earth",
+      "spellPower": 49,
+      "maxMana": 920,
+      "riptideHps": 13.579986348122867,
+      "surgeHps": 27.21333333333334,
+      "combinedHps": 40.793319681456204,
+      "nonTankHealth": [
+        475,
+        505,
+        515,
+        560
+      ]
+    },
+    {
+      "stage": "ready",
+      "seed": 950010,
+      "build": "7-tide",
+      "spellPower": 49,
+      "maxMana": 920,
+      "riptideHps": 13.579986348122867,
+      "surgeHps": 27.21333333333334,
+      "combinedHps": 40.793319681456204,
+      "nonTankHealth": [
+        475,
+        505,
+        515,
+        560
+      ]
+    },
+    {
+      "stage": "ready",
+      "seed": 950010,
+      "build": "7-ancestral-wave",
+      "spellPower": 49,
+      "maxMana": 920,
+      "riptideHps": 11.630495049504951,
+      "surgeHps": 27.21333333333334,
+      "combinedHps": 38.84382838283829,
+      "nonTankHealth": [
+        475,
+        505,
+        515,
+        560
+      ]
+    },
+    {
+      "stage": "ready",
+      "seed": 950010,
+      "build": "7-earth-echo",
+      "spellPower": 49,
+      "maxMana": 920,
+      "riptideHps": 12.608117323556373,
+      "surgeHps": 27.21333333333334,
+      "combinedHps": 39.82145065688971,
+      "nonTankHealth": [
+        475,
+        505,
+        515,
+        560
+      ]
+    },
+    {
+      "stage": "ready",
+      "seed": 950011,
+      "build": "7-earth",
+      "spellPower": 52,
+      "maxMana": 895,
+      "riptideHps": 13.723740614334469,
+      "surgeHps": 27.733333333333338,
+      "combinedHps": 41.45707394766781,
+      "nonTankHealth": [
+        465,
+        420,
+        400,
+        515
+      ]
+    },
+    {
+      "stage": "ready",
+      "seed": 950011,
+      "build": "7-tide",
+      "spellPower": 52,
+      "maxMana": 895,
+      "riptideHps": 13.723740614334469,
+      "surgeHps": 27.733333333333338,
+      "combinedHps": 41.45707394766781,
+      "nonTankHealth": [
+        465,
+        420,
+        400,
+        515
+      ]
+    },
+    {
+      "stage": "ready",
+      "seed": 950011,
+      "build": "7-ancestral-wave",
+      "spellPower": 52,
+      "maxMana": 895,
+      "riptideHps": 11.76950495049505,
+      "surgeHps": 27.733333333333338,
+      "combinedHps": 39.50283828382839,
+      "nonTankHealth": [
+        465,
+        420,
+        400,
+        515
+      ]
+    },
+    {
+      "stage": "ready",
+      "seed": 950011,
+      "build": "7-earth-echo",
+      "spellPower": 52,
+      "maxMana": 895,
+      "riptideHps": 12.749675527039416,
+      "surgeHps": 27.733333333333338,
+      "combinedHps": 40.483008860372756,
+      "nonTankHealth": [
+        465,
+        420,
+        400,
+        515
+      ]
+    },
+    {
+      "stage": "ready",
+      "seed": 950012,
+      "build": "7-earth",
+      "spellPower": 35,
+      "maxMana": 830,
+      "riptideHps": 12.536754266211602,
+      "surgeHps": 24.071666666666665,
+      "combinedHps": 36.60842093287827,
+      "nonTankHealth": [
+        470,
+        450,
+        400,
+        580
+      ]
+    },
+    {
+      "stage": "ready",
+      "seed": 950012,
+      "build": "7-tide",
+      "spellPower": 35,
+      "maxMana": 830,
+      "riptideHps": 12.536754266211602,
+      "surgeHps": 24.071666666666665,
+      "combinedHps": 36.60842093287827,
+      "nonTankHealth": [
+        470,
+        450,
+        400,
+        580
+      ]
+    },
+    {
+      "stage": "ready",
+      "seed": 950012,
+      "build": "7-ancestral-wave",
+      "spellPower": 35,
+      "maxMana": 830,
+      "riptideHps": 10.665,
+      "surgeHps": 24.071666666666665,
+      "combinedHps": 34.736666666666665,
+      "nonTankHealth": [
+        470,
+        450,
+        400,
+        580
+      ]
+    },
+    {
+      "stage": "ready",
+      "seed": 950012,
+      "build": "7-earth-echo",
+      "spellPower": 35,
+      "maxMana": 830,
+      "riptideHps": 11.602872593950504,
+      "surgeHps": 24.071666666666665,
+      "combinedHps": 35.674539260617166,
+      "nonTankHealth": [
+        470,
+        450,
+        400,
+        580
+      ]
+    },
+    {
+      "stage": "ready",
+      "seed": 950013,
+      "build": "7-earth",
+      "spellPower": 49,
+      "maxMana": 920,
+      "riptideHps": 13.579986348122867,
+      "surgeHps": 27.21333333333334,
+      "combinedHps": 40.793319681456204,
+      "nonTankHealth": [
+        430,
+        400,
+        400,
+        495
+      ]
+    },
+    {
+      "stage": "ready",
+      "seed": 950013,
+      "build": "7-tide",
+      "spellPower": 49,
+      "maxMana": 920,
+      "riptideHps": 13.579986348122867,
+      "surgeHps": 27.21333333333334,
+      "combinedHps": 40.793319681456204,
+      "nonTankHealth": [
+        430,
+        400,
+        400,
+        495
+      ]
+    },
+    {
+      "stage": "ready",
+      "seed": 950013,
+      "build": "7-ancestral-wave",
+      "spellPower": 49,
+      "maxMana": 920,
+      "riptideHps": 11.630495049504951,
+      "surgeHps": 27.21333333333334,
+      "combinedHps": 38.84382838283829,
+      "nonTankHealth": [
+        430,
+        400,
+        400,
+        495
+      ]
+    },
+    {
+      "stage": "ready",
+      "seed": 950013,
+      "build": "7-earth-echo",
+      "spellPower": 49,
+      "maxMana": 920,
+      "riptideHps": 12.608117323556373,
+      "surgeHps": 27.21333333333334,
+      "combinedHps": 39.82145065688971,
+      "nonTankHealth": [
+        430,
+        400,
+        400,
+        495
+      ]
+    },
+    {
+      "stage": "ready",
+      "seed": 950014,
+      "build": "7-earth",
+      "spellPower": 45,
+      "maxMana": 885,
+      "riptideHps": 13.517047781569964,
+      "surgeHps": 26.775000000000002,
+      "combinedHps": 40.29204778156996,
+      "nonTankHealth": [
+        535,
+        490,
+        445,
+        595
+      ]
+    },
+    {
+      "stage": "ready",
+      "seed": 950014,
+      "build": "7-tide",
+      "spellPower": 45,
+      "maxMana": 885,
+      "riptideHps": 13.517047781569964,
+      "surgeHps": 26.775000000000002,
+      "combinedHps": 40.29204778156996,
+      "nonTankHealth": [
+        535,
+        490,
+        445,
+        595
+      ]
+    },
+    {
+      "stage": "ready",
+      "seed": 950014,
+      "build": "7-ancestral-wave",
+      "spellPower": 45,
+      "maxMana": 885,
+      "riptideHps": 11.555198019801981,
+      "surgeHps": 26.775000000000002,
+      "combinedHps": 38.33019801980198,
+      "nonTankHealth": [
+        535,
+        490,
+        445,
+        595
+      ]
+    },
+    {
+      "stage": "ready",
+      "seed": 950014,
+      "build": "7-earth-echo",
+      "spellPower": 45,
+      "maxMana": 885,
+      "riptideHps": 12.538790100824935,
+      "surgeHps": 26.775000000000002,
+      "combinedHps": 39.31379010082494,
+      "nonTankHealth": [
+        535,
+        490,
+        445,
+        595
+      ]
+    },
+    {
+      "stage": "ready",
+      "seed": 950015,
+      "build": "7-earth",
+      "spellPower": 41,
+      "maxMana": 865,
+      "riptideHps": 13.196641638225255,
+      "surgeHps": 25.826666666666668,
+      "combinedHps": 39.02330830489193,
+      "nonTankHealth": [
+        460,
+        440,
+        400,
+        505
+      ]
+    },
+    {
+      "stage": "ready",
+      "seed": 950015,
+      "build": "7-tide",
+      "spellPower": 41,
+      "maxMana": 865,
+      "riptideHps": 13.196641638225255,
+      "surgeHps": 25.826666666666668,
+      "combinedHps": 39.02330830489193,
+      "nonTankHealth": [
+        460,
+        440,
+        400,
+        505
+      ]
+    },
+    {
+      "stage": "ready",
+      "seed": 950015,
+      "build": "7-ancestral-wave",
+      "spellPower": 41,
+      "maxMana": 865,
+      "riptideHps": 11.25980198019802,
+      "surgeHps": 25.826666666666668,
+      "combinedHps": 37.08646864686469,
+      "nonTankHealth": [
+        460,
+        440,
+        400,
+        505
+      ]
+    },
+    {
+      "stage": "ready",
+      "seed": 950015,
+      "build": "7-earth-echo",
+      "spellPower": 41,
+      "maxMana": 865,
+      "riptideHps": 12.230628780934927,
+      "surgeHps": 25.826666666666668,
+      "combinedHps": 38.0572954476016,
+      "nonTankHealth": [
+        460,
+        440,
+        400,
+        505
+      ]
+    }
+  ],
+  "mechanics": [
+    {
+      "encounter": "roses",
+      "name": "Rain of Thorns",
+      "tier": "weak",
+      "targets": 3,
+      "application": "simultaneous",
+      "hpsPerTarget": 14,
+      "seconds": 12,
+      "totalPerTarget": 168,
+      "every": 18
+    },
+    {
+      "encounter": "procession",
+      "name": "Endless Vigil",
+      "tier": "weak",
+      "targets": 1,
+      "application": "sequential",
+      "hpsPerTarget": 15,
+      "seconds": 12,
+      "totalPerTarget": 180,
+      "every": 5
+    },
+    {
+      "encounter": "huntsman",
+      "name": "Barbed Arrow",
+      "tier": "medium",
+      "targets": 1,
+      "application": "simultaneous",
+      "hpsPerTarget": 34,
+      "seconds": 10,
+      "totalPerTarget": 340,
+      "every": 14
+    },
+    {
+      "encounter": "chapel",
+      "name": "Crimson Refrain",
+      "tier": "medium",
+      "targets": 2,
+      "application": "simultaneous",
+      "hpsPerTarget": 34,
+      "seconds": 10,
+      "totalPerTarget": 340,
+      "every": 20
+    },
+    {
+      "encounter": "leech",
+      "name": "Crimson Threads",
+      "tier": "medium",
+      "targets": 1,
+      "application": "sequential",
+      "hpsPerTarget": 34,
+      "seconds": 12,
+      "totalPerTarget": 408,
+      "every": 10
+    },
+    {
+      "encounter": "hounds",
+      "name": "Rending Maul",
+      "tier": "strong",
+      "targets": 1,
+      "application": "simultaneous",
+      "hpsPerTarget": 43,
+      "seconds": 8,
+      "totalPerTarget": 344,
+      "every": 16
+    },
+    {
+      "encounter": "garden",
+      "name": "Severing Thorns",
+      "tier": "strong",
+      "targets": 1,
+      "application": "simultaneous",
+      "hpsPerTarget": 43,
+      "seconds": 8,
+      "totalPerTarget": 344,
+      "every": 16
+    },
+    {
+      "encounter": "duchess",
+      "name": "The Bleeding Veil",
+      "tier": "medium",
+      "targets": 2,
+      "application": "simultaneous",
+      "hpsPerTarget": 34,
+      "seconds": 10,
+      "totalPerTarget": 340,
+      "every": 26
+    }
+  ]
+}

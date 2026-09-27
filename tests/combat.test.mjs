@@ -1,7 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { Combat } from '../src/combat.js';
-import { CHAPTER_ENCOUNTERS, CONFIG } from '../src/data.js';
+import { CHAPTER_ENCOUNTERS, CONFIG, PARTY } from '../src/data.js';
+import { baseline } from '../scripts/encounter-pressure.mjs';
 
 const advance=(g,seconds)=>{for(let i=0;i<Math.round(seconds/CONFIG.step);i++)g.step();};
 function isolated(){const g=new Combat();g.start();g.nextStrike=Infinity;g.nextShard=Infinity;g.mechanics.forEach(m=>m.next=Infinity);g.party.forEach(p=>{p.nextAttack=Infinity;});return g;}
@@ -84,11 +85,13 @@ function currentTriage(g){
   if(missing(lowest)>=105&&g.begin('flash',lowest.id).ok)return;
   if(g.mana>g.maxMana*.8&&ready('holyFire'))g.begin('holyFire','boss');
 }
-test('unattended party loses; current triage wins the Chapter I boss',()=>{
+test('unattended party loses; legacy triage still wins the frozen pre-BAT-91 boss',()=>{
   const seeded=seed=>()=>{seed=(1664525*seed+1013904223)>>>0;return seed/4294967296;};
   const idle=new Combat(CHAPTER_ENCOUNTERS.warden,seeded(1));idle.start();advance(idle,150);assert.equal(idle.status,'defeat');
   for(let seed=1;seed<=20;seed++){
-    const g=new Combat(CHAPTER_ENCOUNTERS.warden,seeded(seed));g.start();let attempts=0;
+    // This historical triage assertion also freezes its original base Regen.
+    const legacyParty=PARTY.map(p=>p.label==='HEALER'?{...p,manaRegen:2}:p);
+    const g=new Combat(baseline.warden,seeded(seed),legacyParty);g.start();let attempts=0;
     while(g.status==='running'&&attempts++<10000){
       currentTriage(g);
       g.step();g.drainEvents();

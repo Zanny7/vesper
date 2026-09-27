@@ -1,11 +1,12 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { ChapterRuns, encounterState, fullResources, reconcileResources } from '../src/chapter-runs.js';
-import { CHAPTERS, CHAPTER_ENCOUNTERS, HEALERS, partyForHealer } from '../src/data.js';
+import { ChapterRuns, encounterState, fullResources, reconcileResources, recoverEncounterMana } from '../src/chapter-runs.js';
+import { CHAPTERS, CHAPTER_ENCOUNTERS, HEALERS, CONFIG, partyForHealer } from '../src/data.js';
 import { Combat } from '../src/combat.js';
 import { chapterUnlocked, restoreCampaign } from '../src/progression.js';
 import { eligibleNormalLootForEncounter, NORMAL_LOOT_TABLES, rollNormalLoot } from '../src/loot.js';
 const chapter = CHAPTERS[0], party = partyForHealer('priest');
+const recoveredLowMana = () => 80 + 600 * CONFIG.encounterManaRecovery;
 const disk = () => { const map = new Map(); return { getItem: k => map.get(k), setItem: (k, v) => map.set(k, v) }; };
 function victory(runs, node, health = 300, mana = 360) {
   const resources = runs.begin(chapter, node, party); assert.ok(resources);
@@ -13,16 +14,45 @@ function victory(runs, node, health = 300, mana = 360) {
   game.party[0].hp = health; game.mana = mana; game.status = 'victory';
   assert.equal(runs.finish(chapter, node, game), true); return game;
 }
+
+test('successful non-final recovery uses victory max Mana once, caps, and preserves Health', () => {
+  const runs = new ChapterRuns(disk());
+  const node = chapter.nodes[0], game = victory(runs, node, 230, 25);
+  const expected = 25 + game.maxMana * CONFIG.encounterManaRecovery;
+  assert.equal(runs.get(chapter, party).resources.mana.current, expected);
+  assert.equal(runs.get(chapter, party).resources.health.tank.current, 230);
+  assert.equal(game.mana, 25, 'combat results retain actual spending');
+  assert.equal(runs.finish(chapter, node, game), false, 'duplicate completion cannot award recovery');
+  assert.equal(runs.get(chapter, party).resources.mana.current, expected);
+  const base = fullResources(party); base.mana = { current: 100, max: 900 };
+  assert.equal(recoverEncounterMana(base).mana.current, 100 + 900 * CONFIG.encounterManaRecovery);
+  base.mana.current = 850;
+  assert.equal(recoverEncounterMana(base).mana.current, 900);
+  assert.equal(base.mana.current, 850, 'recovery does not mutate the combat snapshot');
+});
+
+test('ready, paused, abandoned and mismatched encounters cannot claim victory recovery', () => {
+  const runs = new ChapterRuns(disk()), node = chapter.nodes[0];
+  const resources = runs.begin(chapter, node, party);
+  const game = new Combat(CHAPTER_ENCOUNTERS[node.encounter]); game.reset(undefined, resources); game.mana = 50;
+  for (const status of ['ready', 'running', 'paused']) {
+    game.status = status; assert.equal(runs.finish(chapter, node, game), false);
+    assert.deepEqual(runs.runs[chapter.id].resources, resources);
+  }
+  game.status = 'victory'; assert.equal(runs.finish(chapter, chapter.nodes[1], game), false);
+  runs.abandon(chapter); assert.equal(runs.finish(chapter, node, game), false);
+  assert.deepEqual(runs.runs[chapter.id].resources, resources);
+});
 test('exact surviving resources persist across map visits, healer changes and reloads', () => {
   const storage = disk(), runs = new ChapterRuns(storage);
   victory(runs, chapter.nodes[0], 300, 80);
-  for (let i = 0; i < 10; i++) assert.equal(runs.get(chapter, party).resources.mana.current, 80);
+  for (let i = 0; i < 10; i++) assert.equal(runs.get(chapter, party).resources.mana.current, recoveredLowMana());
   const restored = new ChapterRuns(storage), druid = partyForHealer('druid');
   const resources = restored.begin(chapter, chapter.nodes[1], druid);
   const game = new Combat(CHAPTER_ENCOUNTERS.keeper, () => 0, druid, HEALERS.druid.combatSpells);
-  game.reset(undefined, resources); assert.equal(game.party[0].hp, 300); assert.equal(game.mana, 80);
-  game.step(30); assert.equal(game.mana, 80); assert.equal(game.party[0].hp, 300);
-  game.start(); game.pause(); game.step(30); assert.equal(game.mana, 80);
+  game.reset(undefined, resources); assert.equal(game.party[0].hp, 300); assert.equal(game.mana, recoveredLowMana());
+  game.step(30); assert.equal(game.mana, recoveredLowMana()); assert.equal(game.party[0].hp, 300);
+  game.start(); game.pause(); game.step(30); assert.equal(game.mana, recoveredLowMana());
 });
 test('victory leaves a fallen companion down and does not top up survivors', () => {
   const runs = new ChapterRuns(disk());
@@ -35,7 +65,7 @@ test('victory leaves a fallen companion down and does not top up survivors', () 
   const saved = runs.get(chapter, party).resources;
   assert.equal(saved.health.rogue.current, 0);
   assert.equal(saved.health.tank.current, 300);
-  assert.equal(saved.mana.current, 590);
+  assert.equal(saved.mana.current, 600);
 });
 test('failure automatically starts a fresh playable run without touching permanent data', () => {
   const storage = disk(); storage.setItem('vesper-campaign-v3', '["threshold","gallery"]'); storage.setItem('future-gear', 'owned');
@@ -63,7 +93,7 @@ test('leaving an encounter keeps the current route and carried resources', () =>
   runs.abandon(chapter);
   const restored = new ChapterRuns(storage);
   assert.deepEqual(restored.get(chapter, party).completed, [chapter.nodes[0].id]);
-  assert.equal(restored.get(chapter, party).resources.mana.current, 80);
+  assert.equal(restored.get(chapter, party).resources.mana.current, recoveredLowMana());
   assert.equal(encounterState(chapter, restored.get(chapter, party), chapter.nodes[1]), 'available');
 });
 test('idle map reload preserves the next playable encounter', () => {
@@ -71,7 +101,7 @@ test('idle map reload preserves the next playable encounter', () => {
   victory(runs, chapter.nodes[0], 300, 80);
   const restored = new ChapterRuns(storage);
   assert.equal(encounterState(chapter, restored.get(chapter, party), chapter.nodes[1]), 'available');
-  assert.equal(restored.begin(chapter, chapter.nodes[1], party).mana.current, 80);
+  assert.equal(restored.begin(chapter, chapter.nodes[1], party).mana.current, recoveredLowMana());
 });
 test('resource maxima add only positive differences and clamp decreases', () => {
   const resources = fullResources(party); resources.health.tank.current = 300; resources.mana.current = 360;

@@ -1,0 +1,574 @@
+{
+  "healer": "shaman",
+  "gear": "actual route loadout",
+  "method": "Controlled clock: BAT-89 reference policy for 15 seconds, UI Chain Heal attempt and 4 seconds, then reference-assisted finish. Separate manual danger/triage checks are described in the report. Matriarch seed 0 failed under resource pressure; the second entry uses seed 1 and Tidal Waves.",
+  "checks": [
+    {
+      "id": "sentinel",
+      "chapter": 1,
+      "middle": {
+        "mana": "508 / 600",
+        "party": [
+          "Aldric, Guardian, 580 of 660 health, Recurring Surge (36 banked healing in 1 remaining ticks): 2s remaining, Riptide: 10s remaining",
+          "Nyx, Nightblade, 400 of 400 health",
+          "Sera, Arcanist, 400 of 400 health",
+          "Theron, Ranger, 400 of 400 health",
+          "You, Shaman, 425 of 425 health"
+        ],
+        "timeline": "Tank strike · 3s\n82 damage to Aldric every 3s"
+      },
+      "final": {
+        "mana": "289 / 600",
+        "party": [
+          "Aldric, Guardian, 641 of 660 health",
+          "Nyx, Nightblade, 400 of 400 health",
+          "Sera, Arcanist, 400 of 400 health",
+          "Theron, Ranger, 400 of 400 health",
+          "You, Shaman, 425 of 425 health"
+        ],
+        "result": "Their light endures."
+      },
+      "outcome": "victory"
+    },
+    {
+      "id": "keeper",
+      "chapter": 1,
+      "middle": {
+        "mana": "539 / 630",
+        "party": [
+          "Aldric, Guardian, 586 of 660 health, Recurring Surge (38 banked healing in 1 remaining ticks): 2s remaining, Riptide: 8s remaining",
+          "Nyx, Nightblade, 373 of 400 health",
+          "Sera, Arcanist, 400 of 400 health",
+          "Theron, Ranger, 400 of 400 health",
+          "You, Shaman, 425 of 425 health"
+        ],
+        "timeline": "Tank strike · 3s\n75 damage to Aldric every 3s\nPale Archer 1 · 1s\n60 damage · Random living ally"
+      },
+      "final": {
+        "mana": "256 / 630",
+        "party": [
+          "Aldric, Guardian, 660 of 660 health",
+          "Nyx, Nightblade, 400 of 400 health",
+          "Sera, Arcanist, 400 of 400 health",
+          "Theron, Ranger, 400 of 400 health",
+          "You, Shaman, 425 of 425 health"
+        ],
+        "result": "Their light endures."
+      },
+      "outcome": "victory"
+    },
+    {
+      "id": "watcher",
+      "chapter": 1,
+      "middle": {
+        "mana": "515 / 630",
+        "party": [
+          "Aldric, Guardian, 643 of 675 health, Riptide: 10s remaining",
+          "Nyx, Nightblade, 400 of 400 health",
+          "Sera, Arcanist, 385 of 400 health",
+          "Theron, Ranger, 340 of 400 health",
+          "You, Shaman, 425 of 425 health"
+        ],
+        "timeline": "Tank strike · 2s\n85 damage to Aldric every 3.3s\nPale Archer 1 · 5s\n60 damage · Random living ally\nPale Archer 2 · 7s\n60 damage · Random living ally"
+      },
+      "final": {
+        "mana": "149 / 630",
+        "party": [
+          "Aldric, Guardian, 675 of 675 health",
+          "Nyx, Nightblade, 400 of 400 health",
+          "Sera, Arcanist, 400 of 400 health",
+          "Theron, Ranger, 400 of 400 health",
+          "You, Shaman, 425 of 425 health"
+        ],
+        "result": "Their light endures."
+      },
+      "outcome": "victory"
+    },
+    {
+      "id": "briar",
+      "chapter": 2,
+      "middle": {
+        "mana": "477 / 705",
+        "party": [
+          "Aldric, Guardian, 613 of 680 health, Recurring Surge (123 banked healing in 3 remaining ticks): 5s remaining, Riptide: 7s remaining",
+          "Nyx, Nightblade, 415 of 415 health",
+          "Sera, Arcanist, 400 of 400 health, Riptide: 13s remaining",
+          "Theron, Ranger, 377 of 400 health",
+          "You, Shaman, 444 of 450 health"
+        ],
+        "timeline": "Tank strike · 3s\n72 damage to Aldric every 3s\nSporefall · 19s\nParty-wide damage"
+      },
+      "final": {
+        "mana": "202 / 705",
+        "party": [
+          "Aldric, Guardian, 680 of 680 health",
+          "Nyx, Nightblade, 415 of 415 health",
+          "Sera, Arcanist, 400 of 400 health",
+          "Theron, Ranger, 400 of 400 health",
+          "You, Shaman, 444 of 450 health"
+        ],
+        "result": "Their light endures."
+      },
+      "outcome": "victory"
+    },
+    {
+      "id": "moth",
+      "chapter": 2,
+      "middle": {
+        "mana": "432 / 705",
+        "party": [
+          "Aldric, Guardian, 600 of 680 health, Recurring Surge (123 banked healing in 3 remaining ticks): 5s remaining",
+          "Nyx, Nightblade, 399 of 415 health",
+          "Sera, Arcanist, 369 of 400 health",
+          "Theron, Ranger, 400 of 400 health, Riptide: 12s remaining",
+          "You, Shaman, 431 of 450 health"
+        ],
+        "timeline": "Tank strike · 3s\n65 damage to Aldric every 3s\nGrave Dust · 16s\nParty-wide damage"
+      },
+      "final": {
+        "mana": "150 / 705",
+        "party": [
+          "Aldric, Guardian, 677 of 680 health",
+          "Nyx, Nightblade, 401 of 415 health",
+          "Sera, Arcanist, 400 of 400 health",
+          "Theron, Ranger, 400 of 400 health",
+          "You, Shaman, 427 of 450 health"
+        ],
+        "result": "Their light endures."
+      },
+      "outcome": "victory"
+    },
+    {
+      "id": "choir",
+      "chapter": 2,
+      "middle": {
+        "mana": "379 / 705",
+        "party": [
+          "Aldric, Guardian, 515 of 680 health, Recurring Surge (123 banked healing in 3 remaining ticks): 6s remaining, Riptide: 8s remaining",
+          "Nyx, Nightblade, 371 of 415 health",
+          "Sera, Arcanist, 389 of 400 health, Riptide: 15s remaining",
+          "Theron, Ranger, 362 of 400 health",
+          "You, Shaman, 281 of 450 health"
+        ],
+        "timeline": "Tank strike · 3s\n75 damage to Aldric every 3.5s\nSapling Guard · 3s\n25 damage · Aldric\nRoot Lament · 21s\nParty-wide damage\nRoot Grasp · 35s\n2 targets"
+      },
+      "final": {
+        "mana": "6 / 705",
+        "party": [
+          "Aldric, Guardian, 585 of 680 health",
+          "Nyx, Nightblade, 415 of 415 health",
+          "Sera, Arcanist, 400 of 400 health",
+          "Theron, Ranger, 298 of 400 health",
+          "You, Shaman, 450 of 450 health"
+        ],
+        "result": "Their light endures."
+      },
+      "outcome": "victory"
+    },
+    {
+      "id": "mire",
+      "chapter": 2,
+      "middle": {
+        "mana": "236 / 705",
+        "party": [
+          "Aldric, Guardian, 660 of 680 health, Riptide: 4s remaining",
+          "Nyx, Nightblade, 351 of 415 health",
+          "Sera, Arcanist, 330 of 400 health",
+          "Theron, Ranger, 394 of 400 health, Riptide: 11s remaining",
+          "You, Shaman, 342 of 450 health"
+        ],
+        "timeline": "Tank strike · 3s\n65 damage to Aldric every 3.5s\nBog Wisp · 7s\n40 damage · Random living ally\nMire Mist · 18s\nParty-wide damage\nWidow’s Web · 31s\n2 targets"
+      },
+      "final": {
+        "mana": "29 / 705",
+        "party": [
+          "Aldric, Guardian, 522 of 680 health",
+          "Nyx, Nightblade, 257 of 415 health",
+          "Sera, Arcanist, 113 of 400 health",
+          "Theron, Ranger, 400 of 400 health",
+          "You, Shaman, 295 of 450 health"
+        ],
+        "result": "Their light endures."
+      },
+      "outcome": "victory"
+    },
+    {
+      "id": "matriarch",
+      "chapter": 2,
+      "middle": {
+        "mana": "187 / 705",
+        "party": [
+          "Aldric, Guardian, 639 of 680 health, Recurring Surge (41 banked healing in 1 remaining ticks): 2s remaining, Riptide: 10s remaining",
+          "Nyx, Nightblade, 356 of 415 health",
+          "Sera, Arcanist, 326 of 400 health, Riptide: 16s remaining",
+          "Theron, Ranger, 177 of 400 health",
+          "You, Shaman, 230 of 450 health, Riptide: 4s remaining"
+        ],
+        "timeline": "Tank strike · 3s\n70 damage to Aldric every 4.5s\nThorn Slinger · 10s\n40 damage · Random living ally\nHollow Bloom · 21s\nParty-wide damage\nThornfall · 35s\n2 targets"
+      },
+      "final": {
+        "mana": "167 / 705",
+        "party": [
+          "Aldric, Guardian, 644 of 680 health, Riptide: 6s remaining",
+          "Nyx, Nightblade, 356 of 415 health",
+          "Sera, Arcanist, 384 of 400 health, Riptide: 12s remaining",
+          "Theron, Ranger, 317 of 400 health",
+          "You, Shaman, 288 of 450 health"
+        ],
+        "result": "Be their saving grace."
+      },
+      "outcome": "defeat and chapter reset"
+    },
+    {
+      "id": "gatekeeper",
+      "chapter": 3,
+      "middle": {
+        "mana": "678 / 795",
+        "party": [
+          "Aldric, Guardian, 715 of 790 health, Riptide: 10s remaining",
+          "Nyx, Nightblade, 400 of 400 health",
+          "Sera, Arcanist, 400 of 400 health",
+          "Theron, Ranger, 400 of 400 health",
+          "You, Shaman, 445 of 445 health"
+        ],
+        "timeline": "Tank strike · 3s\n95 damage to Aldric every 3s\nForked Cleave · 6s\n2 targets"
+      },
+      "final": {
+        "mana": "437 / 795",
+        "party": [
+          "Aldric, Guardian, 790 of 790 health",
+          "Nyx, Nightblade, 400 of 400 health",
+          "Sera, Arcanist, 400 of 400 health",
+          "Theron, Ranger, 400 of 400 health",
+          "You, Shaman, 445 of 445 health"
+        ],
+        "result": "Their light endures."
+      },
+      "outcome": "victory"
+    },
+    {
+      "id": "twins",
+      "chapter": 3,
+      "middle": {
+        "mana": "618 / 795",
+        "party": [
+          "Aldric, Guardian, 757 of 790 health, Recurring Surge (140 banked healing in 3 remaining ticks): 5s remaining, Riptide: 18s remaining",
+          "Nyx, Nightblade, 391 of 400 health, Riptide: 12s remaining",
+          "Sera, Arcanist, 400 of 400 health",
+          "Theron, Ranger, 400 of 400 health",
+          "You, Shaman, 445 of 445 health"
+        ],
+        "timeline": "Tank strike · 2s\n92 damage to Aldric every 2.8s\nAshblade Duelist · 6s\n50 damage · Random living ally\nCrosscut · 9s\n2 targets"
+      },
+      "final": {
+        "mana": "286 / 795",
+        "party": [
+          "Aldric, Guardian, 748 of 790 health",
+          "Nyx, Nightblade, 266 of 400 health",
+          "Sera, Arcanist, 400 of 400 health",
+          "Theron, Ranger, 400 of 400 health",
+          "You, Shaman, 445 of 445 health"
+        ],
+        "result": "Their light endures."
+      },
+      "outcome": "victory"
+    },
+    {
+      "id": "ravens",
+      "chapter": 3,
+      "middle": {
+        "mana": "654 / 795",
+        "party": [
+          "Aldric, Guardian, 717 of 790 health, Recurring Surge (140 banked healing in 3 remaining ticks): 5s remaining",
+          "Nyx, Nightblade, 400 of 400 health",
+          "Sera, Arcanist, 330 of 400 health, Riptide: 13s remaining",
+          "Theron, Ranger, 400 of 400 health",
+          "You, Shaman, 338 of 445 health"
+        ],
+        "timeline": "Tank strike · 2s\n92 damage to Aldric every 2.8s\nSearing Feathers · 13s\n3 targets"
+      },
+      "final": {
+        "mana": "432 / 795",
+        "party": [
+          "Aldric, Guardian, 790 of 790 health",
+          "Nyx, Nightblade, 400 of 400 health",
+          "Sera, Arcanist, 400 of 400 health",
+          "Theron, Ranger, 400 of 400 health",
+          "You, Shaman, 445 of 445 health"
+        ],
+        "result": "Their light endures."
+      },
+      "outcome": "victory"
+    },
+    {
+      "id": "furnace",
+      "chapter": 3,
+      "middle": {
+        "mana": "577 / 795",
+        "party": [
+          "Aldric, Guardian, 703 of 810 health, Recurring Surge (140 banked healing in 3 remaining ticks): 5s remaining, Riptide: 11s remaining",
+          "Nyx, Nightblade, 303 of 410 health, Riptide: 3s remaining",
+          "Sera, Arcanist, 290 of 400 health",
+          "Theron, Ranger, 290 of 400 health",
+          "You, Shaman, 339 of 445 health"
+        ],
+        "timeline": "Tank strike · 2s\n120 damage to Aldric every 3.3s\nTwin Brands · 12s\n2 targets\nFurnace Breath · 34s\nParty-wide damage"
+      },
+      "final": {
+        "mana": "289 / 795",
+        "party": [
+          "Aldric, Guardian, 673 of 810 health",
+          "Nyx, Nightblade, 410 of 410 health",
+          "Sera, Arcanist, 225 of 400 health",
+          "Theron, Ranger, 400 of 400 health",
+          "You, Shaman, 445 of 445 health"
+        ],
+        "result": "Their light endures."
+      },
+      "outcome": "victory"
+    },
+    {
+      "id": "harrier",
+      "chapter": 3,
+      "middle": {
+        "mana": "558 / 820",
+        "party": [
+          "Aldric, Guardian, 810 of 810 health, Recurring Surge (145 banked healing in 3 remaining ticks): 5s remaining, Riptide: 6s remaining",
+          "Nyx, Nightblade, 389 of 410 health",
+          "Sera, Arcanist, 400 of 400 health",
+          "Theron, Ranger, 400 of 400 health, Riptide: 13s remaining",
+          "You, Shaman, 406 of 445 health"
+        ],
+        "timeline": "Tank strike · 1s\n85 damage to Aldric every 2.2s\nEmber Stalker · 6s\n40 damage · Random living ally\nDivided Pounce · 7s\n2 targets"
+      },
+      "final": {
+        "mana": "336 / 820",
+        "party": [
+          "Aldric, Guardian, 744 of 810 health",
+          "Nyx, Nightblade, 410 of 410 health",
+          "Sera, Arcanist, 400 of 400 health",
+          "Theron, Ranger, 400 of 400 health",
+          "You, Shaman, 445 of 445 health"
+        ],
+        "result": "Their light endures."
+      },
+      "outcome": "victory"
+    },
+    {
+      "id": "tribunal",
+      "chapter": 3,
+      "middle": {
+        "mana": "594 / 820",
+        "party": [
+          "Aldric, Guardian, 716 of 810 health, Recurring Surge (145 banked healing in 3 remaining ticks): 5s remaining, Riptide: 12s remaining",
+          "Nyx, Nightblade, 410 of 410 health",
+          "Sera, Arcanist, 367 of 400 health",
+          "Theron, Ranger, 205 of 400 health",
+          "You, Shaman, 254 of 445 health"
+        ],
+        "timeline": "Tank strike · 2s\n108 damage to Aldric every 2.8s\nCinder Witness · 9s\n45 damage · Random living ally\nThreefold Judgment · 15s\n3 targets"
+      },
+      "final": {
+        "mana": "301 / 820",
+        "party": [
+          "Aldric, Guardian, 631 of 810 health",
+          "Nyx, Nightblade, 410 of 410 health",
+          "Sera, Arcanist, 243 of 400 health",
+          "Theron, Ranger, 400 of 400 health",
+          "You, Shaman, 254 of 445 health"
+        ],
+        "result": "Their light endures."
+      },
+      "outcome": "victory"
+    },
+    {
+      "id": "bridge",
+      "chapter": 3,
+      "middle": {
+        "mana": "621 / 820",
+        "party": [
+          "Aldric, Guardian, 694 of 810 health, Recurring Surge (145 banked healing in 3 remaining ticks): 6s remaining, Riptide: 3s remaining",
+          "Nyx, Nightblade, 292 of 410 health",
+          "Sera, Arcanist, 207 of 400 health, Riptide: 13s remaining",
+          "Theron, Ranger, 280 of 400 health",
+          "You, Shaman, 330 of 445 health"
+        ],
+        "timeline": "Tank strike · 2s\n110 damage to Aldric every 3.3s\nShield Retainer · 5s\n25 damage · Aldric\nShattered Iron · 13s\n2 targets\nIronfall · 35s\nParty-wide damage"
+      },
+      "final": {
+        "mana": "329 / 820",
+        "party": [
+          "Aldric, Guardian, 810 of 810 health",
+          "Nyx, Nightblade, 410 of 410 health",
+          "Sera, Arcanist, 400 of 400 health",
+          "Theron, Ranger, 400 of 400 health",
+          "You, Shaman, 445 of 445 health"
+        ],
+        "result": "Their light endures."
+      },
+      "outcome": "victory"
+    },
+    {
+      "id": "regent",
+      "chapter": 3,
+      "middle": {
+        "mana": "609 / 820",
+        "party": [
+          "Aldric, Guardian, 588 of 810 health, Recurring Surge (145 banked healing in 3 remaining ticks): 5s remaining",
+          "Nyx, Nightblade, 273 of 410 health, Riptide: 13s remaining",
+          "Sera, Arcanist, 260 of 400 health",
+          "Theron, Ranger, 200 of 400 health, Riptide: 3s remaining",
+          "You, Shaman, 348 of 510 health"
+        ],
+        "timeline": "Tank strike · 3s\n95 damage to Aldric every 3.6s\nRegent Guard · 8s\n25 damage · Aldric\nSundering Decree · 14s\n3 targets\nCrown of Embers · 37s\nParty-wide damage"
+      },
+      "final": {
+        "mana": "104 / 820",
+        "party": [
+          "Aldric, Guardian, 654 of 810 health",
+          "Nyx, Nightblade, 212 of 410 health",
+          "Sera, Arcanist, 400 of 400 health",
+          "Theron, Ranger, 200 of 400 health",
+          "You, Shaman, 510 of 510 health"
+        ],
+        "result": "Their light endures."
+      },
+      "outcome": "victory"
+    },
+    {
+      "id": "huntsman",
+      "chapter": 4,
+      "middle": {
+        "mana": "754 / 830",
+        "party": [
+          "Aldric, Guardian, 743 of 830 health, Recurring Surge (143 banked healing in 3 remaining ticks): 5s remaining",
+          "Nyx, Nightblade, 445 of 470 health, Barbed Arrow: 4s remaining, Riptide: 14s remaining",
+          "Sera, Arcanist, 440 of 440 health",
+          "Theron, Ranger, 445 of 445 health",
+          "You, Shaman, 460 of 460 health"
+        ],
+        "timeline": "Tank strike · 3s\n85 damage to Aldric every 3s\nBarbed Arrow · 7s\nPersistent wound"
+      },
+      "final": {
+        "mana": "631 / 830",
+        "party": [
+          "Aldric, Guardian, 805 of 830 health",
+          "Nyx, Nightblade, 470 of 470 health",
+          "Sera, Arcanist, 440 of 440 health",
+          "Theron, Ranger, 445 of 445 health, Barbed Arrow: 10s remaining",
+          "You, Shaman, 460 of 460 health"
+        ],
+        "result": "Their light endures."
+      },
+      "outcome": "victory"
+    },
+    {
+      "id": "chapel",
+      "chapter": 4,
+      "middle": {
+        "mana": "720 / 840",
+        "party": [
+          "Aldric, Guardian, 795 of 835 health, Recurring Surge (151 banked healing in 3 remaining ticks): 6s remaining, Riptide: 3s remaining",
+          "Nyx, Nightblade, 390 of 460 health",
+          "Sera, Arcanist, 344 of 475 health, Crimson Refrain: 4s remaining, Riptide: 16s remaining",
+          "Theron, Ranger, 365 of 440 health",
+          "You, Shaman, 335 of 520 health, Crimson Refrain: 4s remaining"
+        ],
+        "timeline": "Tank strike · 1s\n80 damage to Aldric every 3.2s\nCrimson Refrain · 13s\nPersistent wound\nGrieving Hymn · 29s\nParty-wide damage"
+      },
+      "final": {
+        "mana": "520 / 840",
+        "party": [
+          "Aldric, Guardian, 762 of 835 health",
+          "Nyx, Nightblade, 390 of 460 health",
+          "Sera, Arcanist, 397 of 475 health",
+          "Theron, Ranger, 412 of 440 health",
+          "You, Shaman, 448 of 520 health"
+        ],
+        "result": "Their light endures."
+      },
+      "outcome": "victory"
+    },
+    {
+      "id": "procession",
+      "chapter": 4,
+      "middle": {
+        "mana": "768 / 840",
+        "party": [
+          "Aldric, Guardian, 835 of 835 health, Recurring Surge (121 banked healing in 2 remaining ticks): 3s remaining, Riptide: 4s remaining",
+          "Nyx, Nightblade, 439 of 460 health, Endless Vigil: 6s remaining, Riptide: 18s remaining",
+          "Sera, Arcanist, 445 of 475 health, Endless Vigil: 10s remaining",
+          "Theron, Ranger, 440 of 440 health",
+          "You, Shaman, 520 of 520 health"
+        ],
+        "timeline": "Tank strike · 1s\n85 damage to Aldric every 3.2s\nMourning Acolyte · 1s\n45 damage · Random living ally\nEndless Vigil · 3s\nPersistent wound"
+      },
+      "final": {
+        "mana": "461 / 840",
+        "party": [
+          "Aldric, Guardian, 835 of 835 health",
+          "Nyx, Nightblade, 460 of 460 health",
+          "Sera, Arcanist, 475 of 475 health",
+          "Theron, Ranger, 410 of 440 health, Endless Vigil: 3s remaining",
+          "You, Shaman, 515 of 520 health, Endless Vigil: 8s remaining"
+        ],
+        "result": "Their light endures."
+      },
+      "outcome": "victory"
+    },
+    {
+      "id": "garden",
+      "chapter": 4,
+      "middle": {
+        "mana": "716 / 840",
+        "party": [
+          "Aldric, Guardian, 687 of 835 health, Recurring Surge (181 banked healing in 3 remaining ticks): 6s remaining, Riptide: 10s remaining",
+          "Nyx, Nightblade, 460 of 460 health",
+          "Sera, Arcanist, 301 of 475 health",
+          "Theron, Ranger, 440 of 440 health",
+          "You, Shaman, 434 of 520 health, Severing Thorns: 2s remaining, Recurring Surge (101 banked healing in 2 remaining ticks): 5s remaining"
+        ],
+        "timeline": "Tank strike · 1s\n110 damage to Aldric every 3.2s\nSevering Thorns · 10s\nPersistent wound\nTwin Shears · 22s\n2 targets"
+      },
+      "final": {
+        "mana": "437 / 840",
+        "party": [
+          "Aldric, Guardian, 749 of 835 health",
+          "Nyx, Nightblade, 460 of 460 health",
+          "Sera, Arcanist, 475 of 475 health",
+          "Theron, Ranger, 440 of 440 health",
+          "You, Shaman, 520 of 520 health"
+        ],
+        "result": "Their light endures."
+      },
+      "outcome": "victory"
+    },
+    {
+      "id": "matriarch-equipped",
+      "chapter": 2,
+      "middle": {
+        "mana": "376 / 760",
+        "party": [
+          "Aldric, Guardian, 658 of 705 health, Recurring Surge (44 banked healing in 1 remaining ticks): 2s remaining, Riptide: 8s remaining",
+          "Nyx, Nightblade, 385 of 425 health",
+          "Sera, Arcanist, 391 of 400 health",
+          "Theron, Ranger, 400 of 400 health, Riptide: 15s remaining",
+          "You, Shaman, 296 of 460 health"
+        ],
+        "timeline": "Tank strike · 3s\n70 damage to Aldric every 4.5s\nThorn Slinger · 10s\n40 damage · Random living ally\nHollow Bloom · 21s\nParty-wide damage\nThornfall · 35s\n2 targets"
+      },
+      "final": {
+        "mana": "16 / 760",
+        "party": [
+          "Aldric, Guardian, 576 of 705 health",
+          "Nyx, Nightblade, 405 of 425 health",
+          "Sera, Arcanist, 295 of 400 health",
+          "Theron, Ranger, 266 of 400 health",
+          "You, Shaman, 340 of 460 health"
+        ],
+        "result": "Their light endures."
+      },
+      "outcome": "victory"
+    }
+  ]
+}

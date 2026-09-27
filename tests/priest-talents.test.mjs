@@ -20,7 +20,7 @@ test('Priest row 1 derives mana regeneration, Binding Light, and Early Mercy by 
   const two = priestTalentLoadout(partyForHealer('priest'), SPELLS, {
     'conservation-of-faith': 2, 'binding-light': 2, 'early-mercy': 2,
   });
-  assert.equal(one.party.at(-1).manaRegen, 2.2); assert.equal(two.party.at(-1).manaRegen, 2.4);
+  assert.equal(one.party.at(-1).manaRegen, CONFIG.manaRegen * 1.1); assert.equal(two.party.at(-1).manaRegen, CONFIG.manaRegen * 1.2);
   assert.equal(one.spells.find(spell => spell.id === 'flash').bindingLight.ratio, .15);
   assert.equal(two.spells.find(spell => spell.id === 'flash').bindingLight.ratio, .30);
   assert.equal(one.spells.find(spell => spell.id === 'greater').earlyMercy.ratio, .30);

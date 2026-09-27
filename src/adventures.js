@@ -1,11 +1,18 @@
 import { healerHint, loadActiveHealer } from './healers.js';
-import { CHAPTERS, CHAPTER_ENCOUNTERS } from './data.js';
+import { CHAPTERS, CHAPTER_ENCOUNTERS, CONFIG } from './data.js';
 import { chapterComplete, chapterUnlocked, restoreCampaign } from './progression.js';
 import { encounterState } from './chapter-runs.js';
 import { chapterSwitchCopy, createChapterSwitch } from './chapter-switch.js';
 import { encounterLootMarkup } from './loot-presentation.js';
 import { mechanicCategory, mechanicIcon } from './mechanic-icons.js';
+import { formatCombatNumber } from './stats.js';
 export { nodeState, chapterComplete, restoreProgress, awardVictory } from './progression.js';
+
+export function chapterManaText(run) {
+  // Unstarted previews have no persisted chapter resource state to display.
+  if (run.status === 'pending' || run.status === 'complete' && !run.completed.length) return '';
+  return `Mana ${formatCombatNumber(run.resources.mana.current)} / ${formatCombatNumber(run.resources.mana.max)}`;
+}
 
 function minimumMapExtent(nodes, axis, nodeSize, spacing) {
   const points = [...new Set(nodes.map(node => node[axis]))].sort((a, b) => a - b);
@@ -137,6 +144,8 @@ export function setupAdventures({ startEncounter, onProgress, onRunChange, runs,
   }
   function render() {
     const run = currentRun(); runCompleted = new Set(run.completed);
+    const mana = $('#chapter-mana');
+    mana.textContent = chapterManaText(run); mana.hidden = !mana.textContent;
     for (const node of nodes) {
       const button = buttons.get(node.id), state = encounterState(chapter, run, node);
       button.dataset.state = state;
@@ -168,8 +177,8 @@ export function setupAdventures({ startEncounter, onProgress, onRunChange, runs,
     $('#detail-state').textContent = run.status === 'complete' ? 'Chapter complete. Choose Replay Chapter to begin a new run from the start.' : run.status === 'pending' ? 'Choose Start Chapter to begin a fresh run from this chapter’s first encounter.' : state === 'locked'
       ? `Complete ${node.from.map(id => nodes.find(item => item.id === id).name).join(' or ')} in this run first.`
       : state === 'completed'
-        ? node.kind === 'boss' ? 'Chapter complete. Your party can start the next chapter.' : 'Health and Mana carry into the next encounter. Choose your path.'
-        : 'Enter with the resources shown on the map.';
+        ? node.kind === 'boss' ? 'Chapter complete. Your party can start the next chapter.' : `Health and Mana carry forward; victory restores ${Math.round(CONFIG.encounterManaRecovery * 100)}% of maximum Mana. Choose your path.`
+        : `Surviving Health and Mana carry forward. Successful non-final encounters restore ${Math.round(CONFIG.encounterManaRecovery * 100)}% of maximum Mana.`;
   }
   $('#preview-encounter').addEventListener('click', () => {
     const node = nodes.find(item => item.id === selected);

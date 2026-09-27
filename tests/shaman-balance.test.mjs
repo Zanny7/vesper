@@ -35,7 +35,7 @@ test('simulation charges instant costs exactly, rather than subtracting tick reg
   // next decision, outside this one-step window. Only Stream costs Mana here.
   const result = simulate(encounter, party, 'shaman', {}, 1, resources, { seconds: CONFIG.step });
   assert.equal(result.manaSpent, 35);
-  assert.ok(Math.abs(result.remainingMana - (600 - 35 + 2 * CONFIG.step)) < 1e-7);
+  assert.ok(Math.abs(result.remainingMana - (600 - 35 + CONFIG.manaRegen * CONFIG.step)) < 1e-7);
   assert.deepEqual(result.casts, { healingStream: 1 });
 });
 

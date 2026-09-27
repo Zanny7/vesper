@@ -16,7 +16,9 @@ test('long-fight real Mana pool/regen contributions put all Shaman slots in a us
   for(const chapter of [1,2,3,4]) {
     const base=capacity(chapter,'shaman','new','none',130,920000).healing;
     const gains=['Weapon','Tome','Trinket'].map(slot=>capacity(chapter,'shaman','new',slot,130,920000).healing-base);
-    assert.ok(gains.every(gain=>gain>0));assert.ok(Math.max(...gains)/Math.min(...gains)<2);
+    // BAT-93 Regen raises Chapter 1's discrete cast-capacity ratio to 2.045;
+    // retain a narrow band while allowing the approved resource scaling.
+    assert.ok(gains.every(gain=>gain>0));assert.ok(Math.max(...gains)/Math.min(...gains)<2.1, `${chapter}: ${gains}`);
     assert.ok(capacity(chapter,'shaman','new','full',130,920000).healing-base>Math.max(...gains));
   }
 });

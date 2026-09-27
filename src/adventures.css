@@ -36,7 +36,9 @@
 .boss:hover .node-symbol { border-color: #8e4c50; box-shadow: 0 0 22px #d8bd7255; }
 .adventure-node:focus-visible { outline: none; }
 .adventure-node:focus-visible .node-symbol { outline: 2px solid #eed2a0; outline-offset: 5px; }
-.map-legend { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px 22px; padding: 20px; border-top: 1px solid #778a662b; color: #b4c4bd; font-size: 10px; }
+.map-status { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 14px 24px; padding: 20px; border-top: 1px solid #778a662b; }
+#chapter-mana { color: #a9ccea; font-size: 12px; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.map-legend { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px 22px; color: #b4c4bd; font-size: 10px; }
 .map-legend .legend-current { color: #d8bd72; }
 .map-legend .legend-boss { color: #c77c7c; }
 .encounter-detail { display: flex; flex-direction: column; overflow-y: auto; overscroll-behavior: contain; scrollbar-color: #897b55 #142329; scrollbar-width: thin; border: 1px solid #46616180; border-radius: 8px; background: #111f25; padding: 25px; min-width: 0; }

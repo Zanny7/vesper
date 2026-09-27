@@ -4,6 +4,13 @@ import { adjustedResource, resourceKey } from './stats.js';
 
 const storageKey = 'vesper-chapter-runs-v1';
 const valid = n => Number.isFinite(n) && n >= 0;
+// Recovery is awarded once by finish(), using the victory loadout's maximum.
+// Health, fallen allies, and the Mana spent in combat are unaffected.
+export function recoverEncounterMana(resources, fraction = CONFIG.encounterManaRecovery) {
+  const next = structuredClone(resources);
+  next.mana.current = Math.min(next.mana.max, next.mana.current + next.mana.max * fraction);
+  return next;
+}
 export function encounterState(chapter, run, node) {
   if (!chapter.nodes.includes(node) || !run) return 'locked';
   if (run.status === 'complete') return run.completed.includes(node.id) ? 'completed' : 'locked';
@@ -80,6 +87,7 @@ export class ChapterRuns {
     run.resources = game.resources(); run.inEncounter = null;
     run.completed = [...new Set([...run.completed, node.id])];
     run.status = chapterComplete(new Set(run.completed), chapter.nodes) ? 'complete' : 'active';
+    if (run.status === 'active') run.resources = recoverEncounterMana(run.resources);
     this.save(); return true;
   }
   abandon(chapter) {

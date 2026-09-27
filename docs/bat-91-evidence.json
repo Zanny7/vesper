@@ -1,0 +1,18 @@
+{
+  "baselineCommit": "f00c3e7",
+  "healer": "shaman",
+  "files": {
+    "src/data.js": "470d802cd2939d476d38c40e6385439f4909c705f059eb918187405f5590dd48",
+    "src/chapter-runs.js": "4e56cb24df62b9944280ad281a189332cdbdf31b5145b1fbe6913ea990d9e720",
+    "src/combat.js": "a76d8a852cf5281113573dbbba6ec53459e2071de07fdb0d0892bad19554787c",
+    "scripts/encounter-pressure.mjs": "632cb2224103d283333e3fd072e1aedaf98133099c4a370b18c030d32df4fc7f",
+    "scripts/encounter-dot-probes.mjs": "0beb7f63d8abfbc1e1e1ce35225a877caafaaa69a9fa53e326b664b36fafb1c3",
+    "scripts/shaman-priority.mjs": "a88813f61ea98fdbb6ba005fd186666cb0b5149d3bef742e6ec83f512b492da5",
+    "scripts/fixtures/bat91-encounters.json": "6b44e4b35ddabdf17508307693ac107f96ba4f0ff7bb126f62d5598f86d1d930",
+    "docs/bat-91-after.json": "bce9925891e7d28fa3c009ced40486441469c4ca8a356bbe3eb7e7698951faf2",
+    "docs/bat-91-final-recovery20.json": "8028f7e0f32eed270bf537d379d4ce0bf8bb203d8f8018553aee6c54ba584f2d",
+    "docs/bat-91-final-recovery35.json": "e2a05dd1c261e6442bd7a9a459450818511775ac179ba4f33285f91f2e13df90",
+    "docs/bat-91-final-recovery50.json": "3c592ab97b41361f8ded327e08fc1372d8bb04253c99a89d26a3419b731d933f",
+    "docs/bat-91-late-response.json": "6bf9658af2cb46f18e6ef5547311b5a2e0266afd9da7b47d70eb3e53f7342063"
+  }
+}

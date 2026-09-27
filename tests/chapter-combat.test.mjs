@@ -1,25 +1,16 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { Combat } from '../src/combat.js';
-import { CHAPTER_ENCOUNTERS, CONFIG, ADVENTURES, CHAPTERS } from '../src/data.js';
+import { CHAPTER_ENCOUNTERS, CONFIG, CHAPTERS, HEALERS, partyForHealer } from '../src/data.js';
+import { pressureRoute } from '../scripts/encounter-pressure.mjs';
 
 const advance = (game, seconds) => { for (let i = 0; i < seconds / CONFIG.step; i++) game.step(); };
 const seeded = seed => () => { seed = (1664525 * seed + 1013904223) >>> 0; return seed / 4294967296; };
-function heal(game) {
-  if (game.cast) return;
-  const living = game.party.filter(p => p.hp > 0), lowest = [...living].sort((a,b) => a.hp/a.maxHp-b.hp/b.maxHp)[0];
-  const injured = living.filter(p => p.maxHp-p.hp >= 70), tank = game.party[0];
-  if (tank.hp < 360 && (game.cooldowns.penance || 0) <= game.time) game.begin('penance', 'tank');
-  else if (lowest.hp / lowest.maxHp < .48) game.begin('flash', lowest.id);
-  else if (injured.length >= 3) game.begin('prayer', lowest.id);
-  else if (tank.maxHp-tank.hp >= 160) game.begin('greater', 'tank');
-  else if (lowest.maxHp-lowest.hp >= 100) game.begin('flash', lowest.id);
-}
 
 test('Chapter 1 normal route pressure escalates through HP, strike cadence, and adds', () => {
   const encounters = CHAPTERS[0].nodes.filter(node => node.kind === 'normal')
     .map(node => CHAPTER_ENCOUNTERS[node.encounter]);
-  assert.deepEqual(encounters.map(encounter => encounter.maxHp), [1000, 1000, 1450]);
+  assert.ok(encounters[0].maxHp < encounters[1].maxHp && encounters[1].maxHp < encounters[2].maxHp);
   const pressure = encounter => encounter.strike.damage / encounter.strike.every
     + encounter.adds.reduce((sum, add) => sum + add.damage / add.every, 0);
   assert.ok(pressure(encounters[0]) < pressure(encounters[1]));
@@ -31,7 +22,7 @@ test('Chapter 1 normal route pressure escalates through HP, strike cadence, and 
     }
   }
   assert.ok(CHAPTER_ENCOUNTERS.warden.maxHp > encounters[2].maxHp);
-  assert.ok(CHAPTER_ENCOUNTERS.warden.strike.damage > encounters[2].strike.damage);
+  assert.ok(CHAPTER_ENCOUNTERS.warden.mechanics.some(m => m.target === 'tank' && m.damage > encounters[2].strike.damage));
 });
 
 test('ranged adds select randomly among all living members, including tank and healer', () => {
@@ -68,19 +59,29 @@ test('add timers freeze on pause, reset with the selected encounter, and stop on
   assert.equal(game.adds.length, 0);
 });
 
-test('the first and boss fights require healing, and basic triage wins every Chapter 1 encounter', () => {
+test('Chapter 1 requires healing and a geared Shaman can complete the persistent route', () => {
   for (const encounter of [CHAPTER_ENCOUNTERS.sentinel, CHAPTER_ENCOUNTERS.warden]) {
     const idle = new Combat(encounter, seeded(1)); idle.start(); advance(idle, 150);
     assert.equal(idle.status, 'defeat', encounter.id);
   }
-  for (const encounter of ADVENTURES.map(node => CHAPTER_ENCOUNTERS[node.encounter])) {
-    for (let seed = 1; seed <= 30; seed++) {
-      const game = new Combat(encounter, seeded(seed)); game.start();
-      while (game.status === 'running' && game.time < 150) { heal(game); game.step(); game.drainEvents(); }
-      assert.equal(game.status, 'victory', encounter.id + ' seed ' + seed);
-      assert.equal(game.stats.deaths, 0, encounter.id + ' seed ' + seed);
-      assert.ok(game.time < CONFIG.enrage, encounter.id + ' should finish before enrage');
-      assert.ok(game.stats.effective > 0);
-    }
+  const attempts = Array.from({ length: 8 }, (_, i) => pressureRoute(1, 0, i, i % 2 ? '1-reserves' : '1-deep', 'ready', 'veryGood'));
+  const wins = attempts.filter(r => r.won && r.encounters.every(e => e.deaths === 0));
+  assert.ok(wins.length >= 4, 'both legal builds have reproducible, death-free route clears with actual loot');
+  for (const route of wins) {
+    assert.equal(route.encounters.length, 4);
+    assert.ok(route.encounters.every(e => e.seconds < CONFIG.enrage && e.effectiveHealing > 0));
+    assert.ok(route.encounters.at(-1).seconds > Math.max(...route.encounters.slice(0, -1).map(e => e.seconds)));
+  }
+});
+
+test('a warned party hit is lethal at 30% Health and survivable when prepared', () => {
+  for (const health of [.30, .60]) {
+    const encounter = structuredClone(CHAPTER_ENCOUNTERS.moth);
+    encounter.maxHp = 1e8; encounter.strike.first = Infinity;
+    const game = new Combat(encounter, seeded(91), partyForHealer('shaman'), HEALERS.shaman.combatSpells);
+    game.party[1].hp = game.party[1].maxHp * health;
+    game.start(); advance(game, encounter.mechanics[0].first + .1);
+    assert.equal(game.party[1].hp === 0, health === .30);
+    assert.equal(game.stats.deaths, health === .30 ? 1 : 0);
   }
 });

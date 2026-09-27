@@ -8,7 +8,7 @@ test('baseline healers have requested resources and neutral new stats', () => {
   for (const id of ['priest', 'druid']) {
     const g = new Combat(undefined, () => 0, partyForHealer(id), HEALERS[id].combatSpells);
     assert.equal(g.healer.maxHp, 400); assert.equal(g.maxMana, 600); assert.equal(g.mana, 600);
-    g.mana = 300; g.step(5); assert.equal(g.mana, 300); g.start(); g.step(1); assert.equal(g.mana, 302);
+    g.mana = 300; g.step(5); assert.equal(g.mana, 300); g.start(); g.step(1); assert.equal(g.mana, 300 + CONFIG.manaRegen);
     assert.ok(g.party.every(p => p.armor === 0 && p.resistance === 0)); assert.equal(g.spellPower, 0);
   }
 });

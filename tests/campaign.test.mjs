@@ -107,11 +107,11 @@ test('split warnings lock distinct living targets including tank and healer; pau
 });
 
 test('bleeds tick for their full duration, refresh their own effect, and allow different wounds to overlap', () => {
-  const g=isolated('huntsman'), m=g.mechanics[0], tank=g.party[0];
+  const g=isolated('huntsman'), m=g.mechanics.find(m => m.target === 'tank'), tank=g.party[0];
   g.resolveMechanic(m);assert.equal(tank.dots.length,1);
   const initial=tank.hp;advance(g,2.1);assert.equal(tank.hp,initial-m.dot.damage);
   g.resolveMechanic(m);assert.equal(tank.dots.length,1);
-  const refreshed=tank.hp;advance(g,10.1);
+  const refreshed=tank.hp;advance(g,m.dot.ticks*m.dot.interval+.1);
   assert.equal(tank.hp,refreshed-m.dot.damage*m.dot.ticks);assert.equal(tank.dots.length,0);
   g.resolveMechanic(m);g.resolveMechanic({...m,id:'other',name:'Other wound'});
   assert.equal(tank.dots.length,2);
@@ -140,6 +140,6 @@ test('later chapter openers are manageable with fresh resources', () => {
 test('encounter pressure stays fixed when a stronger party is supplied for future gear tuning', () => {
   const stronger=PARTY.map(p=>({...p,maxHp:p.maxHp+100,damage:p.damage*1.2}));
   const g=new Combat(CHAPTER_ENCOUNTERS.briar,()=>0,stronger);g.start();
-  advance(g,3);assert.equal(g.party[0].hp,stronger[0].maxHp-58);
-  assert.equal(g.encounter.strike.damage,58);
+  advance(g,3.1);assert.equal(g.party[0].hp,stronger[0].maxHp-CHAPTER_ENCOUNTERS.briar.strike.damage);
+  assert.equal(g.encounter.strike.damage,CHAPTER_ENCOUNTERS.briar.strike.damage);
 });

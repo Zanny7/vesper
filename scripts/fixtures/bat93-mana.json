@@ -1,0 +1,29 @@
+{
+  "baseRegen": 2,
+  "itemRegen": {
+    "ch1-sepulcher-candle": 0.1,
+    "ch1-book-of-last-names": 0.3,
+    "ch1-bell-of-the-vigil": 0.65,
+    "ch2-briarheart-thurible": 0.15,
+    "ch2-litany-of-falling-leaves": 0.5,
+    "ch2-dewfall-rosary": 1.05,
+    "ch3-lantern-of-unspent-dawn": 0.2,
+    "ch3-canticles-in-copper": 0.7,
+    "ch3-coalglass-hourglass": 1.5,
+    "ch3-phoenixroot-branch": 0.25,
+    "ch3-charred-ring-almanac": 0.7,
+    "ch3-salamander-egg": 1.6,
+    "ch4-scepter-of-the-last-mercy": 0.3,
+    "ch4-thornlit-testament": 0.95,
+    "ch4-tear-of-the-pale-queen": 2,
+    "ch4-crook-of-the-elder-hart": 0.35,
+    "ch4-briarqueen-herbarium": 0.95,
+    "ch4-seed-of-the-silver-eclipse": 2.1
+  },
+  "fixedHashes": {
+    "encounters": "45fc691add0b17a3a59baa91c9ccb6f3627b75bd1e09041a91f8737edae0ff9d",
+    "healers": "65921c27c6b61aaf54751ef2eced808934800bf83deeaef596910f9d5ae6a88a",
+    "shamanTalents": "2e3d4df02d5d052c23047887db0c2fb0783109d78d8db968a912eb964759a8a7",
+    "gearWithoutRegen": "ce320394ff1d3c4bb750592e09b5fde72a8a2bcbadfb7697d4ceed1130811b87"
+  }
+}

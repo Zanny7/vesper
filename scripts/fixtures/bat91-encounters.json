@@ -1,0 +1,1147 @@
+{
+  "sentinel": {
+    "id": "sentinel",
+    "name": "The Sepulchral Sentinel",
+    "maxHp": 1000,
+    "strike": {
+      "first": 2.4,
+      "every": 2.4,
+      "damage": 50,
+      "damageType": "Physical"
+    },
+    "adds": [],
+    "mechanics": [],
+    "lesson": "Keep Aldric healthy. When he is stable, damage the enemy to convert Atonement into extra healing.",
+    "chapterId": "catacombs",
+    "isBoss": false
+  },
+  "keeper": {
+    "id": "keeper",
+    "name": "The Cinder Keeper",
+    "maxHp": 1000,
+    "strike": {
+      "first": 2.4,
+      "every": 2.4,
+      "damage": 50,
+      "damageType": "Physical"
+    },
+    "adds": [
+      {
+        "first": 4,
+        "every": 4.8,
+        "damage": 30,
+        "damageType": "Physical"
+      }
+    ],
+    "mechanics": [],
+    "lesson": "The archer may hit anyone, including you. Switch targets when an ally needs healing, then return to Aldric.",
+    "chapterId": "catacombs",
+    "isBoss": false
+  },
+  "watcher": {
+    "id": "watcher",
+    "name": "The Bone Watcher",
+    "maxHp": 1450,
+    "strike": {
+      "first": 2.4,
+      "every": 2.4,
+      "damage": 65,
+      "damageType": "Physical"
+    },
+    "adds": [
+      {
+        "first": 4,
+        "every": 4.5,
+        "damage": 34,
+        "damageType": "Physical"
+      },
+      {
+        "first": 6,
+        "every": 4.5,
+        "damage": 34,
+        "damageType": "Physical"
+      }
+    ],
+    "mechanics": [],
+    "lesson": "Two archers spread wounds across the party. Use Prayer of Healing when several allies are hurt.",
+    "chapterId": "catacombs",
+    "isBoss": false
+  },
+  "warden": {
+    "id": "warden",
+    "name": "The Hollow Warden",
+    "maxHp": 1700,
+    "strike": {
+      "first": 2.3,
+      "every": 5,
+      "damage": 70,
+      "damageType": "Physical"
+    },
+    "adds": [
+      {
+        "first": 4,
+        "every": 4.5,
+        "damage": 10,
+        "damageType": "Physical"
+      },
+      {
+        "first": 6,
+        "every": 4.5,
+        "damage": 10,
+        "damageType": "Physical"
+      }
+    ],
+    "mechanics": [],
+    "lesson": "The Warden hits Aldric hard but leaves a longer recovery window. Keep Penance ready while watching the archers.",
+    "chapterId": "catacombs",
+    "isBoss": true
+  },
+  "briar": {
+    "id": "briar",
+    "name": "Briarbound Ancient",
+    "maxHp": 1050,
+    "strike": {
+      "first": 2.5,
+      "every": 2.5,
+      "damage": 58,
+      "damageType": "Physical"
+    },
+    "appearance": "treant",
+    "color": "#89b39a",
+    "mechanics": [
+      {
+        "id": "spores",
+        "name": "Sporefall",
+        "first": 9,
+        "every": 12,
+        "damage": 58,
+        "warning": 3,
+        "target": "party",
+        "iconCategory": "aoe",
+        "color": "#b8c98a",
+        "hint": "Party-wide damage. Prepare Prayer of Healing, then use Atonement to support the weakest ally.",
+        "damageType": "Magic"
+      }
+    ],
+    "adds": [],
+    "lesson": "Let the first Sporefall land, then restore the party together. Keep Aldric steady between pulses.",
+    "chapterId": "wilds",
+    "isBoss": false
+  },
+  "moth": {
+    "id": "moth",
+    "name": "The Mourning Moth",
+    "maxHp": 1100,
+    "strike": {
+      "first": 1.7,
+      "every": 1.7,
+      "damage": 42,
+      "damageType": "Physical"
+    },
+    "appearance": "moth",
+    "color": "#b1a2c5",
+    "mechanics": [
+      {
+        "id": "dust",
+        "name": "Grave Dust",
+        "first": 8,
+        "every": 10,
+        "damage": 52,
+        "warning": 3,
+        "target": "party",
+        "iconCategory": "aoe",
+        "color": "#b8c98a",
+        "hint": "Party-wide damage. Prepare Prayer of Healing, then use Atonement to support the weakest ally.",
+        "damageType": "Magic"
+      }
+    ],
+    "adds": [],
+    "lesson": "Frequent light pulses reward efficient group healing. Avoid using Prayer for only one wounded ally.",
+    "chapterId": "wilds",
+    "isBoss": false
+  },
+  "boar": {
+    "id": "boar",
+    "name": "Gravetusk",
+    "maxHp": 1150,
+    "strike": {
+      "first": 3.2,
+      "every": 3.2,
+      "damage": 100,
+      "damageType": "Physical"
+    },
+    "appearance": "beast",
+    "color": "#b8a887",
+    "mechanics": [],
+    "adds": [
+      {
+        "name": "Thorn Slinger",
+        "first": 5,
+        "every": 4.5,
+        "damage": 36,
+        "target": "random",
+        "appearance": "archer",
+        "damageType": "Physical"
+      }
+    ],
+    "lesson": "Heavy, slow tusk blows give you time to prepare. Tend stray thorn wounds between tank heals.",
+    "chapterId": "wilds",
+    "isBoss": false
+  },
+  "choir": {
+    "id": "choir",
+    "name": "The Root Choir",
+    "maxHp": 1150,
+    "strike": {
+      "first": 2.3,
+      "every": 2.3,
+      "damage": 60,
+      "damageType": "Physical"
+    },
+    "appearance": "treant",
+    "color": "#7dafa1",
+    "mechanics": [
+      {
+        "id": "lament",
+        "name": "Root Lament",
+        "first": 11,
+        "every": 15,
+        "damage": 72,
+        "warning": 3,
+        "target": "party",
+        "iconCategory": "aoe",
+        "color": "#b8c98a",
+        "hint": "Party-wide damage. Prepare Prayer of Healing, then use Atonement to support the weakest ally.",
+        "damageType": "Magic"
+      }
+    ],
+    "adds": [
+      {
+        "name": "Sapling Guard",
+        "first": 4,
+        "every": 4,
+        "damage": 20,
+        "target": "tank",
+        "appearance": "melee",
+        "damageType": "Physical"
+      }
+    ],
+    "lesson": "The sapling also attacks Aldric. Save a group heal for the slower, stronger lament.",
+    "chapterId": "wilds",
+    "isBoss": false
+  },
+  "mire": {
+    "id": "mire",
+    "name": "Mirelight Widow",
+    "maxHp": 1150,
+    "strike": {
+      "first": 1.8,
+      "every": 1.8,
+      "damage": 46,
+      "damageType": "Physical"
+    },
+    "appearance": "spider",
+    "color": "#9aa875",
+    "mechanics": [
+      {
+        "id": "mist",
+        "name": "Mire Mist",
+        "first": 7,
+        "every": 11,
+        "damage": 52,
+        "warning": 3,
+        "target": "party",
+        "iconCategory": "aoe",
+        "color": "#b8c98a",
+        "hint": "Party-wide damage. Prepare Prayer of Healing, then use Atonement to support the weakest ally.",
+        "damageType": "Magic"
+      }
+    ],
+    "adds": [
+      {
+        "name": "Bog Wisp",
+        "first": 6,
+        "every": 5.5,
+        "damage": 17,
+        "target": "random",
+        "appearance": "wisp",
+        "damageType": "Magic"
+      }
+    ],
+    "lesson": "Mist and wisp shots create different wounds. Balance group recovery with focused healing.",
+    "chapterId": "wilds",
+    "isBoss": false
+  },
+  "matriarch": {
+    "id": "matriarch",
+    "name": "Elder of the Hollow Grove",
+    "maxHp": 1800,
+    "strike": {
+      "first": 3.3,
+      "every": 3.3,
+      "damage": 43,
+      "damageType": "Physical"
+    },
+    "appearance": "treant",
+    "color": "#a8ce8d",
+    "mechanics": [
+      {
+        "id": "bloom",
+        "name": "Hollow Bloom",
+        "first": 10,
+        "every": 13,
+        "damage": 55,
+        "warning": 3,
+        "target": "party",
+        "iconCategory": "aoe",
+        "color": "#b8c98a",
+        "hint": "Party-wide damage. Prepare Prayer of Healing, then use Atonement to support the weakest ally.",
+        "damageType": "Magic"
+      }
+    ],
+    "adds": [
+      {
+        "name": "Thorn Slinger",
+        "first": 5,
+        "every": 5,
+        "damage": 18,
+        "target": "random",
+        "appearance": "archer",
+        "damageType": "Physical"
+      }
+    ],
+    "lesson": "The Elder leaves a recovery window between tank strikes, then wounds the whole party with a stronger bloom. Prepare group healing before each pulse.",
+    "chapterId": "wilds",
+    "isBoss": true
+  },
+  "gatekeeper": {
+    "id": "gatekeeper",
+    "name": "The Cinder Gatekeeper",
+    "maxHp": 1250,
+    "strike": {
+      "first": 2.4,
+      "every": 2.4,
+      "damage": 62,
+      "damageType": "Physical"
+    },
+    "appearance": "knight",
+    "color": "#c69e7e",
+    "mechanics": [
+      {
+        "id": "cleave",
+        "name": "Forked Cleave",
+        "first": 9,
+        "every": 12,
+        "damage": 94,
+        "count": 2,
+        "warning": 3,
+        "target": "random",
+        "iconCategory": "physical",
+        "color": "#e4af7c",
+        "hint": "Hits 2 different living allies. Check the marked targets and heal the most vulnerable first.",
+        "damageType": "Physical"
+      }
+    ],
+    "adds": [],
+    "lesson": "Two allies are marked before the cleave. Restore the more vulnerable target first.",
+    "chapterId": "citadel",
+    "isBoss": false
+  },
+  "twins": {
+    "id": "twins",
+    "name": "Ashblade Captain",
+    "maxHp": 1400,
+    "strike": {
+      "first": 2.1,
+      "every": 2.1,
+      "damage": 58,
+      "damageType": "Physical"
+    },
+    "appearance": "knight",
+    "color": "#c48e80",
+    "mechanics": [
+      {
+        "id": "crosscut",
+        "name": "Crosscut",
+        "first": 8,
+        "every": 10,
+        "damage": 82,
+        "count": 2,
+        "warning": 3,
+        "target": "random",
+        "iconCategory": "physical",
+        "color": "#e4af7c",
+        "hint": "Hits 2 different living allies. Check the marked targets and heal the most vulnerable first.",
+        "damageType": "Physical"
+      }
+    ],
+    "adds": [
+      {
+        "name": "Ashblade Duelist",
+        "first": 5,
+        "every": 4.5,
+        "damage": 28,
+        "target": "random",
+        "appearance": "melee",
+        "damageType": "Physical"
+      }
+    ],
+    "lesson": "A duelist adds stray cuts between paired strikes. Keep your next heal flexible.",
+    "chapterId": "citadel",
+    "isBoss": false
+  },
+  "ravens": {
+    "id": "ravens",
+    "name": "The Cinderwing",
+    "maxHp": 1400,
+    "strike": {
+      "first": 2.2,
+      "every": 2.2,
+      "damage": 53,
+      "damageType": "Physical"
+    },
+    "appearance": "moth",
+    "color": "#b99783",
+    "mechanics": [
+      {
+        "id": "feathers",
+        "name": "Searing Feathers",
+        "first": 10,
+        "every": 14,
+        "damage": 100,
+        "count": 3,
+        "warning": 3,
+        "target": "random",
+        "iconCategory": "physical",
+        "color": "#e4af7c",
+        "hint": "Hits 3 different living allies. Check the marked targets and heal the most vulnerable first.",
+        "damageType": "Physical"
+      }
+    ],
+    "adds": [],
+    "lesson": "Three different allies take the volley. Prayer becomes efficient when all three need healing.",
+    "chapterId": "citadel",
+    "isBoss": false
+  },
+  "furnace": {
+    "id": "furnace",
+    "name": "Furnace Colossus",
+    "maxHp": 1450,
+    "strike": {
+      "first": 3,
+      "every": 3,
+      "damage": 80,
+      "damageType": "Physical"
+    },
+    "appearance": "knight",
+    "color": "#dcaa77",
+    "mechanics": [
+      {
+        "id": "brands",
+        "name": "Twin Brands",
+        "first": 9,
+        "every": 14,
+        "damage": 86,
+        "count": 2,
+        "warning": 3,
+        "target": "random",
+        "iconCategory": "physical",
+        "color": "#e4af7c",
+        "hint": "Hits 2 different living allies. Check the marked targets and heal the most vulnerable first.",
+        "damageType": "Physical"
+      },
+      {
+        "id": "furnace",
+        "name": "Furnace Breath",
+        "first": 18,
+        "every": 22,
+        "damage": 48,
+        "warning": 3,
+        "target": "party",
+        "iconCategory": "aoe",
+        "color": "#b8c98a",
+        "hint": "Party-wide damage. Prepare Prayer of Healing, then use Atonement to support the weakest ally.",
+        "damageType": "Magic"
+      }
+    ],
+    "adds": [],
+    "lesson": "Paired brands and occasional party damage overlap. Watch the warnings before committing to a long cast.",
+    "chapterId": "citadel",
+    "isBoss": false
+  },
+  "harrier": {
+    "id": "harrier",
+    "name": "The Ember Harrier",
+    "maxHp": 1300,
+    "strike": {
+      "first": 1.6,
+      "every": 1.6,
+      "damage": 45,
+      "damageType": "Physical"
+    },
+    "appearance": "beast",
+    "color": "#b99174",
+    "mechanics": [
+      {
+        "id": "pounce",
+        "name": "Divided Pounce",
+        "first": 7,
+        "every": 9,
+        "damage": 72,
+        "count": 2,
+        "warning": 3,
+        "target": "random",
+        "iconCategory": "physical",
+        "color": "#e4af7c",
+        "hint": "Hits 2 different living allies. Check the marked targets and heal the most vulnerable first.",
+        "damageType": "Physical"
+      }
+    ],
+    "adds": [],
+    "lesson": "Quick strikes leave short recovery windows. Flash Heal can stabilize a low ally before a larger heal.",
+    "chapterId": "citadel",
+    "isBoss": false
+  },
+  "tribunal": {
+    "id": "tribunal",
+    "name": "The Ashen Tribunal",
+    "maxHp": 1400,
+    "strike": {
+      "first": 2.2,
+      "every": 2.2,
+      "damage": 62,
+      "damageType": "Physical"
+    },
+    "appearance": "wraith",
+    "color": "#c6ac91",
+    "mechanics": [
+      {
+        "id": "judgment",
+        "name": "Threefold Judgment",
+        "first": 12,
+        "every": 16,
+        "damage": 110,
+        "count": 3,
+        "warning": 3,
+        "target": "random",
+        "iconCategory": "physical",
+        "color": "#e4af7c",
+        "hint": "Hits 3 different living allies. Check the marked targets and heal the most vulnerable first.",
+        "damageType": "Physical"
+      }
+    ],
+    "adds": [
+      {
+        "name": "Cinder Witness",
+        "first": 6,
+        "every": 6,
+        "damage": 26,
+        "target": "random",
+        "appearance": "wisp",
+        "damageType": "Magic"
+      }
+    ],
+    "lesson": "Three heavy wounds arrive together, followed by a long recovery window. Keep some mana in reserve.",
+    "chapterId": "citadel",
+    "isBoss": false
+  },
+  "bridge": {
+    "id": "bridge",
+    "name": "Ironwake Bulwark",
+    "maxHp": 1550,
+    "strike": {
+      "first": 3.2,
+      "every": 3.2,
+      "damage": 80,
+      "damageType": "Physical"
+    },
+    "appearance": "knight",
+    "color": "#aa9f8d",
+    "mechanics": [
+      {
+        "id": "shrapnel",
+        "name": "Shattered Iron",
+        "first": 10,
+        "every": 12,
+        "damage": 86,
+        "count": 2,
+        "warning": 3,
+        "target": "random",
+        "iconCategory": "physical",
+        "color": "#e4af7c",
+        "hint": "Hits 2 different living allies. Check the marked targets and heal the most vulnerable first.",
+        "damageType": "Physical"
+      }
+    ],
+    "adds": [
+      {
+        "name": "Shield Retainer",
+        "first": 4,
+        "every": 5,
+        "damage": 18,
+        "target": "tank",
+        "appearance": "melee",
+        "damageType": "Physical"
+      }
+    ],
+    "lesson": "Tank and split pressure compete for your next cast. Penance can buy time for group recovery.",
+    "chapterId": "citadel",
+    "isBoss": false
+  },
+  "bells": {
+    "id": "bells",
+    "name": "The Bellbound Shade",
+    "maxHp": 1500,
+    "strike": {
+      "first": 2.1,
+      "every": 2.1,
+      "damage": 54,
+      "damageType": "Physical"
+    },
+    "appearance": "wraith",
+    "color": "#ab9bbf",
+    "mechanics": [
+      {
+        "id": "echoes",
+        "name": "Broken Echoes",
+        "first": 8,
+        "every": 11,
+        "damage": 78,
+        "count": 3,
+        "warning": 3,
+        "target": "random",
+        "iconCategory": "physical",
+        "color": "#e4af7c",
+        "hint": "Hits 3 different living allies. Check the marked targets and heal the most vulnerable first.",
+        "damageType": "Physical"
+      },
+      {
+        "id": "toll",
+        "name": "Distant Toll",
+        "first": 19,
+        "every": 24,
+        "damage": 44,
+        "warning": 3,
+        "target": "party",
+        "iconCategory": "aoe",
+        "color": "#b8c98a",
+        "hint": "Party-wide damage. Prepare Prayer of Healing, then use Atonement to support the weakest ally.",
+        "damageType": "Magic"
+      }
+    ],
+    "adds": [],
+    "lesson": "Frequent split wounds occasionally meet a full-party toll. Keep Prayer ready for that overlap.",
+    "chapterId": "citadel",
+    "isBoss": false
+  },
+  "regent": {
+    "id": "regent",
+    "name": "The Cinder Regent",
+    "maxHp": 2200,
+    "strike": {
+      "first": 2.4,
+      "every": 2.4,
+      "damage": 50,
+      "damageType": "Physical"
+    },
+    "appearance": "knight",
+    "color": "#e2b27e",
+    "mechanics": [
+      {
+        "id": "decree",
+        "name": "Sundering Decree",
+        "first": 10,
+        "every": 14,
+        "damage": 65,
+        "count": 3,
+        "warning": 3,
+        "target": "random",
+        "iconCategory": "physical",
+        "color": "#e4af7c",
+        "hint": "Hits 3 different living allies. Check the marked targets and heal the most vulnerable first.",
+        "damageType": "Physical"
+      },
+      {
+        "id": "crown",
+        "name": "Crown of Embers",
+        "first": 20,
+        "every": 25,
+        "damage": 35,
+        "warning": 3,
+        "target": "party",
+        "iconCategory": "aoe",
+        "color": "#b8c98a",
+        "hint": "Party-wide damage. Prepare Prayer of Healing, then use Atonement to support the weakest ally.",
+        "damageType": "Magic"
+      }
+    ],
+    "adds": [
+      {
+        "name": "Regent Guard",
+        "first": 5,
+        "every": 6,
+        "damage": 16,
+        "target": "tank",
+        "appearance": "melee",
+        "damageType": "Physical"
+      }
+    ],
+    "lesson": "The Regent combines three-target decrees, tank pressure, and occasional AoE. Recover before the next overlap.",
+    "chapterId": "citadel",
+    "isBoss": true
+  },
+  "huntsman": {
+    "id": "huntsman",
+    "name": "The Thorn Huntsman",
+    "maxHp": 1700,
+    "strike": {
+      "first": 2.2,
+      "every": 2.2,
+      "damage": 66,
+      "damageType": "Physical"
+    },
+    "appearance": "vampire",
+    "color": "#b98799",
+    "mechanics": [
+      {
+        "id": "barb",
+        "name": "Barbed Arrow",
+        "first": 8,
+        "every": 14,
+        "count": 1,
+        "warning": 3,
+        "target": "random",
+        "iconCategory": "bleed",
+        "color": "#d78d9d",
+        "dot": {
+          "damage": 25,
+          "ticks": 5,
+          "interval": 2,
+          "damageType": "Bleed"
+        },
+        "hint": "One random living ally will bleed for 10s. Heal through it; there is no dispel."
+      }
+    ],
+    "adds": [],
+    "lesson": "A single ally bleeds for ten seconds. Watch the remaining duration and heal before the next tick.",
+    "chapterId": "thorns",
+    "isBoss": false
+  },
+  "hounds": {
+    "id": "hounds",
+    "name": "The Sanguine Hound",
+    "maxHp": 1800,
+    "strike": {
+      "first": 2,
+      "every": 2,
+      "damage": 58,
+      "damageType": "Physical"
+    },
+    "appearance": "beast",
+    "color": "#b78089",
+    "mechanics": [
+      {
+        "id": "maul",
+        "name": "Rending Maul",
+        "first": 9,
+        "every": 14,
+        "count": 1,
+        "warning": 3,
+        "target": "tank",
+        "iconCategory": "bleed",
+        "color": "#d78d9d",
+        "dot": {
+          "damage": 28,
+          "ticks": 4,
+          "interval": 2,
+          "damageType": "Bleed"
+        },
+        "hint": "Aldric will bleed for 8s. Heal through it; there is no dispel."
+      }
+    ],
+    "adds": [
+      {
+        "name": "Hunting Whelp",
+        "first": 5,
+        "every": 4.5,
+        "damage": 29,
+        "target": "random",
+        "appearance": "melee",
+        "damageType": "Physical"
+      }
+    ],
+    "lesson": "Aldric takes a heavy bleed while the whelp hunts other allies. Keep strong single-target healing available.",
+    "chapterId": "thorns",
+    "isBoss": false
+  },
+  "roses": {
+    "id": "roses",
+    "name": "The Weeping Rose",
+    "maxHp": 1800,
+    "strike": {
+      "first": 2.2,
+      "every": 2.2,
+      "damage": 56,
+      "damageType": "Physical"
+    },
+    "appearance": "treant",
+    "color": "#c28ca7",
+    "mechanics": [
+      {
+        "id": "thorns",
+        "name": "Rain of Thorns",
+        "first": 9,
+        "every": 16,
+        "count": 3,
+        "warning": 3,
+        "target": "random",
+        "iconCategory": "bleed",
+        "color": "#d78d9d",
+        "dot": {
+          "damage": 14,
+          "ticks": 6,
+          "interval": 2,
+          "damageType": "Bleed"
+        },
+        "hint": "3 random living allies will bleed for 12s. Heal through it; there is no dispel."
+      }
+    ],
+    "adds": [],
+    "lesson": "Three lighter bleeds make sustained group recovery efficient. They must be healed through, not dispelled.",
+    "chapterId": "thorns",
+    "isBoss": false
+  },
+  "chapel": {
+    "id": "chapel",
+    "name": "The Crimson Cantor",
+    "maxHp": 2500,
+    "strike": {
+      "first": 2.3,
+      "every": 2.3,
+      "damage": 71,
+      "damageType": "Physical"
+    },
+    "appearance": "wraith",
+    "color": "#bf8b9e",
+    "mechanics": [
+      {
+        "id": "refrain",
+        "name": "Crimson Refrain",
+        "first": 8,
+        "every": 15,
+        "count": 2,
+        "warning": 3,
+        "target": "random",
+        "iconCategory": "bleed",
+        "color": "#d78d9d",
+        "dot": {
+          "damage": 22,
+          "ticks": 5,
+          "interval": 2,
+          "damageType": "Bleed"
+        },
+        "hint": "2 random living allies will bleed for 10s. Heal through it; there is no dispel."
+      },
+      {
+        "id": "hymn",
+        "name": "Grieving Hymn",
+        "first": 17,
+        "every": 21,
+        "damage": 60,
+        "warning": 3,
+        "target": "party",
+        "iconCategory": "aoe",
+        "color": "#b8c98a",
+        "hint": "Party-wide damage. Prepare Prayer of Healing, then use Atonement to support the weakest ally.",
+        "damageType": "Magic"
+      }
+    ],
+    "adds": [],
+    "lesson": "Two long wounds may still be ticking when the hymn lands. Top up vulnerable allies ahead of it.",
+    "chapterId": "thorns",
+    "isBoss": false
+  },
+  "leech": {
+    "id": "leech",
+    "name": "The Vein Weaver",
+    "maxHp": 2350,
+    "strike": {
+      "first": 1.8,
+      "every": 1.8,
+      "damage": 56,
+      "damageType": "Physical"
+    },
+    "appearance": "spider",
+    "color": "#af879f",
+    "mechanics": [
+      {
+        "id": "threads",
+        "name": "Crimson Threads",
+        "first": 7,
+        "every": 10,
+        "count": 1,
+        "warning": 3,
+        "target": "random",
+        "iconCategory": "bleed",
+        "color": "#d78d9d",
+        "dot": {
+          "damage": 18,
+          "ticks": 6,
+          "interval": 1,
+          "damageType": "Bleed"
+        },
+        "hint": "One random living ally will bleed for 6s. Heal through it; there is no dispel."
+      },
+      {
+        "id": "fangs",
+        "name": "Forked Fangs",
+        "first": 13,
+        "every": 16,
+        "damage": 92,
+        "count": 2,
+        "warning": 3,
+        "target": "random",
+        "iconCategory": "physical",
+        "color": "#e4af7c",
+        "hint": "Hits 2 different living allies. Check the marked targets and heal the most vulnerable first.",
+        "damageType": "Physical"
+      }
+    ],
+    "adds": [],
+    "lesson": "Short, rapid ticks demand prompt attention. Fangs may wound two other allies during the bleed.",
+    "chapterId": "thorns",
+    "isBoss": false
+  },
+  "procession": {
+    "id": "procession",
+    "name": "The Sorrow Bearer",
+    "maxHp": 2350,
+    "strike": {
+      "first": 2.3,
+      "every": 2.3,
+      "damage": 64,
+      "damageType": "Physical"
+    },
+    "appearance": "vampire",
+    "color": "#aa8399",
+    "mechanics": [
+      {
+        "id": "vigil",
+        "name": "Endless Vigil",
+        "first": 8,
+        "every": 18,
+        "count": 2,
+        "warning": 3,
+        "target": "random",
+        "iconCategory": "bleed",
+        "color": "#d78d9d",
+        "dot": {
+          "damage": 23,
+          "ticks": 5,
+          "interval": 3,
+          "damageType": "Bleed"
+        },
+        "hint": "2 random living allies will bleed for 15s. Heal through it; there is no dispel."
+      }
+    ],
+    "adds": [
+      {
+        "name": "Mourning Acolyte",
+        "first": 6,
+        "every": 5,
+        "damage": 34,
+        "target": "random",
+        "appearance": "wisp",
+        "damageType": "Magic"
+      }
+    ],
+    "lesson": "Long, slow bleeds continue between other attacks. Use the three-second tick rhythm to plan recovery.",
+    "chapterId": "thorns",
+    "isBoss": false
+  },
+  "garden": {
+    "id": "garden",
+    "name": "The Briar Executioner",
+    "maxHp": 2800,
+    "strike": {
+      "first": 2.7,
+      "every": 2.7,
+      "damage": 92,
+      "damageType": "Physical"
+    },
+    "appearance": "knight",
+    "color": "#b9998b",
+    "mechanics": [
+      {
+        "id": "sever",
+        "name": "Severing Thorns",
+        "first": 9,
+        "every": 14,
+        "count": 2,
+        "warning": 3,
+        "target": "random",
+        "iconCategory": "bleed",
+        "color": "#d78d9d",
+        "dot": {
+          "damage": 23,
+          "ticks": 5,
+          "interval": 2,
+          "damageType": "Bleed"
+        },
+        "hint": "2 random living allies will bleed for 10s. Heal through it; there is no dispel."
+      },
+      {
+        "id": "shears",
+        "name": "Twin Shears",
+        "first": 16,
+        "every": 17,
+        "damage": 98,
+        "count": 2,
+        "warning": 3,
+        "target": "random",
+        "iconCategory": "physical",
+        "color": "#e4af7c",
+        "hint": "Hits 2 different living allies. Check the marked targets and heal the most vulnerable first.",
+        "damageType": "Physical"
+      }
+    ],
+    "adds": [],
+    "lesson": "Direct cuts can hit while bleeds persist. Prefer the ally with the lowest health and the most incoming damage.",
+    "chapterId": "thorns",
+    "isBoss": false
+  },
+  "cryptkeeper": {
+    "id": "cryptkeeper",
+    "name": "The Bloodroot Keeper",
+    "maxHp": 2800,
+    "strike": {
+      "first": 2,
+      "every": 2,
+      "damage": 65,
+      "damageType": "Physical"
+    },
+    "appearance": "treant",
+    "color": "#b39198",
+    "mechanics": [
+      {
+        "id": "roots",
+        "name": "Bloodroot Bind",
+        "first": 8,
+        "every": 15,
+        "count": 3,
+        "warning": 3,
+        "target": "random",
+        "iconCategory": "bleed",
+        "color": "#d78d9d",
+        "dot": {
+          "damage": 16,
+          "ticks": 6,
+          "interval": 2,
+          "damageType": "Bleed"
+        },
+        "hint": "3 random living allies will bleed for 12s. Heal through it; there is no dispel."
+      },
+      {
+        "id": "petals",
+        "name": "Falling Petals",
+        "first": 18,
+        "every": 21,
+        "damage": 58,
+        "warning": 3,
+        "target": "party",
+        "iconCategory": "aoe",
+        "color": "#b8c98a",
+        "hint": "Party-wide damage. Prepare Prayer of Healing, then use Atonement to support the weakest ally.",
+        "damageType": "Magic"
+      }
+    ],
+    "adds": [
+      {
+        "name": "Briar Guard",
+        "first": 5,
+        "every": 5,
+        "damage": 25,
+        "target": "tank",
+        "appearance": "melee",
+        "damageType": "Physical"
+      }
+    ],
+    "lesson": "Spread bleeds meet occasional AoE while a guard pressures Aldric. Prepare group healing for the overlap.",
+    "chapterId": "thorns",
+    "isBoss": false
+  },
+  "duchess": {
+    "id": "duchess",
+    "name": "The Thornveiled Duchess",
+    "maxHp": 3600,
+    "strike": {
+      "first": 2.4,
+      "every": 2.4,
+      "damage": 60,
+      "damageType": "Physical"
+    },
+    "appearance": "vampire",
+    "color": "#dfa0b3",
+    "mechanics": [
+      {
+        "id": "veil",
+        "name": "The Bleeding Veil",
+        "first": 9,
+        "every": 17,
+        "count": 2,
+        "warning": 3,
+        "target": "random",
+        "iconCategory": "bleed",
+        "color": "#d78d9d",
+        "dot": {
+          "damage": 16,
+          "ticks": 6,
+          "interval": 2,
+          "damageType": "Bleed"
+        },
+        "hint": "2 random living allies will bleed for 12s. Heal through it; there is no dispel."
+      },
+      {
+        "id": "court",
+        "name": "Cruel Court",
+        "first": 16,
+        "every": 19,
+        "damage": 70,
+        "count": 3,
+        "warning": 3,
+        "target": "random",
+        "iconCategory": "physical",
+        "color": "#e4af7c",
+        "hint": "Hits 3 different living allies. Check the marked targets and heal the most vulnerable first.",
+        "damageType": "Physical"
+      },
+      {
+        "id": "requiem",
+        "name": "Scarlet Requiem",
+        "first": 25,
+        "every": 29,
+        "damage": 40,
+        "warning": 3,
+        "target": "party",
+        "iconCategory": "aoe",
+        "color": "#b8c98a",
+        "hint": "Party-wide damage. Prepare Prayer of Healing, then use Atonement to support the weakest ally.",
+        "damageType": "Magic"
+      }
+    ],
+    "adds": [
+      {
+        "name": "Thornbound Attendant",
+        "first": 6,
+        "every": 6,
+        "damage": 25,
+        "target": "random",
+        "appearance": "wisp",
+        "damageType": "Magic"
+      }
+    ],
+    "lesson": "Watch bleed durations, answer the court’s split wounds, and prepare for the requiem. Keep yourself and Aldric alive.",
+    "chapterId": "thorns",
+    "isBoss": true
+  }
+}
