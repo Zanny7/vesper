@@ -1,5 +1,5 @@
 import { CHAPTERS, CONFIG } from './data.js';
-import { nodeState, restoreProgress, chapterComplete } from './progression.js';
+import { nodeState, restoreProgress, chapterComplete, awardVisit } from './progression.js';
 import { adjustedResource, resourceKey } from './stats.js';
 
 const storageKey = 'vesper-chapter-runs-v1';
@@ -76,9 +76,18 @@ export class ChapterRuns {
   }
   begin(chapter, node, party, historicallyComplete = false) {
     const run = this.get(chapter, party, historicallyComplete);
-    if (encounterState(chapter, run, node) !== 'available') return null;
+    if (!node.encounter || encounterState(chapter, run, node) !== 'available') return null;
     run.inEncounter = node.id; this.save();
     return structuredClone(run.resources);
+  }
+  visit(chapter, node, party, historicallyComplete = false) {
+    const run = this.get(chapter, party, historicallyComplete);
+    const completed = new Set(run.completed);
+    if (encounterState(chapter, run, node) !== 'available' || !awardVisit(completed, node, chapter.nodes)) return false;
+    // Utility visits are distinct from victories: no combat recovery, loot or
+    // talent awards. Future authored utility effects belong in a dedicated rule.
+    run.completed = [...completed];
+    this.save(); return true;
   }
   finish(chapter, node, game) {
     const run = this.runs[chapter.id];

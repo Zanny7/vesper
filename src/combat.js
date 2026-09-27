@@ -26,6 +26,7 @@ export class Combat {
     this.mechanics = encounter.mechanics.map(m => ({ ...m, next: m.first, warned: false }));
   }
   get healer() { return this.party.find(p => p.label === 'HEALER'); }
+  get enrageSeconds() { return this.encounter.enrageSeconds ?? CONFIG.enrage; }
   get maxMana() { return this.healer?.maxMana ?? CONFIG.mana; }
   get spellPower() { return this.healer?.spellPower || 0; }
   resources() {
@@ -747,8 +748,9 @@ export class Combat {
       if (this.time >= m.next) { this.resolveMechanic(m); m.next += m.every; m.warned = false; delete m.targets; }
     }
     const healer = this.party.find(p => p.label === 'HEALER');
-    if (this.party[0].hp <= 0 || healer?.hp <= 0 || this.party.filter(p => p.hp > 0).length < 3 || this.time >= CONFIG.enrage) {
-      this.status = 'defeat'; this.cast = null; this.log(this.time >= CONFIG.enrage ? 'The sanctum is consumed. Enrage.' : 'The party has fallen.', 'danger'); this.emit('end');
+    const enrage = this.enrageSeconds;
+    if (this.party[0].hp <= 0 || healer?.hp <= 0 || this.party.filter(p => p.hp > 0).length < 3 || this.time >= enrage) {
+      this.status = 'defeat'; this.cast = null; this.log(this.time >= enrage ? 'The sanctum is consumed. Enrage.' : 'The party has fallen.', 'danger'); this.emit('end');
     } else if (this.boss.hp <= 0) { this.status = 'victory'; this.cast = null; this.log(`${this.encounter.name} is defeated.${this.adds.length ? ' The remaining enemies flee.' : ''}`, 'heal'); this.emit('end'); }
     if (['victory', 'defeat'].includes(this.status)) this.clearShamanEffects();
   }

@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { CHAPTERS, ALL_ADVENTURES, CHAPTER_ENCOUNTERS, PARTY, CONFIG } from '../src/data.js';
 import { Combat } from '../src/combat.js';
-import { restoreCampaign, chapterUnlocked, nodeState, chapterComplete, awardVictory } from '../src/progression.js';
+import { restoreCampaign, chapterUnlocked, nodeState, chapterComplete, awardVictory, awardVisit } from '../src/progression.js';
 
 const advance = (g, seconds) => { for (let i=0;i<Math.ceil(seconds/CONFIG.step);i++) g.step(); };
 const seeded = seed => () => { seed = (1664525*seed+1013904223) >>> 0; return seed/4294967296; };
@@ -22,13 +22,13 @@ function triage(g) {
 
 test('every chapter graph has one reachable boss, unique nodes and valid encounters', () => {
   assert.equal(new Set(ALL_ADVENTURES.map(n=>n.id)).size,ALL_ADVENTURES.length);
-  assert.deepEqual(CHAPTERS.map(c=>c.nodes.length),[4,6,9,9]);
+  assert.deepEqual(CHAPTERS.map(c=>c.nodes.length),[4,6,9,9,10,12,14,15]);
   for(const chapter of CHAPTERS) {
     const nodes=chapter.nodes,bosses=nodes.filter(n=>n.kind==='boss');
     assert.equal(bosses.length,1);
     assert.equal(nodes.filter(n=>!n.from.length).length,1);
     for(const node of nodes) {
-      assert.ok(CHAPTER_ENCOUNTERS[node.encounter],node.id);
+      assert.ok(node.encounter ? CHAPTER_ENCOUNTERS[node.encounter] : node.utility?.type,node.id);
       for(const id of node.from) {
         const parent=nodes.find(n=>n.id===id);
         assert.ok(parent,node.id);
@@ -48,7 +48,8 @@ test('every alternative route unlocks its boss without clearing sibling routes',
     for(const node of route) {
       assert.equal(nodeState(node,completed),'available');
       assert.equal(chapterComplete(completed,chapter.nodes),false);
-      assert.equal(awardVictory(completed,node.id,{status:'victory',encounter:CHAPTER_ENCOUNTERS[node.encounter]},chapter.nodes),true);
+      assert.equal(node.encounter ? awardVictory(completed,node.id,{status:'victory',encounter:CHAPTER_ENCOUNTERS[node.encounter]},chapter.nodes)
+        : awardVisit(completed,node,chapter.nodes),true);
     }
     assert.equal(chapterComplete(completed,chapter.nodes),true);
     assert.equal(completed.size,chapter.routeLength);
@@ -77,7 +78,7 @@ test('chapter lessons and encounter compositions vary and build on earlier press
   assert.ok(fights(CHAPTERS[1]).filter(e=>e.mechanics.some(m=>m.target==='party')).length>=4);
   assert.ok(fights(CHAPTERS[2]).every(e=>e.mechanics.some(m=>m.target==='random' && [2,3].includes(m.count))));
   assert.ok(fights(CHAPTERS[3]).every(e=>e.mechanics.some(m=>m.dot)));
-  for(const chapter of CHAPTERS.slice(1)) {
+  for(const chapter of CHAPTERS.slice(1).filter(chapter => chapter.contentStatus !== 'shell')) {
     const encounters=fights(chapter);
     assert.ok(new Set(encounters.map(e=>e.appearance)).size>=3);
     assert.ok(encounters.some(e=>e.adds.length) && encounters.some(e=>!e.adds.length));
@@ -123,7 +124,7 @@ test('later chapter openers are manageable with fresh resources', () => {
   // Later route encounters are tuned as progression walls. The first normal
   // encounter remains individually beatable before route attrition begins.
   const legacyParty = PARTY.map(p => p.label === 'HEALER' ? { ...p, maxMana: 1200, manaRegen: 4 } : p);
-  for(const chapter of CHAPTERS.slice(1)) for(const node of chapter.nodes.filter(node => node.kind === 'normal' && node.from.length === 0)) {
+  for(const chapter of CHAPTERS.slice(1).filter(chapter => chapter.contentStatus !== 'shell')) for(const node of chapter.nodes.filter(node => node.kind === 'normal' && node.from.length === 0)) {
     const encounter=CHAPTER_ENCOUNTERS[node.encounter];
     for(let seed=1;seed<=20;seed++) {
       const g=new Combat(encounter,seeded(seed),legacyParty);g.start();

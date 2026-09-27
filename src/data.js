@@ -377,9 +377,56 @@ export const CHAPTERS = [
   { id: 'citadel', number: 'Chapter 3', name: 'The Ember Citadel', nodes: CITADEL, routeLength: 6, description: 'Choose your way through the fallen citadel. Balance split wounds across several allies.' },
   { id: 'thorns', number: 'Chapter 4', name: 'The Thornveiled Court', nodes: THORNS, routeLength: 6, description: 'Enter a court of lingering wounds. Heal through bleeds while answering familiar threats.' },
 ];
+// Eras own navigation and item provenance. Add chapter groups and colors here
+// when extending the campaign; UI code does not infer eras from item IDs.
+export const ERAS = [
+  { id: 'era-1', name: 'Era I', chapters: ['catacombs', 'wilds', 'citadel', 'thorns'], itemBorder: '#aab2b9' },
+  { id: 'era-2', name: 'Era II', chapters: ['reach', 'tides', 'spire', 'eclipse'], itemBorder: '#78be87' },
+];
+// Content shells use existing combat primitives with provisional pressure.
+// Separate IDs keep old encounter tuning and reward ownership intact.
+const ERA_II_SHELLS = [
+  { id: 'reach', name: 'The Emerald Reach', stages: [1, 3, 1, 2, 2, 1], description: 'Cross the broken frontier. Choose shelter, a guarded trail, or an optional elite challenge.', places: ['Verdant Gate', 'Mossway', 'Emerald Sentinel', 'Dawn Shrine', 'Root Crossing', 'Fern Hollow', 'Lost Watch', 'Briar Steps', 'Greenward', 'Heart of the Reach'] },
+  { id: 'tides', name: 'The Drowned Sanctuaries', stages: [1, 2, 1, 3, 2, 2, 1], description: 'Follow the receding tide through sunken sanctuaries. Weigh safer paths against deeper danger.', places: ['Salt Gate', 'Reed Passage', 'Drowned Walk', 'Tide Crossing', 'Shallow Way', 'Tideguard', 'Moonwell Shrine', 'Sunken Choir', 'Pearl Vault', 'Wave Steps', 'Flood Watch', 'Throne Below'] },
+  { id: 'spire', name: 'The Glassbound Spire', stages: [1, 2, 2, 1, 3, 2, 2, 1], description: 'Climb a fractured spire. Longer routes make each wound and each decision matter.', places: ['Glass Gate', 'Prism Walk', 'Lower Ascent', 'Mirror Hall', 'Crystal Watch', 'Spire Crossing', 'Clear Passage', 'Prism Warden', 'Starlight Shrine', 'Shard Gallery', 'Hollow Lens', 'Crown Steps', 'High Watch', 'The Glass Crown'] },
+  { id: 'eclipse', name: 'The Eclipsed Dominion', stages: [1, 2, 2, 1, 3, 2, 2, 1, 1], description: 'Enter the last light of a fallen dominion. Carry your party through the longest vigil yet.', places: ['Dusk Gate', 'Umbral Walk', 'Fading Path', 'Night Gallery', 'Twilight Watch', 'Eclipse Crossing', 'Quiet Passage', 'Umbral Knight', 'Lastlight Shrine', 'Shadow Choir', 'Hollow Moon', 'Crown Walk', 'Black Watch', 'Final Approach', 'The Eclipsed Throne'] },
+];
+for (const [index, shell] of ERA_II_SHELLS.entries()) {
+  let offset = 0, previous = [];
+  const nodes = shell.stages.flatMap((size, stage) => {
+    const group = Array.from({ length: size }, (_, lane) => {
+      const id = `${shell.id}-${offset + lane + 1}`, name = shell.places[offset + lane];
+      const kind = stage === shell.stages.length - 1 ? 'boss' : size === 3 && lane === 1 ? 'elite' : size === 3 && lane === 2 ? 'shrine' : 'normal';
+      // Equal lanes stay parallel; a three-way fork narrows through its middle
+      // lane, preserving readable edges without losing any route to the boss.
+      const parents = previous.length === size && size > 1 ? [previous[lane]]
+        : previous.length === 3 && size === 2 ? previous.filter((_, p) => p === 1 || p === lane * 2) : previous;
+      const result = node(id, name, kind === 'shrine' ? null : id, parents.map(n => n.id),
+        6 + stage * 88 / (shell.stages.length - 1), size === 1 ? 50 : size === 2 ? 25 + lane * 50 : 16 + lane * 34,
+        kind === 'shrine' ? 'A quiet light marks a sanctuary along this route. Pass through to continue your journey.'
+          : kind === 'elite' ? 'An optional guardian holds the dangerous path. Prepare for heavier pressure.' : `The path leads through ${name.toLowerCase()}.`, kind);
+      if (kind === 'shrine') result.utility = { type: 'shrine' };
+      else {
+        const template = CHAPTER_ENCOUNTERS[kind === 'boss' ? 'duchess' : kind === 'elite' ? 'chapel' : lane === 0 ? 'huntsman' : 'roses'];
+        CHAPTER_ENCOUNTERS[id] = { ...structuredClone(template), id, name, contentStatus: 'shell' };
+      }
+      return result;
+    });
+    offset += size; previous = group; return group;
+  });
+  CHAPTERS.push({ id: shell.id, number: `Chapter ${index + 5}`, name: shell.name, description: shell.description, nodes,
+    routeLength: shell.stages.length, contentStatus: 'shell', talentMilestones: false,
+    // Affix definitions can be layered onto these chapters by later content BATs.
+    modifiers: [], encounterDurationTarget: [90, 180] });
+}
+for (const [index, chapter] of CHAPTERS.entries()) {
+  chapter.ordinal = index + 1;
+  chapter.eraId = ERAS.find(era => era.chapters.includes(chapter.id)).id;
+}
 export const ALL_ADVENTURES = CHAPTERS.flatMap(chapter => chapter.nodes);
 // Presentation metadata travels with an encounter; power/timing stays above.
 for (const chapter of CHAPTERS) for (const node of chapter.nodes) {
+  if (!node.encounter) continue;
   Object.assign(CHAPTER_ENCOUNTERS[node.encounter], { chapterId: chapter.id, isBoss: node.kind === 'boss' });
 }
 // Types are explicit on every runtime damage source. No damage/timing rebalance.

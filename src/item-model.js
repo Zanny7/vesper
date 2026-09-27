@@ -1,4 +1,4 @@
-import { GEAR, SLOTS, HEALERS } from './data.js';
+import { GEAR, SLOTS, HEALERS, CHAPTERS } from './data.js';
 
 export const ITEM_STATS = {
   healer: ['maxMana', 'manaRegen', 'spellPower', 'haste', 'crit'],
@@ -33,7 +33,7 @@ export function validateCatalogue(items) {
       if (!['rogue', 'mage', 'ranger'].includes(item.owner) || SLOTS[item.owner][0] !== item.slot) fail('invalid weapon owner');
     } else if (item.owner !== undefined) fail('shared items must not have a character owner');
     if (!Number.isInteger(item.itemLevel) || item.itemLevel < 1) fail('invalid item level');
-    if (![1, 2, 3, 4].includes(item.chapter)) fail('invalid chapter');
+    if (!CHAPTERS.some(chapter => chapter.ordinal === item.chapter)) fail('invalid chapter');
     for (const key of ['name', 'icon']) if (typeof item[key] !== 'string' || !item[key].trim()) fail(`missing ${key}`);
     if (item.flavor !== undefined && typeof item.flavor !== 'string') fail('invalid flavor');
     if (!item.stats || Array.isArray(item.stats) || !Object.keys(item.stats).length) fail('missing stats');

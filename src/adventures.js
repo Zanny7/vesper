@@ -6,7 +6,10 @@ import { chapterSwitchCopy, createChapterSwitch } from './chapter-switch.js';
 import { encounterLootMarkup } from './loot-presentation.js';
 import { mechanicCategory, mechanicIcon } from './mechanic-icons.js';
 import { formatCombatNumber } from './stats.js';
+import { eraForChapter } from './eras.js';
 export { nodeState, chapterComplete, restoreProgress, awardVictory } from './progression.js';
+const nodeLabel = node => ({ boss: 'Chapter Boss', elite: 'Optional Elite', shrine: 'Shrine' }[node.kind] || 'Encounter');
+const nodeSymbol = node => ({ boss: '♜', elite: '⚔', shrine: '✧' }[node.kind] || '◇');
 
 export function chapterManaText(run) {
   // Unstarted previews have no persisted chapter resource state to display.
@@ -48,6 +51,13 @@ export function setupAdventures({ startEncounter, onProgress, onRunChange, runs,
   let routes = [], buttons = new Map();
   let active = null;
   let runCompleted = new Set();
+  const mobileMap = matchMedia('(max-width: 600px)');
+  function sizeMap() {
+    const vertical = mobileMap.matches && chapter.id !== 'catacombs';
+    map.style.setProperty('--map-min-width', `${minimumMapExtent(nodes, vertical ? 'y' : 'x', vertical ? 96 : 132, 0)}px`);
+    map.style.setProperty('--map-min-height', `${minimumMapExtent(nodes, vertical ? 'x' : 'y', 160, 16)}px`);
+  }
+  mobileMap.addEventListener('change', () => { sizeMap(); requestAnimationFrame(drawRoutes); });
   const currentRun = () => runs.get(chapter, getParty(), chapterComplete(completed, nodes));
   const chapterSwitch = createChapterSwitch({ runs, getParty, onStart: () => {
     active = null; selected = nodes[0].id; render(); onRunChange?.(completed);
@@ -107,11 +117,11 @@ export function setupAdventures({ startEncounter, onProgress, onRunChange, runs,
     runCompleted = new Set(run.completed);
     selected = nodes.find(node => encounterState(chapter, run, node) === 'available')?.id || (run.status === 'pending' ? nodes[0].id : nodes.at(-1).id);
     $('#chapter-title').textContent = chapter.name;
-    $('#chapter-view .journey-heading .eyebrow').textContent = `${chapter.number.toUpperCase()} · YOUR NEXT VIGIL`;
-    $('#chapter-view .journey-intro').textContent = chapter.id === 'catacombs' ? 'Four encounters. One descent. Keep their light alive.' : `${nodes.length} encounters · ${chapter.routeLength} fights along a route · Choose either path at each fork.`;
+    $('#chapter-view .journey-heading .eyebrow').textContent = `${eraForChapter(chapter).name.toUpperCase()} · ${chapter.number.toUpperCase()} · YOUR NEXT VIGIL`;
+    $('#chapter-view .journey-intro').textContent = chapter.id === 'catacombs' ? 'Four encounters. One descent. Keep their light alive.' : `${nodes.length} nodes · ${chapter.routeLength} stops along a route · Choose your path at each fork.`;
     map.classList.toggle('branching', chapter.id !== 'catacombs');
-    map.style.setProperty('--map-min-width', `${minimumMapExtent(nodes, 'x', 132, 0)}px`);
-    map.style.setProperty('--map-min-height', `${minimumMapExtent(nodes, 'y', 160, 16)}px`);
+    sizeMap();
+    map.closest('.map-scroll').scrollTo(0, 0);
     map.closest('.journey').setAttribute('aria-label', `${chapter.number} progression map`);
     map.setAttribute('aria-label', `${chapter.number} encounter routes`);
     routes = nodes.flatMap(node => node.from.map(id => ({ from: id, to: node.id })));
@@ -120,7 +130,7 @@ export function setupAdventures({ startEncounter, onProgress, onRunChange, runs,
       const button = document.createElement('button');
       button.className = `adventure-node ${node.kind}`;
       button.style.setProperty('--x', `${node.x}%`); button.style.setProperty('--y', `${node.y}%`);
-      button.innerHTML = `<span class="node-kind">${String(index + 1).padStart(2, '0')} · ${node.kind === 'boss' ? 'CHAPTER BOSS' : 'ENCOUNTER'}</span><span class="node-symbol" aria-hidden="true">${node.kind === 'boss' ? '♜' : '◇'}</span><strong>${node.name}</strong>`;
+      button.innerHTML = `<span class="node-kind">${String(index + 1).padStart(2, '0')} · ${nodeLabel(node).toUpperCase()}</span><span class="node-symbol" aria-hidden="true">${nodeSymbol(node)}</span><strong>${node.name}</strong>`;
       button.addEventListener('click', () => { selected = node.id; render(); });
       map.append(button);
       return [node.id, button];
@@ -136,11 +146,17 @@ export function setupAdventures({ startEncounter, onProgress, onRunChange, runs,
     if (!bounds.width || !bounds.height) return;
     const svg = map.querySelector('svg');
     svg.setAttribute('viewBox', `0 0 ${bounds.width} ${bounds.height}`);
-    const vertical = chapter.id === 'catacombs' && matchMedia('(max-width: 600px)').matches;
+    const vertical = mobileMap.matches;
     routes.forEach((route, index) => {
       const from = buttons.get(route.from), to = buttons.get(route.to);
       const a = from.querySelector('.node-symbol').getBoundingClientRect();
       const b = to.querySelector('.node-symbol').getBoundingClientRect();
+      if (vertical && chapter.id !== 'catacombs') {
+        const x1 = a.left + a.width / 2 - bounds.left, x2 = b.left + b.width / 2 - bounds.left;
+        const y1 = a.bottom - bounds.top, y2 = b.top - bounds.top, bend = (y1 + y2) / 2;
+        svg.children[index].setAttribute('d', `M ${x1} ${y1} C ${x1} ${bend}, ${x2} ${bend}, ${x2} ${y2}`);
+        return;
+      }
       const y1 = a.top + a.height / 2 - bounds.top, y2 = b.top + b.height / 2 - bounds.top;
       let x1 = a.right - bounds.left, x2 = b.left - bounds.left;
       let bend = (x1 + x2) / 2;
@@ -169,41 +185,56 @@ export function setupAdventures({ startEncounter, onProgress, onRunChange, runs,
       const button = buttons.get(node.id), state = encounterState(chapter, run, node);
       button.dataset.state = state;
       button.setAttribute('aria-pressed', String(selected === node.id));
-      button.querySelector('.node-symbol').textContent = state === 'locked' ? '⊘' : node.kind === 'boss' ? '♜' : '◇';
+      button.querySelector('.node-symbol').textContent = state === 'locked' ? '⊘' : nodeSymbol(node);
       const stateDescription = state === 'completed' ? 'Cleared this run' : state === 'available' ? chapter.id === 'catacombs' ? 'Current encounter' : 'Available route' : 'Locked';
       button.setAttribute('aria-label', `${node.kind === 'boss' ? 'Chapter boss' : 'Encounter'}: ${node.name}. ${stateDescription}`);
     }
     for (const path of map.querySelectorAll('[data-route]')) path.classList.toggle('cleared', runCompleted.has(path.dataset.route));
-    const node = nodes.find(node => node.id === selected), encounter = CHAPTER_ENCOUNTERS[node.encounter];
+    const node = nodes.find(node => node.id === selected), encounter = CHAPTER_ENCOUNTERS[node.encounter] || {
+      name: 'Quiet sanctuary', adds: [], mechanics: [], lesson: 'Visit this sanctuary to follow its path. Health and Mana carry forward unchanged.',
+    };
     const state = encounterState(chapter, run, node), count = encounter.adds.length;
     $('#restart-chapter').textContent = run.status === 'complete' ? 'Replay Chapter' : run.status === 'pending' ? 'Start Chapter' : 'Restart chapter';
     $('#journey-progress').textContent = run.status === 'pending' ? 'No run started' : run.status === 'complete' && !runCompleted.size ? 'Chapter completed · No active run' : `${runCompleted.size} / ${nodes.length} cleared this run${chapterComplete(completed, nodes) ? ' · Previously completed' : ''}`;
-    $('#detail-type').textContent = `${node.kind === 'boss' ? 'Chapter Boss' : 'Encounter'} · ${nodes.indexOf(node) + 1} / ${nodes.length}`;
+    $('#detail-type').textContent = `${nodeLabel(node)} · ${nodes.indexOf(node) + 1} / ${nodes.length}`;
     $('#detail-title').textContent = node.name;
     $('#detail-description').textContent = node.description;
-    $('#detail-enemies').textContent = `${encounter.name}${count ? ` + ${encounter.adds.map((add, i) => add.name || `Pale Archer ${i + 1}`).join(', ')}` : ' · Alone'}`;
+    $('#detail-enemies').textContent = !node.encounter ? 'Sanctuary · No combat' : `${encounter.name}${count ? ` + ${encounter.adds.map((add, i) => add.name || `Pale Archer ${i + 1}`).join(', ')}` : ' · Alone'}`;
     const mechanicRows = [
-      { id: 'tank-strikes', name: 'Tank strikes', category: 'physical', description: `${encounter.strike.damage} damage to Aldric every ${encounter.strike.every}s.` },
+      ...(encounter.strike ? [{ id: 'tank-strikes', name: 'Tank strikes', category: 'physical', description: `${encounter.strike.damage} damage to Aldric every ${encounter.strike.every}s.` }] : []),
       ...encounter.mechanics.map(mechanic => ({ id: mechanic.id, name: mechanic.name, category: mechanicCategory(mechanic), description: healerHint(mechanic.hint, loadActiveHealer()) })),
       ...(count ? [{ id: 'supporting-enemies', name: 'Supporting enemies', category: 'adds', description: `${encounter.adds.map(add => `${add.name || 'Pale Archer'} attacks ${add.target === 'tank' ? 'Aldric' : 'random living allies'}.`).join(' ')} Your party focuses the main enemy; the others flee when it falls.` }] : []),
     ];
     mechanicsList.innerHTML = mechanicRows.map(mechanicRow).join('');
     $('#detail-lesson').textContent = healerHint(encounter.lesson, loadActiveHealer());
     const loot = getNormalLoot?.(node) || [];
-    $('#detail-loot').innerHTML = encounterLootMarkup(loot, getBossBonusLoot?.(node) || [], node.kind === 'boss');
+    $('#detail-loot').innerHTML = !node.encounter ? '<p class="empty-loot">No gear rewards at this sanctuary.</p>'
+      : chapter.contentStatus === 'shell' && !loot.length ? '<p class="empty-loot">Rewards for this journey are yet to be discovered.</p>'
+      : encounterLootMarkup(loot, getBossBonusLoot?.(node) || [], node.kind === 'boss');
     $('#preview-encounter').disabled = state !== 'available';
-    $('#preview-encounter').textContent = run.status === 'complete' ? 'Replay Chapter to begin' : run.status === 'pending' ? 'Start Chapter to begin' : state === 'locked' ? 'Encounter locked' : state === 'completed' ? 'Cleared this run' : 'Prepare encounter →';
+    $('#preview-encounter').textContent = run.status === 'complete' ? 'Replay Chapter to begin' : run.status === 'pending' ? 'Start Chapter to begin' : state === 'locked' ? 'Route locked' : state === 'completed' ? 'Cleared this run' : !node.encounter ? 'Visit shrine →' : 'Prepare encounter →';
     $('#detail-state').textContent = run.status === 'complete' ? 'Chapter complete. Choose Replay Chapter to begin a new run from the start.' : run.status === 'pending' ? 'Choose Start Chapter to begin a fresh run from this chapter’s first encounter.' : state === 'locked'
       ? `Complete ${node.from.map(id => nodes.find(item => item.id === id).name).join(' or ')} in this run first.`
       : state === 'completed'
         ? node.kind === 'boss' ? 'Chapter complete. Your party can start the next chapter.' : `Health and Mana carry forward; victory restores ${Math.round(CONFIG.encounterManaRecovery * 100)}% of maximum Mana. Choose your path.`
+        : !node.encounter ? 'A peaceful stop along your route. Health and Mana carry forward unchanged.'
         : `Surviving Health and Mana carry forward. Successful non-final encounters restore ${Math.round(CONFIG.encounterManaRecovery * 100)}% of maximum Mana.`;
+  }
+  function persistProgress(node) {
+    completed.add(node.id);
+    try { localStorage.setItem(storageKey, JSON.stringify([...completed])); } catch { /* Keep session progress. */ }
+    selected = nodes.find(next => next.from.includes(node.id) && encounterState(chapter, currentRun(), next) === 'available')?.id || node.id;
+    render(); onProgress(completed);
   }
   $('#preview-encounter').addEventListener('click', () => {
     const node = nodes.find(item => item.id === selected);
     if (encounterState(chapter, currentRun(), node) !== 'available') return;
+    if (!node.encounter) {
+      if (runs.visit(chapter, node, getParty(), chapterComplete(completed, nodes))) persistProgress(node);
+      return;
+    }
     $('#preview-title').textContent = node.name; $('#preview-description').textContent = node.description;
-    $('#preview-type').textContent = `${node.kind === 'boss' ? 'Chapter Boss' : 'Encounter'} · 5 heroes · Normal`;
+    $('#preview-type').textContent = `${nodeLabel(node)} · 5 heroes`;
     dialog.showModal();
   });
   $('#cancel-preview').addEventListener('click', () => dialog.close());
@@ -228,11 +259,7 @@ export function setupAdventures({ startEncounter, onProgress, onRunChange, runs,
       if (game.status === 'defeat') { active = null; selected = nodes[0].id; render(); return true; }
       onVictory?.(node, chapter);
       onLoot?.(awardLoot?.(node) || []);
-      completed.add(node.id);
-      try { localStorage.setItem(storageKey, JSON.stringify([...completed])); } catch { /* Keep session progress. */ }
-      runCompleted = new Set(currentRun().completed);
-      selected = nodes.find(node => node.from.includes(active) && encounterState(chapter, currentRun(), node) === 'available')?.id || active;
-      render(); onProgress(completed); return true;
+      persistProgress(node); return true;
     },
   };
 }

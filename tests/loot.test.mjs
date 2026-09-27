@@ -4,8 +4,9 @@ import { CHAPTERS, GEAR } from '../src/data.js';
 import { NORMAL_LOOT_TABLES, BOSS_BONUS_LOOT_TABLES, eligibleLootPool, normalDropCount, rollNormalLoot, rollBossBonusLoot } from '../src/loot.js';
 import { routes, seeded } from '../scripts/boss-balance.mjs';
 const sequence=values=>{let i=0;return ()=>values[i++]??0;};
+const authoredChapters = CHAPTERS.filter(chapter => GEAR.some(item => item.chapter === chapter.ordinal));
 test('every normal encounter offers all four roles without duplicates',()=>{
-  for(const [c,chapter] of CHAPTERS.entries()) for(const node of chapter.nodes) {
+  for(const [c,chapter] of authoredChapters.entries()) for(const node of chapter.nodes) {
     const table=NORMAL_LOOT_TABLES[node.encounter]; assert.equal(new Set(table).size,table.length);
     const pool=eligibleLootPool(table,[],'priest');assert.equal(pool.length,table.length);
     assert.ok(pool.every(i=>i.chapter===c+1));assert.deepEqual(new Set(pool.map(i=>i.role)),new Set(['healer','all','tank','damage']));
@@ -32,14 +33,14 @@ test('owned and repeated ids are filtered and two-drop rolls cannot duplicate',(
   assert.deepEqual(rollNormalLoot(table,table,'priest',sequence([.85])),[]);
 });
 test('every route offers each healer throughput slot identically',()=>{
-  for(const chapter of CHAPTERS) for(const route of routes(chapter)) {
+  for(const chapter of authoredChapters) for(const route of routes(chapter)) {
     const pools=['priest','druid','shaman'].map(healer=>route.flatMap(node=>eligibleLootPool(NORMAL_LOOT_TABLES[node.encounter],[],healer)).map(i=>i.id));
     assert.deepEqual(pools[0],pools[1]);assert.deepEqual(pools[0],pools[2]);
     for(const slot of ['Weapon','Tome','Trinket']) assert.ok(pools[0].some(id=>GEAR.find(i=>i.id===id && i.role==='healer' && i.slot===slot)));
   }
 });
 test('boss bonus remains chapter-local, outside boss normal pool, one guaranteed unowned reward',()=>{
-  for(const [c,chapter] of CHAPTERS.entries()) {
+  for(const [c,chapter] of authoredChapters.entries()) {
     const boss=chapter.nodes.find(n=>n.kind==='boss'), table=BOSS_BONUS_LOOT_TABLES[boss.encounter];
     assert.ok(table.length);assert.ok(table.every(id=>GEAR.find(i=>i.id===id).chapter===c+1));
     assert.ok(table.every(id=>!NORMAL_LOOT_TABLES[boss.encounter].includes(id)));

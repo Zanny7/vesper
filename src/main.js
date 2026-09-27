@@ -15,6 +15,7 @@ import { setupChapters } from './chapters.js';
 import { setupTeam } from './team.js';
 import { Equipment } from './gear.js';
 import { roleLabel } from './item-model.js';
+import { itemBorderAttributes, itemEraLabel } from './eras.js';
 import { setupEquipment, itemIcon } from './equipment.js';
 import { BOSS_BONUS_LOOT_TABLES, NORMAL_LOOT_TABLES, eligibleNormalLootForEncounter, eligibleBossBonusLootForEncounter, rollBossBonusLoot, rollNormalLoot } from './loot.js';
 import { activeHealer, loadActiveHealer, healerHint } from './healers.js';
@@ -165,7 +166,7 @@ function renderUI(){
   $('#mana-number').textContent=`${number(game.mana)} / ${number(game.maxMana)}`;$('#mana-fill').style.width=`${game.mana/game.maxMana*100}%`;
   renderHealerBuffs($('#healer-buffs'), game);
   $('#boss-fill').style.width=`${game.boss.hp/game.boss.maxHp*100}%`;$('#boss-percent').textContent=`${Math.ceil(game.boss.hp/game.boss.maxHp*100)}%`;$('#boss-hp').textContent=`${number(game.boss.hp)} / ${number(game.boss.maxHp)}`;
-  $('#timer').textContent=clock(game.time);$('#enrage').textContent=clock(Math.max(0,CONFIG.enrage-game.time));
+  $('#timer').textContent=clock(game.time);$('#enrage').textContent=clock(Math.max(0,game.enrageSeconds-game.time));
   $('#alive-count').textContent=`${game.party.filter(p=>p.hp>0).length} / 5`;
   $('#healing-stat').innerHTML=`EFFECTIVE HEALING <b>${number(game.stats.effective)}</b>`;
   const cast=game.cast;
@@ -209,11 +210,11 @@ function renderUI(){
       ready:['YOUR VIGIL BEGINS','Be their saving grace.','The party will fight. You will keep them alive.<br>Hover a party frame and press the key shown on a spell to heal.','Begin encounter'],
       paused:['TAKE A BREATH','The light can wait.','Your encounter is paused.<br>Resume when you are ready.','Resume encounter'],
       victory:['ENCOUNTER COMPLETE','Their light endures.',ALL_ADVENTURES.find(node => node.encounter === game.encounter.id).kind === 'boss' ? `${CHAPTERS.find(chapter => chapter.nodes.some(node => node.encounter === game.encounter.id)).number} complete.<br>Your party has survived the vigil.` : `${game.encounter.name} has fallen.<br>Return to the map to choose your next encounter.`,'Play again'],
-      defeat:['THE VIGIL ENDS','Even light can falter.',game.time>=CONFIG.enrage?'The guardian enraged after 150 seconds.':game.party.find(p=>p.label==='HEALER').hp<=0?'Your light faded. Remember to heal yourself.':game.party[0].hp<=0?'Aldric fell, and the front line collapsed.':'Too few allies remain to hold the sanctum.','Try again'],
+      defeat:['THE VIGIL ENDS','Even light can falter.',game.time>=game.enrageSeconds?`The guardian enraged after ${game.enrageSeconds} seconds.`:game.party.find(p=>p.label==='HEALER').hp<=0?'Your light faded. Remember to heal yourself.':game.party[0].hp<=0?'Aldric fell, and the front line collapsed.':'Too few allies remain to hold the sanctum.','Try again'],
     }[game.status];
     if (game.status === 'victory') {
       data[3] = 'Continue to chapter map';
-      data[2] += lastLoot.length ? `<div class="loot-awarded"><small>LOOT ACQUIRED</small>${lastLoot.map(item => `<div class="loot-item"><span class="gear-slot is-equipped">${itemIcon(item)}</span><span><strong>${item.name}</strong><small>Item level ${item.itemLevel} · ${roleLabel(item)}</small></span></div>`).join('')}</div>` : '<div class="loot-awarded"><small>NO GEAR FOUND</small></div>';
+      data[2] += lastLoot.length ? `<div class="loot-awarded"><small>LOOT ACQUIRED</small>${lastLoot.map(item => `<div class="loot-item"><span class="gear-slot is-equipped" ${itemBorderAttributes(item)}>${itemIcon(item)}</span><span><strong>${item.name}</strong><small>Item level ${item.itemLevel} · ${roleLabel(item)} · ${itemEraLabel(item)}</small></span></div>`).join('')}</div>` : '<div class="loot-awarded"><small>NO GEAR FOUND</small></div>';
     }
     if (game.status === 'defeat') { data[2] += '<br>A fresh chapter run is ready at the first encounter. Permanent unlocks are safe.'; data[3] = 'Return to chapter map'; }
     if(data){$('#overlay-eyebrow').textContent=data[0];$('#overlay-title').textContent=data[1];$('#overlay-text').innerHTML=data[2];$('#begin').innerHTML=`${data[3]} <span>→</span>`;}

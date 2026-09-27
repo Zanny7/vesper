@@ -4,7 +4,8 @@
 .gear-slot.is-empty { color: #82968a; border-color: #40544c; }
 .gear-slot.is-empty svg { opacity: .32; }
 button.gear-slot:hover, button.gear-slot[aria-expanded="true"], button.gear-slot:focus-visible { border-color: #e1c493; background: #304039; outline: 2px solid #b4c3a5; outline-offset: 3px; }
-.gear-slot.is-equipped { border-color: #ab9566; background: radial-gradient(ellipse at 50% 40%, #77623f66, #152229 85%); }
+.gear-slot.is-equipped { border-color: var(--item-era-border, #aab2b9); background: radial-gradient(ellipse at 50% 40%, #77623f66, #152229 85%); }
+.gear-slot.is-equipped[data-era]:is(:hover, :focus-visible, [aria-expanded="true"]) { border-color: var(--item-era-border); }
 .gear-slot:disabled { opacity: .5; cursor: not-allowed; }
 .gear-slot[draggable="true"] { cursor: grab; }
 .gear-slot.is-dragging { opacity: .4; cursor: grabbing; }

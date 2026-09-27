@@ -54,7 +54,7 @@ test('prior chapters carry one evolving equipment state through boss rewards and
 
 test('BAT-68 representative talent presets remain legal and match the point budget', () => {
   const data = JSON.parse(execFileSync(process.execPath, ['scripts/chapter-benchmarks.mjs', '1'], { cwd: new URL('..', import.meta.url), encoding: 'utf8' }));
-  assert.equal(data.chapters.length, CHAPTERS.length);
+  assert.equal(data.chapters.length, CHAPTERS.filter(chapter => chapter.contentStatus !== 'shell').length);
   for (const [chapter, byHealer] of Object.entries(data.talentPresets)) for (const [healer, choices] of Object.entries(byHealer)) {
     for (const allocation of Array.isArray(choices) ? choices : [choices]) {
       assert.equal(Object.values(allocation).reduce((sum, ranks) => sum + ranks, 0), 2 * Number(chapter) - 1);

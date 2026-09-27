@@ -13,7 +13,7 @@ const ROLES = Object.keys(NORMAL_DROP_WEIGHTS);
 export function buildNormalLootTables(chapters = CHAPTERS, catalogue = GEAR) {
   const tables = {};
   for (const [chapterIndex, chapter] of chapters.entries()) {
-    const chapterNumber = chapterIndex + 1;
+    const chapterNumber = chapter.ordinal ?? chapterIndex + 1;
     const items = catalogue.filter(item => item.chapter === chapterNumber);
     const depthById = new Map();
     const depth = node => {
@@ -23,6 +23,7 @@ export function buildNormalLootTables(chapters = CHAPTERS, catalogue = GEAR) {
       return value;
     };
     chapter.nodes.forEach((node, encounterIndex) => {
+      if (!node.encounter) return;
       const choose = (pool, index) => pool.length ? [pool[index % pool.length].id] : [];
       const healerSlot = ['Weapon', 'Tome', 'Trinket'][depth(node) % 3];
       tables[node.encounter] = [
@@ -59,7 +60,7 @@ export function buildBossBonusLootTables(chapters = CHAPTERS, catalogue = GEAR, 
   return Object.fromEntries(chapters.flatMap((chapter, chapterIndex) => chapter.nodes
     .filter(node => node.kind === 'boss')
     .map(node => [node.encounter, catalogue
-      .filter(item => item.chapter === chapterIndex + 1 && !normalTables[node.encounter]?.includes(item.id))
+      .filter(item => item.chapter === (chapter.ordinal ?? chapterIndex + 1) && !normalTables[node.encounter]?.includes(item.id))
       .map(item => item.id)])));
 }
 

@@ -2,7 +2,7 @@ import { ADVENTURES, CHAPTERS } from './data.js';
 
 export function nodeState(node, completed) {
   if (completed.has(node.id)) return 'completed';
-  return node.encounter && (!node.from.length || node.from.some(id => completed.has(id))) ? 'available' : 'locked';
+  return (node.encounter || node.utility?.type) && (!node.from.length || node.from.some(id => completed.has(id))) ? 'available' : 'locked';
 }
 export function restoreProgress(saved, nodes = ADVENTURES) {
   const completed = new Set();
@@ -35,7 +35,11 @@ export function restoreCampaign(saved) {
 }
 export function awardVictory(completed, active, game, nodes = ADVENTURES) {
   const node = nodes.find(node => node.id === active);
-  if (!node || game.status !== 'victory' || game.encounter.id !== node.encounter || nodeState(node, completed) !== 'available') return false;
+  if (!node?.encounter || game.status !== 'victory' || game.encounter?.id !== node.encounter || nodeState(node, completed) !== 'available') return false;
   completed.add(node.id);
   return true;
+}
+export function awardVisit(completed, node, nodes) {
+  if (!nodes.includes(node) || node.encounter || !node.utility?.type || nodeState(node, completed) !== 'available') return false;
+  completed.add(node.id); return true;
 }

@@ -121,8 +121,8 @@ test('first-encounter and boss milestones award once, persist, and survive run r
 test('four current chapters provide eight distinct milestone points per healer', () => {
   const talents = new TalentProgression(disk(), trees);
   for (const chapter of CHAPTERS) {
-    assert.equal(talents.awardEncounter('druid', chapter, chapter.nodes[0]), 1);
-    assert.equal(talents.awardEncounter('druid', chapter, chapter.nodes.at(-1)), 1);
+    assert.equal(talents.awardEncounter('druid', chapter, chapter.nodes[0]), chapter.talentMilestones === false ? 0 : 1);
+    assert.equal(talents.awardEncounter('druid', chapter, chapter.nodes.at(-1)), chapter.talentMilestones === false ? 0 : 1);
   }
   assert.equal(talents.state('druid').earnedPoints, 8);
   assert.equal(talents.state('priest').earnedPoints, 0);

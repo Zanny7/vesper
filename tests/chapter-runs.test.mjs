@@ -131,6 +131,12 @@ test('sequential boss clears unlock each next chapter with a playable first enco
     let next = current.nodes[0];
     while (next) {
       assert.equal(encounterState(current, runs.get(current, party), next), 'available');
+      if (!next.encounter) {
+        assert.equal(runs.visit(current, next, party), true);
+        historical.add(next.id);
+        next = current.nodes.find(node => encounterState(current, runs.get(current, party), node) === 'available');
+        continue;
+      }
       const resources = runs.begin(current, next, party);
       assert.ok(resources);
       const game = new Combat(CHAPTER_ENCOUNTERS[next.encounter]);

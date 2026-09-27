@@ -2,6 +2,7 @@
 import { GEAR, partyForHealer, HEALERS } from './data.js';
 import { formatNumber } from './stats.js';
 import { roleLabel } from './item-model.js';
+import { itemBorderAttributes, itemEraLabel } from './eras.js';
 export const statLabels = { maxHp: 'Health', maxMana: 'Mana', manaRegen: 'Mana regeneration', spellPower: 'Spell Power', haste: 'Haste', crit: 'Crit', armor: 'Armor', resistance: 'Resistance', damage: 'Damage' };
 const escape = value => String(value).replace(/[&<>"']/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch]));
 const silhouettes = {
@@ -20,7 +21,7 @@ export const itemLevel = item => item.itemLevel ?? 1;
 const regenFormat = new Intl.NumberFormat('en-US', { maximumFractionDigits: 2 });
 const itemStatNumber = (stat, value) => stat === 'manaRegen' ? regenFormat.format(value) : formatNumber(value);
 export function itemDetails(item) {
-  return `<strong>${escape(item.name)}</strong><small>Item level ${itemLevel(item)} · ${escape(item.slot)}</small><small class="item-role">${roleLabel(item)}</small><dl>${Object.entries(item.stats).map(([stat, value]) => `<div><dt>${escape(statLabels[stat] || stat)}</dt><dd>+${itemStatNumber(stat, value)}${['haste', 'crit'].includes(stat) ? '%' : ''}</dd></div>`).join('')}</dl>${item.flavor ? `<p>${escape(item.flavor)}</p>` : ''}`;
+  return `<strong>${escape(item.name)}</strong><small>Item level ${itemLevel(item)} · ${escape(item.slot)}</small><small class="item-role">${roleLabel(item)} · ${itemEraLabel(item)}</small><dl>${Object.entries(item.stats).map(([stat, value]) => `<div><dt>${escape(statLabels[stat] || stat)}</dt><dd>+${itemStatNumber(stat, value)}${['haste', 'crit'].includes(stat) ? '%' : ''}</dd></div>`).join('')}</dl>${item.flavor ? `<p>${escape(item.flavor)}</p>` : ''}`;
 }
 export function itemComparison(item, current) {
   return [...new Set([...Object.keys(item.stats), ...Object.keys(current?.stats || {})])].map(stat => {
@@ -34,7 +35,7 @@ export function itemIcon(item, slot = item?.slot || 'Bag', owner = item?.owner) 
   return `<svg viewBox="0 0 40 40" fill="currentColor" fill-opacity=".12" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" aria-hidden="true">${silhouettes[type] || silhouettes.Bag}</svg>`;
 }
 export function equipmentSlot(member, slot, item, locked) {
-  return `<button type="button" class="gear-slot ${item ? 'is-equipped' : 'is-empty'}" data-equipment-slot="${slot}" data-member-id="${escape(member.id)}" ${item ? `data-item-id="${escape(item.id)}" draggable="${!locked}"` : `data-slot-tip="${slot}"`} aria-label="${slot}: ${escape(item?.name || 'Empty')}" aria-haspopup="dialog" aria-expanded="false" ${locked ? 'disabled' : ''}>${itemIcon(item, slot, member.id)}</button>`;
+  return `<button type="button" class="gear-slot ${item ? 'is-equipped' : 'is-empty'}" ${itemBorderAttributes(item)} data-equipment-slot="${slot}" data-member-id="${escape(member.id)}" ${item ? `data-item-id="${escape(item.id)}" draggable="${!locked}"` : `data-slot-tip="${slot}"`} aria-label="${slot}: ${escape(item?.name || 'Empty')}" aria-haspopup="dialog" aria-expanded="false" ${locked ? 'disabled' : ''}>${itemIcon(item, slot, member.id)}</button>`;
 }
 export function setupEquipment({ equipment, onChange, isLocked }) {
   const popup = document.createElement('section'), tooltip = document.createElement('div');
@@ -66,7 +67,7 @@ export function setupEquipment({ equipment, onChange, isLocked }) {
     const same = anchor === target; close(); if (same) return;
     anchor = target; target.setAttribute('aria-expanded', 'true');
     const current = equipment.item(member, slot), items = equipment.owned(member, slot);
-    popup.innerHTML = `<div class="gear-picker-heading"><strong>${escape(slot)}</strong><button type="button" aria-label="Close equipment picker">✕</button></div><p>Choose owned equipment</p><div class="gear-choices">${items.map(item => `<button type="button" class="gear-choice" data-item-id="${escape(item.id)}" aria-pressed="${current?.id === item.id}"><span class="gear-slot is-equipped">${itemIcon(item)}</span><span><strong>${escape(item.name)}</strong><small>Item level ${itemLevel(item)} · ${roleLabel(item)}${current?.id === item.id ? ' · Equipped' : ''}</small><small class="gear-comparison">${itemComparison(item, current)}</small></span></button>`).join('') || '<p>No compatible items owned.</p>'}</div>${current ? '<button type="button" class="quiet gear-unequip">Unequip</button>' : ''}`;
+    popup.innerHTML = `<div class="gear-picker-heading"><strong>${escape(slot)}</strong><button type="button" aria-label="Close equipment picker">✕</button></div><p>Choose owned equipment</p><div class="gear-choices">${items.map(item => `<button type="button" class="gear-choice" data-item-id="${escape(item.id)}" aria-pressed="${current?.id === item.id}"><span class="gear-slot is-equipped" ${itemBorderAttributes(item)}>${itemIcon(item)}</span><span><strong>${escape(item.name)}</strong><small>Item level ${itemLevel(item)} · ${roleLabel(item)} · ${itemEraLabel(item)}${current?.id === item.id ? ' · Equipped' : ''}</small><small class="gear-comparison">${itemComparison(item, current)}</small></span></button>`).join('') || '<p>No compatible items owned.</p>'}</div>${current ? '<button type="button" class="quiet gear-unequip">Unequip</button>' : ''}`;
     popup.hidden = false; place(popup, target);
     popup.querySelector('.gear-picker-heading button').onclick = () => close(true);
     const choose = id => {
@@ -85,7 +86,7 @@ export function setupEquipment({ equipment, onChange, isLocked }) {
     const start = page * 20;
     host.innerHTML = `<div class="bag-grid" role="group" aria-label="Inventory, 20 slots">${Array.from({ length: 20 }, (_, i) => {
       const index = start + i, item = equipment.bagItem(index);
-      return item ? `<button type="button" class="gear-slot is-equipped" data-item-id="${escape(item.id)}" data-bag-index="${index}" draggable="${!isLocked()}" aria-label="${escape(item.name)}, item level ${itemLevel(item)}" aria-haspopup="dialog">${itemIcon(item)}</button>` : `<button type="button" class="gear-slot is-empty bag-drop-slot" data-bag-index="${index}" aria-label="Empty bag slot" ${isLocked() ? 'disabled' : ''}>${itemIcon(null)}</button>`;
+      return item ? `<button type="button" class="gear-slot is-equipped" ${itemBorderAttributes(item)} data-item-id="${escape(item.id)}" data-bag-index="${index}" draggable="${!isLocked()}" aria-label="${escape(item.name)}, item level ${itemLevel(item)}" aria-haspopup="dialog">${itemIcon(item)}</button>` : `<button type="button" class="gear-slot is-empty bag-drop-slot" data-bag-index="${index}" aria-label="Empty bag slot" ${isLocked() ? 'disabled' : ''}>${itemIcon(null)}</button>`;
     }).join('')}</div><div class="bag-footer"><span>${equipment.ownedIds.size} owned · ${page + 1} / ${pages}</span><button class="quiet" type="button" data-bag-page="-1" aria-label="Previous inventory page" ${page === 0 ? 'disabled' : ''}>←</button><button class="quiet" type="button" data-bag-page="1" aria-label="Next inventory page" ${page === pages - 1 ? 'disabled' : ''}>→</button></div><p class="bag-help">Inspect items here. Equip them in Team.</p>`;
     host.querySelector('.bag-footer > span').textContent = `${equipment.ownedIds.size} owned · ${page + 1} / ${pages}`;
     host.querySelector('.bag-help').textContent = 'Drag items to equipment slots. Right-click to discard.';
@@ -103,7 +104,7 @@ export function setupEquipment({ equipment, onChange, isLocked }) {
     if (!item || isLocked()) return;
     hideTip();
     anchor = target;
-    popup.innerHTML = `<div class="gear-picker-heading"><strong>Discard item?</strong><button type="button" aria-label="Cancel discard">✕</button></div><p class="discard-summary"><span class="gear-slot is-equipped">${itemIcon(item)}</span><span><b>${escape(item.name)}</b><small>Item level ${itemLevel(item)} · ${escape(item.slot)} · ${roleLabel(item)}</small></span></p><div class="discard-actions"><button type="button" class="discard-confirm">Discard item</button><button type="button" class="quiet discard-cancel">Cancel</button></div>`;
+    popup.innerHTML = `<div class="gear-picker-heading"><strong>Discard item?</strong><button type="button" aria-label="Cancel discard">✕</button></div><p class="discard-summary"><span class="gear-slot is-equipped" ${itemBorderAttributes(item)}>${itemIcon(item)}</span><span><b>${escape(item.name)}</b><small>Item level ${itemLevel(item)} · ${escape(item.slot)} · ${roleLabel(item)} · ${itemEraLabel(item)}</small></span></p><div class="discard-actions"><button type="button" class="discard-confirm">Discard item</button><button type="button" class="quiet discard-cancel">Cancel</button></div>`;
     popup.hidden = false; place(popup, target);
     const cancel = () => close(true);
     popup.querySelector('.gear-picker-heading button').onclick = cancel;

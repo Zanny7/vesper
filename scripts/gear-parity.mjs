@@ -16,7 +16,7 @@ export const itemSummary = item => ({ id: item.id, ilvl: item.itemLevel,
 
 export function auditGearParity() {
   const healerIds = Object.keys(HEALERS);
-  return CHAPTERS.map((chapter, index) => {
+  return CHAPTERS.filter(chapter => GEAR.some(item => item.chapter === chapter.ordinal)).map((chapter, index) => {
     const routeIds = routes(chapter).map(route => route.map(node => node.encounter));
     const preBossIds = [...new Set(routeIds.flat())];
     const bossId = chapter.nodes.find(node => node.kind === 'boss').encounter;

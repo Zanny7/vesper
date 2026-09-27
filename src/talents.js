@@ -64,6 +64,7 @@ function cleanHealerState(saved, tree, healerId) {
 }
 
 function milestoneIds(chapter, node) {
+  if (chapter?.talentMilestones === false) return [];
   if (!chapter?.id || !Array.isArray(chapter.nodes) || !node || !chapter.nodes.includes(node)) return [];
   const ids = [];
   if (chapter.nodes.find(candidate => !candidate.from?.length) === node) ids.push(`${chapter.id}:first`);

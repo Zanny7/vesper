@@ -48,7 +48,8 @@ function snapshot(equipment, healerId, chapter) {
   };
 }
 
-const chapters = CHAPTERS.map((chapter, chapterIndex) => {
+// Era II placeholders have no authored rewards or balance presets yet.
+const chapters = CHAPTERS.filter(chapter => chapter.contentStatus !== 'shell').map((chapter, chapterIndex) => {
   const paths = routes(chapter);
   const routeLengths = [...new Set(paths.map(path => path.length))];
   const byTier = Object.fromEntries(tiers.map((tier, tierIndex) => {

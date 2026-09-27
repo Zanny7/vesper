@@ -1,3 +1,4 @@
+import { itemBorderAttributes, itemEraLabel } from '../src/eras.js';
 import { GEAR } from '../src/data.js';
 import { Equipment } from '../src/gear.js';
 import { ITEM_OWNERS, roleLabel } from '../src/item-model.js';
@@ -26,4 +27,4 @@ owner.onchange = () => { ui.close(); member = { id: owner.value }; render(); };
 render();
 // New chapters automatically join the review page when their catalogue lands.
 const chapters = [...new Set(GEAR.map(item => item.chapter))].sort((a, b) => a - b);
-document.querySelector('#catalogue').innerHTML = chapters.map(chapter => `<section><h2>Chapter ${chapter}</h2><div class="gallery">${GEAR.filter(item => item.chapter === chapter).map(item => `<article><div class="sizes"><button type="button" class="gear-slot is-equipped" data-item-id="${escape(item.id)}" aria-label="Inspect ${escape(item.name)}">${itemIcon(item)}</button><img class="tiny" src="${escape(item.icon)}" alt="${escape(item.name)}"></div><h3>${escape(item.name)}</h3><small>${roleLabel(item)} · ${item.slot} · ilvl ${item.itemLevel}</small><p class="stats">${escape(statsText(item.stats))}</p><small>${escape(item.flavor || '')}</small></article>`).join('')}</div></section>`).join('');
+document.querySelector('#catalogue').innerHTML = chapters.map(chapter => `<section><h2>Chapter ${chapter}</h2><div class="gallery">${GEAR.filter(item => item.chapter === chapter).map(item => `<article><div class="sizes"><button type="button" class="gear-slot is-equipped" ${itemBorderAttributes(item)} data-item-id="${escape(item.id)}" aria-label="Inspect ${escape(item.name)}">${itemIcon(item)}</button><img class="tiny" src="${escape(item.icon)}" alt="${escape(item.name)}"></div><h3>${escape(item.name)}</h3><small>${roleLabel(item)} · ${itemEraLabel(item)} · ${item.slot} · ilvl ${item.itemLevel}</small><p class="stats">${escape(statsText(item.stats))}</p><small>${escape(item.flavor || '')}</small></article>`).join('')}</div></section>`).join('');
