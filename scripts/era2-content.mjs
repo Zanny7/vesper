@@ -41,7 +41,7 @@ export function probe(encounter, party, build, seed, resources = fullResources(p
     if (policy === 'oneHot' && !game.stats.casts) game.begin('riptide', 'tank');
     if (policy === 'oneWave' && !game.stats.casts && game.party[0].hp < game.party[0].maxHp * .65) game.begin('healingWave', 'tank');
     if (policy === 'oneStream' && !game.stats.casts && game.party[0].hp < game.party[0].maxHp * .65) game.begin('healingStream', game.healer.id);
-    if (['conservative', 'wasteful'].includes(policy) && !game.cast) {
+    if (['conservative', 'average', 'wasteful'].includes(policy) && !game.cast) {
       if (game.party.some(p => p.hp > 0 && (p.hp / p.maxHp < .45
         || (p.hp - expectedDamage(game, p, 3) + pendingHealing(game, p, 3)) / p.maxHp < .65))) decideShamanPriority(game);
       if (policy === 'wasteful' && !game.cast) {
@@ -49,7 +49,7 @@ export function probe(encounter, party, build, seed, resources = fullResources(p
         if (target) game.begin('healingWave', target.id);
       }
     }
-      nextDecision = game.time + .12;
+      nextDecision = game.time + (policy === 'average' ? .7 : .12);
     }
     triageSeconds += CONFIG.step * Number(game.party.filter(p => p.hp > 0 && p.hp / p.maxHp < .65).length >= 2);
     game.step();

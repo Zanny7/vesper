@@ -103,13 +103,13 @@ test('Era I gear stays silver and authored Era II gear uses green surfaces', () 
   }
 });
 
-test('Era II has independent authored profiles with pending final encounter tuning and encounter enrage overrides', () => {
+test('Era II has independent tuned encounter profiles and encounter enrage overrides', () => {
   const profile = encounter => ({ maxHp: encounter.maxHp, strike: encounter.strike, mechanics: encounter.mechanics, adds: encounter.adds });
   for (const chapter of CHAPTERS.slice(4)) for (const node of chapter.nodes.filter(node => node.encounter)) {
     const encounter = CHAPTER_ENCOUNTERS[node.encounter];
     assert.ok(['huntsman', 'roses', 'chapel', 'duchess'].every(id => JSON.stringify(profile(encounter)) !== JSON.stringify(profile(CHAPTER_ENCOUNTERS[id]))));
     assert.equal(encounter.contentStatus, 'authored');
-    assert.equal(encounter.balanceStatus, 'awaiting-tuning');
+    assert.equal(encounter.balanceStatus, 'tuned');
     assert.ok(encounter.enrageSeconds >= 180);
   }
   for (const seconds of [undefined, 180]) {

@@ -1,0 +1,585 @@
+{
+  "checks": [
+    {
+      "width": 1280,
+      "chapter": 5,
+      "strategy": "foothold",
+      "slots": 0,
+      "nodes": 2,
+      "completed": true,
+      "casts": [
+        15,
+        14
+      ],
+      "bossMana": 856.7994999999763
+    },
+    {
+      "width": 1280,
+      "chapter": 5,
+      "strategy": "normal",
+      "slots": 13,
+      "nodes": 6,
+      "completed": true,
+      "casts": [
+        10,
+        9,
+        17,
+        15,
+        18,
+        57
+      ],
+      "bossMana": 252.4890000001489
+    },
+    {
+      "width": 1280,
+      "chapter": 5,
+      "strategy": "elite",
+      "slots": 18,
+      "nodes": 6,
+      "completed": true,
+      "casts": [
+        8,
+        28,
+        13,
+        14,
+        17,
+        54
+      ],
+      "bossMana": 393.4730000001558
+    },
+    {
+      "width": 1280,
+      "chapter": 5,
+      "strategy": "shrine",
+      "slots": 18,
+      "nodes": 6,
+      "completed": true,
+      "casts": [
+        9,
+        13,
+        15,
+        17,
+        62
+      ],
+      "bossMana": 377.6460000001464
+    },
+    {
+      "width": 1280,
+      "chapter": 6,
+      "strategy": "foothold",
+      "slots": 0,
+      "nodes": 2,
+      "completed": true,
+      "casts": [
+        12,
+        18
+      ],
+      "bossMana": 931.0570000000092
+    },
+    {
+      "width": 1280,
+      "chapter": 6,
+      "strategy": "normal",
+      "slots": 13,
+      "nodes": 7,
+      "completed": true,
+      "casts": [
+        10,
+        16,
+        19,
+        16,
+        20,
+        25,
+        64
+      ],
+      "bossMana": 190.94399999993087
+    },
+    {
+      "width": 1280,
+      "chapter": 6,
+      "strategy": "elite",
+      "slots": 18,
+      "nodes": 7,
+      "completed": true,
+      "casts": [
+        9,
+        17,
+        17,
+        38,
+        22,
+        24,
+        63
+      ],
+      "bossMana": 376.8519999998598
+    },
+    {
+      "width": 1280,
+      "chapter": 6,
+      "strategy": "shrine",
+      "slots": 18,
+      "nodes": 7,
+      "completed": true,
+      "casts": [
+        9,
+        16,
+        19,
+        20,
+        27,
+        70
+      ],
+      "bossMana": 404.79599999986294
+    },
+    {
+      "width": 1280,
+      "chapter": 7,
+      "strategy": "foothold",
+      "slots": 0,
+      "nodes": 2,
+      "completed": true,
+      "casts": [
+        17,
+        16
+      ],
+      "bossMana": 946.5329999999938
+    },
+    {
+      "width": 1280,
+      "chapter": 7,
+      "strategy": "normal",
+      "slots": 13,
+      "nodes": 8,
+      "completed": true,
+      "casts": [
+        12,
+        12,
+        21,
+        24,
+        14,
+        30,
+        32,
+        73
+      ],
+      "bossMana": 339.7400000001062
+    },
+    {
+      "width": 1280,
+      "chapter": 7,
+      "strategy": "elite",
+      "slots": 18,
+      "nodes": 8,
+      "completed": true,
+      "casts": [
+        10,
+        13,
+        21,
+        24,
+        48,
+        30,
+        30,
+        73
+      ],
+      "bossMana": 348.5600000001141
+    },
+    {
+      "width": 1280,
+      "chapter": 7,
+      "strategy": "shrine",
+      "slots": 18,
+      "nodes": 8,
+      "completed": true,
+      "casts": [
+        10,
+        18,
+        21,
+        24,
+        24,
+        35,
+        77
+      ],
+      "bossMana": 483.4740000001061
+    },
+    {
+      "width": 1280,
+      "chapter": 8,
+      "strategy": "foothold",
+      "slots": 0,
+      "nodes": 2,
+      "completed": true,
+      "casts": [
+        13,
+        18
+      ],
+      "bossMana": 1034.2510000000082
+    },
+    {
+      "width": 1280,
+      "phase": "Lastlight Court",
+      "at": 12.000000000000176
+    },
+    {
+      "width": 1280,
+      "phase": "Procession of Shadows",
+      "at": 48.01666666666522
+    },
+    {
+      "width": 1280,
+      "phase": "Total Eclipse",
+      "at": 89.0166666666629
+    },
+    {
+      "width": 1280,
+      "phase": "Sundered Dawn",
+      "at": 140.00000000000355
+    },
+    {
+      "width": 1280,
+      "chapter": 8,
+      "strategy": "normal",
+      "slots": 13,
+      "nodes": 9,
+      "completed": true,
+      "casts": [
+        12,
+        17,
+        24,
+        24,
+        17,
+        35,
+        37,
+        44,
+        89
+      ],
+      "bossMana": 272.9719999999552
+    },
+    {
+      "width": 1280,
+      "chapter": 8,
+      "strategy": "elite",
+      "slots": 18,
+      "nodes": 9,
+      "completed": true,
+      "casts": [
+        10,
+        14,
+        21,
+        21,
+        48,
+        34,
+        33,
+        42,
+        83
+      ],
+      "bossMana": 507.7669999999582
+    },
+    {
+      "width": 1280,
+      "chapter": 8,
+      "strategy": "shrine",
+      "slots": 18,
+      "nodes": 9,
+      "completed": true,
+      "casts": [
+        10,
+        17,
+        21,
+        25,
+        26,
+        41,
+        49,
+        89
+      ],
+      "bossMana": 492.2179999999603
+    },
+    {
+      "width": 390,
+      "chapter": 5,
+      "strategy": "foothold",
+      "slots": 0,
+      "nodes": 2,
+      "completed": true,
+      "casts": [
+        14,
+        13
+      ],
+      "bossMana": 879.9914999999936
+    },
+    {
+      "width": 390,
+      "chapter": 5,
+      "strategy": "normal",
+      "slots": 13,
+      "nodes": 6,
+      "completed": true,
+      "casts": [
+        11,
+        9,
+        16,
+        14,
+        19,
+        57
+      ],
+      "bossMana": 281.4890000001496
+    },
+    {
+      "width": 390,
+      "chapter": 5,
+      "strategy": "elite",
+      "slots": 18,
+      "nodes": 6,
+      "completed": true,
+      "casts": [
+        8,
+        27,
+        16,
+        14,
+        18,
+        55
+      ],
+      "bossMana": 355.45700000015984
+    },
+    {
+      "width": 390,
+      "chapter": 5,
+      "strategy": "shrine",
+      "slots": 18,
+      "nodes": 6,
+      "completed": true,
+      "casts": [
+        8,
+        14,
+        16,
+        18,
+        60
+      ],
+      "bossMana": 437.1500000001454
+    },
+    {
+      "width": 390,
+      "chapter": 6,
+      "strategy": "foothold",
+      "slots": 0,
+      "nodes": 2,
+      "completed": true,
+      "casts": [
+        11,
+        17
+      ],
+      "bossMana": 943.7370000000268
+    },
+    {
+      "width": 390,
+      "chapter": 6,
+      "strategy": "normal",
+      "slots": 13,
+      "nodes": 7,
+      "completed": true,
+      "casts": [
+        11,
+        15,
+        16,
+        15,
+        18,
+        24,
+        64
+      ],
+      "bossMana": 236.94399999993033
+    },
+    {
+      "width": 390,
+      "chapter": 6,
+      "strategy": "elite",
+      "slots": 18,
+      "nodes": 7,
+      "completed": true,
+      "casts": [
+        9,
+        15,
+        19,
+        40,
+        20,
+        24,
+        63
+      ],
+      "bossMana": 347.8519999998598
+    },
+    {
+      "width": 390,
+      "chapter": 6,
+      "strategy": "shrine",
+      "slots": 18,
+      "nodes": 7,
+      "completed": true,
+      "casts": [
+        9,
+        14,
+        18,
+        20,
+        28,
+        70
+      ],
+      "bossMana": 261.91299999987615
+    },
+    {
+      "width": 390,
+      "chapter": 7,
+      "strategy": "foothold",
+      "slots": 0,
+      "nodes": 2,
+      "completed": true,
+      "casts": [
+        14,
+        16
+      ],
+      "bossMana": 946.5329999999938
+    },
+    {
+      "width": 390,
+      "chapter": 7,
+      "strategy": "normal",
+      "slots": 13,
+      "nodes": 8,
+      "completed": true,
+      "casts": [
+        10,
+        13,
+        21,
+        22,
+        13,
+        31,
+        32,
+        74
+      ],
+      "bossMana": 383.06800000010935
+    },
+    {
+      "width": 390,
+      "chapter": 7,
+      "strategy": "elite",
+      "slots": 18,
+      "nodes": 8,
+      "completed": true,
+      "casts": [
+        10,
+        13,
+        22,
+        22,
+        48,
+        29,
+        30,
+        72
+      ],
+      "bossMana": 379.20800000010604
+    },
+    {
+      "width": 390,
+      "chapter": 7,
+      "strategy": "shrine",
+      "slots": 18,
+      "nodes": 8,
+      "completed": true,
+      "casts": [
+        10,
+        15,
+        21,
+        24,
+        27,
+        37,
+        80
+      ],
+      "bossMana": 375.3630000001074
+    },
+    {
+      "width": 390,
+      "chapter": 8,
+      "strategy": "foothold",
+      "slots": 0,
+      "nodes": 2,
+      "completed": true,
+      "casts": [
+        13,
+        19
+      ],
+      "bossMana": 1002.2510000000082
+    },
+    {
+      "width": 390,
+      "phase": "Lastlight Court",
+      "at": 12.000000000000176
+    },
+    {
+      "width": 390,
+      "phase": "Procession of Shadows",
+      "at": 48.01666666666522
+    },
+    {
+      "width": 390,
+      "phase": "Total Eclipse",
+      "at": 89.0166666666629
+    },
+    {
+      "width": 390,
+      "phase": "Sundered Dawn",
+      "at": 140.00000000000355
+    },
+    {
+      "width": 390,
+      "chapter": 8,
+      "strategy": "normal",
+      "slots": 13,
+      "nodes": 9,
+      "completed": true,
+      "casts": [
+        12,
+        16,
+        23,
+        25,
+        17,
+        35,
+        32,
+        44,
+        87
+      ],
+      "bossMana": 252.0359999999555
+    },
+    {
+      "width": 390,
+      "chapter": 8,
+      "strategy": "elite",
+      "slots": 18,
+      "nodes": 9,
+      "completed": true,
+      "casts": [
+        11,
+        16,
+        20,
+        22,
+        48,
+        36,
+        34,
+        40,
+        81
+      ],
+      "bossMana": 475.1399999999567
+    },
+    {
+      "width": 390,
+      "chapter": 8,
+      "strategy": "shrine",
+      "slots": 18,
+      "nodes": 9,
+      "completed": true,
+      "casts": [
+        10,
+        16,
+        20,
+        26,
+        29,
+        44,
+        47,
+        93
+      ],
+      "bossMana": 434.9219999999582
+    }
+  ],
+  "errors": []
+}

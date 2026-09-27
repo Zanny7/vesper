@@ -11,11 +11,11 @@ import { TALENT_TREES } from '../src/talent-trees.js';
 import { shamanBuilds } from '../scripts/shaman-policy.mjs';
 const advance = (game, seconds) => { for (let i=0; i<seconds/CONFIG.step; i++) game.step(); };
 
-test('all 47 Era II fights have unique authored pressure, readable schedules and authored rewards awaiting final tuning', () => {
+test('all 47 Era II fights have distinct tuned pressure, readable schedules and authored rewards', () => {
   const profiles = new Set();
   let fights = 0;
   for (const chapter of CHAPTERS.slice(4)) {
-    assert.equal(chapter.balanceStatus, 'awaiting-tuning');
+    assert.equal(chapter.balanceStatus, 'tuned');
     assert.equal(chapter.rewardsStatus, 'authored');
     assert.equal(chapter.talentMilestones, false);
     const encounters=chapter.nodes.filter(n=>n.encounter).map(n=>CHAPTER_ENCOUNTERS[n.encounter]);
@@ -126,11 +126,12 @@ test('legal shrine paths carry wounded Health, apply explicit utility, and award
   }
 });
 
-test('a death-free enrage is still a failed route, never a safe clear in balance evidence', () => {
-  const chapter=CHAPTERS[6], seed=970001, party=priorEquipment('prior-entry',seed).party('shaman');
-  const result=probeRoute(chapter,routes(chapter)[0],party,'8-earth',seed,'conservative');
+test('a death-free enrage is a failure, never a safe clear in balance evidence', () => {
+  const seed=970001, party=priorEquipment('prior-entry',seed).party('shaman');
+  const encounter={...structuredClone(CHAPTER_ENCOUNTERS['spire-14']),maxHp:1e8,
+    strike:{first:100,every:100,damage:0},mechanics:[],enrageSeconds:5};
+  const result=probe(encounter,party,'8-earth',seed);
   assert.equal(result.won,false); assert.equal(result.safe,false);
-  assert.equal(result.encounters.at(-1).kind,'boss');
-  assert.ok(result.encounters.at(-1).seconds>=CHAPTER_ENCOUNTERS[chapter.nodes.at(-1).encounter].enrageSeconds);
-  assert.ok(result.encounters.every(row=>!row.deaths));
+  assert.ok(result.seconds>=encounter.enrageSeconds);
+  assert.equal(result.deaths,0);
 });
