@@ -11,12 +11,12 @@ import { TALENT_TREES } from '../src/talent-trees.js';
 import { shamanBuilds } from '../scripts/shaman-policy.mjs';
 const advance = (game, seconds) => { for (let i=0; i<seconds/CONFIG.step; i++) game.step(); };
 
-test('all 47 Era II fights have unique authored pressure, readable schedules and an explicit reward blocker', () => {
+test('all 47 Era II fights have unique authored pressure, readable schedules and authored rewards awaiting final tuning', () => {
   const profiles = new Set();
   let fights = 0;
   for (const chapter of CHAPTERS.slice(4)) {
-    assert.equal(chapter.balanceStatus, 'awaiting-gear');
-    assert.equal(chapter.rewardsStatus, 'pending');
+    assert.equal(chapter.balanceStatus, 'awaiting-tuning');
+    assert.equal(chapter.rewardsStatus, 'authored');
     assert.equal(chapter.talentMilestones, false);
     const encounters=chapter.nodes.filter(n=>n.encounter).map(n=>CHAPTER_ENCOUNTERS[n.encounter]);
     assert.ok(encounters.at(-1).maxHp > Math.max(...encounters.slice(0,-1).map(e=>e.maxHp)));
@@ -78,7 +78,7 @@ test('Era II branches commit per run without erasing historical clears or changi
   assert.ok(CHAPTERS.slice(0,4).every(chapter=>chapter.routeChoices===undefined));
 });
 
-test('elite bonus tables use actual chapter provenance, guarantee an unowned compatible extra item, and label it', () => {
+test('custom elite pool derivation remains chapter-local and the preview labels the choice model', () => {
   const chapter=CHAPTERS[5];
   const catalogue=GEAR.filter(item=>item.chapter===4).map(item=>({...item,id:`qa-${item.id}`,chapter:6}));
   // Synthetic catalogue is a reward plumbing test, never a balance loadout.
@@ -88,7 +88,7 @@ test('elite bonus tables use actual chapter provenance, guarantee an unowned com
   const first=rollBossBonusLoot(table,[],'shaman',()=>0,catalogue);
   assert.equal(first.length,1);
   assert.equal(rollBossBonusLoot(table,table,'shaman',()=>0,catalogue).length,0);
-  assert.match(encounterLootMarkup([],first,false,true),/Elite Bonus/);
+  assert.match(encounterLootMarkup([],first,false,true),/Elite Choice/);
 });
 
 test('all Era II normal and elite fights reject idle and single-Stream safe clears with a full actual Era I catalogue loadout', () => {

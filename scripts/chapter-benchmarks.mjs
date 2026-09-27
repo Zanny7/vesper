@@ -48,8 +48,8 @@ function snapshot(equipment, healerId, chapter) {
   };
 }
 
-// Gear readiness cannot be claimed for chapters still awaiting real rewards.
-const chapters = CHAPTERS.filter(chapter => chapter.contentStatus !== 'shell' && chapter.balanceStatus !== 'awaiting-gear').map((chapter, chapterIndex) => {
+// BAT-77/BAT-68 readiness and talent presets cover Era I; BAT-98 owns Era II acquisition.
+const chapters = CHAPTERS.filter(chapter => chapter.ordinal <= 4).map((chapter, chapterIndex) => {
   const paths = routes(chapter);
   const routeLengths = [...new Set(paths.map(path => path.length))];
   const byTier = Object.fromEntries(tiers.map((tier, tierIndex) => {
@@ -98,4 +98,4 @@ console.log(JSON.stringify({ samplesPerHealerTier: samples, seedBase: 77000, slo
   inheritanceModel: 'recursive', priorBossApproachRoutes: 1, priorBossRewards: true,
   priorReadinessClears: { veryGood: [2], average: [3], weak: [4, 5] },
   priorExtraClears: { veryGood: [0], average: [0, 1], weak: [1, 2] },
-  skillProfiles: SKILL_PROFILES, talentPresets: Object.fromEntries(CHAPTERS.map((_, index) => [index + 1, Object.fromEntries(healerIds.map(healerId => [healerId, index === 3 ? ['twin-penance', 'sanctuary', 'twin-rejuvenation', 'tranquility'].filter(variant => healerId === 'priest' ? variant === 'twin-penance' || variant === 'sanctuary' : variant === 'twin-rejuvenation' || variant === 'tranquility').map(variant => allocations(healerId, index, true, variant)) : allocations(healerId, index, true, 'core')]))])), chapters }, null, 2));
+  skillProfiles: SKILL_PROFILES, talentPresets: Object.fromEntries(CHAPTERS.slice(0,4).map((_, index) => [index + 1, Object.fromEntries(healerIds.map(healerId => [healerId, index === 3 ? ['twin-penance', 'sanctuary', 'twin-rejuvenation', 'tranquility'].filter(variant => healerId === 'priest' ? variant === 'twin-penance' || variant === 'sanctuary' : variant === 'twin-rejuvenation' || variant === 'tranquility').map(variant => allocations(healerId, index, true, variant)) : allocations(healerId, index, true, 'core')]))])), chapters }, null, 2));

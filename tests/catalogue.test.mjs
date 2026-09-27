@@ -6,7 +6,7 @@ import { ITEM_OWNERS, slotsForOwner, validateCatalogue, canEquipItem, averageIte
 import { Equipment } from '../src/gear.js';
 import { itemIcon, itemDetails } from '../src/equipment.js';
 test('Chapters 1–4 cover every character slot with valid roles and metadata',()=>{
-  assert.deepEqual(validateCatalogue(GEAR),[]); assert.equal(GEAR.length,138);
+  assert.deepEqual(validateCatalogue(GEAR),[]); assert.equal(GEAR.filter(item=>item.chapter<=4).length,138);
   assert.equal(new Set(GEAR.map(i=>i.name)).size,GEAR.length);
   for(const chapter of [1,2,3,4]) for(const owner of ITEM_OWNERS) {
     const gear=new Equipment();
@@ -19,7 +19,7 @@ test('Chapters 1–4 cover every character slot with valid roles and metadata',(
   }
   for(const item of GEAR) {
     const [min,max]=GEAR_CHAPTER_BANDS[item.chapter]; assert.ok(item.itemLevel>=min && item.itemLevel<=max);
-    assert.match(item.id,/^ch[1-4]-/); assert.ok(item.flavor.length>15);
+    assert.match(item.id,/^ch[1-8]-/); assert.ok(item.flavor.length>15);
   }
 });
 test('icons are distinct local illustrations and details display eligibility',()=>{

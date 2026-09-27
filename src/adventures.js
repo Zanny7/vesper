@@ -262,7 +262,7 @@ export function setupAdventures({ startEncounter, onProgress, onRunChange, runs,
       if (!runs.finish(chapter, node, game)) return false;
       if (game.status === 'defeat') { active = null; selected = nodes[0].id; render(); return true; }
       onVictory?.(node, chapter);
-      onLoot?.(awardLoot?.(node) || []);
+      onLoot?.(awardLoot?.(node, `${runs.runs[chapter.id].attemptId}:${node.id}`) || []);
       persistProgress(node); return true;
     },
   };

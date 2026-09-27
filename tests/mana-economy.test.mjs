@@ -9,7 +9,7 @@ const hash = value => createHash('sha256').update(JSON.stringify(value)).digest(
 test('BAT-93 Mana baseline preserves spells, talents and all other item fields', () => {
   assert.equal(CONFIG.encounterManaRecovery, .2);
   assert.equal(CONFIG.manaRegen, 3);
-  for (const item of GEAR) if (item.stats.manaRegen != null) {
+  for (const item of GEAR.filter(item=>item.chapter<=4)) if (item.stats.manaRegen != null) {
     assert.ok(Math.abs(item.stats.manaRegen - baseline.itemRegen[item.id] * 1.5) < 1e-10, item.id);
   }
   // Encounter scope is guarded against the post-BAT-93 snapshot in
@@ -17,6 +17,6 @@ test('BAT-93 Mana baseline preserves spells, talents and all other item fields',
   const fixedHealers = Object.fromEntries(Object.entries(HEALERS).map(([id, { manaRegen, ...healer }]) => [id, healer]));
   assert.equal(hash(fixedHealers), baseline.fixedHashes.healers);
   assert.equal(hash(SHAMAN_TALENT_VALUES), baseline.fixedHashes.shamanTalents);
-  const withoutRegen = GEAR.map(({ stats: { manaRegen, ...stats }, ...item }) => ({ ...item, stats }));
+  const withoutRegen = GEAR.filter(item=>item.chapter<=4).map(({ stats: { manaRegen, ...stats }, ...item }) => ({ ...item, stats }));
   assert.equal(hash(withoutRegen), baseline.fixedHashes.gearWithoutRegen);
 });

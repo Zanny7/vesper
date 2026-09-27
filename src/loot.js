@@ -1,4 +1,4 @@
-import { CHAPTERS, GEAR, GEAR_LOOT_WEIGHTS } from './data.js';
+import { CHAPTERS, GEAR, GEAR_LOOT_WEIGHTS, ERA2_LOOT_TABLES, ERA2_ELITE_LOOT_TABLES, ELITE_REWARD_CHANCE } from './data.js';
 import { canEquipItem } from './item-model.js';
 
 // Armor is its own category. Item count cannot dilute shared throughput rewards.
@@ -24,6 +24,10 @@ export function buildNormalLootTables(chapters = CHAPTERS, catalogue = GEAR) {
     };
     chapter.nodes.forEach((node, encounterIndex) => {
       if (!node.encounter) return;
+      const authored = ERA2_LOOT_TABLES[node.encounter];
+      if (authored?.every(id => items.some(item => item.id === id))) {
+        tables[node.encounter] = [...authored]; return;
+      }
       const choose = (pool, index) => pool.length ? [pool[index % pool.length].id] : [];
       const healerSlot = ['Weapon', 'Tome', 'Trinket'][depth(node) % 3];
       tables[node.encounter] = [
@@ -67,15 +71,24 @@ export function buildBossBonusLootTables(chapters = CHAPTERS, catalogue = GEAR, 
 export const BOSS_BONUS_LOOT_TABLES = Object.freeze(buildBossBonusLootTables());
 export const eligibleBossBonusLootForEncounter = (encounterId, ownedIds, healerId, catalogue = GEAR) => eligibleLootPool(BOSS_BONUS_LOOT_TABLES[encounterId], ownedIds, healerId, catalogue);
 
-// Optional elite victories use the same guaranteed-extra-item roll as bosses.
-// The pool fills from real chapter gear; empty catalogues award nothing.
+// Optional elite choice pools overlap normal routes; they carry no exclusive power.
 export function buildEliteBonusLootTables(chapters = CHAPTERS, catalogue = GEAR, normalTables = buildNormalLootTables(chapters, catalogue)) {
   return Object.fromEntries(chapters.flatMap((chapter, index) => chapter.nodes.filter(node => node.kind === 'elite')
-    .map(node => [node.encounter, catalogue.filter(item => item.chapter === (chapter.ordinal ?? index + 1)
-      && !normalTables[node.encounter]?.includes(item.id)).map(item => item.id)])));
+    .map(node => {
+      const items = catalogue.filter(item => item.chapter === (chapter.ordinal ?? index + 1));
+      const authored = ERA2_ELITE_LOOT_TABLES[node.encounter];
+      return [node.encounter, authored?.every(id => items.some(item => item.id === id)) ? [...authored]
+        : items.filter(item => !normalTables[node.encounter]?.includes(item.id)).slice(0, 6).map(item => item.id)];
+    })));
 }
 export const ELITE_BONUS_LOOT_TABLES = Object.freeze(buildEliteBonusLootTables());
 export const eligibleEliteBonusLootForEncounter = (encounterId, ownedIds, healerId, catalogue = GEAR) => eligibleLootPool(ELITE_BONUS_LOOT_TABLES[encounterId], ownedIds, healerId, catalogue);
+
+// The successful roll exposes every eligible choice; it never selects an item.
+export function rollEliteRewardChoice(encounterId, ownedIds, healerId, rng = Math.random, catalogue = GEAR) {
+  const succeeded = rng() < ELITE_REWARD_CHANCE;
+  return { succeeded, items: succeeded ? eligibleEliteBonusLootForEncounter(encounterId, ownedIds, healerId, catalogue) : [] };
+}
 
 export function normalDropCount(rng = Math.random) {
   const roll = rng();

@@ -6,12 +6,12 @@ import { routes, seeded } from '../scripts/boss-balance.mjs';
 const sequence=values=>{let i=0;return ()=>values[i++]??0;};
 const authoredChapters = CHAPTERS.filter(chapter => GEAR.some(item => item.chapter === chapter.ordinal));
 test('every normal encounter offers all four roles without duplicates',()=>{
-  for(const [c,chapter] of authoredChapters.entries()) for(const node of chapter.nodes) {
+  for(const [c,chapter] of authoredChapters.entries()) for(const node of chapter.nodes.filter(node=>node.encounter)) {
     const table=NORMAL_LOOT_TABLES[node.encounter]; assert.equal(new Set(table).size,table.length);
     const pool=eligibleLootPool(table,[],'priest');assert.equal(pool.length,table.length);
     assert.ok(pool.every(i=>i.chapter===c+1));assert.deepEqual(new Set(pool.map(i=>i.role)),new Set(['healer','all','tank','damage']));
     assert.equal(pool.filter(i=>i.role==='healer').length,1);
-    assert.equal(pool.filter(i=>i.role==='all').length,3);
+    assert.equal(pool.filter(i=>i.role==='all').length,chapter.ordinal<=4?3:6);
   }
 });
 test('normal counts preserve 50/35/15 boundaries',()=>{

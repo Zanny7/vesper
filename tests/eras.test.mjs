@@ -81,8 +81,8 @@ test('utility visits heal once per run and preserve Mana and fallen allies witho
   }
 });
 
-test('all existing gear is silver Era I and future Era II gear uses the same green surfaces', () => {
-  for (const item of GEAR) {
+test('Era I gear stays silver and authored Era II gear uses green surfaces', () => {
+  for (const item of GEAR.filter(item=>item.chapter<=4)) {
     assert.equal(itemEraLabel(item), 'Era I');
     assert.match(itemBorderAttributes(item), /--item-era-border:#aab2b9/);
     assert.match(itemDetails(item), /Era I/);
@@ -98,18 +98,18 @@ test('all existing gear is silver Era I and future Era II gear uses the same gre
   assert.ok(Object.values(tables).some(table => table.includes(future.id)), 'chapter ownership works when passed a subset');
   assert.equal(Object.hasOwn(tables, 'null'), false, 'shrines do not get combat loot tables');
   for (const shell of CHAPTERS.slice(4)) for (const node of shell.nodes) {
-    if (node.encounter) assert.deepEqual(NORMAL_LOOT_TABLES[node.encounter], []);
-    if (node.kind === 'boss') assert.deepEqual(BOSS_BONUS_LOOT_TABLES[node.encounter], []);
+    if (node.encounter) assert.ok(NORMAL_LOOT_TABLES[node.encounter].length > 0);
+    if (node.kind === 'boss') assert.ok(BOSS_BONUS_LOOT_TABLES[node.encounter].length > 0);
   }
 });
 
-test('Era II has independent authored profiles with an explicit gear blocker and encounter enrage overrides', () => {
+test('Era II has independent authored profiles with pending final encounter tuning and encounter enrage overrides', () => {
   const profile = encounter => ({ maxHp: encounter.maxHp, strike: encounter.strike, mechanics: encounter.mechanics, adds: encounter.adds });
   for (const chapter of CHAPTERS.slice(4)) for (const node of chapter.nodes.filter(node => node.encounter)) {
     const encounter = CHAPTER_ENCOUNTERS[node.encounter];
     assert.ok(['huntsman', 'roses', 'chapel', 'duchess'].every(id => JSON.stringify(profile(encounter)) !== JSON.stringify(profile(CHAPTER_ENCOUNTERS[id]))));
     assert.equal(encounter.contentStatus, 'authored');
-    assert.equal(encounter.balanceStatus, 'awaiting-gear');
+    assert.equal(encounter.balanceStatus, 'awaiting-tuning');
     assert.ok(encounter.enrageSeconds >= 180);
   }
   for (const seconds of [undefined, 180]) {

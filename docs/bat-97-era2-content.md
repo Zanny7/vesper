@@ -1,5 +1,10 @@
 # BAT-97 — Era II content and provisional pressure
 
+**BAT-98 update:** actual Chapter 5–8 gear and reward progression now exist.
+See [the gear/reward handoff](bat-98-era2-gear.md) for real previous/partial/prepared
+loadouts. The original evidence below is the pre-gear checkpoint; BAT-97 still
+requires final tuning against that new progression before closure.
+
 **Content is authored; final numerical acceptance remains blocked.** The
 repository has no Chapter 5–8 items or reward pools. These encounters must be
 retuned and accepted against actual Era II progression before BAT-97 is closed.

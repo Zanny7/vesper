@@ -20,7 +20,7 @@ test('retired prototype items are unavailable and saved references grant no stat
 });
 test('authored catalogue has valid metadata, supported stats and existing icons', () => {
   assert.deepEqual(validateCatalogue(GEAR), []);
-  assert.deepEqual(GEAR_CHAPTER_BANDS, { 1: [1, 3], 2: [4, 6], 3: [7, 9], 4: [10, 12] });
+  assert.deepEqual(GEAR_CHAPTER_BANDS, { 1: [1, 3], 2: [4, 6], 3: [7, 9], 4: [10, 12], 5: [13, 15], 6: [16, 18], 7: [19, 21], 8: [22, 24] });
   for (const item of GEAR) assert.ok(existsSync(new URL(`..${item.icon}`, import.meta.url)));
   for (const stat of ITEM_STATS.healer.filter(stat => !['haste','crit'].includes(stat))) assert.deepEqual(validateCatalogue([{ ...GEAR[0], stats: { [stat]: 1 } }]), []);
   assert.deepEqual(slotsForOwner('healer'), []);
@@ -47,7 +47,7 @@ test('legacy migration preserves only valid equipped items and writes v2', () =>
   storage.setItem('vesper-equipment-v1', JSON.stringify({ priest: { Weapon: 'test-priest-censer', Head: 'test-aldric-shield' } }));
   const gear = new Equipment(storage, undefined, GEAR);
   assert.deepEqual(gear.collection().map(item => item.id), ['test-priest-censer']);
-  assert.equal(JSON.parse(storage.getItem('vesper-equipment-v2')).version, 4);
+  assert.equal(JSON.parse(storage.getItem('vesper-equipment-v2')).version, 5);
   gear.equip({ id: 'priest' }, 'Weapon', '');
   assert.equal(new Equipment(storage, undefined, GEAR).item({ id: 'priest' }, 'Weapon'), null);
 });

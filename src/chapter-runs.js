@@ -47,6 +47,7 @@ export class ChapterRuns {
     for (const [id, run] of Object.entries(this.runs)) {
       const chapter = CHAPTERS.find(candidate => candidate.id === id);
       if (!chapter || !run || typeof run !== 'object' || run.inEncounter || run.status === 'failed') { delete this.runs[id]; continue; }
+      run.attemptId ||= crypto.randomUUID();
       run.completed = [...restoreProgress(run.completed, chapter.nodes)];
       run.status = chapterComplete(new Set(run.completed), chapter.nodes) ? 'complete' : 'active';
       if (run.status === 'active' && !run.resources) delete this.runs[id];
@@ -77,7 +78,7 @@ export class ChapterRuns {
   }
   restart(chapter, party) {
     for (const other of CHAPTERS) if (other.id !== chapter.id && this.runs[other.id]?.status === 'active') delete this.runs[other.id];
-    const run = { status: 'active', completed: [], resources: fullResources(party), inEncounter: null };
+    const run = { status: 'active', completed: [], resources: fullResources(party), inEncounter: null, attemptId: crypto.randomUUID() };
     this.runs[chapter.id] = run; this.save(); return run;
   }
   reconcileParty(party) {

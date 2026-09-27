@@ -14,10 +14,11 @@ import { setupAdventures } from './adventures.js';
 import { setupChapters } from './chapters.js';
 import { setupTeam } from './team.js';
 import { Equipment } from './gear.js';
+import { setupEliteRewards } from './elite-rewards.js';
 import { roleLabel } from './item-model.js';
 import { itemBorderAttributes, itemEraLabel } from './eras.js';
 import { setupEquipment, itemIcon } from './equipment.js';
-import { BOSS_BONUS_LOOT_TABLES, ELITE_BONUS_LOOT_TABLES, NORMAL_LOOT_TABLES, eligibleNormalLootForEncounter, eligibleBossBonusLootForEncounter, eligibleEliteBonusLootForEncounter, rollBossBonusLoot, rollNormalLoot } from './loot.js';
+import { BOSS_BONUS_LOOT_TABLES, NORMAL_LOOT_TABLES, eligibleNormalLootForEncounter, eligibleBossBonusLootForEncounter, eligibleEliteBonusLootForEncounter, rollBossBonusLoot, rollNormalLoot, rollEliteRewardChoice } from './loot.js';
 import { activeHealer, loadActiveHealer, healerHint } from './healers.js';
 import { abilityTooltip, renderAbilityCooldown } from './ability-presentation.js';
 import { abilityIcon } from './ability-icons.js';
@@ -41,6 +42,7 @@ setupEncounterSpeedControl(encounterSpeed);
 setupMusicSettings(music);
 const runs = new ChapterRuns(abilityStorage);
 const equipment = new Equipment(abilityStorage);
+let eliteRewardUI;
 const loadout = healerId => {
   const party = equipment.party(healerId), spells = abilitySettings.spells(healerId);
   const adjusted = healerId === 'priest'
@@ -204,6 +206,7 @@ function renderUI(){
   const logKey=game.history.map(l=>l.time+l.text).join('|');
   if(logKey!==lastLog){$('#combat-log').innerHTML=game.history.slice(0,6).map(l=>`<div class="log-entry ${l.kind}"><time>${clock(l.time)}</time><span>${l.text}</span></div>`).join('')||'<p class="empty-log">The sanctum is still.<br>For now.</p>';lastLog=logKey;}
   if(game.status!==lastStatus){
+    eliteRewardUI?.refresh();
     if (['victory','defeat'].includes(game.status)) music.stop({ fade: true });
     document.body.classList.toggle('encounter-overlay', game.status !== 'running');
     lastStatus=game.status;$('#scene-overlay').hidden=game.status==='running';
@@ -262,13 +265,17 @@ const adventures = setupAdventures({
   onProgress: completed => { talents.migrateLegacyCampaign(activeHealerId, completed); chapters.refresh(completed); },
   onRunChange: completed => chapters.refresh(completed),
   onVictory: (node, chapter) => talents.awardEncounter(activeHealerId, chapter, node),
-  awardLoot: node => {
+  awardLoot: (node, victoryId) => {
     const rewards = rollNormalLoot(NORMAL_LOOT_TABLES[node.encounter], equipment.ownedIds, activeHealerId);
     if (node.kind === 'boss') rewards.push(...rollBossBonusLoot(BOSS_BONUS_LOOT_TABLES[node.encounter], [...equipment.ownedIds, ...rewards.map(item => item.id)], activeHealerId));
-    if (node.kind === 'elite') rewards.push(...rollBossBonusLoot(ELITE_BONUS_LOOT_TABLES[node.encounter], [...equipment.ownedIds, ...rewards.map(item => item.id)], activeHealerId));
     for (const item of rewards) equipment.acquire(item.id);
+    if (node.kind === 'elite') equipment.recordEliteReward(victoryId, node.encounter, rollEliteRewardChoice(node.encounter, equipment.ownedIds, activeHealerId));
     return rewards;
   },
-  onLoot: rewards => { lastLoot = rewards; gearUI.renderInventory(); team.refresh(); },
+  onLoot: rewards => { lastLoot = rewards; gearUI.renderInventory(); team.refresh(); eliteRewardUI?.refresh(true); },
 });
+eliteRewardUI = setupEliteRewards({ equipment, onClaim: item => {
+  lastLoot.push(item); gearUI.renderInventory(); team.refresh(); adventures.refresh();
+  lastStatus = ''; renderUI();
+} });
 renderUI();requestAnimationFrame(frame);

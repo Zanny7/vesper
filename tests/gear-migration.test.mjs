@@ -13,7 +13,7 @@ test('all obsolete healer ids migrate deterministically in inventory, bag and eq
     assert.deepEqual([...gear.ownedIds],[id]); assert.deepEqual(locations(gear),[id]);
     assert.equal(gear.item({id:'shaman'},item.slot).id,id);
     assert.deepEqual(new Equipment(storage).equipped,gear.equipped);
-    assert.equal(JSON.parse(storage.getItem('vesper-equipment-v2')).version,4);
+    assert.equal(JSON.parse(storage.getItem('vesper-equipment-v2')).version,5);
   }
 });
 test('invalid new role assignments return to bag without losing ownership or duplicating bag ids',()=>{

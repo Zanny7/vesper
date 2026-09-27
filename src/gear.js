@@ -1,4 +1,4 @@
-import { HEALERS, partyForHealer, GEAR, SLOTS, GEAR_ID_MIGRATIONS } from './data.js';
+import { HEALERS, partyForHealer, GEAR, SLOTS, GEAR_ID_MIGRATIONS, ERA2_ELITE_LOOT_TABLES } from './data.js';
 import { slotsForOwner, eligibleItems, canEquipItem } from './item-model.js';
 export { GEAR, SLOTS } from './data.js';
 
@@ -27,12 +27,12 @@ export class Equipment {
     this.isLocked = isLocked;
     this.catalogue = catalogue;
     this.itemById = id => catalogue.find(item => item.id === id) || null;
-    this.storage = storage; this.equipped = {}; this.ownedIds = new Set(); this.bagSlots = [];
+    this.storage = storage; this.equipped = {}; this.ownedIds = new Set(); this.bagSlots = []; this.eliteRewards = Object.create(null);
     try {
       const raw = storage?.getItem(storageKey);
       if (raw != null) {
         const saved = JSON.parse(raw);
-        if ([2, 3, 4].includes(saved?.version) && isRecord(saved)) {
+        if ([2, 3, 4, 5].includes(saved?.version) && isRecord(saved)) {
           const migrate = id => migratedId(id, catalogue);
           this.ownedIds = new Set((Array.isArray(saved.owned) ? saved.owned : []).map(migrate).filter(id => this.itemById(id)));
           const assignments = migratedAssignments(saved.equipped, catalogue, storage?.getItem('vesper-active-healer-v1'));
@@ -46,6 +46,14 @@ export class Equipment {
             bagged.add(id); return id;
           });
           for (const id of this.ownedIds) if (!equipped.has(id) && !this.bagSlots.includes(id)) this.placeInBag(id);
+          for (const [id, reward] of Object.entries(isRecord(saved.eliteRewards) ? saved.eliteRewards : {})) {
+            const table = ERA2_ELITE_LOOT_TABLES[reward?.encounter];
+            if (!id || !Array.isArray(table) || !['pending', 'claimed', 'failed', 'exhausted'].includes(reward.status)) continue;
+            const choices = [...new Set(Array.isArray(reward.choices) ? reward.choices : [])].filter(itemId => table.includes(itemId) && this.itemById(itemId));
+            if (reward.status === 'pending' && !choices.length) continue;
+            if (reward.status === 'claimed' && (!table.includes(reward.chosen) || !this.itemById(reward.chosen))) continue;
+            this.eliteRewards[id] = { encounter: reward.encounter, status: reward.status, choices, ...(reward.status === 'claimed' ? { chosen: reward.chosen } : {}) };
+          }
           this.save();
         }
       } else {
@@ -57,7 +65,30 @@ export class Equipment {
       }
     } catch { /* Malformed storage starts an empty session. */ }
   }
-  save() { try { this.storage?.setItem(storageKey, JSON.stringify({ version: 4, owned: [...this.ownedIds], equipped: this.equipped, bag: this.bagSlots })); } catch { /* Keep the session selection. */ } }
+  save() { try { this.storage?.setItem(storageKey, JSON.stringify({ version: 5, owned: [...this.ownedIds], equipped: this.equipped, bag: this.bagSlots, eliteRewards: this.eliteRewards })); } catch { /* Keep the session selection. */ } }
+  recordEliteReward(id, encounter, roll) {
+    if (!id || Object.hasOwn(this.eliteRewards, id) || !Array.isArray(ERA2_ELITE_LOOT_TABLES[encounter])) return false;
+    const choices = roll.items.map(item => item.id).filter(itemId => ERA2_ELITE_LOOT_TABLES[encounter].includes(itemId) && this.itemById(itemId) && !this.owns(itemId));
+    this.eliteRewards[id] = { encounter, choices: [...new Set(choices)], status: !roll.succeeded ? 'failed' : choices.length ? 'pending' : 'exhausted' };
+    this.save(); return true;
+  }
+  pendingEliteRewards() {
+    return Object.entries(this.eliteRewards).filter(([, reward]) => reward.status === 'pending').map(([id, reward]) => ({ id, ...reward,
+      items: reward.choices.map(itemId => this.itemById(itemId)).filter(item => item && !this.owns(item.id)),
+    }));
+  }
+  claimEliteReward(id, chosen) {
+    const reward = this.eliteRewards[id], item = this.itemById(chosen);
+    if (this.isLocked() || reward?.status !== 'pending' || !reward.choices.includes(chosen) || !item || this.owns(chosen)) return null;
+    // Ownership and the spent claim are persisted in one inventory write.
+    this.ownedIds.add(chosen); this.placeInBag(chosen);
+    reward.status = 'claimed'; reward.chosen = chosen; this.save(); return item;
+  }
+  dismissExhaustedEliteReward(id) {
+    const reward = this.pendingEliteRewards().find(reward => reward.id === id);
+    if (!reward || reward.items.length) return false;
+    this.eliteRewards[id].status = 'exhausted'; this.save(); return true;
+  }
   switchHealer(from, to) {
     if (this.isLocked() || from === to || !Object.hasOwn(HEALERS, from) || !Object.hasOwn(HEALERS, to)) return false;
     for (const [slot, id] of Object.entries(this.equipped[from] || {})) {

@@ -127,8 +127,8 @@ export function evaluate(samples = 4) {
           bossReached:reached.length,bossEntryMana:mean(reached,'bossEntryMana')};
       })) };
   });
-  return { schemaVersion:1,samples,referenceHealer:'shaman',finalBalanceAcceptance:'blocked: no authored Chapters 5–8 gear/rewards',
-    unavailableStates:['previous-chapter gear for Chapters 6–8','partial current-chapter gear','prepared current-chapter gear'],
+  return { schemaVersion:1,samples,referenceHealer:'shaman',finalBalanceAcceptance:'pending: BAT-97 must validate actual Era II progression using scripts/era2-gear.mjs',
+    unavailableStates:[],
     note:'Prior gear acquisition assumes Era I victories. Chapter 5 prior-entry is a first-visit probe; later chapters are old-gear stress probes. Deterministic outcomes are not human probabilities.',
     baseline:{recovery:CONFIG.encounterManaRecovery,baseRegen:CONFIG.manaRegen},chapters,loadouts,probes,routes:routeRows };
 }

@@ -8,7 +8,7 @@ import { routes } from '../scripts/boss-balance.mjs';
 
 test('BAT-94 changes only the identified Chapter 4 normal encounters', () => {
   assert.deepEqual(CONFIG,baseline.config);
-  assert.deepEqual(GEAR,baseline.gear);
+  assert.deepEqual(GEAR.filter(item=>item.chapter<=4),baseline.gear);
   assert.deepEqual(HEALERS.shaman,baseline.shaman);
   const changed = Object.keys(baseline.encounters).filter(id => JSON.stringify(CHAPTER_ENCOUNTERS[id]) !== JSON.stringify(baseline.encounters[id]));
   assert.deepEqual(changed,['huntsman','roses','procession','garden','cryptkeeper']);
