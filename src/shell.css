@@ -25,6 +25,7 @@
   padding: 7px; border: 1px solid #9f8d5d70; border-radius: 5px;
   background: #102128ee; box-shadow: 0 5px 25px #0007; backdrop-filter: blur(8px);
 }
+body[data-screen="encounter"] .utility-controls { display: none; }
 .utility-button { display: grid; place-items: center; width: 40px; height: 40px; border: 1px solid #b4a27055; border-radius: 3px; background: #28332e; color: #dec79a; }
 .utility-button svg { width: 24px; height: 24px; }
 .utility-button:hover:not(:disabled), .utility-button[aria-expanded="true"] { border-color: #e2c68c; background: #3d4230; }

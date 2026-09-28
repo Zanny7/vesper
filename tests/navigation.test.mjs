@@ -2,10 +2,12 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 
-const [html, shell, team] = await Promise.all([
+const [html, shell, team, shellCss, rewardCss] = await Promise.all([
   readFile(new URL('../index.html', import.meta.url), 'utf8'),
   readFile(new URL('../src/shell.js', import.meta.url), 'utf8'),
   readFile(new URL('../src/team.js', import.meta.url), 'utf8'),
+  readFile(new URL('../src/shell.css', import.meta.url), 'utf8'),
+  readFile(new URL('../src/elite-rewards.css', import.meta.url), 'utf8'),
 ]);
 
 test('fixed utility rail contains only Inventory and Settings stays beside help', () => {
@@ -25,4 +27,6 @@ test('equipment is managed from Team and active encounters restrict Inventory on
   assert.match(shell, /button\.hidden = current === 'encounter' && restricted/);
   assert.match(shell, /current === 'encounter' && restrictedUtilities\.has\(next\)/);
   assert.doesNotMatch(shell, /onEquipmentShortcut|next === 'equipment'/);
+  assert.match(shellCss, /body\[data-screen="encounter"\] \.utility-controls\s*\{\s*display:\s*none/);
+  assert.match(rewardCss, /body\[data-screen="encounter"\] \.elite-reward-launcher\s*\{\s*display:\s*none/);
 });

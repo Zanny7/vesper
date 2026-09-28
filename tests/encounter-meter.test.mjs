@@ -10,15 +10,21 @@ test('contribution percentages use the supplied total and guard empty totals', (
 });
 
 test('meter pins the relevant footer outside the fixed-height scrolling list', async () => {
-  const [html, css, source] = await Promise.all([
+  const [html, css, source, abilityBarCss] = await Promise.all([
     readFile(new URL('../index.html', import.meta.url), 'utf8'),
     readFile(new URL('../src/encounter-meter.css', import.meta.url), 'utf8'),
     readFile(new URL('../src/encounter-meter.js', import.meta.url), 'utf8'),
+    readFile(new URL('../src/ability-bar.css', import.meta.url), 'utf8'),
   ]);
   assert.match(html, /class="meter-body"><\/div><div class="meter-pinned"><\/div>/);
   assert.match(css, /\.encounter-meter\s*\{[^}]*display:\s*flex/);
+  assert.match(css, /\.encounter-meter\s*\{[^}]*position:\s*fixed[^}]*right:\s*18px[^}]*bottom:\s*18px/);
+  assert.match(css, /height:\s*264px/);
+  assert.match(css, /body:not\(\[data-screen="encounter"\]\) \.encounter-meter\s*\{\s*display:\s*none/);
   assert.match(css, /\.meter-body\s*\{[^}]*flex:\s*1 1 auto;[^}]*overflow-y:\s*auto/);
   assert.match(source, /pinnedMarkup = overhealSummary\(\)/);
+  assert.ok(html.indexOf('immersive.css') < html.indexOf('ability-bar.css'), 'the immersive action panel override loads after the immersive layout');
+  assert.match(abilityBarCss, /\.immersive \.action-panel\s*\{[^}]*transform:\s*none/);
   assert.ok(source.includes('aria-label="${displayNumber(perSecond)} ${unit} per second, ${displayNumber(amount)} total ${unit}"'));
   assert.ok(source.includes('>(${displayNumber(perSecond)}) ${displayNumber(amount)}</strong>'));
   assert.match(source, /modeButton\.dataset\.meterMode; detail = false; previousBody = ''; previousPinned = ''; render\(\)/);
