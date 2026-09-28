@@ -28,6 +28,7 @@ import { createMusicController } from './music.js';
 import { setupMusicSettings } from './music-settings.js';
 import { createEncounterTrackSelector } from './soundtrack.js';
 import { createEncounterSpeed, setupEncounterSpeedControl } from './encounter-speed.js';
+import { setupEncounterMeter } from './encounter-meter.js';
 import { CONFIG, CHAPTER_ENCOUNTERS, ALL_ADVENTURES, CHAPTERS } from './data.js';
 
 const $ = selector => document.querySelector(selector);
@@ -58,6 +59,7 @@ const party = healerId => loadout(healerId).party;
 const resetLoadout = healerId => { const next = loadout(healerId); game.setLoadout(next.party, next.spells); };
 let talents;
 const game = new Combat(CHAPTER_ENCOUNTERS.sentinel, Math.random, equipment.party(activeHealerId), abilitySettings.spells(activeHealerId)), scene = new Battlefield($('#battlefield'));
+const meter = setupEncounterMeter($('#encounter-meter'), game);
 const equipmentLocked = () => ['running', 'paused'].includes(game.status);
 talents = new TalentProgression(abilityStorage, TALENT_TREES, equipmentLocked);
 resetLoadout(activeHealerId);
@@ -111,7 +113,7 @@ function prepareEncounterUI() {
 prepareEncounterUI();
 function toast(message){$('#toast').textContent=message;$('#toast').classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>$('#toast').classList.remove('show'),2200);}
 function cast(id){const result=game.begin(id,hovered||selected);if(!result.ok)toast(result.reason);}
-function restart(encounter, resources){game.reset(encounter, resources);prepareEncounterUI();scene.reset();selected='tank';hovered=null;accumulator=0;lastStatus='';lastLog='';lastLoot=[];$('#toast').classList.remove('show');renderUI();}
+function restart(encounter, resources){game.reset(encounter, resources);meter.reset();prepareEncounterUI();scene.reset();selected='tank';hovered=null;accumulator=0;lastStatus='';lastLog='';lastLoot=[];$('#toast').classList.remove('show');renderUI();}
 function begin(){if(['victory','defeat'].includes(game.status)){shell.openChapter();return;}if(game.status==='paused')game.pause();else game.start();renderUI();}
 $('#begin').addEventListener('click',begin);
 $('#restart').textContent = '↻ Restart chapter';
@@ -137,8 +139,7 @@ document.addEventListener('visibilitychange',()=>{last=performance.now();accumul
 window.addEventListener('blur',()=>{hovered=null;});
 function renderUI(){
   if (['victory', 'defeat'].includes(game.status)) {
-    const finished = adventures.recordVictory(game);
-    if (game.status === 'defeat' && finished) { shell.openChapter(); return; }
+    adventures.recordVictory(game);
   }
   shell.refresh();
   for(const frame of frames){
@@ -173,6 +174,7 @@ function renderUI(){
   $('#encounter-phase').textContent = game.phase ? `${game.phase.name} · ${game.phase.hint}` : '';
   $('#alive-count').textContent=`${game.party.filter(p=>p.hp>0).length} / 5`;
   $('#healing-stat').innerHTML=`EFFECTIVE HEALING <b>${number(game.stats.effective)}</b>`;
+  meter.render();
   const cast=game.cast;
   $('.casting-row').classList.toggle('is-casting', !!cast);
   $('#cast-name').textContent=cast?`${cast.spell.channel?'Channeling: ':''}${cast.spell.name}`:'Ready for your command';
@@ -239,7 +241,8 @@ function frame(now){
     accumulator+=gameplayDt;
     while(accumulator>=CONFIG.step){game.step();accumulator-=CONFIG.step;}
   }else accumulator=0;
-  scene.receive(game.drainEvents());if(shell.isEncounter())scene.render(game,dt,selected,hovered,gameplayDt);
+  const events = game.drainEvents();
+  meter.consume(events);scene.receive(events);if(shell.isEncounter())scene.render(game,dt,selected,hovered,gameplayDt);
   uiElapsed+=dt;if(uiElapsed>=1/30){renderUI();uiElapsed=0;}
   requestAnimationFrame(frame);
 }
@@ -247,7 +250,7 @@ const gearUI = setupEquipment({ equipment, isLocked: equipmentLocked, onChange: 
   runs.reconcileParty(party(activeHealerId)); resetLoadout(activeHealerId);
   buildHealerUI(); prepareEncounterUI(); scene.reset(); renderUI(); team.refresh(); adventures.refresh();
 } });
-const shell = setupShell({ game, view, resetEncounter: restart, onAbandon: () => adventures.abandon(), onNavigate: destination => { if (destination !== 'encounter') music.stop({ fade: false }); gearUI.close(); if (destination === 'chapter') adventures.refresh(); }, onEncounterStart: track => music.play(track), onEquipmentShortcut: () => team.selectHealer(activeHealerId), onInventoryOpen: () => gearUI.renderInventory(), onUtilityClose: () => gearUI.close() });
+const shell = setupShell({ game, view, resetEncounter: restart, onAbandon: () => adventures.abandon(), onNavigate: destination => { if (destination !== 'encounter') { music.stop({ fade: false }); meter.reset(); } gearUI.close(); if (destination === 'chapter') adventures.refresh(); }, onEncounterStart: track => music.play(track), onInventoryOpen: () => gearUI.renderInventory(), onUtilityClose: () => gearUI.close() });
 const team = setupTeam({ settings: abilitySettings, onAbilitiesChange: () => { buildHealerUI(); renderUI(); }, paintPortrait: (canvas, member, width) => scene.paintPortrait(canvas, member, width), onHealerChange: healerId => {
   activeHealerId = healerId; runs.reconcileParty(party(healerId)); resetLoadout(healerId);
   selected = 'tank'; hovered = null; buildHealerUI(); prepareEncounterUI(); scene.reset(); renderUI(); adventures.refresh();

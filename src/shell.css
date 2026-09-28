@@ -8,6 +8,8 @@
 }
 .primary-nav button:hover { color: #f1e2be; background: #e5d5a508; }
 .primary-nav [aria-current="page"] { color: #e3cb96; border-bottom-color: #cbb079; }
+.header-utility { display: inline-flex; align-items: center; gap: 7px; white-space: nowrap; }
+.header-utility svg { width: 17px; height: 17px; }
 .brand-sub { display: none; }
 .hub-view { padding: 48px 5% 120px; max-width: 1320px; }
 .hub-heading { margin-bottom: 38px; }
@@ -72,7 +74,9 @@ body.immersive .masthead {
   .brand-mark, .immersive .brand-mark { font-size: 25px; }
   .primary-nav { gap: 0; }
   .primary-nav button { padding: 0 8px; font-size: 11px; }
-  .header-right, .immersive .header-right { display: none; }
+  .header-right, .immersive .header-right { display: flex; gap: 0; }
+  .header-right .build, .header-right #help-button { display: none; }
+  .header-utility { padding: 7px 8px; font-size: 11px; }
   .hub-view { padding: 30px 18px 100px; }
   .hub-heading h1 { font-size: 36px; }
   .hub-empty { padding: 30px 20px; }

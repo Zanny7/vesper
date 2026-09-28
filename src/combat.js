@@ -339,7 +339,7 @@ export class Combat {
     const criticalAmount = amount * (critical ? CRIT_MULTIPLIER : 1);
     const dealt = Math.min(this.boss.hp, criticalAmount);
     this.boss.hp = Math.max(0, this.boss.hp - dealt);
-    this.emit('damage', { target: 'boss', amount: dealt, raw: amount, source: spell, damageType: 'Holy', critical });
+    this.emit('damage', { target: 'boss', actor: actor.id, amount: dealt, raw: amount, source: spell, damageType: 'Holy', critical });
     if (triggersAtonement) this.atonement(dealt, spell);
     return dealt;
   }

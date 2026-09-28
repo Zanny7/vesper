@@ -1,5 +1,5 @@
 // Global navigation owns screens and utility panels, never combat mechanics.
-export function setupShell({ game, view, resetEncounter, onAbandon = () => {}, onNavigate = () => {}, onEncounterStart = () => {}, onEquipmentShortcut = () => {}, onInventoryOpen = () => {}, onUtilityClose = () => {} }) {
+export function setupShell({ game, view, resetEncounter, onAbandon = () => {}, onNavigate = () => {}, onEncounterStart = () => {}, onInventoryOpen = () => {}, onUtilityClose = () => {} }) {
   const screens = {
     home: document.querySelector('#home-view'),
     adventures: document.querySelector('#adventures-view'),
@@ -9,7 +9,7 @@ export function setupShell({ game, view, resetEncounter, onAbandon = () => {}, o
   };
   const utilitySurface = document.querySelector('#utility-surface');
   const utilityButtons = [...document.querySelectorAll('[data-utility]')];
-  const restrictedUtilities = new Set(['inventory', 'equipment']);
+  const restrictedUtilities = new Set(['inventory']);
   const inventoryContent = document.querySelector('#inventory-content');
   const musicSettings = document.querySelector('#music-settings');
   const navigation = [...document.querySelectorAll('.primary-nav [data-navigate]')];
@@ -91,11 +91,10 @@ export function setupShell({ game, view, resetEncounter, onAbandon = () => {}, o
     button.addEventListener('click', () => {
       const next = button.dataset.utility;
       if (activeEncounter() && restrictedUtilities.has(next)) return;
-      if (next === 'equipment') { onEquipmentShortcut(); requestNavigation('team'); return; }
       if (utility === next) return closeUtility();
       closeUtility();
       utility = next;
-      const name = next === 'settings' ? 'Settings' : next === 'inventory' ? 'Inventory' : 'Equipment';
+      const name = next === 'settings' ? 'Settings' : 'Inventory';
       document.querySelector('#utility-title').textContent = name;
       document.querySelector('#utility-description').hidden = true;
       inventoryContent.hidden = next !== 'inventory';
