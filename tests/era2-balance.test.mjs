@@ -8,11 +8,13 @@ import {probe,probeRoute,builds} from '../scripts/era2-content.mjs';
 import {representativePaths} from '../scripts/era2-balance.mjs';
 import {routes} from '../scripts/boss-balance.mjs';
 import {fullResources,recoverEncounterMana} from '../src/chapter-runs.js';
+import {beforeBat102Healers} from '../scripts/bat-102-priest-scope.mjs';
+import {historicalHealersBeforeBat103} from './fixtures/bat103-original-healers.mjs';
 
 const baseline=JSON.parse(readFileSync(new URL('../scripts/fixtures/bat99-fixed.json',import.meta.url)));
 const hash=value=>createHash('sha256').update(JSON.stringify(value)).digest('hex');
 test('BAT-99 leaves Mana, gear, healers and Era I encounters intact',()=>{
-  assert.equal(hash(CONFIG),baseline.CONFIG);assert.equal(hash(GEAR),baseline.GEAR);assert.equal(hash(HEALERS),baseline.HEALERS);
+  assert.equal(hash(CONFIG),baseline.CONFIG);assert.equal(hash(GEAR),baseline.GEAR);assert.equal(hash(historicalHealersBeforeBat103(beforeBat102Healers(HEALERS))),baseline.HEALERS);
   const encounters=Object.fromEntries(CHAPTERS.slice(0,4).flatMap(c=>c.nodes.filter(n=>n.encounter).map(n=>[n.encounter,CHAPTER_ENCOUNTERS[n.encounter]])));
   assert.equal(hash(encounters),baseline.encounters);
 });

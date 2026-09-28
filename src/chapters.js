@@ -44,11 +44,11 @@ export function setupChapters({ openChapter, activeChapter = () => null }) {
     if (!eraUnlocked(selectedEra, completed)) selectedEra = ERAS[0];
     document.querySelector('#adventures-title').textContent = eraTitle(selectedEra);
     const index = ERAS.indexOf(selectedEra), nextEra = ERAS[index + 1];
-    previous.hidden = index === 0;
-    next.hidden = !nextEra;
+    previous.disabled = index === 0;
     next.disabled = !nextEra || !eraUnlocked(nextEra, completed);
+    previous.title = previous.disabled ? 'There is no earlier era' : `Return to ${ERAS[index - 1].name}`;
     next.textContent = 'Next Era →';
-    next.title = next.disabled ? `Complete ${chaptersForEra(selectedEra).at(-1).number} to unlock the next era` : 'Enter the next era';
+    next.title = !nextEra ? 'There is no later era' : next.disabled ? `Complete ${chaptersForEra(selectedEra).at(-1).number} to unlock the next era` : 'Enter the next era';
     eraButtons.forEach((button, i) => {
       const unlocked = eraUnlocked(ERAS[i], completed);
       button.textContent = `${eraTitle(ERAS[i])}${unlocked ? '' : ' · Locked'}`;

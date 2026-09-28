@@ -170,7 +170,7 @@ test('Overgrowth lowers cost, bypasses cooldown and conserves transferred remain
   game.party.forEach(member => { member.hp = member.maxHp * .5; });
   game.party[0].hp = game.party[0].maxHp * .9;
   cast(game, 'wildGrowth');
-  near(game.mana, CONFIG.mana - 56);
+  near(game.mana, CONFIG.mana - 40);
   const before = game.party.reduce((sum, member) => sum + hot(game, 'wildGrowth', member.id).heal * hot(game, 'wildGrowth', member.id).ticks, 0);
   advance(game, 1);
   const after = game.party.reduce((sum, member) => sum + hot(game, 'wildGrowth', member.id).heal * hot(game, 'wildGrowth', member.id).ticks, 0);

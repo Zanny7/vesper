@@ -29,7 +29,7 @@ test('Atonement includes the Priest, ignores companion attacks, and is wasted at
 
 test('Penance heals allies or deals two hostile bolts and triggers Atonement', () => {
   const friendly = setup(); friendly.party[0].hp = 100; friendly.begin('penance', 'tank'); advance(friendly, 2);
-  assert.equal(friendly.party[0].hp, 220); assert.equal(friendly.boss.hp, encounter.maxHp);
+  assert.equal(friendly.party[0].hp, 250); assert.equal(friendly.boss.hp, encounter.maxHp);
   const hostile = setup(); hostile.party[4].hp = 100; hostile.begin('penance', 'boss'); advance(hostile, 2);
   assert.equal(hostile.boss.hp, encounter.maxHp - 30); assert.equal(hostile.party[4].hp, 130);
   assert.equal(hostile.events.filter(event => event.type === 'damage' && event.target === 'boss').length, 2);

@@ -80,9 +80,9 @@ test('Focused Penance subtracts from base cooldown and Lingering Prayer only HoT
   assert.ok(game.begin('prayer', 'tank').ok); advance(game, 3);
   for (const ally of game.party) {
     const hot = ally.hots.find(effect => effect.source === 'lingering-prayer');
-    assert.equal(hot.heal, 100 * .3 / 3); assert.equal(hot.ticks, 3);
+    assert.equal(hot.heal, 110 * .3 / 3); assert.equal(hot.ticks, 3);
   }
-  advance(game, 2); assert.equal(game.party[0].hp, 1 + 120 + 100 + 10);
+  advance(game, 2); assert.equal(game.party[0].hp, 1 + 150 + 110 + 11);
   const previous = game.party[0].hots.find(effect => effect.source === 'lingering-prayer');
   assert.ok(game.begin('prayer', 'tank').ok); advance(game, 3);
   assert.equal(game.party[0].hots.filter(effect => effect.source === 'lingering-prayer').length, 1);
@@ -95,14 +95,14 @@ test('Fourfold Penance adds a third main bolt and smart-heals the current lowest
   friendly.party[0].hp = 100; friendly.party[1].hp = 100; friendly.party[2].hp = 120;
   assert.ok(friendly.begin('penance', 'tank').ok); advance(friendly, 1.5);
   friendly.party[2].hp = 1; advance(friendly, .5);
-  assert.equal(friendly.party[0].hp, 280);
-  assert.equal(friendly.party[2].hp, 61);
+  assert.equal(friendly.party[0].hp, 325);
+  assert.equal(friendly.party[2].hp, 76);
   assert.equal(friendly.events.filter(event => event.type === 'heal' && event.spell === 'penance').length, 3);
   const hostile = setup({ 'fourfold-penance': 1 });
   hostile.party.forEach(member => member.hp = member.maxHp); hostile.party[4].hp = 1;
   assert.ok(hostile.begin('penance', 'boss').ok); advance(hostile, 2);
   assert.equal(hostile.boss.hp, encounter.maxHp - 45);
-  assert.equal(hostile.party[4].hp, 106);
+  assert.equal(hostile.party[4].hp, 121);
 });
 
 test('Echo of Grace heals the lowest-percent wounded ally other than the primary target', () => {
@@ -110,10 +110,10 @@ test('Echo of Grace heals the lowest-percent wounded ally other than the primary
   game.party.forEach(member => member.hp = member.maxHp);
   game.party[0].hp = 100; game.party[1].hp = 200; game.party[4].hp = 90;
   assert.ok(game.begin('flash', 'tank').ok); advance(game, 1.5);
-  assert.equal(game.party[0].hp, 190);
-  assert.equal(game.party[4].hp, 108);
+  assert.equal(game.party[0].hp, 210);
+  assert.equal(game.party[4].hp, 112);
   assert.ok(game.begin('greater', 'tank').ok); advance(game, 3);
-  assert.equal(game.party[4].hp, 148);
+  assert.equal(game.party[4].hp, 152);
 });
 
 test('Light Unspent redistributes 40% of direct Prayer overhealing once', () => {
@@ -121,13 +121,13 @@ test('Light Unspent redistributes 40% of direct Prayer overhealing once', () => 
   game.party.forEach(member => member.hp = member.maxHp);
   game.party[0].hp -= 300; game.party[1].hp -= 50;
   assert.ok(game.begin('prayer', 'tank').ok); advance(game, 3);
-  assert.equal(game.party[0].hp, game.party[0].maxHp - 60);
+  assert.equal(game.party[0].hp, game.party[0].maxHp - 34);
   assert.equal(game.party[1].hp, game.party[1].maxHp);
   const redistributions = game.events.filter(event => event.type === 'heal' && event.spell === 'light-unspent');
   assert.equal(redistributions.length, 1);
-  assert.equal(redistributions[0].raw, 140);
+  assert.equal(redistributions[0].raw, 156);
   advance(game, 2);
-  assert.equal(game.party[0].hp, game.party[0].maxHp - 60);
+  assert.equal(game.party[0].hp, game.party[0].maxHp - 34);
   assert.equal(game.party[0].hots.some(effect => effect.source === 'lingering-prayer'), false);
   assert.equal(game.events.filter(event => event.spell === 'light-unspent').length, 1);
 });
@@ -152,14 +152,14 @@ test('Twin Penance banks two charges and recharges one at a time at the Focused 
   assert.equal(game.availableCharges('penance'), 2); assert.equal(game.cooldowns.penance, undefined);
 });
 
-test('Sanctuary reduces every incoming damage type by 20% for 12 seconds with a 60 second cooldown', () => {
+test('Sanctuary reduces every incoming damage type by 30% for 12 seconds with a 60 second cooldown', () => {
   const game = setup({ sanctuary: 1 });
   assert.ok(game.begin('sanctuary', 'tank').ok);
   const tank = game.party[0]; tank.hp = tank.maxHp;
   for (const type of ['Physical', 'Magic', 'Holy']) game.damage(tank, 10, 'test', type);
-  assert.equal(tank.hp, tank.maxHp - 24);
+  assert.equal(tank.hp, tank.maxHp - 21);
   advance(game, 12); game.damage(tank, 10, 'test', 'Holy');
-  assert.equal(tank.hp, tank.maxHp - 34);
+  assert.equal(tank.hp, tank.maxHp - 31);
   assert.equal(game.begin('sanctuary', 'tank').ok, false);
   assert.equal(game.cooldowns.sanctuary, 60);
 });
@@ -170,10 +170,10 @@ test('Divine Fervor grants healer Haste and multiplicative 20% Mana reduction fo
   assert.ok(healerGame.begin('divineFervor', 'tank').ok);
   assert.equal(healerGame.buffs.divineFervor.target, 'priest');
   assert.ok(healerGame.begin('greater', 'tank').ok);
-  assert.equal(healerGame.cast.duration, 2.5);
+  assert.ok(Math.abs(healerGame.cast.duration - 3 / 1.3) < 1e-8);
   assert.equal(healerGame.cast.manaCost, 36);
   advance(healerGame, 2.5);
-  assert.equal(healerGame.mana, mana - 36);
+  assert.ok(healerGame.mana >= mana - 36 && healerGame.mana < mana - 35);
   healerGame.buffs.postHaste = 1;
   assert.ok(healerGame.begin('greater', 'tank').ok);
   assert.ok(Math.abs(healerGame.cast.manaCost - 28.8) < 1e-8);

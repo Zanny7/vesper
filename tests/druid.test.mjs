@@ -9,7 +9,7 @@ function cast(g, id, target = 'tank') { assert.equal(g.begin(id, target).ok, tru
 
 test('Druid costs, durations, exact HoT totals and final ticks', () => {
   for (const [id, cost, castTime, duration, interval, direct, tick, count] of [
-    ['rejuvenation', 30, 0, 15, 3, 0, 30, 5], ['regrowth', 40, 1.5, 18, 3, 60, 20, 6], ['wildGrowth', 70, 0, 8, 1, 0, 12, 8],
+    ['rejuvenation', 25, 0, 15, 3, 0, 30, 5], ['regrowth', 40, 1.5, 18, 3, 60, 20, 6], ['wildGrowth', 50, 0, 8, 1, 0, 12, 8],
   ]) {
     const g = setup(), t = g.party[0];
     assert.equal(g.begin(id, 'tank').ok, true);
@@ -56,7 +56,7 @@ test('Nourish pools 80/110/140/170 based on HoTs at completion', () => {
     const g = setup(); for (const id of ['rejuvenation', 'regrowth', 'wildGrowth'].slice(0, count)) cast(g, id);
     const mana = g.mana; assert.equal(g.begin('nourish', 'tank').ok, true); assert.equal(g.mana, mana);
     assert.equal(g.cast.duration, 2); advance(g, 2);
-    assert.ok(Math.abs(g.mana - (Math.min(g.maxMana, mana + 2 * g.healer.manaRegen) - 30)) < 1e-8);
+    assert.ok(Math.abs(g.mana - (Math.min(g.maxMana, mana + 2 * g.healer.manaRegen) - 22)) < 1e-8);
     const pool = g.party[0].hots.find(hot => hot.source === 'nourish');
     assert.equal(pool.heal * pool.ticks, 80 + count * 30);
     advance(g, 4);

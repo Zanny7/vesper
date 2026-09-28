@@ -14,9 +14,9 @@ test('baseline healers have requested resources and neutral new stats', () => {
 });
 test('Spell Power adds once to direct, channel, mixed and per-target HoT totals', () => {
   const byId = id => [...SPELLS, ...DRUID_SPELLS].find(s => s.id === id);
-  close(healingParts(byId('flash'), 10).direct, 100);
-  close(healingParts(byId('prayer'), 10).direct, 110);
-  close(healingParts(byId('penance'), 10).direct, 130);
+  close(healingParts(byId('flash'), 10).direct, 120);
+  close(healingParts(byId('prayer'), 10).direct, 120);
+  close(healingParts(byId('penance'), 10).direct, 160);
   close(healingParts(byId('rejuvenation'), 10).hotTick, 32);
   close(healingParts(byId('wildGrowth'), 10).hotTick, 13.25);
   const growth = healingParts(byId('regrowth'), 10);

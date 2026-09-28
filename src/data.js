@@ -12,8 +12,8 @@ export const PRIEST_TALENT_VALUES = Object.freeze({
   echoOfGrace: Object.freeze({ ratio: .20 }),
   lightUnspent: Object.freeze({ overhealRatio: .40 }),
   twinPenance: Object.freeze({ charges: 2 }),
-  sanctuary: Object.freeze({ reduction: .20, duration: 12, cooldown: 60 }),
-  divineFervor: Object.freeze({ speed: .20, manaReduction: .20, duration: 15, cooldown: 60 }),
+  sanctuary: Object.freeze({ reduction: .30, duration: 12, cooldown: 60 }),
+  divineFervor: Object.freeze({ speed: .30, manaReduction: .20, duration: 15, cooldown: 60 }),
 });
 export const DRUID_TALENT_VALUES = Object.freeze({
   naturalRegeneration: Object.freeze({ manaRegenPerRank: .2 }),
@@ -1040,20 +1040,20 @@ export const PARTY = [
   { id: 'priest', name: 'You', role: 'Priest', label: 'HEALER', maxHp: 400, color: '#e2cc94', damage: 0, interval: 2, x: 485, y: 484 },
 ];
 export const SPELLS = [
-  { id: 'flash', name: 'Flash Heal', key: '1', icon: 'spark', cast: 1.5, cost: 1, heal: 90, color: '#e5ce8c', description: 'A quick, focused heal for 90.' },
+  { id: 'flash', name: 'Flash Heal', key: '1', icon: 'spark', cast: 1.5, cost: 1, heal: 110, color: '#e5ce8c', description: 'A quick, focused heal for 110.' },
   { id: 'greater', name: 'Greater Heal', key: '2', icon: 'sun', cast: 3, cost: 1.5, heal: 200, color: '#f2dfad', description: 'An efficient, powerful heal for 200.' },
-  { id: 'prayer', name: 'Prayer of Healing', key: '3', icon: 'wings', cast: 3, cost: 2.5, heal: 100, party: true, color: '#9fdfc6', description: 'Restores 100 health to every living ally, including you.' },
-  { id: 'penance', name: 'Penance', key: '4', icon: 'bolts', cast: 2, cost: 1, heal: 120, damage: 30, dualTarget: true, channel: true, cooldown: 12, ticks: [{ at: 1, heal: 60, damage: 15 }, { at: 2, heal: 60, damage: 15 }], description: 'Channel two holy bolts. Each heals an ally for 60, or damages the enemy for 15 and triggers Atonement.', color: '#f4c16c' },
+  { id: 'prayer', name: 'Prayer of Healing', key: '3', icon: 'wings', cast: 3, cost: 2.5, heal: 110, party: true, color: '#9fdfc6', description: 'Restores 110 health to every living ally, including you.' },
+  { id: 'penance', name: 'Penance', key: '4', icon: 'bolts', cast: 2, cost: 1, heal: 150, damage: 30, dualTarget: true, channel: true, cooldown: 12, ticks: [{ at: 1, heal: 75, damage: 15 }, { at: 2, heal: 75, damage: 15 }], description: 'Channel two holy bolts. Each heals an ally for 75, or damages the enemy for 15 and triggers Atonement.', color: '#f4c16c' },
   { id: 'smite', name: 'Smite', key: '5', icon: 'smite', cast: 1.5, cost: 4 / CONFIG.baseMana, heal: 0, damage: 2.5, enemy: true, atonement: true, description: 'Deal 2.5 damage to the enemy and heal the most injured ally through Atonement.', color: '#f3df9b' },
   { id: 'holyFire', name: 'Holy Fire', key: '6', icon: 'holyFire', cast: 0, cost: 8 / CONFIG.baseMana, heal: 0, damage: 3, enemy: true, atonement: true, cooldown: 6, enemyDot: { damage: 7, duration: 10, interval: 2 }, description: 'Deal 3 damage, then 7 over 10s. Recasting carries pending damage into the refreshed effect. All damage triggers Atonement.', color: '#efad69' },
 ];
 export const DRUID_HOTS = ['rejuvenation', 'regrowth', 'wildGrowth'];
 export const DRUID_SPELLS = [
-  { id: 'rejuvenation', name: 'Rejuvenation', key: '1', icon: 'leaf', cast: 0, cost: 1, heal: 0, hot: { duration: 15, interval: 3, heal: 30 }, color: '#9cdb95', description: 'Heal for 30 every 3s for 15s (150 total). Refreshing restarts the duration and tick timer.' },
+  { id: 'rejuvenation', name: 'Rejuvenation', key: '1', icon: 'leaf', cast: 0, cost: 25 / CONFIG.baseMana, heal: 0, hot: { duration: 15, interval: 3, heal: 30 }, color: '#9cdb95', description: 'Heal for 30 every 3s for 15s (150 total). Refreshing restarts the duration and tick timer.' },
   { id: 'regrowth', name: 'Regrowth', key: '2', icon: 'sprout', cast: 1.5, cost: 40 / CONFIG.baseMana, heal: 60, hot: { duration: 18, interval: 3, heal: 20 }, color: '#a8e5b9', description: 'Heal for 60 immediately, then 20 every 3s for 18s (180 total). Refreshing restarts the HoT.' },
   { id: 'swiftmend', name: 'Swiftmend', key: '3', icon: 'bloom', cast: 0, cost: 35 / CONFIG.baseMana, heal: 130, cooldown: 15, consumesHot: DRUID_HOTS, preserveHot: true, color: '#e0d497', description: 'Heal for 130. Requires Rejuvenation, Regrowth, or Wild Growth on this ally, but does not consume it.' },
-  { id: 'wildGrowth', name: 'Wild Growth', key: '4', icon: 'grove', cast: 0, cost: 70 / CONFIG.baseMana, heal: 0, party: true, cooldown: 10, hot: { duration: 8, interval: 1, heal: 12 }, color: '#80c9a8', description: 'Heal every living ally for 12 every second for 8s (96 per ally). Each ally has their own HoT.' },
-  { id: 'nourish', name: 'Nourish', key: '5', icon: 'seed', cast: 2, cost: 1, heal: 0, hot: { duration: 4, interval: 1, heal: 20, pool: true }, hotBonus: { sources: DRUID_HOTS, amount: 30, max: 3 }, color: '#c8df9b', description: 'A 4-second HoT ticking every second. Its 80 healing grows by 30 per active Rejuvenation, Regrowth, or Wild Growth type at completion. Recasting adds to the unspent pool and refreshes the duration.' },
+  { id: 'wildGrowth', name: 'Wild Growth', key: '4', icon: 'grove', cast: 0, cost: 50 / CONFIG.baseMana, heal: 0, party: true, cooldown: 10, hot: { duration: 8, interval: 1, heal: 12 }, color: '#80c9a8', description: 'Heal every living ally for 12 every second for 8s (96 per ally). Each ally has their own HoT.' },
+  { id: 'nourish', name: 'Nourish', key: '5', icon: 'seed', cast: 2, cost: 22 / CONFIG.baseMana, heal: 0, hot: { duration: 4, interval: 1, heal: 20, pool: true }, hotBonus: { sources: DRUID_HOTS, amount: 30, max: 3 }, color: '#c8df9b', description: 'A 4-second HoT ticking every second. Its 80 healing grows by 30 per active Rejuvenation, Regrowth, or Wild Growth type at completion. Recasting adds to the unspent pool and refreshes the duration.' },
 ];
 export const SHAMAN_EMPOWERMENT = Object.freeze({ healingBonus: .20, castReduction: .20 });
 export const SHAMAN_SPELLS = [

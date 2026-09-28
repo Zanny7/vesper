@@ -7,20 +7,20 @@ import { baseline } from '../scripts/encounter-pressure.mjs';
 const advance=(g,seconds)=>{for(let i=0;i<Math.round(seconds/CONFIG.step);i++)g.step();};
 function isolated(){const g=new Combat();g.start();g.nextStrike=Infinity;g.nextShard=Infinity;g.mechanics.forEach(m=>m.next=Infinity);g.party.forEach(p=>{p.nextAttack=Infinity;});return g;}
 
-test('Flash completes at 1.5s and heals 90 without baseline Post-Haste',()=>{
+test('Flash completes at 1.5s and heals 110 without baseline Post-Haste',()=>{
   const g=isolated();g.party[0].hp=100;
   assert.equal(g.begin('flash','tank').ok,true);advance(g,1.4);assert.equal(g.party[0].hp,100);
-  advance(g,.1);assert.equal(g.party[0].hp,190);assert.deepEqual(g.buffs,{});
+  advance(g,.1);assert.equal(g.party[0].hp,210);assert.deepEqual(g.buffs,{});
   g.begin('greater','tank');assert.equal(g.cast.duration,3);
 });
 test('Prayer heals every living ally including Priest without reviving the dead',()=>{
   const g=isolated();g.party.forEach(p=>p.hp=100);g.party[1].hp=0;g.begin('prayer','rogue');advance(g,3);
-  assert.deepEqual(g.party.map(p=>p.hp),[200,0,200,200,200]);assert.equal(g.stats.effective,400);
+  assert.deepEqual(g.party.map(p=>p.hp),[210,0,210,210,210]);assert.equal(g.stats.effective,440);
 });
-test('Penance launches two bolts before distinct heals totaling 120',()=>{
+test('Penance launches two bolts before distinct heals totaling 150',()=>{
   const g=isolated();g.party[0].hp=100;g.begin('penance','tank');advance(g,.7);
   assert.equal(g.events.filter(e=>e.type==='bolt').length,1);assert.equal(g.party[0].hp,100);
-  advance(g,.3);assert.equal(g.party[0].hp,160);advance(g,1);assert.equal(g.party[0].hp,220);
+  advance(g,.3);assert.equal(g.party[0].hp,175);advance(g,1);assert.equal(g.party[0].hp,250);
   const bolts=g.events.filter(e=>e.type==='bolt'),heals=g.events.filter(e=>e.type==='heal');assert.equal(bolts.length,2);assert.equal(heals.length,2);
   heals.forEach((heal,i)=>assert.ok(Math.abs(heal.time-bolts[i].time-.3)<.02));assert.equal(g.cast,null);
   assert.equal(g.begin('penance','tank').ok,false);advance(g,10);assert.equal(g.begin('penance','tank').ok,true);

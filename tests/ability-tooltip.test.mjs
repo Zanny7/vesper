@@ -22,32 +22,32 @@ const makeGame = (healer, allocations = {}, stats = {}, random = () => 0.99) => 
 const spell = (game, id) => game.spells.find(entry => entry.id === id);
 const advance = (game, seconds) => { for (let i = 0; i < Math.round(seconds / CONFIG.step); i++) game.step(); };
 
-test('Penance tooltip and combat share the 30 Mana, 60-per-bolt baseline', () => {
+test('Penance tooltip and combat share the 30 Mana, 75-per-bolt baseline', () => {
   const game = makeGame('priest');
   const penance = spell(game, 'penance');
   const tooltip = abilityTooltip(game, penance, game.party[0]);
   assert.match(tooltip, /2s channel · 30 Mana/);
-  assert.match(tooltip, /2 healing bolts: 60 each \(120 total\)/);
+  assert.match(tooltip, /2 healing bolts: 75 each \(150 total\)/);
   assert.match(tooltip, /2 bolts for 15 damage each \(30 total\)/);
   game.start(); game.party[0].hp = 100;
   assert.equal(game.begin('penance', 'tank').ok, true);
   advance(game, 2);
-  assert.deepEqual(game.events.filter(event => event.type === 'heal' && event.spell === 'penance').map(event => event.raw), [60, 60]);
-  assert.equal(game.party[0].hp, 220);
+  assert.deepEqual(game.events.filter(event => event.type === 'heal' && event.spell === 'penance').map(event => event.raw), [75, 75]);
+  assert.equal(game.party[0].hp, 250);
 });
 
 test('Spell Power, Haste, ranks and Post-Haste update tooltip values from the active loadout', () => {
   const game = makeGame('priest', { 'binding-light': 2, 'early-mercy': 2, 'post-haste': 1, 'fourfold-penance': 1 }, { spellPower: 30, haste: 20 });
   assert.match(abilityTooltip(game, spell(game, 'flash')), /1.3s cast · 30 Mana/);
-  assert.match(abilityTooltip(game, spell(game, 'flash')), /Heal one ally for 120/);
+  assert.match(abilityTooltip(game, spell(game, 'flash')), /Heal one ally for 140/);
   assert.match(abilityTooltip(game, spell(game, 'flash')), /Binding Light: after Flash Heal/);
   assert.match(abilityTooltip(game, spell(game, 'greater')), /2.5s cast · 45 Mana/);
   assert.match(abilityTooltip(game, spell(game, 'greater')), /deliver 50% of Greater Heal halfway through this cast/);
   const penance = abilityTooltip(game, spell(game, 'penance'));
   assert.match(penance, /1.7s channel · 30 Mana/);
-  assert.match(penance, /3 healing bolts: 68 each \(203 total\)/);
-  assert.match(penance, /additional smart bolt .* 68/);
-  assert.equal(healingParts(spell(game, 'penance'), 30).direct, 270);
+  assert.match(penance, /3 healing bolts: 83 each \(248 total\)/);
+  assert.match(penance, /additional smart bolt .* 83/);
+  assert.equal(healingParts(spell(game, 'penance'), 30).direct, 330);
   game.buffs.postHaste = 1;
   assert.match(abilityTooltip(game, spell(game, 'greater')), /2s cast · 36 Mana/);
   assert.match(abilityTooltip(game, spell(game, 'greater')), /Post-Haste: this cast uses one stack/);
@@ -57,14 +57,14 @@ test('equipping and removing a Spell Power weapon refreshes the same combat tool
   const equipment = new Equipment(undefined, () => false, TEST_GEAR);
   const game = new Combat(encounter, () => 0.99, equipment.party('priest'), SPELLS);
   const flash = spell(game, 'flash');
-  assert.match(abilityTooltip(game, flash), /Heal one ally for 90/);
+  assert.match(abilityTooltip(game, flash), /Heal one ally for 110/);
   equipment.acquire('test-priest-censer');
   assert.equal(equipment.equip(partyForHealer('priest').at(-1), 'Weapon', 'test-priest-censer'), true);
   game.setLoadout(equipment.party('priest'), SPELLS);
-  assert.match(abilityTooltip(game, flash), /Heal one ally for 102/);
+  assert.match(abilityTooltip(game, flash), /Heal one ally for 122/);
   assert.equal(equipment.equip(partyForHealer('priest').at(-1), 'Weapon', null), true);
   game.setLoadout(equipment.party('priest'), SPELLS);
-  assert.match(abilityTooltip(game, flash), /Heal one ally for 90/);
+  assert.match(abilityTooltip(game, flash), /Heal one ally for 110/);
 });
 
 test('Druid tooltip tracks HoT ticks, target bonuses, and talent-added behavior', () => {
@@ -77,7 +77,7 @@ test('Druid tooltip tracks HoT ticks, target bonuses, and talent-added behavior'
   assert.match(swiftmend, /does not consume the HoT/);
   assert.match(swiftmend, /2 lowest-health-percentage other living allies for 39 each/);
   game.cooldowns.wildGrowth = game.time + 8;
-  assert.match(abilityTooltip(game, spell(game, 'wildGrowth')), /0.8s cast · 56 Mana/);
+  assert.match(abilityTooltip(game, spell(game, 'wildGrowth')), /0.8s cast · 40 Mana/);
   assert.match(abilityTooltip(game, spell(game, 'wildGrowth')), /Overgrowth available/);
   assert.match(abilityTooltip(game, spell(game, 'genesis')), /tick 15% faster for 8s/);
 });
@@ -116,18 +116,18 @@ test('Penance bolts crit independently and Haste keeps all main and smart bolts'
   advance(game, 2);
   const main = game.events.filter(event => event.type === 'heal' && event.spell === 'penance');
   const smart = game.events.filter(event => event.type === 'heal' && event.spell === 'fourfold-penance');
-  assert.deepEqual(main.map(event => event.raw), [90, 60, 90]);
+  assert.deepEqual(main.map(event => event.raw), [112.5, 75, 112.5]);
   assert.equal(smart.length, 1);
-  assert.equal(smart[0].raw, 60);
+  assert.equal(smart[0].raw, 75);
   assert.deepEqual(game.events.filter(event => event.type === 'bolt' && event.spell === 'penance').length, 4);
 });
 
 test('Priest active spell tooltips reflect configured effects, cooldowns, and the live Penance base', () => {
   const game = makeGame('priest', { 'focused-penance': 1, sanctuary: 1, 'divine-fervor': 1 });
   assert.match(abilityTooltip(game, spell(game, 'penance')), /10s cooldown/);
-  assert.match(abilityTooltip(game, spell(game, 'sanctuary')), /Reduce party damage taken by 20% for 12s/);
+  assert.match(abilityTooltip(game, spell(game, 'sanctuary')), /Reduce party damage taken by 30% for 12s/);
   assert.match(abilityTooltip(game, spell(game, 'sanctuary')), /60s cooldown/);
-  assert.match(abilityTooltip(game, spell(game, 'divineFervor')), /20% Haste and reduce all spell Mana costs by 20% for 15s/);
+  assert.match(abilityTooltip(game, spell(game, 'divineFervor')), /30% Haste and reduce all spell Mana costs by 20% for 15s/);
   assert.match(abilityTooltip(game, spell(game, 'divineFervor')), /60s cooldown/);
 });
 
