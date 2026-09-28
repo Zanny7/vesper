@@ -68,3 +68,29 @@ test('music controller loops the selected boss asset and applies persistent cont
   assert.equal(FakeAudio.instance.volume, 0);
   assert.deepEqual(JSON.parse(persisted.get('vesper-music-settings-v1')), { volume: 40, muted: true });
 });
+
+test('elite completion and map exit release audio before normal and boss playback', () => {
+  class FakeAudio {
+    constructor() { this.paused = true; this.volume = 0; this.src = ''; this.plays = []; }
+    pause() { this.paused = true; }
+    load() {}
+    play() { this.paused = false; this.plays.push(this.src); return Promise.resolve(); }
+    removeAttribute(name) { if (name === 'src') this.src = ''; }
+  }
+  const music = createMusicController({ AudioClass: FakeAudio, fadeInDuration: 0, fadeDuration: 100 });
+  const selector = createEncounterTrackSelector({ random: () => 0 });
+  const elite = selector.select({ kind: 'elite' });
+  music.play(elite);
+  music.stop({ fade: true }); // Combat outcome.
+  music.stop({ fade: false }); // Returning to the map cancels the fade.
+  assert.equal(music.getState().currentTrackId, null);
+  const normal = selector.select({ kind: 'normal' });
+  assert.notEqual(normal.id, elite.id);
+  music.play(normal);
+  assert.deepEqual(music.getState(), { volume: 25, muted: false, currentTrackId: normal.id, playing: true });
+  music.stop({ fade: false }); // Shrine navigation does not start a track.
+  assert.equal(music.getState().playing, false);
+  music.play(selector.select({ kind: 'boss' }));
+  assert.equal(music.getState().currentTrackId, SOUNDTRACK_POOLS.boss[0].id);
+  music.stop({ fade: false });
+});

@@ -30,7 +30,7 @@
 .adventure-node[data-state="completed"] .node-symbol { border-color: #66dcb0; color: #a9edbe; }
 .adventure-node[data-state="locked"] { color: #93a5a0; }
 .adventure-node[data-state="locked"] .node-symbol { color: #aab4b1; font-size: 22px; }
-.adventure-node[data-state="locked"]:not(.boss) .node-symbol { border-color: #aab4b1; border-radius: 5px; background: #172b2d; box-shadow: none; }
+.adventure-node[data-state="locked"]:not(.boss) .node-symbol { border-color: #aab4b1; background: #172b2d; box-shadow: none; }
 .adventure-node[aria-pressed="true"] .node-symbol { border-color: #d8bd72; color: #edcf8e; background: #302c20; box-shadow: 0 0 20px #d8bd7266, inset 0 0 0 1px #d8bd72; }
 .adventure-node:not([data-state="locked"]):hover .node-symbol { border-color: #d8bd72; box-shadow: 0 0 22px #d8bd7255; }
 .boss[data-state="available"] .node-symbol { border-color: #8e4c50; color: #c77c7c; box-shadow: 0 0 25px #d8bd7255; }

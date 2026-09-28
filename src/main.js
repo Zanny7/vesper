@@ -247,7 +247,7 @@ const gearUI = setupEquipment({ equipment, isLocked: equipmentLocked, onChange: 
   runs.reconcileParty(party(activeHealerId)); resetLoadout(activeHealerId);
   buildHealerUI(); prepareEncounterUI(); scene.reset(); renderUI(); team.refresh(); adventures.refresh();
 } });
-const shell = setupShell({ game, view, resetEncounter: restart, onAbandon: () => adventures.abandon(), onNavigate: destination => { if (destination !== 'encounter') music.stop({ fade: true }); gearUI.close(); if (destination === 'chapter') adventures.refresh(); }, onEncounterStart: track => music.play(track), onEquipmentShortcut: () => team.selectHealer(activeHealerId), onInventoryOpen: () => gearUI.renderInventory(), onUtilityClose: () => gearUI.close() });
+const shell = setupShell({ game, view, resetEncounter: restart, onAbandon: () => adventures.abandon(), onNavigate: destination => { if (destination !== 'encounter') music.stop({ fade: false }); gearUI.close(); if (destination === 'chapter') adventures.refresh(); }, onEncounterStart: track => music.play(track), onEquipmentShortcut: () => team.selectHealer(activeHealerId), onInventoryOpen: () => gearUI.renderInventory(), onUtilityClose: () => gearUI.close() });
 const team = setupTeam({ settings: abilitySettings, onAbilitiesChange: () => { buildHealerUI(); renderUI(); }, paintPortrait: (canvas, member, width) => scene.paintPortrait(canvas, member, width), onHealerChange: healerId => {
   activeHealerId = healerId; runs.reconcileParty(party(healerId)); resetLoadout(healerId);
   selected = 'tank'; hovered = null; buildHealerUI(); prepareEncounterUI(); scene.reset(); renderUI(); adventures.refresh();

@@ -40,6 +40,20 @@ test('all 47 Era II fights have distinct tuned pressure, readable schedules and 
   assert.equal(CONFIG.encounterManaRecovery,.2); assert.equal(CONFIG.manaRegen,3);
 });
 
+test('Era II special forks follow several fights and leave combat before each boss', () => {
+  for (const chapter of CHAPTERS.slice(4)) {
+    const elite = chapter.nodes.find(node => node.kind === 'elite');
+    const shrine = chapter.nodes.find(node => node.kind === 'shrine');
+    const boss = chapter.nodes.find(node => node.kind === 'boss');
+    assert.equal(elite.routeStage, shrine.routeStage);
+    assert.ok(elite.routeStage >= Math.floor(chapter.routeLength / 2), chapter.id);
+    assert.ok(elite.routeStage < boss.routeStage - 1, chapter.id);
+    assert.ok(chapter.nodes.some(node => node.kind === 'normal' && node.routeStage === elite.routeStage));
+    assert.ok(chapter.nodes.some(node => node.kind === 'normal' && node.routeStage === elite.routeStage + 1));
+    assert.ok(chapter.nodes.filter(node => node.kind === 'normal' && node.routeStage < elite.routeStage).length >= 4);
+  }
+});
+
 test('bounded mechanics stop announcing new casts while their existing wounds finish; phases pause and reset', () => {
   const encounter={...structuredClone(CHAPTER_ENCOUNTERS.sentinel),maxHp:1e8,
     phases:[{at:0,name:'Opening',hint:'First wound.'},{at:6,name:'Closing',hint:'Second hit.'}],

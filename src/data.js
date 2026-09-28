@@ -1328,18 +1328,22 @@ const ERA_II_CONTENT = {
         phase(76, 'Total Eclipse', 'Recover the party before three falling stars.'), phase(116, 'Sundered Dawn', 'A heavy tank crown competes with split wounds and the last light.')]),
   ],
 };
+// Stage groups refer to stable encounter indices. Moving a fork must not
+// change saved node IDs or the BAT-98 item pools assigned to those IDs.
 const ERA_II_MAPS = [
-  { id: 'reach', name: 'The Emerald Reach', stages: [1, 3, 1, 2, 2, 1], description: 'Cross the broken frontier. Choose shelter, a guarded trail, or an optional elite challenge.', places: ['Verdant Gate', 'Mossway', 'Emerald Sentinel', 'Dawn Shrine', 'Root Crossing', 'Fern Hollow', 'Lost Watch', 'Briar Steps', 'Greenward', 'Heart of the Reach'] },
-  { id: 'tides', name: 'The Drowned Sanctuaries', stages: [1, 2, 1, 3, 2, 2, 1], description: 'Follow the receding tide through sunken sanctuaries. Weigh safer paths against deeper danger.', places: ['Salt Gate', 'Reed Passage', 'Drowned Walk', 'Tide Crossing', 'Shallow Way', 'Tideguard', 'Moonwell Shrine', 'Sunken Choir', 'Pearl Vault', 'Wave Steps', 'Flood Watch', 'Throne Below'] },
-  { id: 'spire', name: 'The Glassbound Spire', stages: [1, 2, 2, 1, 3, 2, 2, 1], description: 'Climb a fractured spire. Longer routes make each wound and each decision matter.', places: ['Glass Gate', 'Prism Walk', 'Lower Ascent', 'Mirror Hall', 'Crystal Watch', 'Spire Crossing', 'Clear Passage', 'Prism Warden', 'Starlight Shrine', 'Shard Gallery', 'Hollow Lens', 'Crown Steps', 'High Watch', 'The Glass Crown'] },
-  { id: 'eclipse', name: 'The Eclipsed Dominion', stages: [1, 2, 2, 1, 3, 2, 2, 1, 1], description: 'Enter the last light of a fallen dominion. Carry your party through the longest vigil yet.', places: ['Dusk Gate', 'Umbral Walk', 'Fading Path', 'Night Gallery', 'Twilight Watch', 'Eclipse Crossing', 'Quiet Passage', 'Umbral Knight', 'Lastlight Shrine', 'Shadow Choir', 'Hollow Moon', 'Crown Walk', 'Black Watch', 'Final Approach', 'The Eclipsed Throne'] },
+  { id: 'reach', name: 'The Emerald Reach', stages: [[0], [1, 5], [4], [6, 2, 3], [7, 8], [9]], description: 'Cross the broken frontier. Choose shelter, a guarded trail, or an optional elite challenge.', places: ['Verdant Gate', 'Mossway', 'Emerald Sentinel', 'Dawn Shrine', 'Root Crossing', 'Fern Hollow', 'Lost Watch', 'Briar Steps', 'Greenward', 'Heart of the Reach'] },
+  { id: 'tides', name: 'The Drowned Sanctuaries', stages: [[0], [1, 2], [3, 7], [4], [8, 5, 6], [9, 10], [11]], description: 'Follow the receding tide through sunken sanctuaries. Weigh safer paths against deeper danger.', places: ['Salt Gate', 'Reed Passage', 'Drowned Walk', 'Tide Crossing', 'Shallow Way', 'Tideguard', 'Moonwell Shrine', 'Sunken Choir', 'Pearl Vault', 'Wave Steps', 'Flood Watch', 'Throne Below'] },
+  { id: 'spire', name: 'The Glassbound Spire', stages: [[0], [1, 2], [3, 4], [9, 6], [5], [10, 7, 8], [11, 12], [13]], description: 'Climb a fractured spire. Longer routes make each wound and each decision matter.', places: ['Glass Gate', 'Prism Walk', 'Lower Ascent', 'Mirror Hall', 'Crystal Watch', 'Spire Crossing', 'Clear Passage', 'Prism Warden', 'Starlight Shrine', 'Shard Gallery', 'Hollow Lens', 'Crown Steps', 'High Watch', 'The Glass Crown'] },
+  { id: 'eclipse', name: 'The Eclipsed Dominion', stages: [[0], [1, 2], [3, 4], [5, 6], [9], [10], [12, 7, 8], [11, 13], [14]], description: 'Enter the last light of a fallen dominion. Carry your party through the longest vigil yet.', places: ['Dusk Gate', 'Umbral Walk', 'Fading Path', 'Night Gallery', 'Twilight Watch', 'Eclipse Crossing', 'Quiet Passage', 'Umbral Knight', 'Lastlight Shrine', 'Shadow Choir', 'Hollow Moon', 'Crown Walk', 'Black Watch', 'Final Approach', 'The Eclipsed Throne'] },
 ];
 for (const [index, shell] of ERA_II_MAPS.entries()) {
-  let offset = 0, previous = [];
-  const nodes = shell.stages.flatMap((size, stage) => {
-    const group = Array.from({ length: size }, (_, lane) => {
-      const id = `${shell.id}-${offset + lane + 1}`, name = shell.places[offset + lane];
-      const kind = stage === shell.stages.length - 1 ? 'boss' : size === 3 && lane === 1 ? 'elite' : size === 3 && lane === 2 ? 'shrine' : 'normal';
+  let previous = [];
+  const eliteIndex = [2, 5, 7, 7][index], shrineIndex = eliteIndex + 1;
+  const nodes = shell.stages.flatMap((indices, stage) => {
+    const size = indices.length;
+    const group = indices.map((contentIndex, lane) => {
+      const id = `${shell.id}-${contentIndex + 1}`, name = shell.places[contentIndex];
+      const kind = stage === shell.stages.length - 1 ? 'boss' : contentIndex === shrineIndex ? 'shrine' : contentIndex === eliteIndex ? 'elite' : 'normal';
       // Equal lanes stay parallel; a three-way fork narrows through its middle
       // lane, preserving readable edges without losing any route to the boss.
       const parents = previous.length === size && size > 1 ? [previous[lane]]
@@ -1354,13 +1358,31 @@ for (const [index, shell] of ERA_II_MAPS.entries()) {
         result.description = `Restore ${Math.round(result.utility.fraction * 100)}% of maximum Health to each living ally, once per run. No resurrection, Mana recovery or gear reward. Choose shelter instead of combat rewards.`;
       }
       else {
-        const content = structuredClone(ERA_II_CONTENT[shell.id][offset + lane]);
+        const content = structuredClone(ERA_II_CONTENT[shell.id][contentIndex]);
+        if (kind === 'normal') {
+          // Normal routes now ask for repeated healing between warning spikes.
+          // Keep the first fork gentle enough for inherited-gear farming.
+          const early = stage < 2;
+          const pressure = [
+            { strike: 1.15, cadence: 0.82, ticks: 2 },
+            { strike: 1.08, cadence: 0.92, ticks: 1 },
+            { strike: 1.1, cadence: 0.88, ticks: 1 },
+            { strike: 1.1, cadence: 0.9, ticks: 1 },
+          ][index];
+          content.strike.damage = Math.round(content.strike.damage * (early ? 1.05 : pressure.strike));
+          for (const mechanic of content.mechanics) {
+            if (!early) {
+              mechanic.every = Math.round(mechanic.every * pressure.cadence * 10) / 10;
+              if (mechanic.dot) mechanic.dot.ticks += pressure.ticks;
+            }
+          }
+        }
         CHAPTER_ENCOUNTERS[id] = { ...content, id };
         result.description = content.lesson + (kind === 'elite' ? ` ${Math.round(ELITE_REWARD_CHANCE * 100)}% chance to choose one eligible item from six targeted rewards.` : '');
       }
       return result;
     });
-    offset += size; previous = group; return group;
+    previous = group; return group;
   });
   CHAPTERS.push({ id: shell.id, number: `Chapter ${index + 5}`, name: shell.name, description: shell.description, nodes,
     routeLength: shell.stages.length, routeChoices: 'exclusive', contentStatus: 'authored', balanceStatus: 'tuned', rewardsStatus: 'authored', talentMilestones: false,

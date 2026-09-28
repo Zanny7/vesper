@@ -9,7 +9,7 @@ import { formatCombatNumber } from './stats.js';
 import { eraForChapter } from './eras.js';
 export { nodeState, chapterComplete, restoreProgress, awardVictory } from './progression.js';
 const nodeLabel = node => ({ boss: 'Chapter Boss', elite: 'Optional Elite', shrine: 'Shrine' }[node.kind] || 'Encounter');
-const nodeSymbol = node => ({ boss: '♜', elite: '⚔', shrine: '✧' }[node.kind] || '◇');
+const nodeSymbol = node => ({ boss: '♜', elite: '♛', shrine: '✧' }[node.kind] || '◇');
 
 export function chapterManaText(run) {
   // Unstarted previews have no persisted chapter resource state to display.
@@ -185,7 +185,7 @@ export function setupAdventures({ startEncounter, onProgress, onRunChange, runs,
       const button = buttons.get(node.id), state = encounterState(chapter, run, node);
       button.dataset.state = state;
       button.setAttribute('aria-pressed', String(selected === node.id));
-      button.querySelector('.node-symbol').textContent = state === 'locked' ? '⊘' : nodeSymbol(node);
+      button.querySelector('.node-symbol').textContent = state === 'locked' && node.kind === 'normal' ? '⊘' : nodeSymbol(node);
       const stateDescription = state === 'completed' ? 'Cleared this run' : state === 'available' ? chapter.id === 'catacombs' ? 'Current encounter' : 'Available route' : 'Locked';
       button.setAttribute('aria-label', `${nodeLabel(node)}: ${node.name}. ${stateDescription}`);
     }
