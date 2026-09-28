@@ -32,6 +32,7 @@ export function setupShell({ game, view, resetEncounter, onAbandon = () => {}, o
     if (locked && restrictedUtilities.has(utility)) closeUtility();
     for (const button of utilityButtons) {
       const restricted = restrictedUtilities.has(button.dataset.utility);
+      button.hidden = current === 'encounter' && restricted;
       button.disabled = locked && restricted;
       const name = button.dataset.utility[0].toUpperCase() + button.dataset.utility.slice(1);
       button.title = `${name}${locked && restricted ? ' — unavailable during an encounter' : ''}`;
@@ -90,7 +91,7 @@ export function setupShell({ game, view, resetEncounter, onAbandon = () => {}, o
   for (const button of utilityButtons) {
     button.addEventListener('click', () => {
       const next = button.dataset.utility;
-      if (activeEncounter() && restrictedUtilities.has(next)) return;
+      if (current === 'encounter' && restrictedUtilities.has(next)) return;
       if (utility === next) return closeUtility();
       closeUtility();
       utility = next;

@@ -22,5 +22,7 @@ test('equipment is managed from Team and active encounters restrict Inventory on
   assert.match(html, /data-navigate="team">Team/);
   assert.match(team, /paper-doll.*member\.role.*equipment/);
   assert.match(shell, /new Set\(\['inventory'\]\)/);
+  assert.match(shell, /button\.hidden = current === 'encounter' && restricted/);
+  assert.match(shell, /current === 'encounter' && restrictedUtilities\.has\(next\)/);
   assert.doesNotMatch(shell, /onEquipmentShortcut|next === 'equipment'/);
 });

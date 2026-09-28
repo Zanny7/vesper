@@ -7,6 +7,8 @@
 .action-panel > :not(.encounter-meter) { grid-column: 1; }
 .action-panel .casting-row { margin-bottom: 0; }
 .encounter-meter {
+  display: flex;
+  flex-direction: column;
   grid-column: 2;
   grid-row: 1 / span 3;
   align-self: stretch;
@@ -17,9 +19,11 @@
   background: linear-gradient(180deg, #17272bdc, #0b181edc);
   color: #e9e2cf;
   font: 10px 'DM Sans', sans-serif;
+  height: 264px;
+  box-sizing: border-box;
   box-shadow: 0 6px 20px #0004;
 }
-.meter-tabs { display: flex; gap: 4px; margin-bottom: 7px; }
+.meter-tabs { display: flex; flex: none; gap: 4px; margin-bottom: 7px; }
 .meter-tabs button {
   flex: 1;
   padding: 5px 3px;
@@ -31,12 +35,13 @@
   cursor: pointer;
 }
 .meter-tabs button[aria-pressed="true"] { border-color: #c8ae77; background: #483f2c; color: #f0ddb2; }
-.meter-body { max-height: 260px; overflow-y: auto; }
+.meter-body { flex: 1 1 auto; min-height: 0; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; scrollbar-color: #897b55 #142329; }
 .meter-row {
   position: relative;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  gap: 1px 6px;
+  grid-template-columns: minmax(0, 1fr) 34px auto;
+  align-items: center;
+  gap: 6px;
   width: 100%;
   margin: 3px 0;
   padding: 4px 6px;
@@ -52,10 +57,11 @@ button.meter-row { cursor: pointer; }
 button.meter-row:hover, .meter-back:hover { border-color: #d0b781; }
 .meter-fill { position: absolute; inset: 0 auto 0 0; width: var(--meter-fill); background: var(--meter-color); opacity: .24; pointer-events: none; }
 .meter-row > :not(.meter-fill) { position: relative; }
-.meter-name { grid-row: 1 / span 2; align-self: center; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.meter-row strong, .meter-row small { text-align: right; font-variant-numeric: tabular-nums; }
-.meter-row strong { font-size: 10px; }
+.meter-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.meter-share { text-align: center; color: #cbb882; font-variant-numeric: tabular-nums; }
+.meter-row strong { text-align: right; white-space: nowrap; font-size: 9px; font-variant-numeric: tabular-nums; }
 .meter-row small { color: #b1c1b8; font-size: 8px; }
+.meter-pinned { flex: none; }
 .meter-summary { display: grid; grid-template-columns: 1fr auto; gap: 2px 5px; margin-top: 7px; padding: 7px 4px 0; border-top: 1px solid #84775370; }
 .meter-summary span { grid-row: 1 / span 2; align-self: center; color: #cbb882; font-size: 8px; letter-spacing: .5px; }
 .meter-summary strong, .meter-summary small { text-align: right; font-variant-numeric: tabular-nums; }

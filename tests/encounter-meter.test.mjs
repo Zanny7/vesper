@@ -1,7 +1,31 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { readFile } from 'node:fs/promises';
 import { Combat } from '../src/combat.js';
-import { EncounterMeter } from '../src/encounter-meter.js';
+import { EncounterMeter, contributionPercent } from '../src/encounter-meter.js';
+
+test('contribution percentages use the supplied total and guard empty totals', () => {
+  assert.equal(contributionPercent(25, 100), '25%');
+  assert.equal(contributionPercent(0, 0), '—');
+});
+
+test('meter pins the relevant footer outside the fixed-height scrolling list', async () => {
+  const [html, css, source] = await Promise.all([
+    readFile(new URL('../index.html', import.meta.url), 'utf8'),
+    readFile(new URL('../src/encounter-meter.css', import.meta.url), 'utf8'),
+    readFile(new URL('../src/encounter-meter.js', import.meta.url), 'utf8'),
+  ]);
+  assert.match(html, /class="meter-body"><\/div><div class="meter-pinned"><\/div>/);
+  assert.match(css, /\.encounter-meter\s*\{[^}]*display:\s*flex/);
+  assert.match(css, /\.meter-body\s*\{[^}]*flex:\s*1 1 auto;[^}]*overflow-y:\s*auto/);
+  assert.match(source, /pinnedMarkup = overhealSummary\(\)/);
+  assert.ok(source.includes('aria-label="${displayNumber(perSecond)} ${unit} per second, ${displayNumber(amount)} total ${unit}"'));
+  assert.ok(source.includes('>(${displayNumber(perSecond)}) ${displayNumber(amount)}</strong>'));
+  assert.match(source, /modeButton\.dataset\.meterMode; detail = false; previousBody = ''; previousPinned = ''; render\(\)/);
+  assert.doesNotMatch(source, /previousMarkup/);
+  assert.match(source, /OVERHEALING<\/span><strong>\$\{displayNumber\(meter\.totalOverheal\)\}<\/strong><small>\$\{contributionPercent\(meter\.totalOverheal, meter\.totalHealing \+ meter\.totalOverheal\)\} of attempted healing/);
+  assert.doesNotMatch(source, /summary\('EFFECTIVE HEALING'/);
+});
 
 test('damage meter credits the actor, caps overkill, and retains all five sorted rows', () => {
   const game = new Combat();
@@ -41,9 +65,18 @@ test('healing meter uses effective amounts and sorts spell and effect details', 
   meter.consume(game.drainEvents());
   assert.equal(game.stats.overheal, 138);
   assert.equal(meter.totalHealing, 20);
+  assert.equal(meter.totalOverheal, 138);
   assert.deepEqual(meter.healingRows(4, game.spells).map(row => [row.name, row.amount, row.perSecond]), [
     ['Flash Heal', 12, 3], ['Atonement', 8, 2],
   ]);
+});
+
+test('healing totals remain zero with empty output and rates stay safe', () => {
+  const meter = new EncounterMeter(new Combat().party);
+  assert.equal(meter.totalHealing, 0);
+  assert.equal(meter.totalOverheal, 0);
+  assert.deepEqual(meter.healingRows(0), []);
+  assert.ok(meter.damageRows(0).every(row => row.perSecond === 0));
 });
 
 test('rates use active encounter time and freeze while paused or ended', () => {

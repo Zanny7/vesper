@@ -1,5 +1,6 @@
 const displayNumber = value => Math.round(value).toLocaleString('en-US');
 const rate = (amount, seconds) => seconds > 0 ? amount / seconds : 0;
+export const contributionPercent = (amount, total) => total > 0 ? `${Math.round(amount / total * 100)}%` : '—';
 const escapeHtml = value => String(value).replace(/[&<>"']/g, character => ({
   '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;',
 })[character]);
@@ -11,6 +12,7 @@ export class EncounterMeter {
     this.healing = new Map();
     this.totalDamage = 0;
     this.totalHealing = 0;
+    this.totalOverheal = 0;
   }
 
   constructor(party) { this.reset(party); }
@@ -20,6 +22,9 @@ export class EncounterMeter {
       if (event.type === 'damage' && event.target === 'boss' && this.damage.has(event.actor) && event.amount > 0) {
         this.damage.set(event.actor, this.damage.get(event.actor) + event.amount);
         this.totalDamage += event.amount;
+      }
+      if (event.type === 'heal') {
+        this.totalOverheal += Math.max(0, (event.raw ?? event.amount) - event.amount);
       }
       if (event.type === 'heal' && event.amount > 0) {
         const source = event.spell || 'unknown';
@@ -45,9 +50,13 @@ export class EncounterMeter {
 
 export function setupEncounterMeter(element, game) {
   const meter = new EncounterMeter(game.party);
-  let mode = 'damage', detail = false, previousMarkup = '';
+  let mode = 'damage', detail = false, previousBody = '', previousPinned = '';
   const summary = (label, total, seconds, unit) => `<div class="meter-summary"><span>${label}</span><strong>${displayNumber(total)}</strong><small>${displayNumber(rate(total, seconds))} ${unit}</small></div>`;
-  const row = (name, amount, perSecond, color, portion, clickable = false) => `<${clickable ? 'button type="button" data-meter-back="true"' : 'div'} class="meter-row" style="--meter-color:${escapeHtml(color)};--meter-fill:${Math.max(0, Math.min(100, portion))}%"><span class="meter-fill" aria-hidden="true"></span><span class="meter-name">${escapeHtml(name)}</span><strong>${displayNumber(amount)}</strong><small>${displayNumber(perSecond)} ${mode === 'damage' ? 'DPS' : 'HPS'}</small></${clickable ? 'button' : 'div'}>`;
+  const overhealSummary = () => `<div class="meter-summary"><span>OVERHEALING</span><strong>${displayNumber(meter.totalOverheal)}</strong><small>${contributionPercent(meter.totalOverheal, meter.totalHealing + meter.totalOverheal)} of attempted healing</small></div>`;
+  const row = (name, amount, perSecond, color, portion, clickable = false, share = null) => {
+    const unit = mode === 'damage' ? 'damage' : 'healing';
+    return `<${clickable ? 'button type="button" data-meter-back="true"' : 'div'} class="meter-row" style="--meter-color:${escapeHtml(color)};--meter-fill:${Math.max(0, Math.min(100, portion))}%"><span class="meter-fill" aria-hidden="true"></span><span class="meter-name">${escapeHtml(name)}</span><span class="meter-share">${share ?? '—'}</span><strong aria-label="${displayNumber(perSecond)} ${unit} per second, ${displayNumber(amount)} total ${unit}">(${displayNumber(perSecond)}) ${displayNumber(amount)}</strong></${clickable ? 'button' : 'div'}>`;
+  };
 
   function render() {
     const seconds = game.time;
@@ -55,31 +64,36 @@ export function setupEncounterMeter(element, game) {
       button.setAttribute('aria-pressed', String(button.dataset.meterMode === mode));
     });
     const body = element.querySelector('.meter-body');
-    let markup;
+    const pinned = element.querySelector('.meter-pinned');
+    let bodyMarkup, pinnedMarkup;
     if (mode === 'damage') {
       const rows = meter.damageRows(seconds);
-      markup = `${rows.map(member => row(member.name, member.amount, member.perSecond, member.color, rows[0].amount ? member.amount / rows[0].amount * 100 : 0)).join('')}${summary('PARTY TOTAL', meter.totalDamage, seconds, 'DPS')}`;
+      bodyMarkup = rows.map(member => row(member.name, member.amount, member.perSecond, member.color, rows[0].amount ? member.amount / rows[0].amount * 100 : 0, false, contributionPercent(member.amount, meter.totalDamage))).join('');
+      pinnedMarkup = summary('PARTY TOTAL', meter.totalDamage, seconds, 'DPS');
     } else if (detail) {
       const rows = meter.healingRows(seconds, game.spells);
-      markup = `<button type="button" class="meter-back" data-meter-back="true">← All healing</button>${rows.length ? rows.map(effect => row(effect.name, effect.amount, effect.perSecond, '#86cbb3', effect.amount / rows[0].amount * 100, true)).join('') : '<p class="meter-empty">No effective healing yet.</p>'}${summary('EFFECTIVE HEALING', meter.totalHealing, seconds, 'HPS')}`;
+      bodyMarkup = `${rows.length ? rows.map(effect => row(effect.name, effect.amount, effect.perSecond, '#86cbb3', rows[0].amount ? effect.amount / rows[0].amount * 100 : 0, true, contributionPercent(effect.amount, meter.totalHealing))).join('') : '<p class="meter-empty">No effective healing yet.</p>'}<button type="button" class="meter-back" data-meter-back="true">← All healing</button>`;
+      pinnedMarkup = overhealSummary();
     } else {
-      markup = `${row(game.healer?.name || 'Healer', meter.totalHealing, rate(meter.totalHealing, seconds), '#86cbb3', meter.totalHealing ? 100 : 0, true)}${summary('EFFECTIVE HEALING', meter.totalHealing, seconds, 'HPS')}<p class="meter-hint">Select the healer to see spells and effects.</p>`;
+      bodyMarkup = `${row(game.healer?.name || 'Healer', meter.totalHealing, rate(meter.totalHealing, seconds), '#86cbb3', meter.totalHealing ? 100 : 0, true, contributionPercent(meter.totalHealing, meter.totalHealing))}<p class="meter-hint">Select the healer to see spells and effects.</p>`;
+      pinnedMarkup = overhealSummary();
     }
-    if (markup !== previousMarkup) {
+    if (bodyMarkup !== previousBody) {
       const focusedBack = body.contains(document.activeElement) && document.activeElement.hasAttribute('data-meter-back');
-      body.innerHTML = markup;
+      body.innerHTML = bodyMarkup;
       if (focusedBack) body.querySelector('[data-meter-back]')?.focus({ preventScroll: true });
-      previousMarkup = markup;
+      previousBody = bodyMarkup;
     }
+    if (pinnedMarkup !== previousPinned) { pinned.innerHTML = pinnedMarkup; previousPinned = pinnedMarkup; }
   }
 
   element.addEventListener('click', event => {
     const modeButton = event.target.closest('[data-meter-mode]');
-    if (modeButton) { mode = modeButton.dataset.meterMode; detail = false; previousMarkup = ''; render(); return; }
-    if (event.target.closest('[data-meter-back]')) { detail = mode === 'healing' && !detail; previousMarkup = ''; render(); }
+    if (modeButton) { mode = modeButton.dataset.meterMode; detail = false; previousBody = ''; previousPinned = ''; render(); return; }
+    if (event.target.closest('[data-meter-back]')) { detail = mode === 'healing' && !detail; previousBody = ''; render(); }
   });
   return {
-    reset() { meter.reset(game.party); mode = 'damage'; detail = false; previousMarkup = ''; render(); },
+    reset() { meter.reset(game.party); mode = 'damage'; detail = false; previousBody = ''; previousPinned = ''; render(); },
     consume(events) { meter.consume(events); },
     render,
   };
